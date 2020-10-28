@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>esbuild - Content Types</title>
+    <link rel="stylesheet" href="/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <script>
+      try {
+        document.body.dataset.mode3 = localStorage.getItem('mode3') || 'cli'
+        document.body.dataset.mode2 = localStorage.getItem('mode2') || 'js'
+        document.body.dataset.theme = localStorage.getItem('theme')
+      } catch (e) {
+        document.body.dataset.mode3 = 'cli'
+        document.body.dataset.mode2 = 'js'
+        document.body.dataset.theme = null
+      }
+      document.body.classList.add('has-js')
+    </script>
+    <script src="/script.js" defer></script>
+    <div id="menubar">
+      <a id="menutoggle" href="javascript:void 0">
+        <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="18" width="20" height="2" stroke-width="0"/>
+          <rect x="15" y="24" width="20" height="2" stroke-width="0"/>
+          <rect x="15" y="30" width="20" height="2" stroke-width="0"/>
+        </svg>
+      </a>
+    </div>
+    <nav>
+      <div id="shadow"></div>
+      <div id="menu">
+        <a href="/" class="logo">esbuild</a>
+        <ul>
+          <li><a href="/getting-started/">Getting Started</a></li>
+          <ul class="h2">
+            <li><a href="/getting-started/#install-esbuild">Install esbuild</a></li>
+            <li><a href="/getting-started/#your-first-bundle">Your first bundle</a></li>
+            <li><a href="/getting-started/#build-scripts">Build scripts</a></li>
+            <li><a href="/getting-started/#bundling-for-the-browser">Bundling for the browser</a></li>
+            <li><a href="/getting-started/#bundling-for-node">Bundling for node</a></li>
+          </ul>
+          <li><a href="/api/">API</a></li>
+          <ul class="h2">
+            <li><a href="/api/#transform-api">Transform API</a></li>
+            <li><a href="/api/#build-api">Build API</a></li>
+            <li><a href="/api/#simple-options">Simple options</a></li>
+            <li><a href="/api/#advanced-options">Advanced options</a></li>
+            <li><a href="/api/#js-specific-details">JS-specific details</a></li>
+          </ul>
+          <li><a href="/content-types/">Content Types</a></li>
+          <ul class="h2">
+            <li id="nav-javascript"><a href="#javascript">JavaScript</a></li>
+            <li id="nav-typescript"><a href="#typescript">TypeScript</a></li>
+            <li id="nav-jsx"><a href="#jsx">JSX</a></li>
+            <ul class="h3">
+              <li id="nav-using-jsx-without-react"><a href="#using-jsx-without-react">Using JSX without React</a></li>
+            </ul>
+            <li id="nav-json"><a href="#json">JSON</a></li>
+            <li id="nav-css"><a href="#css">CSS</a></li>
+            <li id="nav-text"><a href="#text">Text</a></li>
+            <li id="nav-binary"><a href="#binary">Binary</a></li>
+            <li id="nav-base64"><a href="#base64">Base64</a></li>
+            <li id="nav-data-url"><a href="#data-url">Data URL</a></li>
+            <li id="nav-external-file"><a href="#external-file">External file</a></li>
+          </ul>
+          <li><a href="/faq/">FAQ</a></li>
+        </ul>
+        <div id="icons">
+          <a href="https://github.com/evanw/esbuild">
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
+            <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
+              -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+              -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+              -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
+              .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
+              .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
+              8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
+          </svg>
+          </a><a href="javascript:void 0" id="theme">
+            <svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"/>
+              <circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"/>
+            </svg>
+            <svg id="theme-dark" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10.1 6.6a8.08 8.08 0 00.24 11.06 8.08 8.08 0 0011.06.24c-6.46.9-12.2-4.84-11.3-11.3z" stroke-width="0"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <h1>Content Types</h1>
+      <p>All of the built-in content types are listed below. Each content type has an associated &quot;loader&quot; which tells esbuild how to interpret the file contents. Some file extensions already have a loader configured for them by default, although the defaults can be overridden.</p>
+      <h2 id="javascript">
+        <a aria-hidden="true" href="#javascript">#</a>
+        JavaScript
+      </h2>
+      <p>Loader: <code>js</code></p>
+      <p>This loader is enabled by default for <code>.js</code>, <code>.cjs</code>, and <code>.mjs</code> files. The <code>.cjs</code> extension is used by node for CommonJS modules and the <code>.mjs</code> extension is used by node for ECMAScript modules, although esbuild doesn't make a distinction between the two.</p>
+      <p>All modern JavaScript syntax is supported by esbuild. Newer syntax may not be supported by older browsers, however, so you may want to configure the <a href="/api/#target">target</a> option to tell esbuild to convert newer syntax to older syntax as appropriate.</p>
+      <p>These syntax features are always transformed for older browsers:</p>
+      <table>
+      <thead>
+      <tr>
+      <th>Syntax transform</th>
+      <th>Language version</th>
+      <th>Example</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-trailing-function-commas">Trailing commas in function parameter lists and calls</a></td>
+      <td><code>es2017</code></td>
+      <td><code>foo(a, b, )</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-numeric-separator">Numeric separators</a></td>
+      <td><code>esnext</code></td>
+      <td><code>1_000_000</code></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>These syntax features are conditionally transformed for older browsers depending on the configured language target:</p>
+      <table>
+      <thead>
+      <tr>
+      <th>Syntax transform</th>
+      <th>Transformed when <code>--target</code> is below</th>
+      <th>Example</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-exponentiation-operator">Exponentiation operator</a></td>
+      <td><code>es2016</code></td>
+      <td><code>a ** b</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/ecmascript-asyncawait">Async functions</a></td>
+      <td><code>es2017</code></td>
+      <td><code>async () =&gt; {}</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-object-rest-spread">Spread properties</a></td>
+      <td><code>es2018</code></td>
+      <td><code>let x = {...y}</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-object-rest-spread">Rest properties</a></td>
+      <td><code>es2018</code></td>
+      <td><code>let {...x} = y</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-optional-catch-binding">Optional catch binding</a></td>
+      <td><code>es2019</code></td>
+      <td><code>try {} catch {}</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-optional-chaining">Optional chaining</a></td>
+      <td><code>es2020</code></td>
+      <td><code>a?.b</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-nullish-coalescing">Nullish coalescing</a></td>
+      <td><code>es2020</code></td>
+      <td><code>a ?? b</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-import-meta"><code>import.meta</code></a></td>
+      <td><code>es2020</code></td>
+      <td><code>import.meta</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-class-fields">Class instance fields</a></td>
+      <td><code>esnext</code></td>
+      <td><code>class { x }</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-static-class-features">Static class fields</a></td>
+      <td><code>esnext</code></td>
+      <td><code>class { static x }</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-private-methods">Private instance methods</a></td>
+      <td><code>esnext</code></td>
+      <td><code>class { #x() {} }</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-class-fields">Private instance fields</a></td>
+      <td><code>esnext</code></td>
+      <td><code>class { #x }</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-static-class-features">Private static methods</a></td>
+      <td><code>esnext</code></td>
+      <td><code>class { static #x() {} }</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-static-class-features">Private static fields</a></td>
+      <td><code>esnext</code></td>
+      <td><code>class { static #x }</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-logical-assignment">Logical assignment operators</a></td>
+      <td><code>esnext</code></td>
+      <td><code>a ??= b</code></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>These syntax features are currently always passed through un-transformed:</p>
+      <table>
+      <thead>
+      <tr>
+      <th>Syntax transform</th>
+      <th>Unsupported when <code>--target</code> is below</th>
+      <th>Example</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-async-iteration">Asynchronous iteration</a></td>
+      <td><code>es2018</code></td>
+      <td><code>for await (let x of y) {}</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-async-iteration">Async generators</a></td>
+      <td><code>es2018</code></td>
+      <td><code>async function* foo() {}</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-bigint">BigInt</a></td>
+      <td><code>es2020</code></td>
+      <td><code>123n</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-hashbang">Hashbang grammar</a></td>
+      <td><code>esnext</code></td>
+      <td><code>#!/usr/bin/env node</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-top-level-await">Top-level await</a></td>
+      <td><code>esnext</code></td>
+      <td><code>await import(x)</code></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>See also <a href="https://github.com/tc39/proposals/blob/master/finished-proposals.md">the list of finished ECMAScript proposals</a> and <a href="https://github.com/tc39/proposals/blob/master/README.md">the list of active ECMAScript proposals</a>. Note that while transforming code containing top-level await is supported, bundling code containing top-level await is not yet supported.</p>
+      <p>Some additional details:</p>
+      <ul><li><strong>ES5 support</strong> <p> Transforming ES6+ syntax to ES5 is not supported yet. However, if you're using esbuild to transform ES5 code, you should still set the <a href="/api/#target">target</a> to <code>es5</code>. This prevents esbuild from introducing ES6 syntax into your ES5 code. For example, without this flag the object literal <code>{x: x}</code> will become <code>{x}</code> and the string <code>&quot;a\nb&quot;</code> will become a multi-line template literal when minifying. Both of these substitutions are done because the resulting code is shorter, but the substitutions will not be performed if the <a href="/api/#target">target</a> is <code>es5</code>. </p></li><li><strong>Private member performance</strong> <p> The private member transform (for the <code>#name</code> syntax) uses <code>WeakMap</code> and <code>WeakSet</code> to preserve the privacy properties of this feature. This is similar to the corresponding transforms in the Babel and TypeScript compilers. Most modern JavaScript engines (V8, JavaScriptCore, and SpiderMonkey but not ChakraCore) may not have good performance characteristics for large <code>WeakMap</code> and <code>WeakSet</code> objects. </p> <p> Creating many instances of classes with private fields or private methods with this syntax transform active may cause a lot of overhead for the garbage collector. This is because modern engines (other than ChakraCore) store weak values in an actual map object instead of as hidden properties on the keys themselves, and large map objects can cause performance issues with garbage collection. See <a href="https://github.com/tc39/ecma262/issues/1657#issuecomment-518916579">this reference</a> for more information. </p></li></ul>
+      <h2 id="typescript">
+        <a aria-hidden="true" href="#typescript">#</a>
+        TypeScript
+      </h2>
+      <p>Loader: <code>ts</code> or <code>tsx</code></p>
+      <p>This loader is enabled by default for <code>.ts</code> and <code>.tsx</code> files, which means esbuild has built-in support for parsing TypeScript syntax and discarding the type annotations. However, esbuild <em>does not</em> do any type checking so you will still need to run <code>tsc -noEmit</code> in parallel with esbuild to check types. This is not something esbuild does itself.</p>
+      <p>TypeScript type declarations like these are parsed and ignored (a non-exhaustive list):</p>
+      <table>
+      <thead>
+      <tr>
+      <th>Syntax feature</th>
+      <th>Example</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td>Interface declarations</td>
+      <td><code>interface Foo {}</code></td>
+      </tr>
+      <tr>
+      <td>Type declarations</td>
+      <td><code>type Foo = number</code></td>
+      </tr>
+      <tr>
+      <td>Function declarations</td>
+      <td><code>function foo(): void;</code></td>
+      </tr>
+      <tr>
+      <td>Ambient declarations</td>
+      <td><code>declare module 'foo' {}</code></td>
+      </tr>
+      <tr>
+      <td>Type-only imports</td>
+      <td><code>import type {Type} from 'foo'</code></td>
+      </tr>
+      <tr>
+      <td>Type-only exports</td>
+      <td><code>export type {Type} from 'foo'</code></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>TypeScript-only syntax extensions are supported, and are always converted to JavaScript (a non-exhaustive list):</p>
+      <table>
+      <thead>
+      <tr>
+      <th>Syntax feature</th>
+      <th>Example</th>
+      <th>Notes</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td>Namespaces</td>
+      <td><code>namespace Foo {}</code></td>
+      <td></td>
+      </tr>
+      <tr>
+      <td>Enums</td>
+      <td><code>enum Foo { A, B }</code></td>
+      <td></td>
+      </tr>
+      <tr>
+      <td>Const enums</td>
+      <td><code>const enum Foo { A, B }</code></td>
+      <td>Behaves the same as regular enums</td>
+      </tr>
+      <tr>
+      <td>Generic type parameters</td>
+      <td><code>&lt;T&gt;(a: T): T =&gt; a</code></td>
+      <td>Not available with the <code>tsx</code> loader</td>
+      </tr>
+      <tr>
+      <td>JSX with types</td>
+      <td><code>&lt;Element&lt;T&gt;/&gt;</code></td>
+      <td></td>
+      </tr>
+      <tr>
+      <td>Type casts</td>
+      <td><code>a as B</code> and <code>&lt;B&gt;a</code></td>
+      <td></td>
+      </tr>
+      <tr>
+      <td>Type imports</td>
+      <td><code>import {Type} from 'foo'</code></td>
+      <td>Handled by removing all unused imports</td>
+      </tr>
+      <tr>
+      <td>Type exports</td>
+      <td><code>export {Type} from 'foo'</code></td>
+      <td>Handled by ignoring missing exports in TypeScript files</td>
+      </tr>
+      <tr>
+      <td>Experimental decorators</td>
+      <td><code>@sealed class Foo {}</code></td>
+      <td>The <code>emitDecoratorMetadata</code> flag is not supported</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>Some additional caveats:</p>
+      <ul><li><p> You should probably enable the <a href="https://www.typescriptlang.org/tsconfig#isolatedModules"><code>isolatedModules</code></a> TypeScript configuration option if you use TypeScript with esbuild. This prevents you from using features which could cause mis-compilation in environments like esbuild where each file is compiled independently without tracing type references across files. For example, it prevents you from re-exporting types from another module using <code>export <wbr>{T} <wbr>from <wbr>'./types'</code> (you need to use <code>export <wbr>type <wbr>{T} <wbr>from <wbr>'./types'</code> instead). </p></li><li><p> The <a href="https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata"><code>emitDecoratorMetadata</code></a> TypeScript configuration option is not supported. It passes type annotations to decorators and is an exception to the &quot;TypeScript is just JavaScript&quot; philosophy that TypeScript started with where type annotations are not supposed to change the output of the compiler. Since esbuild does not replicate TypeScript's type system, it does not have enough information to implement this feature. </p></li><li><p> The <code>tsx</code> loader is <em>not</em> a superset of the <code>ts</code> loader. They are two different partially-incompatible syntaxes. For example, the character sequence <code>&lt;a&gt;1&lt;/a&gt;/g</code> parses as <code>&lt;a&gt;(1 &lt; (/a&gt;/g))</code> with the <code>ts</code> loader and <code>(&lt;a&gt;1&lt;/a&gt;) / g</code> with the <code>tsx</code> loader. </p> <p>The most common issue this causes is not being able to use generic type parameters on arrow function expressions such as <code>&lt;T&gt;() =&gt; {}</code> with the <code>tsx</code> loader. This is intentional, and matches the behavior of the official TypeScript compiler. That space in the <code>tsx</code> grammar is reserved for JSX elements. </p></li></ul>
+      <h2 id="jsx">
+        <a aria-hidden="true" href="#jsx">#</a>
+        JSX
+      </h2>
+      <p>Loader: <code>jsx</code> or <code>tsx</code></p>
+      <p><a href="https://facebook.github.io/jsx/">JSX</a> is an XML-like syntax extension for JavaScript that was created for <a href="https://github.com/facebook/react">React</a>. It's intended to be converted into normal JavaScript by your build tool. Each XML element becomes a normal JavaScript function call. For example, the following JSX code:</p>
+      <pre><span class="hljs-keyword">import</span> Button <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./button&#x27;</span>
+<span class="hljs-keyword">let</span> button = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span>&gt;</span>Click me<span class="hljs-tag">&lt;/<span class="hljs-name">Button</span>&gt;</span></span>
+render(button)</pre>
+      <p>Will be converted to the following JavaScript code:</p>
+      <pre><span class="hljs-keyword">import</span> Button <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./button&quot;</span>;
+<span class="hljs-keyword">let</span> button = React.createElement(Button, <span class="hljs-literal">null</span>, <span class="hljs-string">&quot;Click me&quot;</span>);
+render(button);</pre>
+      <p>This loader is enabled by default for <code>.jsx</code> and <code>.tsx</code> files. Note that JSX syntax is not enabled in <code>.js</code> files by default. If you would like to enable that, you will need to configure it:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --loader:.js=jsx</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">loader</span>: { <span class="hljs-string">&#x27;.js&#x27;</span>: <span class="hljs-string">&#x27;jsx&#x27;</span> },
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Loader: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]api.Loader{
+      <span class="hljs-string">&quot;.js&quot;</span>: api.LoaderJSX,
+    },
+    Write: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h3 id="using-jsx-without-react" data-h2="jsx">
+        <a aria-hidden="true" href="#using-jsx-without-react">#</a>
+        Using JSX without React
+      </h3>
+      <p>If you're using JSX with a library other than React (such as <a href="https://preactjs.com/">Preact</a>), you'll likely need to configure the JSX factory and fragment settings since they default to <code>React<wbr>.createElement</code> and <code>React<wbr>.Fragment</code> respectively:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.jsx --jsx-factory=h --jsx-fragment=Fragment</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.jsx&#x27;</span>],
+  <span class="hljs-attr">jsxFactory</span>: <span class="hljs-string">&#x27;h&#x27;</span>,
+  <span class="hljs-attr">jsxFragment</span>: <span class="hljs-string">&#x27;Fragment&#x27;</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.jsx&quot;</span>},
+    JSXFactory:  <span class="hljs-string">&quot;h&quot;</span>,
+    JSXFragment: <span class="hljs-string">&quot;Fragment&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>Alternatively, if you are using TypeScript, you can just configure JSX for TypeScript by adding this to your <code>tsconfig.json</code> file and esbuild should pick it up automatically without needing to be configured:</p>
+      <pre>{
+  <span class="hljs-attr">&quot;compilerOptions&quot;</span>: {
+    <span class="hljs-attr">&quot;jsxFactory&quot;</span>: <span class="hljs-string">&quot;h&quot;</span>,
+    <span class="hljs-attr">&quot;jsxFragmentFactory&quot;</span>: <span class="hljs-string">&quot;Fragment&quot;</span>
+  }
+}</pre>
+      <p>You will also have to add <code>import <wbr>{h, <wbr>Fragment} <wbr>from <wbr>'preact'</code> in files containing JSX syntax.</p>
+      <h2 id="json">
+        <a aria-hidden="true" href="#json">#</a>
+        JSON
+      </h2>
+      <div>Loader: <code>json</code></div>
+      <p>This loader is enabled by default for <code>.json</code> files. It parses the JSON file into a JavaScript object at build time and exports the object as the default export. Using it looks something like this:</p>
+      <pre><span class="hljs-keyword">import</span> object <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.json&#x27;</span>
+<span class="hljs-built_in">console</span>.log(object)</pre>
+      <p>In addition to the default export, there are also named exports for each top-level property in the JSON object. Importing a named export directly means esbuild can automatically remove unused parts of the JSON file from the bundle, leaving only the named exports that you actually used. For example, this code will only include the <code>version</code> field when bundled:</p>
+      <pre><span class="hljs-keyword">import</span> { version } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./package.json&#x27;</span>
+<span class="hljs-built_in">console</span>.log(version)</pre>
+      <h2 id="css">
+        <a aria-hidden="true" href="#css">#</a>
+        CSS
+      </h2>
+      <p>Loader: <code>css</code></p>
+      <div class="warning">The CSS content type is new and is still a work in progress. There is also a known <a href="https://github.com/evanw/esbuild/issues/465">ordering issue</a> with importing CSS files from JavaScript files. You can follow <a href="https://github.com/evanw/esbuild/issues/20">the tracking issue</a> for updates about this feature.</div>
+      <p>This loader is enabled by default for <code>.css</code> files. It loads the file as CSS syntax. CSS is a first-class content type in esbuild, which means esbuild can bundle CSS files directly without needing to import your CSS from JavaScript code:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild --bundle app.css --outfile=out.css</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.css&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.css&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.css&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outfile:     <span class="hljs-string">&quot;out.css&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>You can <code>@import</code> other CSS files and reference image and font files with <code>url()</code> and esbuild will bundle everything together. Note that you will have to configure a loader for image and font files, since esbuild doesn't have any pre-configured. Usually this is either the <a href="#data-url">data URL</a> loader or the <a href="#external-file">external file</a> loader.</p>
+      <p>You can also import CSS from JavaScript. When you do this, esbuild will gather all CSS files referenced from a given entry point and bundle it into a sibling CSS output file next to the JavaScript output file for that JavaScript entry point. So if esbuild generates <code>app.js</code> it would also generate <code>app.css</code> containing all CSS files referenced by <code>app.js</code>. Here's an example of importing a CSS file from JavaScript:</p>
+      <pre><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;./button.css&#x27;</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> Button = <span class="hljs-function">(<span class="hljs-params">{ text }</span>) =&gt;</span>
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;button&quot;</span>&gt;</span>{text}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span></pre>
+      <p>Note that esbuild doesn't yet support CSS modules, so the set of export names from a CSS file is currently always empty. Supporting a basic form of CSS modules is on the roadmap.</p>
+      <h2 id="text">
+        <a aria-hidden="true" href="#text">#</a>
+        Text
+      </h2>
+      <p>Loader: <code>text</code></p>
+      <p>This loader is enabled by default for <code>.txt</code> files. It loads the file as a string at build time and exports the string as the default export. Using it looks something like this:</p>
+      <pre><span class="hljs-keyword">import</span> string <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.txt&#x27;</span>
+<span class="hljs-built_in">console</span>.log(string)</pre>
+      <h2 id="binary">
+        <a aria-hidden="true" href="#binary">#</a>
+        Binary
+      </h2>
+      <p>Loader: <code>binary</code></p>
+      <p>This loader will load the file as a binary buffer at build time and embed it into the bundle using Base64 encoding. The original bytes of the file are decoded from Base64 at run time and exported as a <code>Uint8Array</code> using the default export. Using it looks like this:</p>
+      <pre><span class="hljs-keyword">import</span> uint8array <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.data&#x27;</span>
+<span class="hljs-built_in">console</span>.log(uint8array)</pre>
+      <p>If you need an <code>ArrayBuffer</code> instead, you can just access <code>uint8array<wbr>.buffer</code>. Note that this loader is not enabled by default. You will need to configure it for the appropriate file extension like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --loader:.data=binary</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">loader</span>: { <span class="hljs-string">&#x27;.data&#x27;</span>: <span class="hljs-string">&#x27;binary&#x27;</span> },
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Loader: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]api.Loader{
+      <span class="hljs-string">&quot;.data&quot;</span>: api.LoaderBinary,
+    },
+    Write: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h2 id="base64">
+        <a aria-hidden="true" href="#base64">#</a>
+        Base64
+      </h2>
+      <p>Loader: <code>base64</code></p>
+      <p>This loader will load the file as a binary buffer at build time and embed it into the bundle as a string using Base64 encoding. This string is exported using the default export. Using it looks like this:</p>
+      <pre><span class="hljs-keyword">import</span> base64string <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.data&#x27;</span>
+<span class="hljs-built_in">console</span>.log(base64string)</pre>
+      <p>Note that this loader is not enabled by default. You will need to configure it for the appropriate file extension like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --loader:.data=base64</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">loader</span>: { <span class="hljs-string">&#x27;.data&#x27;</span>: <span class="hljs-string">&#x27;base64&#x27;</span> },
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Loader: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]api.Loader{
+      <span class="hljs-string">&quot;.data&quot;</span>: api.LoaderBase64,
+    },
+    Write: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>If you intend to turn this into a <code>Uint8Array</code> or an <code>ArrayBuffer</code>, you should use the <code>binary</code> loader instead. It uses an optimized Base64-to-binary converter that is faster than the usual <code>atob</code> conversion process.</p>
+      <h2 id="data-url">
+        <a aria-hidden="true" href="#data-url">#</a>
+        Data URL
+      </h2>
+      <p>Loader: <code>dataurl</code></p>
+      <p>This loader will load the file as a binary buffer at build time and embed it into the bundle as a Base64-encoded data URL. This string is exported using the default export. Using it looks like this:</p>
+      <pre><span class="hljs-keyword">import</span> url <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.png&#x27;</span>
+<span class="hljs-keyword">let</span> image = <span class="hljs-keyword">new</span> Image
+image.src = url
+<span class="hljs-built_in">document</span>.body.appendChild(image)</pre>
+      <p>The data URL includes a best guess at the MIME type based on the file extension and/or the file contents, and will look something like this:</p>
+      <pre>data:image/png;base64,iVBORw0KGgo=</pre>
+      <p>Note that this loader is not enabled by default. You will need to configure it for the appropriate file extension like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --loader:.png=dataurl</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">loader</span>: { <span class="hljs-string">&#x27;.png&#x27;</span>: <span class="hljs-string">&#x27;dataurl&#x27;</span> },
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Loader: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]api.Loader{
+      <span class="hljs-string">&quot;.png&quot;</span>: api.LoaderDataURL,
+    },
+    Write: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h2 id="external-file">
+        <a aria-hidden="true" href="#external-file">#</a>
+        External file
+      </h2>
+      <p>Loader: <code>file</code></p>
+      <p>This loader will copy the file to the output directory and embed the file name into the bundle as a string. This string is exported using the default export. Using it looks like this:</p>
+      <pre><span class="hljs-keyword">import</span> url <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.png&#x27;</span>
+<span class="hljs-keyword">let</span> image = <span class="hljs-keyword">new</span> Image
+image.src = url
+<span class="hljs-built_in">document</span>.body.appendChild(image)</pre>
+      <p>Note that this loader is not enabled by default. You will need to configure it for the appropriate file extension like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --loader:.png=file --outdir=out</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">loader</span>: { <span class="hljs-string">&#x27;.png&#x27;</span>: <span class="hljs-string">&#x27;file&#x27;</span> },
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;out&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Loader: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]api.Loader{
+      <span class="hljs-string">&quot;.png&quot;</span>: api.LoaderFile,
+    },
+    Outdir: <span class="hljs-string">&quot;out&quot;</span>,
+    Write:  <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>By default the exported string is just the file name. If you would like to prepend a base path to the exported string, this can be done with the <a href="/api/#public-path">public path</a> API option.</p>
+    </main>
+  </body>
+</html>

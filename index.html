@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>esbuild - An extremely fast JavaScript bundler</title>
+    <link rel="stylesheet" href="/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body class="index">
+    <script>
+      try {
+        document.body.dataset.mode3 = localStorage.getItem('mode3') || 'cli'
+        document.body.dataset.mode2 = localStorage.getItem('mode2') || 'js'
+        document.body.dataset.theme = localStorage.getItem('theme')
+      } catch (e) {
+        document.body.dataset.mode3 = 'cli'
+        document.body.dataset.mode2 = 'js'
+        document.body.dataset.theme = null
+      }
+      document.body.classList.add('has-js')
+    </script>
+    <script src="/script.js" defer></script>
+    <div id="menubar">
+      <a id="menutoggle" href="javascript:void 0">
+        <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="18" width="20" height="2" stroke-width="0"/>
+          <rect x="15" y="24" width="20" height="2" stroke-width="0"/>
+          <rect x="15" y="30" width="20" height="2" stroke-width="0"/>
+        </svg>
+      </a>
+    </div>
+    <nav>
+      <div id="shadow"></div>
+      <div id="menu">
+        <a href="/" class="logo">esbuild</a>
+        <ul>
+          <li><a href="/getting-started/">Getting Started</a></li>
+          <ul class="h2">
+            <li><a href="/getting-started/#install-esbuild">Install esbuild</a></li>
+            <li><a href="/getting-started/#your-first-bundle">Your first bundle</a></li>
+            <li><a href="/getting-started/#build-scripts">Build scripts</a></li>
+            <li><a href="/getting-started/#bundling-for-the-browser">Bundling for the browser</a></li>
+            <li><a href="/getting-started/#bundling-for-node">Bundling for node</a></li>
+          </ul>
+          <li><a href="/api/">API</a></li>
+          <ul class="h2">
+            <li><a href="/api/#transform-api">Transform API</a></li>
+            <li><a href="/api/#build-api">Build API</a></li>
+            <li><a href="/api/#simple-options">Simple options</a></li>
+            <li><a href="/api/#advanced-options">Advanced options</a></li>
+            <li><a href="/api/#js-specific-details">JS-specific details</a></li>
+          </ul>
+          <li><a href="/content-types/">Content Types</a></li>
+          <ul class="h2">
+            <li><a href="/content-types/#javascript">JavaScript</a></li>
+            <li><a href="/content-types/#typescript">TypeScript</a></li>
+            <li><a href="/content-types/#jsx">JSX</a></li>
+            <li><a href="/content-types/#json">JSON</a></li>
+            <li><a href="/content-types/#css">CSS</a></li>
+            <li><a href="/content-types/#text">Text</a></li>
+            <li><a href="/content-types/#binary">Binary</a></li>
+            <li><a href="/content-types/#base64">Base64</a></li>
+            <li><a href="/content-types/#data-url">Data URL</a></li>
+            <li><a href="/content-types/#external-file">External file</a></li>
+          </ul>
+          <li><a href="/faq/">FAQ</a></li>
+        </ul>
+        <div id="icons">
+          <a href="https://github.com/evanw/esbuild">
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
+            <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
+              -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+              -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+              -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
+              .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
+              .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
+              8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
+          </svg>
+          </a><a href="javascript:void 0" id="theme">
+            <svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"/>
+              <circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"/>
+            </svg>
+            <svg id="theme-dark" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10.1 6.6a8.08 8.08 0 00.24 11.06 8.08 8.08 0 0011.06.24c-6.46.9-12.2-4.84-11.3-11.3z" stroke-width="0"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <h1>esbuild</h1>
+      <blockquote>An extremely fast JavaScript bundler</blockquote>
+      <style>
+        @keyframes bench0-anim { 0% { left: 0 } 100% { left: 85.91549295774648% } }
+        #bench0-progress { animation: bench0-anim 118.51s linear; left: 85.91549295774648% }
+        .bench0-bar0 { animation: scale-bar 0.37s linear; transform-origin: left }
+        .bench0-label0 { animation: label-bold 0.37s linear; font-weight: bold }
+        .bench0-bar1 { animation: scale-bar 36s linear; transform-origin: left }
+        .bench0-label1 { animation: label-bold 36s linear; font-weight: bold }
+        .bench0-bar2 { animation: scale-bar 41.91s linear; transform-origin: left }
+        .bench0-label2 { animation: label-bold 41.91s linear; font-weight: bold }
+        .bench0-bar3 { animation: scale-bar 63.83s linear; transform-origin: left }
+        .bench0-label3 { animation: label-bold 63.83s linear; font-weight: bold }
+        .bench0-bar4 { animation: scale-bar 108.66s linear; transform-origin: left }
+        .bench0-label4 { animation: label-bold 108.66s linear; font-weight: bold }
+        .bench0-bar5 { animation: scale-bar 118.51s linear; transform-origin: left }
+        .bench0-label5 { animation: label-bold 118.51s linear; font-weight: bold }
+      </style>
+      <figure class="bench" style="position:relative;max-width:800px;height:150px;font-size:13px;line-height:20px;">
+        <div style="position:absolute;left:90px;top:0;right:0;height:120px;">
+          <div style="position:absolute;left:0.00%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:21.75%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:43.50%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:65.25%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:87.00%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:0;top:3px;width:0.27%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:3px;width:0.27%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar0"></div>
+          <div style="position:absolute;right:100%;top:0px;width:90px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label0"><a href="https://github.com/evanw/esbuild">esbuild</a></div>
+          <div style="position:absolute;left:0.27%;top:0px;height:20px;margin-left:8px;" class="bench0-label0">0.37s</div>
+          <div style="position:absolute;left:0;top:23px;width:26.10%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:23px;width:26.10%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar1"></div>
+          <div style="position:absolute;right:100%;top:20px;width:90px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label1"><a href="https://github.com/rollup/rollup">rollup</a> + <a href="https://github.com/terser/terser">terser</a></div>
+          <div style="position:absolute;left:26.10%;top:20px;height:20px;margin-left:8px;" class="bench0-label1">36.00s</div>
+          <div style="position:absolute;left:0;top:43px;width:30.38%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:43px;width:30.38%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar2"></div>
+          <div style="position:absolute;right:100%;top:40px;width:90px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label2"><a href="https://github.com/webpack/webpack">webpack</a> 4</div>
+          <div style="position:absolute;left:30.38%;top:40px;height:20px;margin-left:8px;" class="bench0-label2">41.91s</div>
+          <div style="position:absolute;left:0;top:63px;width:46.27%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:63px;width:46.27%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar3"></div>
+          <div style="position:absolute;right:100%;top:60px;width:90px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label3"><a href="https://github.com/webpack/webpack">webpack</a> 5</div>
+          <div style="position:absolute;left:46.27%;top:60px;height:20px;margin-left:8px;" class="bench0-label3">63.83s</div>
+          <div style="position:absolute;left:0;top:83px;width:78.77%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:83px;width:78.77%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar4"></div>
+          <div style="position:absolute;right:100%;top:80px;width:90px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label4"><a href="https://github.com/parcel-bundler/parcel">parcel</a> 2</div>
+          <div style="position:absolute;left:78.77%;top:80px;height:20px;margin-left:8px;" class="bench0-label4">108.66s</div>
+          <div style="position:absolute;left:0;top:103px;width:85.92%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:103px;width:85.92%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar5"></div>
+          <div style="position:absolute;right:100%;top:100px;width:90px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label5"><a href="https://github.com/parcel-bundler/parcel">parcel</a> 1</div>
+          <div style="position:absolute;left:85.92%;top:100px;height:20px;margin-left:8px;" class="bench0-label5">118.51s</div>
+          <div style="position:absolute;left:0.00%;top:124px;width:50px;margin-left:-25px;text-align:center;">0s</div>
+          <div style="position:absolute;left:21.75%;top:124px;width:50px;margin-left:-25px;text-align:center;">30s</div>
+          <div style="position:absolute;left:43.50%;top:124px;width:50px;margin-left:-25px;text-align:center;">60s</div>
+          <div style="position:absolute;left:65.25%;top:124px;width:50px;margin-left:-25px;text-align:center;">90s</div>
+          <div style="position:absolute;left:87.00%;top:124px;width:50px;margin-left:-25px;text-align:center;">120s</div>
+          <div id="bench0-progress" class="progress" style="position:absolute;top:124px;width:50px;margin-left:-25px;text-align:center;"></div>
+        </div>
+      <script>
+        (function() {
+          var anim, el = document.getElementById('bench0-progress')
+          function update() {
+            anim = anim || el.getAnimations()[0]
+            if (!anim) return
+            el.textContent = Math.floor(anim.timeline.currentTime / 1000) + 's'
+            if (anim.playState === 'finished') clearInterval(i), el.style.display = 'none'
+          }
+          var i = setInterval(update, 250)
+          update()
+        })()
+      </script>
+      </figure>
+      <figcaption>Above: the time to do a production bundle of 10 copies of the <a href="https://github.com/mrdoob/three.js">three.js</a> library from scratch using default settings, including minification and source maps. More info <a href="/faq/#benchmark-details">here</a>.</figcaption>
+      <p>Our current build tools for the web are 10-100x slower than they could be. The main goal of the esbuild bundler project is to bring about a new era of build tool performance, and create an easy-to-use modern bundler along the way.</p>
+      <p>Major features:</p>
+      <ul><li>Extreme speed without needing a cache</li><li>ES6 and CommonJS modules</li><li>Tree shaking of ES6 modules</li><li>An <a href="/api/">API</a> for JavaScript and Go</li><li><a href="/content-types/#typescript">TypeScript</a> and <a href="/content-types/#jsx">JSX</a> syntax</li><li><a href="/api/#sourcemap">Source maps</a></li><li><a href="/api/#minify">Minification</a></li></ul>
+      <p>Check out the <a href="/getting-started/">getting started</a> instructions if you want to give esbuild a try.</p>
+    </main>
+  </body>
+</html>

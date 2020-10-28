@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>esbuild - FAQ</title>
+    <link rel="stylesheet" href="/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <script>
+      try {
+        document.body.dataset.mode3 = localStorage.getItem('mode3') || 'cli'
+        document.body.dataset.mode2 = localStorage.getItem('mode2') || 'js'
+        document.body.dataset.theme = localStorage.getItem('theme')
+      } catch (e) {
+        document.body.dataset.mode3 = 'cli'
+        document.body.dataset.mode2 = 'js'
+        document.body.dataset.theme = null
+      }
+      document.body.classList.add('has-js')
+    </script>
+    <script src="/script.js" defer></script>
+    <div id="menubar">
+      <a id="menutoggle" href="javascript:void 0">
+        <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="18" width="20" height="2" stroke-width="0"/>
+          <rect x="15" y="24" width="20" height="2" stroke-width="0"/>
+          <rect x="15" y="30" width="20" height="2" stroke-width="0"/>
+        </svg>
+      </a>
+    </div>
+    <nav>
+      <div id="shadow"></div>
+      <div id="menu">
+        <a href="/" class="logo">esbuild</a>
+        <ul>
+          <li><a href="/getting-started/">Getting Started</a></li>
+          <ul class="h2">
+            <li><a href="/getting-started/#install-esbuild">Install esbuild</a></li>
+            <li><a href="/getting-started/#your-first-bundle">Your first bundle</a></li>
+            <li><a href="/getting-started/#build-scripts">Build scripts</a></li>
+            <li><a href="/getting-started/#bundling-for-the-browser">Bundling for the browser</a></li>
+            <li><a href="/getting-started/#bundling-for-node">Bundling for node</a></li>
+          </ul>
+          <li><a href="/api/">API</a></li>
+          <ul class="h2">
+            <li><a href="/api/#transform-api">Transform API</a></li>
+            <li><a href="/api/#build-api">Build API</a></li>
+            <li><a href="/api/#simple-options">Simple options</a></li>
+            <li><a href="/api/#advanced-options">Advanced options</a></li>
+            <li><a href="/api/#js-specific-details">JS-specific details</a></li>
+          </ul>
+          <li><a href="/content-types/">Content Types</a></li>
+          <ul class="h2">
+            <li><a href="/content-types/#javascript">JavaScript</a></li>
+            <li><a href="/content-types/#typescript">TypeScript</a></li>
+            <li><a href="/content-types/#jsx">JSX</a></li>
+            <li><a href="/content-types/#json">JSON</a></li>
+            <li><a href="/content-types/#css">CSS</a></li>
+            <li><a href="/content-types/#text">Text</a></li>
+            <li><a href="/content-types/#binary">Binary</a></li>
+            <li><a href="/content-types/#base64">Base64</a></li>
+            <li><a href="/content-types/#data-url">Data URL</a></li>
+            <li><a href="/content-types/#external-file">External file</a></li>
+          </ul>
+          <li><a href="/faq/">FAQ</a></li>
+          <ul class="h2">
+            <li id="nav-why-is-esbuild-fast"><a href="#why-is-esbuild-fast">Why is esbuild fast?</a></li>
+            <li id="nav-benchmark-details"><a href="#benchmark-details">Benchmark details</a></li>
+            <li id="nav-upcoming-roadmap"><a href="#upcoming-roadmap">Upcoming roadmap</a></li>
+            <li id="nav-production-readiness"><a href="#production-readiness">Production readiness</a></li>
+          </ul>
+        </ul>
+        <div id="icons">
+          <a href="https://github.com/evanw/esbuild">
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
+            <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
+              -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+              -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+              -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
+              .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
+              .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
+              8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
+          </svg>
+          </a><a href="javascript:void 0" id="theme">
+            <svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"/>
+              <circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"/>
+            </svg>
+            <svg id="theme-dark" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10.1 6.6a8.08 8.08 0 00.24 11.06 8.08 8.08 0 0011.06.24c-6.46.9-12.2-4.84-11.3-11.3z" stroke-width="0"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <h1>FAQ</h1>
+      <p>This is a collection of common questions about esbuild. You can also ask questions on the <a href="https://github.com/evanw/esbuild/issues">GitHub issue tracker</a>.</p>
+      <ul>
+        <li><a href="#why-is-esbuild-fast">Why is esbuild fast?</a></li>
+        <li><a href="#benchmark-details">Benchmark details</a></li>
+        <li><a href="#upcoming-roadmap">Upcoming roadmap</a></li>
+        <li><a href="#production-readiness">Production readiness</a></li>
+      </ul>
+      <h2 id="why-is-esbuild-fast">
+        <a aria-hidden="true" href="#why-is-esbuild-fast">#</a>
+        Why is esbuild fast?
+      </h2>
+      <p>Several reasons:</p>
+      <ul><li>It's written in <a href="https://golang.org/">Go</a>, a language that compiles to native code</li><li>Parsing, printing, and source map generation are all fully parallelized</li><li>Everything is done in very few passes without expensive data transformations</li><li>Code is written with speed in mind, and tries to avoid unnecessary allocations</li></ul>
+      <h2 id="benchmark-details">
+        <a aria-hidden="true" href="#benchmark-details">#</a>
+        Benchmark details
+      </h2>
+      <p>Here are the details about each benchmark:</p>
+      <figcaption>JavaScript benchmark</figcaption>
+      <figure class="bench" style="position:relative;max-width:800px;height:170px;font-size:13px;line-height:20px;">
+        <div style="position:absolute;left:120px;top:0;right:0;height:140px;">
+          <div style="position:absolute;left:0.00%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:21.59%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:43.18%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:64.77%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:86.37%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:0;top:3px;width:0.27%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:3px;width:0.27%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar0"></div>
+          <div style="position:absolute;right:100%;top:0px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label0"><a href="https://github.com/evanw/esbuild">esbuild</a></div>
+          <div style="position:absolute;left:0.27%;top:0px;height:20px;margin-left:8px;" class="bench0-label0">0.37s</div>
+          <div style="position:absolute;left:0;top:23px;width:1.11%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:23px;width:1.11%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar1"></div>
+          <div style="position:absolute;right:100%;top:20px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label1"><a href="https://github.com/evanw/esbuild">esbuild</a> (1 thread)</div>
+          <div style="position:absolute;left:1.11%;top:20px;height:20px;margin-left:8px;" class="bench0-label1">1.54s</div>
+          <div style="position:absolute;left:0;top:43px;width:25.91%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:43px;width:25.91%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar2"></div>
+          <div style="position:absolute;right:100%;top:40px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label2"><a href="https://github.com/rollup/rollup">rollup</a> + <a href="https://github.com/terser/terser">terser</a></div>
+          <div style="position:absolute;left:25.91%;top:40px;height:20px;margin-left:8px;" class="bench0-label2">36.00s</div>
+          <div style="position:absolute;left:0;top:63px;width:30.16%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:63px;width:30.16%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar3"></div>
+          <div style="position:absolute;right:100%;top:60px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label3"><a href="https://github.com/webpack/webpack">webpack</a> 4</div>
+          <div style="position:absolute;left:30.16%;top:60px;height:20px;margin-left:8px;" class="bench0-label3">41.91s</div>
+          <div style="position:absolute;left:0;top:83px;width:45.94%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:83px;width:45.94%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar4"></div>
+          <div style="position:absolute;right:100%;top:80px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label4"><a href="https://github.com/webpack/webpack">webpack</a> 5</div>
+          <div style="position:absolute;left:45.94%;top:80px;height:20px;margin-left:8px;" class="bench0-label4">63.83s</div>
+          <div style="position:absolute;left:0;top:103px;width:78.20%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:103px;width:78.20%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar5"></div>
+          <div style="position:absolute;right:100%;top:100px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label5"><a href="https://github.com/parcel-bundler/parcel">parcel</a> 2</div>
+          <div style="position:absolute;left:78.20%;top:100px;height:20px;margin-left:8px;" class="bench0-label5">108.66s</div>
+          <div style="position:absolute;left:0;top:123px;width:85.29%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:123px;width:85.29%;height:14px;background:rgba(231,173,0,0.9);" class="bench0-bar6"></div>
+          <div style="position:absolute;right:100%;top:120px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench0-label6"><a href="https://github.com/parcel-bundler/parcel">parcel</a> 1</div>
+          <div style="position:absolute;left:85.29%;top:120px;height:20px;margin-left:8px;" class="bench0-label6">118.51s</div>
+          <div style="position:absolute;left:0.00%;top:144px;width:50px;margin-left:-25px;text-align:center;">0s</div>
+          <div style="position:absolute;left:21.59%;top:144px;width:50px;margin-left:-25px;text-align:center;">30s</div>
+          <div style="position:absolute;left:43.18%;top:144px;width:50px;margin-left:-25px;text-align:center;">60s</div>
+          <div style="position:absolute;left:64.77%;top:144px;width:50px;margin-left:-25px;text-align:center;">90s</div>
+          <div style="position:absolute;left:86.37%;top:144px;width:50px;margin-left:-25px;text-align:center;">120s</div>
+        </div>
+      </figure>
+      <p>This benchmark approximates a large JavaScript codebase by duplicating the <a href="https://github.com/mrdoob/three.js">three.js</a> library 10 times and building a single bundle from scratch, without any caches. The benchmark can be run with <code>make bench-three</code> in the <a href="https://github.com/evanw/esbuild">esbuild repo</a>.</p>
+      <table>
+      <thead>
+      <tr>
+      <th style="text-align:left">Bundler</th>
+      <th style="text-align:right">Time</th>
+      <th style="text-align:right">Relative slowdown</th>
+      <th style="text-align:right">Absolute speed</th>
+      <th style="text-align:right">Output size</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td style="text-align:left">esbuild</td>
+      <td style="text-align:right">0.37s</td>
+      <td style="text-align:right">1x</td>
+      <td style="text-align:right">1479.6 kloc/s</td>
+      <td style="text-align:right">5.81mb</td>
+      </tr>
+      <tr>
+      <td style="text-align:left">esbuild (1 thread)</td>
+      <td style="text-align:right">1.54s</td>
+      <td style="text-align:right">4x</td>
+      <td style="text-align:right">355.5 kloc/s</td>
+      <td style="text-align:right">5.81mb</td>
+      </tr>
+      <tr>
+      <td style="text-align:left">rollup + terser</td>
+      <td style="text-align:right">36.00s</td>
+      <td style="text-align:right">97x</td>
+      <td style="text-align:right">15.2 kloc/s</td>
+      <td style="text-align:right">5.81mb</td>
+      </tr>
+      <tr>
+      <td style="text-align:left">webpack 4</td>
+      <td style="text-align:right">41.91s</td>
+      <td style="text-align:right">113x</td>
+      <td style="text-align:right">13.1 kloc/s</td>
+      <td style="text-align:right">5.97mb</td>
+      </tr>
+      <tr>
+      <td style="text-align:left">webpack 5</td>
+      <td style="text-align:right">63.83s</td>
+      <td style="text-align:right">173x</td>
+      <td style="text-align:right">8.6 kloc/s</td>
+      <td style="text-align:right">5.84mb</td>
+      </tr>
+      <tr>
+      <td style="text-align:left">parcel 2</td>
+      <td style="text-align:right">108.66s</td>
+      <td style="text-align:right">294x</td>
+      <td style="text-align:right">5.0 kloc/s</td>
+      <td style="text-align:right">5.81mb</td>
+      </tr>
+      <tr>
+      <td style="text-align:left">parcel 1</td>
+      <td style="text-align:right">118.51s</td>
+      <td style="text-align:right">320x</td>
+      <td style="text-align:right">4.6 kloc/s</td>
+      <td style="text-align:right">5.89mb</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>Each time reported is the best of three runs. I'm running esbuild with <code>--bundle <wbr>--minify <wbr>--sourcemap</code> (the single-threaded version uses <code>GOMAXPROCS=1</code>). I used the <code>rollup-<wbr>plugin-<wbr>terser</code> plugin because Rollup itself doesn't support minification. Webpack uses <code>--mode=<wbr>production <wbr>--devtool=<wbr>sourcemap</code>. Parcel uses the default options. Absolute speed is based on the total line count including comments and blank lines, which is currently 547,441. The tests were done on a 6-core 2019 MacBook Pro with 16gb of RAM.</p>
+      <p>Caveats:</p>
+      <ul><li>Parcel 1: The bundle crashes at run time with <code>TypeError: <wbr>Cannot <wbr>redefine <wbr>property: <wbr>dynamic</code></li><li>Parcel 2: Must be given extra memory with <code>node <wbr>--max-<wbr>old-<wbr>space-<wbr>size</code> or it runs out of memory</li></ul>
+      <figcaption>TypeScript benchmark</figcaption>
+      <figure class="bench" style="position:relative;max-width:800px;height:130px;font-size:13px;line-height:20px;">
+        <div style="position:absolute;left:120px;top:0;right:0;height:100px;">
+          <div style="position:absolute;left:0.00%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:17.88%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:35.76%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:53.64%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:71.53%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:89.41%;top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>
+          <div style="position:absolute;left:0;top:3px;width:0.39%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:3px;width:0.39%;height:14px;background:rgba(231,173,0,0.9);" class="bench1-bar0"></div>
+          <div style="position:absolute;right:100%;top:0px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench1-label0"><a href="https://github.com/evanw/esbuild">esbuild</a></div>
+          <div style="position:absolute;left:0.39%;top:0px;height:20px;margin-left:8px;" class="bench1-label0">0.11s</div>
+          <div style="position:absolute;left:0;top:23px;width:1.36%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:23px;width:1.36%;height:14px;background:rgba(231,173,0,0.9);" class="bench1-bar1"></div>
+          <div style="position:absolute;right:100%;top:20px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench1-label1"><a href="https://github.com/evanw/esbuild">esbuild</a> (1 thread)</div>
+          <div style="position:absolute;left:1.36%;top:20px;height:20px;margin-left:8px;" class="bench1-label1">0.38s</div>
+          <div style="position:absolute;left:0;top:43px;width:55.18%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:43px;width:55.18%;height:14px;background:rgba(231,173,0,0.9);" class="bench1-bar2"></div>
+          <div style="position:absolute;right:100%;top:40px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench1-label2"><a href="https://github.com/parcel-bundler/parcel">parcel</a> 1</div>
+          <div style="position:absolute;left:55.18%;top:40px;height:20px;margin-left:8px;" class="bench1-label2">15.43s</div>
+          <div style="position:absolute;left:0;top:63px;width:64.48%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:63px;width:64.48%;height:14px;background:rgba(231,173,0,0.9);" class="bench1-bar3"></div>
+          <div style="position:absolute;right:100%;top:60px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench1-label3"><a href="https://github.com/webpack/webpack">webpack</a> 4</div>
+          <div style="position:absolute;left:64.48%;top:60px;height:20px;margin-left:8px;" class="bench1-label3">18.03s</div>
+          <div style="position:absolute;left:0;top:83px;width:85.29%;height:14px;background:rgba(127,127,127,0.2);"></div>
+          <div style="position:absolute;left:0;top:83px;width:85.29%;height:14px;background:rgba(231,173,0,0.9);" class="bench1-bar4"></div>
+          <div style="position:absolute;right:100%;top:80px;width:120px;height:20px;text-align:right;white-space:nowrap;margin-right:8px;" class="bench1-label4"><a href="https://github.com/webpack/webpack">webpack</a> 5</div>
+          <div style="position:absolute;left:85.29%;top:80px;height:20px;margin-left:8px;" class="bench1-label4">23.85s</div>
+          <div style="position:absolute;left:0.00%;top:104px;width:50px;margin-left:-25px;text-align:center;">0s</div>
+          <div style="position:absolute;left:17.88%;top:104px;width:50px;margin-left:-25px;text-align:center;">5s</div>
+          <div style="position:absolute;left:35.76%;top:104px;width:50px;margin-left:-25px;text-align:center;">10s</div>
+          <div style="position:absolute;left:53.64%;top:104px;width:50px;margin-left:-25px;text-align:center;">15s</div>
+          <div style="position:absolute;left:71.53%;top:104px;width:50px;margin-left:-25px;text-align:center;">20s</div>
+          <div style="position:absolute;left:89.41%;top:104px;width:50px;margin-left:-25px;text-align:center;">25s</div>
+        </div>
+      </figure>
+      <p>This benchmark uses the <a href="https://github.com/facebookexperimental/rome">Rome</a> build tool to approximate a large TypeScript codebase. All code must be combined into a single minified bundle with source maps and the resulting bundle must work correctly. The benchmark can be run with <code>make bench-rome</code> in the <a href="https://github.com/evanw/esbuild">esbuild repo</a>.</p>
+      <table>
+      <thead>
+      <tr>
+      <th style="text-align:left">Bundler</th>
+      <th style="text-align:right">Time</th>
+      <th style="text-align:right">Relative slowdown</th>
+      <th style="text-align:right">Absolute speed</th>
+      <th style="text-align:right">Output size</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td style="text-align:left">esbuild</td>
+      <td style="text-align:right">0.11s</td>
+      <td style="text-align:right">1x</td>
+      <td style="text-align:right">1198.5 kloc/s</td>
+      <td style="text-align:right">0.98mb</td>
+      </tr>
+      <tr>
+      <td style="text-align:left">esbuild (1 thread)</td>
+      <td style="text-align:right">0.38s</td>
+      <td style="text-align:right">3x</td>
+      <td style="text-align:right">346.9 kloc/s</td>
+      <td style="text-align:right">0.98mb</td>
+      </tr>
+      <tr>
+      <td style="text-align:left">parcel 1</td>
+      <td style="text-align:right">15.43s</td>
+      <td style="text-align:right">140x</td>
+      <td style="text-align:right">8.5 kloc/s</td>
+      <td style="text-align:right">1.55mb</td>
+      </tr>
+      <tr>
+      <td style="text-align:left">webpack 4</td>
+      <td style="text-align:right">18.03s</td>
+      <td style="text-align:right">164x</td>
+      <td style="text-align:right">7.3 kloc/s</td>
+      <td style="text-align:right">1.26mb</td>
+      </tr>
+      <tr>
+      <td style="text-align:left">webpack 5</td>
+      <td style="text-align:right">23.85s</td>
+      <td style="text-align:right">217x</td>
+      <td style="text-align:right">5.5 kloc/s</td>
+      <td style="text-align:right">1.26mb</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>Each time reported is the best of three runs. I'm running esbuild with <code>--bundle <wbr>--minify <wbr>--sourcemap <wbr>--platform=<wbr>node</code> (the single-threaded version uses <code>GOMAXPROCS=1</code>). Webpack uses <code>ts-loader</code> with <code>transpileOnly: <wbr>true</code> and <code>--mode=<wbr>production <wbr>--devtool=<wbr>sourcemap</code>. Parcel 1 uses <code>--target <wbr>node --bundle-<wbr>node-<wbr>modules</code>. Absolute speed is based on the total line count including comments and blank lines, which is currently 131,836. The tests were done on a 6-core 2019 MacBook Pro with 16gb of RAM.</p>
+      <p>The results don't include Rollup because I couldn't get it to work. I tried <code>rollup-<wbr>plugin-<wbr>typescript</code>, <code>@rollup/<wbr>plugin-<wbr>typescript</code>, and <code>@rollup/<wbr>plugin-<wbr>sucrase</code> and they all didn't work for different reasons relating to TypeScript compilation. Parcel 2 is excluded because it cannot currently build the benchmark.</p>
+      <h2 id="upcoming-roadmap">
+        <a aria-hidden="true" href="#upcoming-roadmap">#</a>
+        Upcoming roadmap
+      </h2>
+      <p>These features are already in progress and are first priority:</p>
+      <ul><li>Code splitting (<a href="https://github.com/evanw/esbuild/issues/16">#16</a>, <a href="/api/#splitting">docs</a>)</li><li>CSS content type (<a href="https://github.com/evanw/esbuild/issues/20">#20</a>, <a href="/content-types/#css">docs</a>)</li><li>Plugin API (<a href="https://github.com/evanw/esbuild/issues/111">#111</a>)</li></ul>
+      <p>These are potential future features but may not happen or may happen to a more limited extent:</p>
+      <ul><li>Watch/serve mode (<a href="https://github.com/evanw/esbuild/issues/21">#21</a>)</li><li>HTML content type (<a href="https://github.com/evanw/esbuild/issues/31">#31</a>)</li><li>Lowering to ES5 (<a href="https://github.com/evanw/esbuild/issues/297">#297</a>)</li><li>Bundling top-level await (<a href="https://github.com/evanw/esbuild/issues/253">#253</a>)</li></ul>
+      <p>After that point, I will consider esbuild to be relatively complete. I'm planning for esbuild to reach a mostly stable state and then stop accumulating more features. This will involve saying &quot;no&quot; to requests for adding major features to esbuild itself. I don't think esbuild should become an all-in-one solution for all frontend needs. In particular, I want to avoid the pain and problems of the &quot;webpack config&quot; model where the underlying tool is too flexible and usability suffers.</p>
+      <p>For example, I am <em>not</em> planning to include these features in esbuild's core itself:</p>
+      <ul><li>Support for other frontend languages (e.g. <a href="https://elm-lang.org/">Elm</a>, <a href="https://svelte.dev/">Svelte</a>, <a href="https://vuejs.org/">Vue</a>, <a href="https://angular.io/">Angular</a>)</li><li>TypeScript type checking (just run <code>tsc</code> separately)</li><li>An API for custom AST manipulation</li><li>Hot-module reloading</li><li>Module federation</li></ul>
+      <p>I hope that the extensibility points I'm adding to esbuild (the <a href="/api/">API</a> and soon plugins too) will make esbuild useful to include as part of more customized build workflows, but I'm not intending or expecting these extensibility points to cover all use cases. If you have very custom requirements then you should be using other tools. I also hope esbuild inspires other build tools to dramatically improve performance by overhauling their implementations so that everyone can benefit, not just those that use esbuild.</p>
+      <p>I am planning to continue to maintain everything in esbuild's existing scope even after esbuild reaches stability. This means implementing support for newly-released JavaScript and TypeScript syntax features, for example.</p>
+      <h2 id="production-readiness">
+        <a aria-hidden="true" href="#production-readiness">#</a>
+        Production readiness
+      </h2>
+      <p>This project has not yet hit version 1.0.0 and is still in active development. That said, it is far beyond the alpha stage and is pretty stable. I think of it as a late-stage beta. For some early-adopters that means it's good enough to use for real things. Some other people think this means esbuild isn't ready yet. This section doesn't try to convince you either way. It just tries to give you enough information so you can decide for yourself whether you want to use esbuild as your bundler.</p>
+      <p>Some data points:</p>
+      <ul><li><strong>Used by other projects</strong> <p> The API is already being used as a library within some other developer tools. For example, <a href="https://github.com/vitejs/vite">Vite</a> and <a href="https://github.com/pikapkg/snowpack">Snowpack</a> are using esbuild's <a href="/api/#transform-api">transform API</a> to transform TypeScript into JavaScript. And <a href="https://github.com/gohugoio/hugo">Hugo</a> is using esbuild's bundler to package JavaScript code during a build. I have also heard reports of others using it in production successfully, although I don't know the details. I intend to use esbuild in production myself once it has enough features but haven't done that yet. </p></li><li><strong>API stability</strong> <p> Even though esbuild's version is not yet 1.0.0, effort is still made to keep the API stable. Patch versions are intended for backwards-compatible changes and minor versions are intended for backwards-incompatible changes (as <a href="https://docs.npmjs.com/misc/semver">recommended by npm</a>). If you plan to use esbuild for something real, you should either pin the exact version (maximum safety) or pin the major and minor versions (only accept backwards-compatible upgrades). </p></li><li><strong>Only one main developer</strong> <p> This tool is primarily built by <a href="https://github.com/evanw">me</a>. For some people this is fine, but for others this means esbuild is not a suitable tool for their organization. That's ok with me. I'm building esbuild because I find it fun to build and because it's the tool I'd want to use. I'm sharing it with the world because there are others that want to use it too, because the feedback makes the tool itself better, and because I think it will inspire the ecosystem to make better tools. </p></li><li><strong>Not always open to scope expansion</strong> <p> I'm not planning on including major features that I'm not interested in building and/or maintaining. I also want to limit the project's scope so it doesn't get too complex and unwieldy, both from an architectural perspective, a testing and correctness perspective, and from a usability perspective. Think of esbuild as a &quot;linker&quot; for the web. It knows how to transform and bundle JavaScript and CSS. But the details of how your source code ends up as plain JavaScript or CSS may need to be 3rd-party code. </p> <p> I'm hoping that the upcoming plugin API will allow the community to add major features (e.g. WebAssembly import) without needing to contribute to esbuild itself. However, not everything is exposed in the plugin API and it may be the case that it's not possible to add a particular feature to esbuild that you may want to add. This is intentional; esbuild is not meant to be an all-in-one solution for all frontend needs. </p></li></ul>
+    </main>
+  </body>
+</html>

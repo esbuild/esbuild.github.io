@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>esbuild - API</title>
+    <link rel="stylesheet" href="/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <script>
+      try {
+        document.body.dataset.mode3 = localStorage.getItem('mode3') || 'cli'
+        document.body.dataset.mode2 = localStorage.getItem('mode2') || 'js'
+        document.body.dataset.theme = localStorage.getItem('theme')
+      } catch (e) {
+        document.body.dataset.mode3 = 'cli'
+        document.body.dataset.mode2 = 'js'
+        document.body.dataset.theme = null
+      }
+      document.body.classList.add('has-js')
+    </script>
+    <script src="/script.js" defer></script>
+    <div id="menubar">
+      <a id="menutoggle" href="javascript:void 0">
+        <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="18" width="20" height="2" stroke-width="0"/>
+          <rect x="15" y="24" width="20" height="2" stroke-width="0"/>
+          <rect x="15" y="30" width="20" height="2" stroke-width="0"/>
+        </svg>
+      </a>
+    </div>
+    <nav>
+      <div id="shadow"></div>
+      <div id="menu">
+        <a href="/" class="logo">esbuild</a>
+        <ul>
+          <li><a href="/getting-started/">Getting Started</a></li>
+          <ul class="h2">
+            <li><a href="/getting-started/#install-esbuild">Install esbuild</a></li>
+            <li><a href="/getting-started/#your-first-bundle">Your first bundle</a></li>
+            <li><a href="/getting-started/#build-scripts">Build scripts</a></li>
+            <li><a href="/getting-started/#bundling-for-the-browser">Bundling for the browser</a></li>
+            <li><a href="/getting-started/#bundling-for-node">Bundling for node</a></li>
+          </ul>
+          <li><a href="/api/">API</a></li>
+          <ul class="h2">
+            <li id="nav-transform-api"><a href="#transform-api">Transform API</a></li>
+            <li id="nav-build-api"><a href="#build-api">Build API</a></li>
+            <li id="nav-simple-options"><a href="#simple-options">Simple options</a></li>
+            <ul class="h3">
+              <li id="nav-bundle"><a href="#bundle">Bundle</a></li>
+              <li id="nav-define"><a href="#define">Define</a></li>
+              <li id="nav-external"><a href="#external">External</a></li>
+              <li id="nav-format"><a href="#format">Format</a></li>
+              <li id="nav-global-name"><a href="#global-name">Global name</a></li>
+              <li id="nav-inject"><a href="#inject">Inject</a></li>
+              <li id="nav-jsx-factory"><a href="#jsx-factory">JSX factory</a></li>
+              <li id="nav-jsx-fragment"><a href="#jsx-fragment">JSX fragment</a></li>
+              <li id="nav-loader"><a href="#loader">Loader</a></li>
+              <li id="nav-minify"><a href="#minify">Minify</a></li>
+              <li id="nav-outdir"><a href="#outdir">Outdir</a></li>
+              <li id="nav-outfile"><a href="#outfile">Outfile</a></li>
+              <li id="nav-platform"><a href="#platform">Platform</a></li>
+              <li id="nav-sourcemap"><a href="#sourcemap">Sourcemap</a></li>
+              <li id="nav-splitting"><a href="#splitting">Splitting</a></li>
+              <li id="nav-target"><a href="#target">Target</a></li>
+              <li id="nav-write"><a href="#write">Write</a></li>
+            </ul>
+            <li id="nav-advanced-options"><a href="#advanced-options">Advanced options</a></li>
+            <ul class="h3">
+              <li id="nav-avoid-tdz"><a href="#avoid-tdz">Avoid TDZ</a></li>
+              <li id="nav-charset"><a href="#charset">Charset</a></li>
+              <li id="nav-color"><a href="#color">Color</a></li>
+              <li id="nav-error-limit"><a href="#error-limit">Error limit</a></li>
+              <li id="nav-log-level"><a href="#log-level">Log level</a></li>
+              <li id="nav-main-fields"><a href="#main-fields">Main fields</a></li>
+              <li id="nav-metafile"><a href="#metafile">Metafile</a></li>
+              <li id="nav-out-extension"><a href="#out-extension">Out extension</a></li>
+              <li id="nav-public-path"><a href="#public-path">Public path</a></li>
+              <li id="nav-pure"><a href="#pure">Pure</a></li>
+              <li id="nav-resolve-extensions"><a href="#resolve-extensions">Resolve extensions</a></li>
+              <li id="nav-sourcefile"><a href="#sourcefile">Sourcefile</a></li>
+              <li id="nav-stdin"><a href="#stdin">Stdin</a></li>
+              <li id="nav-tsconfig"><a href="#tsconfig">Tsconfig</a></li>
+              <li id="nav-tsconfig-raw"><a href="#tsconfig-raw">Tsconfig raw</a></li>
+            </ul>
+            <li id="nav-js-specific-details"><a href="#js-specific-details">JS-specific details</a></li>
+            <ul class="h3">
+              <li id="nav-running-in-the-browser"><a href="#running-in-the-browser">Running in the browser</a></li>
+            </ul>
+          </ul>
+          <li><a href="/content-types/">Content Types</a></li>
+          <ul class="h2">
+            <li><a href="/content-types/#javascript">JavaScript</a></li>
+            <li><a href="/content-types/#typescript">TypeScript</a></li>
+            <li><a href="/content-types/#jsx">JSX</a></li>
+            <li><a href="/content-types/#json">JSON</a></li>
+            <li><a href="/content-types/#css">CSS</a></li>
+            <li><a href="/content-types/#text">Text</a></li>
+            <li><a href="/content-types/#binary">Binary</a></li>
+            <li><a href="/content-types/#base64">Base64</a></li>
+            <li><a href="/content-types/#data-url">Data URL</a></li>
+            <li><a href="/content-types/#external-file">External file</a></li>
+          </ul>
+          <li><a href="/faq/">FAQ</a></li>
+        </ul>
+        <div id="icons">
+          <a href="https://github.com/evanw/esbuild">
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
+            <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
+              -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+              -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+              -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
+              .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
+              .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
+              8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
+          </svg>
+          </a><a href="javascript:void 0" id="theme">
+            <svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"/>
+              <circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"/>
+            </svg>
+            <svg id="theme-dark" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10.1 6.6a8.08 8.08 0 00.24 11.06 8.08 8.08 0 0011.06.24c-6.46.9-12.2-4.84-11.3-11.3z" stroke-width="0"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <h1>API</h1>
+      <p>The API can be accessed in one of three ways: on the command line, in JavaScript, and in Go. The concepts and parameters are largely identical between the three languages so they will be presented together here instead of having separate documentation for each language.</p>
+      <p>There are two main API calls in esbuild's API: <a href="#transform-api">transform</a> and <a href="#build-api">build</a>. It's important to understand which one you should be using because they work differently.</p>
+      <p>If you are using JavaScript be sure to check out the <a href="#js-specific-details">JS-specific details</a> section below. You may also find the <a href="https://github.com/evanw/esbuild/blob/master/lib/types.ts">TypeScript type definitions</a> for esbuild helpful as a reference. If you are using Go be sure to check out the automatically generated <a href="https://pkg.go.dev/github.com/evanw/esbuild/pkg/api">Go documentation</a>.</p>
+      <h2 id="transform-api">
+        <a aria-hidden="true" href="#transform-api">#</a>
+        Transform API
+      </h2>
+      <p>The transform API call operates on a single string without access to a file system. This makes it ideal for use in environments without a file system (such as a browser) or as part of another tool chain. Here is what a simple transform looks like:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;let x: number = 1&#x27;</span> | esbuild --loader=ts</span><span class="repl-out">let x = 1;</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(<span class="hljs-string">&#x27;let x: number = 1&#x27;</span>, {
+  <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;ts&#x27;</span>,
+})</span><span class="repl-out">{
+  code: 'let x = 1;\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Transform(<span class="hljs-string">&quot;let x: number = 1&quot;</span>, api.TransformOptions{
+    Loader: api.LoaderTS,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <p>This API call is used by the command-line interface if no input files are provided and the <code>--bundle</code> flag is not present. In this case the input string comes from stdin and the output string goes to stdout. The transform API can take the following options:</p>
+      <p>Simple options:</p>
+      <ul>
+        <li><a href="#define">Define</a></li>
+        <li><a href="#format">Format</a></li>
+        <li><a href="#global-name">Global name</a></li>
+        <li><a href="#jsx-factory">JSX factory</a></li>
+        <li><a href="#jsx-fragment">JSX fragment</a></li>
+        <li><a href="#loader">Loader</a></li>
+        <li><a href="#minify">Minify</a></li>
+        <li><a href="#sourcemap">Sourcemap</a></li>
+        <li><a href="#target">Target</a></li>
+      </ul>
+      <p>Advanced options:</p>
+      <ul>
+        <li><a href="#avoid-tdz">Avoid TDZ</a></li>
+        <li><a href="#charset">Charset</a></li>
+        <li><a href="#color">Color</a></li>
+        <li><a href="#error-limit">Error limit</a></li>
+        <li><a href="#log-level">Log level</a></li>
+        <li><a href="#pure">Pure</a></li>
+        <li><a href="#sourcefile">Sourcefile</a></li>
+        <li><a href="#tsconfig-raw">Tsconfig raw</a></li>
+      </ul>
+      <h2 id="build-api">
+        <a aria-hidden="true" href="#build-api">#</a>
+        Build API
+      </h2>
+      <p>The build API call operates on one or more files in the file system. This allows the files to reference each other and be bundled together. Here is what a simple build looks like:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;let x: number = 1&#x27;</span> &gt; in.ts</span><span class="repl-in">esbuild in.ts --outfile=out.js</span><span class="repl-in">cat out.js</span><span class="repl-out">let x = 1;</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>).writeFileSync(<span class="hljs-string">&#x27;in.ts&#x27;</span>, <span class="hljs-string">&#x27;let x: number = 1&#x27;</span>)</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;in.ts&#x27;</span>],
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</span><span class="repl-out">{ warnings: [] }</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>).readFileSync(<span class="hljs-string">&#x27;out.js&#x27;</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>)</span><span class="repl-out">'let x = 1;\n'</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;io/ioutil&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  ioutil.WriteFile(<span class="hljs-string">&quot;in.ts&quot;</span>, []<span class="hljs-keyword">byte</span>(<span class="hljs-string">&quot;let x: number = 1&quot;</span>), <span class="hljs-number">0644</span>)
+
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;in.ts&quot;</span>},
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>This API call is used by the command-line interface if there is at least one input file provided or the <code>--bundle</code> flag is present. Note that esbuild does <em>not</em> bundle by default. You have to explicitly pass the <code>--bundle</code> flag to enable bundling. If no input files are provided then a single input file is read from stdin. The build API can take the following options:</p>
+      <p>Simple options:</p>
+      <ul>
+        <li><a href="#bundle">Bundle</a></li>
+        <li><a href="#define">Define</a></li>
+        <li><a href="#external">External</a></li>
+        <li><a href="#format">Format</a></li>
+        <li><a href="#global-name">Global name</a></li>
+        <li><a href="#inject">Inject</a></li>
+        <li><a href="#jsx-factory">JSX factory</a></li>
+        <li><a href="#jsx-fragment">JSX fragment</a></li>
+        <li><a href="#loader">Loader</a></li>
+        <li><a href="#minify">Minify</a></li>
+        <li><a href="#outdir">Outdir</a></li>
+        <li><a href="#outfile">Outfile</a></li>
+        <li><a href="#sourcemap">Sourcemap</a></li>
+        <li><a href="#target">Target</a></li>
+        <li><a href="#write">Write</a></li>
+      </ul>
+      <p>Advanced options:</p>
+      <ul>
+        <li><a href="#avoid-tdz">Avoid TDZ</a></li>
+        <li><a href="#charset">Charset</a></li>
+        <li><a href="#color">Color</a></li>
+        <li><a href="#error-limit">Error limit</a></li>
+        <li><a href="#log-level">Log level</a></li>
+        <li><a href="#main-fields">Main fields</a></li>
+        <li><a href="#metafile">Metafile</a></li>
+        <li><a href="#out-extension">Out extension</a></li>
+        <li><a href="#public-path">Public path</a></li>
+        <li><a href="#pure">Pure</a></li>
+        <li><a href="#resolve-extensions">Resolve extensions</a></li>
+        <li><a href="#sourcefile">Sourcefile</a></li>
+        <li><a href="#stdin">Stdin</a></li>
+        <li><a href="#tsconfig">Tsconfig</a></li>
+      </ul>
+      <h2 id="simple-options">
+        <a aria-hidden="true" href="#simple-options">#</a>
+        Simple options
+      </h2>
+      <h3 id="bundle" data-h2="simple-options">
+        <a aria-hidden="true" href="#bundle">#</a>
+        Bundle
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>To bundle a file means to inline any imported dependencies into the file itself. This process is recursive so dependencies of dependencies (and so on) will also be inlined. By default esbuild will <em>not</em> bundle the input files. Bundling must be explicitly enabled like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild in.js --bundle</pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;in.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</span><span class="repl-out">{ warnings: [] }</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;in.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>Refer to the <a href="http://localhost:8004/getting-started/#your-first-bundle">getting started guide</a> for an example of bundling with real-world code.</p>
+      <p>Note that bundling is different than file concatentation. Passing esbuild multiple input files with bundling enabled will create two separate bundles instead of joining the input files together. To join a set of files together with esbuild, import them all into a single entry point file and bundle just that one file with esbuild.</p>
+      <h3 id="define" data-h2="simple-options">
+        <a aria-hidden="true" href="#define">#</a>
+        Define
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This feature provides a way to replace global identifiers with constant expressions. It can be a way to change the behavior some code between builds without changing the code itself:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;DEBUG &amp;&amp; require(&quot;hooks&quot;)&#x27;</span> | esbuild --define:DEBUG=<span class="hljs-literal">true</span></span><span class="repl-out">require("hooks");</span><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;DEBUG &amp;&amp; require(&quot;hooks&quot;)&#x27;</span> | esbuild --define:DEBUG=<span class="hljs-literal">false</span></span><span class="repl-out">false;</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;DEBUG &amp;&amp; require(&quot;hooks&quot;)&#x27;</span></span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">define</span>: { <span class="hljs-attr">DEBUG</span>: <span class="hljs-string">&#x27;true&#x27;</span> },
+})</span><span class="repl-out">{
+  code: 'require("hooks");\n',
+  map: '',
+  warnings: []
+}</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">define</span>: { <span class="hljs-attr">DEBUG</span>: <span class="hljs-string">&#x27;false&#x27;</span> },
+})</span><span class="repl-out">{
+  code: 'false;\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js := <span class="hljs-string">&quot;DEBUG &amp;&amp; require(&#x27;hooks&#x27;)&quot;</span>
+
+  result1 := api.Transform(js, api.TransformOptions{
+    Define: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;DEBUG&quot;</span>: <span class="hljs-string">&quot;true&quot;</span>},
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result1.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result1.Code)
+  }
+
+  result2 := api.Transform(js, api.TransformOptions{
+    Define: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;DEBUG&quot;</span>: <span class="hljs-string">&quot;false&quot;</span>},
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result2.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result2.Code)
+  }
+}</pre>
+      <p>Supported replacement values are JSON primitives (null, booleans, numbers, and strings) and identifiers. If you want to replace something with a string literal, the replacement value passed to esbuild must itself contain quotes. Omitting the quotes means the replacement value is an identifier instead:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;id, str&#x27;</span> | esbuild --define:id=text <span class="hljs-string">&#x27;--define:str=&quot;text&quot;&#x27;</span></span><span class="repl-out">text, "text";</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(<span class="hljs-string">&#x27;id, str&#x27;</span>, {
+  <span class="hljs-attr">define</span>: { <span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;text&#x27;</span>, <span class="hljs-attr">str</span>: <span class="hljs-string">&#x27;&quot;text&quot;&#x27;</span> },
+})</span><span class="repl-out">{
+  code: 'text, "text";\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Transform(<span class="hljs-string">&quot;id, text&quot;</span>, api.TransformOptions{
+    Define: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">string</span>{
+      <span class="hljs-string">&quot;id&quot;</span>:  <span class="hljs-string">&quot;text&quot;</span>,
+      <span class="hljs-string">&quot;str&quot;</span>: <span class="hljs-string">&quot;\&quot;text\&quot;&quot;</span>,
+    },
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <p>If you're using the CLI, keep in mind that different shells have different rules for how to escape quote characters (which are necessary when the replacement value is a string). For example, bash will remove the outer quote characters while the Windows command prompt won't. If you need to replace something with a string literal and have it work on both Unix and Windows, you may not be able to use the CLI for this. You may have to use the JavaScript or Go API instead.</p>
+      <h3 id="external" data-h2="simple-options">
+        <a aria-hidden="true" href="#external">#</a>
+        External
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>You can mark a file or a package as external to exclude it from your build. Instead of being bundled, the import will be preserved (using <code>require</code> for the <code>iife</code> and <code>cjs</code> formats and using <code>import</code> for the <code>esm</code> format) and will be evaluated at run time instead.</p>
+      <p>This has several uses. First of all, it can be used to trim unnecessary code from your bundle for a code path that you know will never be executed. For example, a package may contain code that only runs in node but you will only be using that package in the browser. It can also be used to import code in node at run time from a package that cannot be bundled. For example, the <code>fsevents</code> package contains a native extension, which esbuild doesn't support. Marking something as external looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;require(&quot;fsevents&quot;)&#x27;</span> &gt; app.js</span><span class="repl-in">esbuild app.js --bundle --external:fsevents</span><span class="repl-out">(() =&gt; {
+  // app.js
+  require("fsevents");
+})();</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>).writeFileSync(<span class="hljs-string">&#x27;app.js&#x27;</span>, <span class="hljs-string">&#x27;require(&quot;fsevents&quot;)&#x27;</span>)</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">external</span>: [<span class="hljs-string">&#x27;fsevents&#x27;</span>],
+})</span><span class="repl-out">{ warnings: [] }</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;io/ioutil&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  ioutil.WriteFile(<span class="hljs-string">&quot;app.js&quot;</span>, []<span class="hljs-keyword">byte</span>(<span class="hljs-string">&quot;require(\&quot;fsevents\&quot;)&quot;</span>), <span class="hljs-number">0644</span>)
+
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Bundle:      <span class="hljs-literal">true</span>,
+    Write:       <span class="hljs-literal">true</span>,
+    External:    []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;fsevents&quot;</span>},
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h3 id="format" data-h2="simple-options">
+        <a aria-hidden="true" href="#format">#</a>
+        Format
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This sets the output format for the generated JavaScript files. There are currently three possible values: <code>iife</code>, <code>cjs</code>, and <code>esm</code>.</p>
+      <h4>IIFE</h4>
+      <p>The <code>iife</code> format stands for &quot;immediately-invoked function expression&quot; and is intended to be run in the browser. Wrapping your code in a function expression ensures that any variables in your code don't accidentally conflict with variables in the global scope. If your entry point has exports that you want to expose as a global in the browser, you can configure that global's name using the <a href="#global-name">global name</a> setting. The <code>iife</code> format is the default format unless you set <a href="#platform">platform</a> to <code>node</code>. Using it looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;alert(&quot;test&quot;)&#x27;</span> | esbuild --format=iife</span><span class="repl-out">(() =&gt; {
+  alert("test");
+})();</span></pre>
+      <pre class="switchable js3"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;alert(&quot;test&quot;)&#x27;</span>
+<span class="hljs-keyword">let</span> out = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">format</span>: <span class="hljs-string">&#x27;iife&#x27;</span>,
+})
+process.stdout.write(out.code)</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js := <span class="hljs-string">&quot;alert(\&quot;test\&quot;)&quot;</span>
+
+  result := api.Transform(js, api.TransformOptions{
+    Format: api.FormatIIFE,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <h4>CommonJS</h4>
+      <p>The <code>cjs</code> format stands for &quot;CommonJS&quot; and is intended to be run in node. It assumes the environment contains <code>exports</code>, <code>require</code>, and <code>module</code>. Entry points with exports in ECMAScript module syntax will be converted to a module with a getter on <code>exports</code> for each export name. The <code>cjs</code> format is the default format when you set <a href="#platform">platform</a> to <code>node</code>. Using it looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;export default &quot;test&quot;&#x27;</span> | esbuild --format=cjs</span><span class="repl-out">...
+__export(exports, {
+  default: () =&gt; stdin_default
+});
+var stdin_default = "test";</span></pre>
+      <pre class="switchable js3"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;export default &quot;test&quot;&#x27;</span>
+<span class="hljs-keyword">let</span> out = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">format</span>: <span class="hljs-string">&#x27;cjs&#x27;</span>,
+})
+process.stdout.write(out.code)</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js := <span class="hljs-string">&quot;export default &#x27;test&#x27;&quot;</span>
+
+  result := api.Transform(js, api.TransformOptions{
+    Format: api.FormatCommonJS,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <h4>ESM</h4>
+      <p>The <code>esm</code> format stands for &quot;ECMAScript module&quot;. It assumes the environment supports <code>import</code> and <code>export</code> syntax. Entry points with exports in CommonJS module syntax will be converted to a single <code>default</code> export of the value of <code>module.exports</code>. Using it looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;module.exports = &quot;test&quot;&#x27;</span> | esbuild --format=esm</span><span class="repl-out">...
+var require_stdin = __commonJS((exports, module) =&gt; {
+  module.exports = "test";
+});
+export default require_stdin();</span></pre>
+      <pre class="switchable js3"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;module.exports = &quot;test&quot;&#x27;</span>
+<span class="hljs-keyword">let</span> out = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">format</span>: <span class="hljs-string">&#x27;esm&#x27;</span>,
+})
+process.stdout.write(out.code)</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js := <span class="hljs-string">&quot;module.exports = &#x27;test&#x27;&quot;</span>
+
+  result := api.Transform(js, api.TransformOptions{
+    Format: api.FormatESModule,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <p>The <code>esm</code> format can be used either in the browser or in node, but you have to explicitly load it as a module. This happens automatically if you <code>import</code> it from another module. Otherwise:</p>
+      <ul><li>In the browser, you can load a module using <code>&lt;script <wbr>src=&quot;<wbr>file.js&quot; <wbr>type=&quot;<wbr>module&quot;&gt;<wbr>&lt;/script&gt;</code>. <br> </li><li>In node, you can load a module using <code>node <wbr>--experimental-<wbr>modules <wbr>file.mjs</code>. Note that node requires the <code>.mjs</code> extension unless you have configured <code>&quot;type&quot;: <wbr>&quot;module&quot;</code> in your <code>package.json</code> file. You can use the <a href="#out-extension">out extension</a> setting in esbuild to customize the output extension for the files esbuild generates. You can read more about using ECMAScript modules in node <a href="https://nodejs.org/api/esm.html">here</a>.</li></ul>
+      <h3 id="global-name" data-h2="simple-options">
+        <a aria-hidden="true" href="#global-name">#</a>
+        Global name
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This option only matters when the <a href="#format">format</a> setting is <code>iife</code> (which stands for immediately-invoked function expression). It sets the name of the global variable which is used to store the exports from the entry point:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;module.exports = &quot;test&quot;&#x27;</span> | esbuild --format=iife --global-name=xyz</pre>
+      <pre class="switchable js3"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;module.exports = &quot;test&quot;&#x27;</span>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">format</span>: <span class="hljs-string">&#x27;iife&#x27;</span>,
+  <span class="hljs-attr">globalName</span>: <span class="hljs-string">&#x27;xyz&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js := <span class="hljs-string">&quot;module.exports = &#x27;test&#x27;&quot;</span>
+
+  result := api.Transform(js, api.TransformOptions{
+    Format:     api.FormatIIFE,
+    GlobalName: <span class="hljs-string">&quot;xyz&quot;</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <p>Specifying the global name with the <code>iife</code> format will generate code that looks something like this:</p>
+      <pre><span class="hljs-keyword">var</span> xyz = (<span class="hljs-function">() =&gt;</span> {
+  ...
+  var require_stdin = __commonJS(<span class="hljs-function">(<span class="hljs-params"><span class="hljs-built_in">exports</span>, <span class="hljs-built_in">module</span></span>) =&gt;</span> {
+    <span class="hljs-built_in">module</span>.exports = <span class="hljs-string">&quot;test&quot;</span>;
+  });
+  <span class="hljs-keyword">return</span> require_stdin();
+})();</pre>
+      <p>The global name can also be a compound property expression, in which case esbuild will generate a global variable with that property. Existing global variables that conflict will not be overwritten. This can be used to implement &quot;namespacing&quot; where multiple independent scripts add their exports onto the same global object. For example:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;module.exports = &quot;test&quot;&#x27;</span> | esbuild --format=iife --global-name=<span class="hljs-string">&#x27;example.versions[&quot;1.0&quot;]&#x27;</span></pre>
+      <pre class="switchable js3"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;module.exports = &quot;test&quot;&#x27;</span>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">format</span>: <span class="hljs-string">&#x27;iife&#x27;</span>,
+  <span class="hljs-attr">globalName</span>: <span class="hljs-string">&#x27;example.versions[&quot;1.0&quot;]&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js := <span class="hljs-string">&quot;module.exports = &#x27;test&#x27;&quot;</span>
+
+  result := api.Transform(js, api.TransformOptions{
+    Format:     api.FormatIIFE,
+    GlobalName: <span class="hljs-string">`example.versions[&quot;1.0&quot;]`</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <p>The compound global name used above generates code that looks like this:</p>
+      <pre><span class="hljs-keyword">var</span> example = example || {};
+example.versions = example.versions || {};
+example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span class="hljs-function">() =&gt;</span> {
+  ...
+  var require_stdin = __commonJS(<span class="hljs-function">(<span class="hljs-params"><span class="hljs-built_in">exports</span>, <span class="hljs-built_in">module</span></span>) =&gt;</span> {
+    <span class="hljs-built_in">module</span>.exports = <span class="hljs-string">&quot;test&quot;</span>;
+  });
+  <span class="hljs-keyword">return</span> require_stdin();
+})();</pre>
+      <h3 id="inject" data-h2="simple-options">
+        <a aria-hidden="true" href="#inject">#</a>
+        Inject
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>This option allows you to automatically replace a global variable with an import from another file. This can be a useful tool for adapting code that you don't control to a new environment. For example, assume you have a file called <code>process-shim.js</code> that exports a variable named <code>process</code>:</p>
+      <pre><span class="hljs-comment">// process-shim.js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> process = {
+  <span class="hljs-attr">cwd</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-string">&#x27;&#x27;</span>
+}</pre>
+      <pre><span class="hljs-comment">// entry.js</span>
+<span class="hljs-built_in">console</span>.log(process.cwd())</pre>
+      <p>This is intended to replace uses of node's <code>process.cwd()</code> function to prevent packages that call it from crashing when run in the browser. You can use the inject feature to replace all uses of the global identifier <code>process</code> with an import to that file:.</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild entry.js --bundle --inject:./process-shim.js --outfile=out.js</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;entry.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">inject</span>: [<span class="hljs-string">&#x27;./process-shim.js&#x27;</span>],
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;entry.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Inject:      []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;./process-shim.js&quot;</span>},
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>That results in something like this:</p>
+      <pre><span class="hljs-comment">// out.js</span>
+<span class="hljs-keyword">let</span> process = {<span class="hljs-attr">cwd</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-string">&quot;&quot;</span>};
+<span class="hljs-built_in">console</span>.log(process.cwd());</pre>
+      <h4>Use with <a href="#define">define</a></h4>
+      <p>You can also combine this with the <a href="#define">define</a> feature to be more selective about what you import. For example:</p>
+      <pre><span class="hljs-comment">// process-shim.js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dummy_process_cwd</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;&#x27;</span>
+}</pre>
+      <pre><span class="hljs-comment">// entry.js</span>
+<span class="hljs-built_in">console</span>.log(process.cwd())</pre>
+      <p>You can map <code>process.cwd</code> to <code>dummy_process_cwd</code> with the <a href="#define">define</a> feature, then inject <code>dummy_process_cwd</code> from <code>process-shim.js</code> with the inject feature:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild entry.js --bundle --define:process.cwd=dummy_process_cwd --inject:./process-shim.js --outfile=out.js</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;entry.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">define</span>: { <span class="hljs-string">&#x27;process.cwd&#x27;</span>: <span class="hljs-string">&#x27;dummy_process_cwd&#x27;</span> },
+  <span class="hljs-attr">inject</span>: [<span class="hljs-string">&#x27;./process-shim.js&#x27;</span>],
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;entry.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Define: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">string</span>{
+      <span class="hljs-string">&quot;process.cwd&quot;</span>: <span class="hljs-string">&quot;dummy_process_cwd&quot;</span>,
+    },
+    Inject:  []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;./process-shim.js&quot;</span>},
+    Outfile: <span class="hljs-string">&quot;out.js&quot;</span>,
+    Write:   <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>That results in the following output:</p>
+      <pre><span class="hljs-comment">// out.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dummy_process_cwd</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span>;
+}
+<span class="hljs-built_in">console</span>.log(dummy_process_cwd());</pre>
+      <h4>Auto-import for <a href="/content-types/#jsx">JSX</a></h4>
+      <p>You can use the inject feature to automatically provide the implementation for JSX expressions. For example, you can auto-import the <code>react</code> package with a small shim file and inject:</p>
+      <pre><span class="hljs-comment">// react-shim.js</span>
+<span class="hljs-keyword">export</span> * <span class="hljs-keyword">as</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span></pre>
+      <pre><span class="hljs-comment">// entry.jsx</span>
+<span class="hljs-built_in">console</span>.log(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>/&gt;</span></span>)</pre>
+      <p>Building <code>entry.jsx</code> and injecting <code>react-shim.js</code> results in the following output:</p>
+      <pre><span class="hljs-comment">// out.js</span>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-built_in">console</span>.log(React.createElement(<span class="hljs-string">&quot;div&quot;</span>, <span class="hljs-literal">null</span>));</pre>
+      <h4>Files without imports</h4>
+      <p>You can also use this feature with files that have no exports. In that case the injected file just comes first before the rest of the output as if every input file contained <code>import <wbr>&quot;./file.js&quot;</code>. Because of the way ECMAScript modules work, this injection is still &quot;hygienic&quot; in that symbols with the same name in different files are renamed so they don't collide with each other.</p>
+      <h4>Conditionally injecting a file</h4>
+      <p>If you want to <em>conditionally</em> import a file only if the export is actually used, you should mark the injected file as not having side effects by putting it in a package and adding <code>&quot;sideEffects&quot;: <wbr>false</code> in that package's <code>package.json</code> file. This setting is a <a href="https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free">convention from Webpack</a> that esbuild respects for any imported file, not just files used with inject.</p>
+      <h3 id="jsx-factory" data-h2="simple-options">
+        <a aria-hidden="true" href="#jsx-factory">#</a>
+        JSX factory
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This sets the function that is called for each JSX element. Normally a JSX expression such as this:</p>
+      <pre>&lt;div&gt;Example text&lt;/div&gt;</pre>
+      <p>is compiled into a function call to <code>React.createElement</code> like this:</p>
+      <pre>React.createElement(<span class="hljs-string">&quot;div&quot;</span>, <span class="hljs-literal">null</span>, <span class="hljs-string">&quot;Example text&quot;</span>);</pre>
+      <p>You can call something other than <code>React.createElement</code> by changing the JSX factory. For example, to call the function <code>h</code> instead (which is used by other libraries such as <a href="https://preactjs.com/">Preact</a>):</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;&lt;div/&gt;&#x27;</span> | esbuild --jsx-factory=h --loader=jsx</span><span class="repl-out">/* @__PURE__ */ h("div", null);</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(<span class="hljs-string">&#x27;&lt;div/&gt;&#x27;</span>, {
+  <span class="hljs-attr">jsxFactory</span>: <span class="hljs-string">&#x27;h&#x27;</span>,
+  <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;jsx&#x27;</span>,
+})</span><span class="repl-out">{
+  code: '/* @__PURE__ */ h("div", null);\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Transform(<span class="hljs-string">&quot;&lt;div/&gt;&quot;</span>, api.TransformOptions{
+    JSXFactory: <span class="hljs-string">&quot;h&quot;</span>,
+    Loader:     api.LoaderJSX,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <p>Alternatively, if you are using TypeScript, you can just configure JSX for TypeScript by adding this to your <code>tsconfig.json</code> file and esbuild should pick it up automatically without needing to be configured:</p>
+      <pre>{
+  <span class="hljs-attr">&quot;compilerOptions&quot;</span>: {
+    <span class="hljs-attr">&quot;jsxFactory&quot;</span>: <span class="hljs-string">&quot;h&quot;</span>
+  }
+}</pre>
+      <h3 id="jsx-fragment" data-h2="simple-options">
+        <a aria-hidden="true" href="#jsx-fragment">#</a>
+        JSX fragment
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This sets the function that is called for each JSX fragment. Normally a JSX fragment expression such as this:</p>
+      <pre>&lt;&gt;Stuff&lt;/&gt;</pre>
+      <p>is compiled into a use of the <code>React.Fragment</code> component like this:</p>
+      <pre>React.createElement(React.Fragment, <span class="hljs-literal">null</span>, <span class="hljs-string">&quot;Stuff&quot;</span>);</pre>
+      <p>You can use a component other than <code>React.Fragment</code> by changing the JSX fragment. For example, to use the component <code>Fragment</code> instead (which is used by other libraries such as <a href="https://preactjs.com/">Preact</a>):</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;&lt;&gt;x&lt;/&gt;&#x27;</span> | esbuild --jsx-fragment=Fragment --loader=jsx</span><span class="repl-out">/* @__PURE__ */ React.createElement(Fragment, null, "x");</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(<span class="hljs-string">&#x27;&lt;&gt;x&lt;/&gt;&#x27;</span>, {
+  <span class="hljs-attr">jsxFragment</span>: <span class="hljs-string">&#x27;Fragment&#x27;</span>,
+  <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;jsx&#x27;</span>,
+})</span><span class="repl-out">{
+  code: '/* @__PURE__ */ React.createElement(Fragment, null, "x");\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Transform(<span class="hljs-string">&quot;&lt;&gt;x&lt;/&gt;&quot;</span>, api.TransformOptions{
+    JSXFragment: <span class="hljs-string">&quot;Fragment&quot;</span>,
+    Loader:      api.LoaderJSX,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <p>Alternatively, if you are using TypeScript, you can just configure JSX for TypeScript by adding this to your <code>tsconfig.json</code> file and esbuild should pick it up automatically without needing to be configured:</p>
+      <pre>{
+  <span class="hljs-attr">&quot;compilerOptions&quot;</span>: {
+    <span class="hljs-attr">&quot;jsxFragmentFactory&quot;</span>: <span class="hljs-string">&quot;Fragment&quot;</span>
+  }
+}</pre>
+      <h3 id="loader" data-h2="simple-options">
+        <a aria-hidden="true" href="#loader">#</a>
+        Loader
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This option changes how a given input file is interpreted. For example, the <a href="/content-types/#javascript"><code>js</code></a> loader interprets the file as JavaScript and the <a href="/content-types/#css"><code>css</code></a> loader interprets the file as CSS. See the <a href="/content-types/">content types</a> page for a complete list of all built-in loaders.</p>
+      <p>Configuring a loader for a given file type lets you load that file type with an <code>import</code> statement or a <code>require</code> call. For example, configuring the <code>.png</code> file extension to use the <a href="/content-types/#data-url">data URL</a> loader means importing a <code>.png</code> file gives you a data URL containing the contents of that image:</p>
+      <pre><span class="hljs-keyword">import</span> url <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.png&#x27;</span>
+<span class="hljs-keyword">let</span> image = <span class="hljs-keyword">new</span> Image
+image.src = url
+<span class="hljs-built_in">document</span>.body.appendChild(image)</pre>
+      <p>The above code can be bundled using the <a href="#build-api">build API</a> call like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --loader:.png=dataurl</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">loader</span>: { <span class="hljs-string">&#x27;.png&#x27;</span>: <span class="hljs-string">&#x27;dataurl&#x27;</span> },
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Loader: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]api.Loader{
+      <span class="hljs-string">&quot;.png&quot;</span>: api.LoaderDataURL,
+    },
+    Write: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>This option is specified differently if you are using the build API with input from <a href="#stdin">stdin</a>, since stdin does not have a file extension. Configuring a loader for stdin with the build API looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;import pkg = require(&quot;./pkg&quot;)&#x27;</span> | esbuild --loader=ts --bundle</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">stdin</span>: {
+    <span class="hljs-attr">contents</span>: <span class="hljs-string">&#x27;import pkg = require(&quot;./pkg&quot;)&#x27;</span>,
+    <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;ts&#x27;</span>,
+    <span class="hljs-attr">resolveDir</span>: __dirname,
+  },
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;log&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  cwd, err := os.Getwd()
+  <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+    log.Fatal(err)
+  }
+
+  result := api.Build(api.BuildOptions{
+    Stdin: &amp;api.StdinOptions{
+      Contents:   <span class="hljs-string">&quot;import pkg = require(&#x27;./pkg&#x27;)&quot;</span>,
+      Loader:     api.LoaderTS,
+      ResolveDir: cwd,
+    },
+    Bundle: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>The <a href="#transform-api">transform API</a> call just takes a single loader since it doesn't involve interacting with the file system, and therefore doesn't deal with file extensions. Configuring a loader (in this case the <a href="/content-types/#typescript"><code>ts</code></a> loader) for the transform API looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;let x: number = 1&#x27;</span> | esbuild --loader=ts</span><span class="repl-out">let x = 1;</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-keyword">let</span> ts = <span class="hljs-string">&#x27;let x: number = 1&#x27;</span></span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(ts, {
+  <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;ts&#x27;</span>,
+})</span><span class="repl-out">{
+  code: 'let x = 1;\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  ts := <span class="hljs-string">&quot;let x: number = 1&quot;</span>
+
+  result := api.Transform(ts, api.TransformOptions{
+    Loader: api.LoaderTS,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <h3 id="minify" data-h2="simple-options">
+        <a aria-hidden="true" href="#minify">#</a>
+        Minify
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>When enabled, the generated code will be minified instead of pretty-printed. Minified code is generally equivalent to non-minified code but is smaller, which means it downloads faster but is harder to debug. Usually you minify code in production but not in development.</p>
+      <p>Enabling minification in esbuild looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;fn = obj =&gt; { return obj.x }&#x27;</span> | esbuild --minify</span><span class="repl-out">fn=n=&gt;n.x;</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-keyword">var</span> js = <span class="hljs-string">&#x27;fn = obj =&gt; { return obj.x }&#x27;</span></span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">minify</span>: <span class="hljs-literal">true</span>,
+})</span><span class="repl-out">{
+  code: 'fn=n=&gt;n.x;\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js := <span class="hljs-string">&quot;fn = obj =&gt; { return obj.x }&quot;</span>
+
+  result := api.Transform(js, api.TransformOptions{
+    MinifyWhitespace:  <span class="hljs-literal">true</span>,
+    MinifyIdentifiers: <span class="hljs-literal">true</span>,
+    MinifySyntax:      <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <p>This option does three separate things in combination: it removes whitespace, it rewrites your syntax to be more compact, and it renames local variables to be shorter. Usually you want to do all of these things, but these options can also be enabled individually if necessary:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;fn = obj =&gt; { return obj.x }&#x27;</span> | esbuild --minify-whitespace</span><span class="repl-out">fn=obj=&gt;{return obj.x};</span><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;fn = obj =&gt; { return obj.x }&#x27;</span> | esbuild --minify-identifiers</span><span class="repl-out">fn = (n) =&gt; {
+  return n.x;
+};</span><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;fn = obj =&gt; { return obj.x }&#x27;</span> | esbuild --minify-syntax</span><span class="repl-out">fn = (obj) =&gt; obj.x;</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-keyword">var</span> js = <span class="hljs-string">&#x27;fn = obj =&gt; { return obj.x }&#x27;</span></span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">minifyWhitespace</span>: <span class="hljs-literal">true</span>,
+})</span><span class="repl-out">{
+  code: 'fn=obj=&gt;{return obj.x};\n',
+  map: '',
+  warnings: []
+}</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">minifyIdentifiers</span>: <span class="hljs-literal">true</span>,
+})</span><span class="repl-out">{
+  code: 'fn = (n) =&gt; {\n  return n.x;\n};\n',
+  map: '',
+  warnings: []
+}</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">minifySyntax</span>: <span class="hljs-literal">true</span>,
+})</span><span class="repl-out">{
+  code: 'fn = (obj) =&gt; obj.x;\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  css := <span class="hljs-string">&quot;div { color: yellow }&quot;</span>
+
+  result1 := api.Transform(css, api.TransformOptions{
+    Loader:           api.LoaderCSS,
+    MinifyWhitespace: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result1.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result1.Code)
+  }
+
+  result2 := api.Transform(css, api.TransformOptions{
+    Loader:            api.LoaderCSS,
+    MinifyIdentifiers: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result2.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result2.Code)
+  }
+
+  result3 := api.Transform(css, api.TransformOptions{
+    Loader:       api.LoaderCSS,
+    MinifySyntax: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result3.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result3.Code)
+  }
+}</pre>
+      <p>These same concepts also apply to CSS, not just to JavaScript:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;div { color: yellow }&#x27;</span> | esbuild --loader=css --minify</span><span class="repl-out">div{color:#ff0}</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-keyword">var</span> css = <span class="hljs-string">&#x27;div { color: yellow }&#x27;</span></span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(css, {
+  <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;css&#x27;</span>,
+  <span class="hljs-attr">minify</span>: <span class="hljs-literal">true</span>,
+})</span><span class="repl-out">{
+  code: 'div{color:#ff0}\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  css := <span class="hljs-string">&quot;div { color: yellow }&quot;</span>
+
+  result := api.Transform(css, api.TransformOptions{
+    Loader:            api.LoaderCSS,
+    MinifyWhitespace:  <span class="hljs-literal">true</span>,
+    MinifyIdentifiers: <span class="hljs-literal">true</span>,
+    MinifySyntax:      <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <p>The JavaScript minification algorithm in esbuild usually generates output that is very close in size to the minified output of industry-standard JavaScript minification tools. You can check out <a href="https://github.com/privatenumber/minification-benchmarks/blob/cc9205d26756a0c32fe47cc22046d850b5c1fbbe/readme.md">this benchmark</a> for an example comparison of output sizes between tools. While esbuild is not the optimal JavaScript minifier in all cases (and doesn't try to be), it strives to generate minified output within a few percent of the size of dedicated minification tools, and of course to do so much faster.</p>
+      <h3 id="outdir" data-h2="simple-options">
+        <a aria-hidden="true" href="#outdir">#</a>
+        Outdir
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>This option sets the output directory for the build operation. For example, this command will generate a directory called <code>out</code>:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --outdir=out</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;out&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outdir:      <span class="hljs-string">&quot;out&quot;</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>The output directory will be generated if it does not already exist, but it will not be cleared if it already contains some files. Any generated files will silently overwrite existing files with the same name. You should clear the output directory yourself before running esbuild if you want the output directory to only contain files from the current run of esbuild.</p>
+      <p>If your build contains multiple entry points in separate directories, the directory structure will be replicated into the output directory starting from the <a href="https://en.wikipedia.org/wiki/Lowest_common_ancestor">lowest common ancestor</a> directory among all input entry point paths. For example, if there are two entry points <code>src/<wbr>home/<wbr>index.ts</code> and <code>src/<wbr>about/<wbr>index.ts</code>, the output directory will contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code>.</p>
+      <h3 id="outfile" data-h2="simple-options">
+        <a aria-hidden="true" href="#outfile">#</a>
+        Outfile
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>This option sets the output file name for the build operation. This is only applicable if there is a single entry point. If there are multiple entry points, you must use the <a href="#outdir">outdir</a> option instead to specify an output directory. Using outfile looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --outfile=out.js</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outdir:      <span class="hljs-string">&quot;out.js&quot;</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h3 id="platform" data-h2="simple-options">
+        <a aria-hidden="true" href="#platform">#</a>
+        Platform
+      </h3>
+      <p>By default, esbuild's bundler is configured to generate code intended for the browser. If your bundled code is intended to run in node instead, you should set the platform to node:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --platform=node</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">platform</span>: <span class="hljs-string">&#x27;node&#x27;</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Platform:    api.PlatformNode,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>When the platform is set to <code>browser</code> (the default value):</p>
+      <ul><li><p> The default output <a href="#format">format</a> is set to <code>iife</code>, which wraps the generated JavaScript code in an immediately-invoked function expression to prevent variables from leaking into the global scope. </p></li><li><p> If a package specifies a map for the <a href="https://gist.github.com/defunctzombie/4339901/49493836fb873ddaa4b8a7aa0ef2352119f69211"><code>browser</code></a> field in its <code>package.json</code> file, esbuild will use that map to replace specific files or modules with their browser-friendly versions. For example, a package might contain a substitution of <a href="https://nodejs.org/api/path.html"><code>path</code></a> with <a href="https://www.npmjs.com/package/path-browserify"><code>path-browserify</code></a>. </p></li><li><p> The <a href="#main-fields">main fields</a> setting is set to <code>browser,<wbr>module,<wbr>main</code> but with some additional special behavior. If a package supports <code>module</code> and <code>main</code> but not <code>browser</code> then <code>main</code> is used instead of <code>module</code> if that package is ever imported using <code>require()</code>. This behavior improves compatibility with CommonJS modules that export a function by assigning it to <code>module.exports</code>. </p></li><li><p> To avoid warning about the use of <code>require</code> in code generated by Browserify, the specific expression <code>typeof <wbr>require <wbr>== <wbr>'function' <wbr>&amp;&amp; <wbr>require</code> is substituted with <code>false</code>. This code is present in some packages that have been published to npm. </p></li></ul>
+      <p>When the platform is set to <code>node</code>:</p>
+      <ul><li><p> The default output <a href="#format">format</a> is set to <code>cjs</code>, which stands for CommonJS (the module format used by node). ES6-style exports using <code>export</code> statements will be converted into getters on the CommonJS <code>exports</code> object. </p></li><li><p> All <a href="https://nodejs.org/docs/latest/api/">built-in node modules</a> such as <code>fs</code> are automatically marked as <a href="#external">external</a> so they don't cause errors when the bundler tries to bundle them. </p></li><li><p> The <a href="#main-fields">main fields</a> setting is set to <code>main,<wbr>module</code>. This means tree shaking will likely not happen for packages that provide both <code>module</code> and <code>main</code> since tree shaking works with ECMAScript modules but not with CommonJS modules. </p> <p> Unfortunately some packages incorrectly treat <code>module</code> as meaning &quot;browser code&quot; instead of &quot;ECMAScript module code&quot; so this default behavior is required for compatibility. You can manually configure the <a href="#main-fields">main fields</a> setting to <code>module,<wbr>main</code> if you want to enable tree shaking and know it is safe to do so. </p></li></ul>
+      <p>See also <a href="/getting-started/#bundling-for-the-browser">bundling for the browser</a> and <a href="/getting-started/#bundling-for-node">bundling for node</a>.</p>
+      <h3 id="sourcemap" data-h2="simple-options">
+        <a aria-hidden="true" href="#sourcemap">#</a>
+        Sourcemap
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>Source maps can make it easier to debug your code. They encode the information necessary to translate from a line/column offset in a generated output file back to a line/column offset in the corresponding original input file. This is useful if your generated code is sufficiently different from your original code (e.g. your original code is TypeScript or you enabled <a href="#minify">minification</a>).</p>
+      <p>Enabling source map generation will generate a <code>.js.map</code> file alongside any generated <code>.js</code> file and add a special <code>//# sourceMappingURL=</code> comment to the bottom of the <code>.js</code> file pointing to the <code>.js.map</code> file:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.ts --sourcemap --outfile=out.js</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.ts&#x27;</span>],
+  <span class="hljs-attr">sourcemap</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.ts&quot;</span>},
+    Sourcemap:   api.SourceMapLinked,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>If the input file itself contains a special <code>//# sourceMappingURL=</code> comment, esbuild will automatically try to parse the linked source map. If successful, the mappings in the generated source map will map all the way back to the original source code referenced in the input source map.</p>
+      <p>If you want to omit the special <code>//# sourceMappingURL=</code> comment from the generated <code>.js</code> file but you still want to generate the <code>.js.map</code> files, you should set the source map mode to <code>external</code>:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.ts --sourcemap=external --outfile=out.js</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.ts&#x27;</span>],
+  <span class="hljs-attr">sourcemap</span>: <span class="hljs-string">&#x27;external&#x27;</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.ts&quot;</span>},
+    Sourcemap:   api.SourceMapExternal,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>If you want to insert the entire source map into the <code>.js</code> file instead of generating a separate <code>.js.map</code> file, you should set the source map mode to <code>inline</code>:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.ts --sourcemap=inline --outfile=out.js</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.ts&#x27;</span>],
+  <span class="hljs-attr">sourcemap</span>: <span class="hljs-string">&#x27;inline&#x27;</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.ts&quot;</span>},
+    Sourcemap:   api.SourceMapInline,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>Keep in mind that source maps are usually very big because they contain all of your original source code, so you usually do not want to ship code containing <code>inline</code> source maps.</p>
+      <h3 id="splitting" data-h2="simple-options">
+        <a aria-hidden="true" href="#splitting">#</a>
+        Splitting
+      </h3>
+      <div class="warning">Code splitting is still a work in progress. It currently only works with the <code>esm</code> output <a href="#format">format</a>. There is also a known <a href="https://github.com/evanw/esbuild/issues/399">ordering issue</a> with <code>import</code> statements across code splitting chunks. You can follow <a href="https://github.com/evanw/esbuild/issues/16">the tracking issue</a> for updates about this feature.</div>
+      <p>This enables &quot;code splitting&quot; which serves two purposes:</p>
+      <ul><li><p> Code shared between multiple entry points is split off into a separate shared file that both entry points import. That way if the user first browses to one page and then to another page, they don't have to download all of the JavaScript for the second page from scratch if the shared part has already been downloaded and cached by their browser. </p></li><li><p> Code referenced through an asynchronous <code>import()</code> expression will be split off into a separate file and only loaded when that expression is evaluated. This allows you to improve the initial download time of your app by only downloading the code you need at startup, and then lazily downloading additional code if needed later. </p> <p> Without code splitting enabled, an <code>import()</code> expression becomes <code>Promise<wbr>.resolve()<wbr>.then(() =&gt; <wbr>require())</code> instead. This still preserves the asynchronous semantics of the expression but it means the imported code is included in the same bundle instead of being split off into a separate file. </p></li></ul>
+      <p>When you enable code splitting you must also configure the output directory using the <a href="#outdir">outdir</a> setting:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild home.ts about.ts --bundle --splitting --outdir=out --format=esm</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;home.ts&#x27;</span>, <span class="hljs-string">&#x27;about.ts&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">splitting</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;out&#x27;</span>,
+  <span class="hljs-attr">format</span>: <span class="hljs-string">&#x27;esm&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;home.ts&quot;</span>, <span class="hljs-string">&quot;about.ts&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Splitting:   <span class="hljs-literal">true</span>,
+    Outdir:      <span class="hljs-string">&quot;out&quot;</span>,
+    Format:      api.FormatESModule,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h3 id="target" data-h2="simple-options">
+        <a aria-hidden="true" href="#target">#</a>
+        Target
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This sets the target environment for the generated JavaScript code. For example, you can configure esbuild to not generate any newer JavaScript that node version 10 can't handle. The target can either be set to a JavaScript language version such as <code>es2020</code> or to a list of versions of individual engines (currently either <code>chrome</code>, <code>firefox</code>, <code>safari</code>, <code>edge</code>, or <code>node</code>).</p>
+      <p>Here is an example with all possible target environments specified (you don't have to specify all of them):</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --target=es2020,chrome58,firefox57,safari11,edge16,node12.19.0</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">target</span>: [
+    <span class="hljs-string">&#x27;es2020&#x27;</span>,
+    <span class="hljs-string">&#x27;chrome58&#x27;</span>,
+    <span class="hljs-string">&#x27;firefox57&#x27;</span>,
+    <span class="hljs-string">&#x27;safari11&#x27;</span>,
+    <span class="hljs-string">&#x27;edge16&#x27;</span>,
+    <span class="hljs-string">&#x27;node12.19.0&#x27;</span>,
+  ],
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Target:      api.ES2020,
+    Engines: []api.Engine{
+      {Name: api.EngineChrome, Version: <span class="hljs-string">&quot;58&quot;</span>},
+      {Name: api.EngineFirefox, Version: <span class="hljs-string">&quot;57&quot;</span>},
+      {Name: api.EngineSafari, Version: <span class="hljs-string">&quot;11&quot;</span>},
+      {Name: api.EngineEdge, Version: <span class="hljs-string">&quot;16&quot;</span>},
+      {Name: api.EngineNode, Version: <span class="hljs-string">&quot;12.19.0&quot;</span>},
+    },
+    Write: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>You can refer to the <a href="/content-types/#javascript">JavaScript loader</a> for the details about which syntax features were introduced with which language versions. Keep in mind that while JavaScript language versions such as <code>es2020</code> are identified by year, that is the year the specification is approved. It has nothing to do with the year all major browsers implement that specification which often happens earlier or later than that year.</p>
+      <p>Note that if you use a syntax feature that esbuild doesn't yet have support for transforming to your current language target, esbuild will generate an error where the unsupported syntax is used. This is often the case when targeting the <code>es5</code> language version, for example, since esbuild only supports transforming most newer JavaScript syntax features to <code>es6</code>.</p>
+      <h3 id="write" data-h2="simple-options">
+        <a aria-hidden="true" href="#write">#</a>
+        Write
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>The build API call can either write to the file system directly or return the files that would have been written as in-memory buffers. By default the CLI and JavaScript APIs write to the file system and the Go API doesn't. To use the in-memory buffers:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-keyword">let</span> result = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">sourcemap</span>: <span class="hljs-string">&#x27;external&#x27;</span>,
+  <span class="hljs-attr">write</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;out&#x27;</span>,
+})
+
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> out <span class="hljs-keyword">of</span> result.outputFiles) {
+  <span class="hljs-built_in">console</span>.log(out.path, out.contents)
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Sourcemap:   api.SourceMapExternal,
+    Write:       <span class="hljs-literal">false</span>,
+    Outdir:      <span class="hljs-string">&quot;out&quot;</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+
+  <span class="hljs-keyword">for</span> _, out := <span class="hljs-keyword">range</span> result.OutputFiles {
+    fmt.Printf(<span class="hljs-string">&quot;%v %v\n&quot;</span>, out.Path, out.Contents)
+  }
+}</pre>
+      <h2 id="advanced-options">
+        <a aria-hidden="true" href="#advanced-options">#</a>
+        Advanced options
+      </h2>
+      <h3 id="avoid-tdz" data-h2="advanced-options">
+        <a aria-hidden="true" href="#avoid-tdz">#</a>
+        Avoid TDZ
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This is a workaround for a performance issue with certain large JavaScript files in Safari. Enabling this setting means the bundle generated by esbuild may initialize up to 10x faster than with this setting disabled. However, it subtly changes the meaning of your code so it's not enabled by default and you should only enable it if you know what you're doing.</p>
+      <p>First, some background. In JavaScript the <code>var</code> statement is &quot;hoisted&quot; meaning the variable is declared immediately in the closest surrounding function, module, or global scope. Accessing one of these variables before its declaration has been evaluated results in the value <code>undefined</code>. In ES6 the <code>const</code>, <code>let</code>, and <code>class</code> statements introduce what's called a &quot;temporal dead zone&quot; or TDZ. This means that, unlike <code>var</code> statements, accessing one of these variable before its declaration has been evaluated results in a <code>ReferenceError</code> being thrown. It's called a &quot;temporal dead zone&quot; because it's a zone of time in which the variable is inaccessible.</p>
+      <p>According to <a href="https://bugs.webkit.org/show_bug.cgi?id=199866">this WebKit bug</a>, there's a severe performance issue with the tracking of TDZ checks in JavaScriptCore, the JavaScript JIT compiler used by WebKit. For example, in one extreme case replacing top-level <code>const</code>, <code>let</code>, and <code>class</code> statements with <code>var</code> statements improved the bundle initialization time from 2000ms to 200ms. This transformation is not enabled by default because it changes the semantics of the code (it removes the TDZ and <code>const</code> assignment checks). However, this change in semantics may be acceptable for you given the performance trade-off.</p>
+      <p>Here's how to enable it:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;const x = 1&#x27;</span> | esbuild --avoid-tdz</span><span class="repl-out">var x = 1;</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(<span class="hljs-string">&#x27;const x = 1&#x27;</span>, {
+  <span class="hljs-attr">avoidTDZ</span>: <span class="hljs-literal">true</span>,
+})</span><span class="repl-out">{
+  code: 'var x = 1;\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Transform(<span class="hljs-string">&quot;const x = 1&quot;</span>, api.TransformOptions{
+    AvoidTDZ: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <h3 id="charset" data-h2="advanced-options">
+        <a aria-hidden="true" href="#charset">#</a>
+        Charset
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>By default esbuild's output is ASCII-only. Any non-ASCII characters are escaped using backslash escape sequences. One reason is because non-ASCII characters are misinterpreted by the browser by default, which causes confusion. You have to explicitly add <code>&lt;meta <wbr>charset=<wbr>&quot;utf-8&quot;&gt;</code> to your HTML or serve it with the correct <code>Content-<wbr>Type</code> header for the browser to not mangle your code. Another reason is that non-ASCII characters can significantly <a href="https://v8.dev/blog/scanner">slow down the browser's parser</a>. However, using escape sequences makes the generated output slightly bigger, and also makes it harder to read.</p>
+      <p>If you would like for esbuild to print the original characters without using escape sequences and you have ensured that the browser will interpret your code as UTF-8, you can disable character escaping by setting the charset:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;let π = Math.PI&#x27;</span> | esbuild</span><span class="repl-out">let \u03C0 = Math.PI;</span><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;let π = Math.PI&#x27;</span> | esbuild --charset=utf8</span><span class="repl-out">let π = Math.PI;</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;let π = Math.PI&#x27;</span></span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js)</span><span class="repl-out">{
+  code: 'let \\u03C0 = Math.PI;\n',
+  map: '',
+  warnings: []
+}</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">charset</span>: <span class="hljs-string">&#x27;utf8&#x27;</span>,
+})</span><span class="repl-out">{
+  code: 'let π = Math.PI;\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js := <span class="hljs-string">&quot;let π = Math.PI&quot;</span>
+
+  result1 := api.Transform(js, api.TransformOptions{})
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result1.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result1.Code)
+  }
+
+  result2 := api.Transform(js, api.TransformOptions{
+    Charset: api.CharsetUTF8,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result2.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result2.Code)
+  }
+}</pre>
+      <p>Some caveats:</p>
+      <ul><li><p> This does not yet escape non-ASCII characters embedded in regular expressions. This is because esbuild does not currently parse the contents of regular expressions at all. The flag was added despite this limitation because it's still useful for code that doesn't contain cases like this. </p></li><li><p> This flag does not apply to comments. I believe preserving non-ASCII data in comments should be fine because even if the encoding is wrong, the run time environment should completely ignore the contents of all comments. For example, the <a href="https://v8.dev/blog/scanner">V8 blog post</a> mentions an optimization that avoids decoding comment contents completely. And all comments other than license-related comments are stripped out by esbuild anyway. </p></li><li><p> This option simultaneously applies to all output file types (JavaScript, CSS, and JSON). So if you configure your server to send the correct <code>Content-<wbr>Type</code> header and want to use the UTF-8 charset, make sure your server is configured to treat both <code>.js</code> and <code>.css</code> files as UTF-8. </p></li></ul>
+      <h3 id="color" data-h2="advanced-options">
+        <a aria-hidden="true" href="#color">#</a>
+        Color
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This option enables or disables colors in the error and warning messages that esbuild writes to stderr file descriptor in the terminal. By default, color is automatically enabled if stderr is a TTY session and automatically disabled otherwise. Colored output in esbuild looks like this:</p>
+      <pre><b>&lt;stdin&gt;:1:16: <span class="color-red">error:</span> Could not resolve "logger" (mark it as external to exclude it from the bundle)</b>
+import log from <span class="color-green">"logger"</span>
+                <span class="color-green">~~~~~~~~</span>
+<b>&lt;stdin&gt;:2:16: <span class="color-purple">warning:</span> The "typeof" operator will never evaluate to "null"</b>
+log(typeof x == <span class="color-green">"null"</span>)
+                <span class="color-green">~~~~~~</span>
+1 warning and 1 error</pre>
+      <p>Colored output can be force-enabled by setting color to <code>true</code>. This is useful if you are piping esbuild's stderr output into a TTY yourself:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;typeof x == &quot;null&quot;&#x27;</span> | esbuild --color=<span class="hljs-literal">true</span> 2&gt; stderr.txt</pre>
+      <pre class="switchable js3"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;typeof x == &quot;null&quot;&#x27;</span>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">color</span>: <span class="hljs-literal">true</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js := <span class="hljs-string">&quot;typeof x == &#x27;null&#x27;&quot;</span>
+
+  result := api.Transform(js, api.TransformOptions{
+    Color: api.ColorAlways,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <p>Colored output can also be set to <code>false</code> to disable colors.</p>
+      <h3 id="error-limit" data-h2="advanced-options">
+        <a aria-hidden="true" href="#error-limit">#</a>
+        Error limit
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>By default, esbuild stops reporting errors after 10 errors have been reached. This avoids the accidental generation of an overwhelming number of error messages, which can easily lock up slower terminal emulators such as Windows command prompt. It also avoids accidentally using up the whole scroll buffer for terminal emulators with limited scroll buffers.</p>
+      <p>The error limit can be changed to another value, and can also be disabled completely by setting it to zero. This will show all build errors:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --error-limit=0</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">errorLimit</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    ErrorLimit:  <span class="hljs-number">0</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h3 id="log-level" data-h2="advanced-options">
+        <a aria-hidden="true" href="#log-level">#</a>
+        Log level
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>The log level can be changed to prevent esbuild from printing warning and/or error messages to the terminal. The four log levels are <code>info</code> (show everything), <code>warning</code> (show warnings and errors), <code>error</code> (just show errors), and <code>silent</code> (show nothing).</p>
+      <p>For example, you can hide all warnings by setting the log level to <code>error</code>:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;typeof x == &quot;null&quot;&#x27;</span> | esbuild --log-level=error</pre>
+      <pre class="switchable js3"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;typeof x == &quot;null&quot;&#x27;</span>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">logLevel</span>: <span class="hljs-string">&#x27;error&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js := <span class="hljs-string">&quot;typeof x == &#x27;null&#x27;&quot;</span>
+
+  result := api.Transform(js, api.TransformOptions{
+    LogLevel: api.LogLevelError,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <h3 id="main-fields" data-h2="advanced-options">
+        <a aria-hidden="true" href="#main-fields">#</a>
+        Main fields
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>When you import a package in node, the <code>main</code> field in that package's <code>package.json</code> file determines which file is imported (along with <a href="https://nodejs.org/api/modules.html#modules_all_together">a lot of other rules</a>). Major JavaScript bundlers including esbuild let you specify additional <code>package.json</code> fields to try when resolving a package. There are at least three such fields commonly in use:</p>
+      <ul><li><code>main</code> <p> This is <a href="https://docs.npmjs.com/files/package.json#main">the standard field</a> for all packages that are meant to be used with node. The name <code>main</code> is hard-coded in to node's module resolution logic itself. Because it's intended for use with node, it's reasonable to expect that the file path in this field is a CommonJS-style module. </p></li><li><code>module</code> <p> This field came from <a href="https://github.com/dherman/defense-of-dot-js/blob/f31319be735b21739756b87d551f6711bd7aa283/proposal.md">a proposal</a> for how to integrate ECMAScript modules into node. Because of this, it's reasonable to expect that the file path in this field is an ECMAScript-style module. This proposal wasn't adopted by node (node uses <code>&quot;type&quot;: <wbr>&quot;module&quot;</code> instead) but it was adopted by major bundlers because ECMAScript-style modules lead to better tree shaking, or dead code removal. </p> <p> For package authors: Some packages incorrectly use the <code>module</code> field for browser-specific code, leaving node-specific code for the <code>main</code> field. This is probably because node ignores the <code>module</code> field and people typically only use bundlers for browser-specific code. However, bundling node-specific code is valuable too (e.g. it decreases download and boot time) and packages that put browser-specific code in <code>module</code> prevent bundlers from being able to do tree shaking effectively. If you are trying to publish browser-specific code in a package, use the <code>browser</code> field instead. </p></li><li><code>browser</code> <p> This field came from <a href="https://gist.github.com/defunctzombie/4339901/49493836fb873ddaa4b8a7aa0ef2352119f69211">a proposal</a> that allows bundlers to replace node-specific files or modules with their browser-friendly versions. It lets you specify an alternate browser-specific entry point. Note that it is possible for a package to use both the <code>browser</code> and <code>module</code> field together (see the note below). </p></li></ul>
+      <p>The default main fields depend on the current <a href="#platform">platform</a> setting and are essentially <code>browser,<wbr>module,<wbr>main</code> for the browser and <code>main,<wbr>module</code> for node. These defaults should be the most widely compatible with the existing package ecosystem. But you can customize them like this if you want to:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --main-fields=module,main</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">mainFields</span>: [<span class="hljs-string">&#x27;module&#x27;</span>, <span class="hljs-string">&#x27;main&#x27;</span>],
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    MainFields:  []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;module&quot;</span>, <span class="hljs-string">&quot;main&quot;</span>},
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>For package authors: If you want to author a package that uses the <code>browser</code> field in combination with the <code>module</code> field to fill out all four entries in the full CommonJS-vs-ESM and browser-vs-node compatibility matrix, you want to use the expanded form of the <code>browser</code> field that is a map instead of just a string:</p>
+      <pre>{
+  <span class="hljs-attr">&quot;main&quot;</span>: <span class="hljs-string">&quot;./node-cjs.js&quot;</span>,
+  <span class="hljs-attr">&quot;module&quot;</span>: <span class="hljs-string">&quot;./node-esm.js&quot;</span>,
+  <span class="hljs-attr">&quot;browser&quot;</span>: {
+    <span class="hljs-attr">&quot;./node-cjs.js&quot;</span>: <span class="hljs-string">&quot;./browser-cjs.js&quot;</span>,
+    <span class="hljs-attr">&quot;./node-esm.js&quot;</span>: <span class="hljs-string">&quot;./browser-esm.js&quot;</span>
+  }
+}</pre>
+      <h3 id="metafile" data-h2="advanced-options">
+        <a aria-hidden="true" href="#metafile">#</a>
+        Metafile
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>This option tells esbuild to write out a JSON file with metadata about the build.</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --metafile=meta.json --outfile=out.js</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">metafile</span>: <span class="hljs-string">&#x27;meta.json&#x27;</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Metafile:    <span class="hljs-string">&quot;meta.json&quot;</span>,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>The metadata in this JSON file follows this schema (specified using TypeScript syntax):</p>
+      <pre>{
+  inputs: {
+    [path: <span class="hljs-built_in">string</span>]: {
+      bytes: <span class="hljs-built_in">number</span>
+      imports: { path: <span class="hljs-built_in">string</span> }[]
+    }
+  }
+  outputs: {
+    [path: <span class="hljs-built_in">string</span>]: {
+      bytes: <span class="hljs-built_in">number</span>
+      inputs: {
+        [path: <span class="hljs-built_in">string</span>]: { bytesInOutput: <span class="hljs-built_in">number</span> }
+      }
+      imports: { path: <span class="hljs-built_in">string</span> }[]
+    }
+  }
+}</pre>
+      <p>This data can then be analyzed by other tools. For example, <a href="https://www.bundle-buddy.com/esbuild">bundle buddy</a> can consume esbuild's metadata format and generates a treemap visualization of the modules in your bundle and how much space each one takes up.</p>
+      <h3 id="out-extension" data-h2="advanced-options">
+        <a aria-hidden="true" href="#out-extension">#</a>
+        Out extension
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>This option lets you customize the file extension of the files that esbuild generates to something other than <code>.js</code> or <code>.css</code>. In particular, the <code>.mjs</code> and <code>.cjs</code> file extensions have special meaning in node (they indicate a file in ESM and CommonJS format, respectively). This option is useful if you are using esbuild to generate multiple files and you have to use the <a href="#outdir">outdir</a> option instead of the <a href="#outfile">outfile</a> option. You can use it like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --outdir=dist --out-extension:.js=.mjs</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;dist&#x27;</span>,
+  <span class="hljs-attr">outExtension</span>: { <span class="hljs-string">&#x27;.js&#x27;</span>: <span class="hljs-string">&#x27;.mjs&#x27;</span> },
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outdir:      <span class="hljs-string">&quot;dist&quot;</span>,
+    OutExtensions: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">string</span>{
+      <span class="hljs-string">&quot;.js&quot;</span>: <span class="hljs-string">&quot;.mjs&quot;</span>,
+    },
+    Write: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h3 id="public-path" data-h2="advanced-options">
+        <a aria-hidden="true" href="#public-path">#</a>
+        Public path
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>This is useful in combination with the <a href="/content-types/#external-file">external file</a> loader. By default that loader exports the name of the imported file as a string using the <code>default</code> export. The public path option lets you prepend a base path to the exported string of each file loaded by this loader:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --loader:.png=file --public-path=https://www.example.com/v1 --outdir=out</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">loader</span>: { <span class="hljs-string">&#x27;.png&#x27;</span>: <span class="hljs-string">&#x27;file&#x27;</span> },
+  <span class="hljs-attr">publicPath</span>: <span class="hljs-string">&#x27;https://www.example.com/v1&#x27;</span>,
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;out&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Loader: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]api.Loader{
+      <span class="hljs-string">&quot;.png&quot;</span>: api.LoaderFile,
+    },
+    Outdir:     <span class="hljs-string">&quot;out&quot;</span>,
+    PublicPath: <span class="hljs-string">&quot;https://www.example.com/v1&quot;</span>,
+    Write:      <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h3 id="pure" data-h2="advanced-options">
+        <a aria-hidden="true" href="#pure">#</a>
+        Pure
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>There is a convention used by various JavaScript tools where a special comment containing either <code>/* @__PURE__ */</code> or <code>/* #__PURE__ */</code> before a new or call expression means that that expression can be removed if the resulting value is unused. It looks like this:</p>
+      <pre><span class="hljs-keyword">let</span> button = <span class="hljs-comment">/* @__PURE__ */</span> React.createElement(Button, <span class="hljs-literal">null</span>);</pre>
+      <p>This information is used by bundlers such as esbuild during tree shaking (a.k.a. dead code removal) to perform fine-grained removal of unused imports across module boundaries in situations where the bundler is not able to prove by itself that the removal is safe due to the dynamic nature of JavaScript code.</p>
+      <p>Note that while the comment says &quot;pure&quot;, it confusingly does <em>not</em> indicate that the function being called is pure. For example, it does not indicate that it is ok to cache repeated calls to that function. The name is essentially just an abstract shorthand for &quot;ok to be removed if unused&quot;.</p>
+      <p>Some expressions such as JSX and certain built-in globals are automatically annoated as <code>/* @__PURE__ */</code> in esbuild. You can also configure additional globals to be marked <code>/* @__PURE__ */</code> as well. For example, you can mark the global <code>console.log</code> function as such to have it be automatically removed from your bundle when the bundle is minified as long as the result isn't used.</p>
+      <p>It's worth mentioning that the effect of the annotation only extends to the call itself, not to the arguments. Arguments with side effects are still kept:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;console.log(&quot;foo:&quot;, foo())&#x27;</span> | esbuild --pure:console.log</span><span class="repl-out">/* @__PURE__ */ console.log("foo:", foo());</span><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;console.log(&quot;foo:&quot;, foo())&#x27;</span> | esbuild --pure:console.log --minify</span><span class="repl-out">foo();</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;console.log(&quot;foo:&quot;, foo())&#x27;</span></span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">pure</span>: [<span class="hljs-string">&#x27;console.log&#x27;</span>],
+})</span><span class="repl-out">{
+  code: '/* @__PURE__ */ console.log("foo:", foo());\n',
+  map: '',
+  warnings: []
+}</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">pure</span>: [<span class="hljs-string">&#x27;console.log&#x27;</span>],
+  <span class="hljs-attr">minify</span>: <span class="hljs-literal">true</span>,
+})</span><span class="repl-out">{
+  code: 'foo();\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js := <span class="hljs-string">&quot;console.log(&#x27;foo:&#x27;, foo())&quot;</span>
+
+  result1 := api.Transform(js, api.TransformOptions{
+    Pure: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;console.log&quot;</span>},
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result1.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result1.Code)
+  }
+
+  result2 := api.Transform(js, api.TransformOptions{
+    Pure:         []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;console.log&quot;</span>},
+    MinifySyntax: <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result2.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result2.Code)
+  }
+}</pre>
+      <h3 id="resolve-extensions" data-h2="advanced-options">
+        <a aria-hidden="true" href="#resolve-extensions">#</a>
+        Resolve extensions
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>The <a href="https://nodejs.org/api/modules.html#modules_file_modules">resolution algorithm used by node</a> supports implicit file extensions. You can <code>require(<wbr>'./file')</code> and it will check for <code>./file</code>, <code>./file.js</code>, <code>./file.json</code>, and <code>./file.node</code> in that order. Modern bundlers including esbuild extend this concept to other file types as well. The full order of implicit file extensions in esbuild can be customized using the resolve extensions setting, which defaults to <code>.tsx,<wbr>.ts,<wbr>.jsx,<wbr>.mjs,<wbr>.cjs,<wbr>.js,<wbr>.css,<wbr>.json</code>:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --resolve-extensions=.ts,.js</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">resolveExtensions</span>: [<span class="hljs-string">&#x27;.ts&#x27;</span>, <span class="hljs-string">&#x27;.js&#x27;</span>],
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints:       []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:            <span class="hljs-literal">true</span>,
+    ResolveExtensions: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;.ts&quot;</span>, <span class="hljs-string">&quot;.js&quot;</span>},
+    Write:             <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h3 id="sourcefile" data-h2="advanced-options">
+        <a aria-hidden="true" href="#sourcefile">#</a>
+        Sourcefile
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This option sets the file name when using an input which has no file name. This happens when using the transform API and when using the build API with stdin. The configured file name is reflected in error messages and in source maps. If it's not configured, the file name defaults to <code>&lt;stdin&gt;</code>. It can be configured like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">cat app.js | esbuild --sourcefile=example.js --sourcemap</pre>
+      <pre class="switchable js3"><span class="hljs-keyword">let</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>)
+<span class="hljs-keyword">let</span> js = fs.readFileSync(<span class="hljs-string">&#x27;app.js&#x27;</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>)
+
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+  <span class="hljs-attr">sourcefile</span>: <span class="hljs-string">&#x27;example.js&#x27;</span>,
+  <span class="hljs-attr">sourcemap</span>: <span class="hljs-string">&#x27;inline&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;io/ioutil&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  js, err := ioutil.ReadFile(<span class="hljs-string">&quot;app.js&quot;</span>)
+  <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+    <span class="hljs-built_in">panic</span>(err)
+  }
+
+  result := api.Transform(<span class="hljs-keyword">string</span>(js),
+    api.TransformOptions{
+      Sourcefile: <span class="hljs-string">&quot;example.js&quot;</span>,
+      Sourcemap:  api.SourceMapInline,
+    })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <h3 id="stdin" data-h2="advanced-options">
+        <a aria-hidden="true" href="#stdin">#</a>
+        Stdin
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>Normally the build API call takes one or more file names as input. However, this option can be used to run a build without a file existing on disk at all. It's called &quot;stdin&quot; because it corresponds to piping a file to stdin on the command line.</p>
+      <p>In addition to specifying the contents of the stdin file, you can optionally also specify the resolve directory (used to determine where relative imports are located), the <a href="#sourcefile">sourcefile</a> (the file name to use in error messages and source maps), and the <a href="#loader">loader</a> (which determines how the file contents are interpreted). The CLI doesn't have a way to specify the resolve directory. Instead, it's automatically set to the current working directory.</p>
+      <p>Here's how to use this feature:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;export * from &quot;./another-file&quot;&#x27;</span> | esbuild --bundle --sourcefile=imaginary-file.js --loader=ts --format=cjs</pre>
+      <pre class="switchable js3"><span class="hljs-keyword">let</span> result = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">stdin</span>: {
+    <span class="hljs-attr">contents</span>: <span class="hljs-string">`export * from &quot;./another-file&quot;`</span>,
+
+    <span class="hljs-comment">// These are all optional:</span>
+    <span class="hljs-attr">resolveDir</span>: <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;path&#x27;</span>).join(__dirname, <span class="hljs-string">&#x27;src&#x27;</span>),
+    <span class="hljs-attr">sourcefile</span>: <span class="hljs-string">&#x27;imaginary-file.js&#x27;</span>,
+    <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;ts&#x27;</span>,
+  },
+  <span class="hljs-attr">format</span>: <span class="hljs-string">&#x27;cjs&#x27;</span>,
+  <span class="hljs-attr">write</span>: <span class="hljs-literal">false</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    Stdin: &amp;api.StdinOptions{
+      Contents: <span class="hljs-string">&quot;export * from &#x27;./another-file&#x27;&quot;</span>,
+
+      <span class="hljs-comment">// These are all optional:</span>
+      ResolveDir: <span class="hljs-string">&quot;./src&quot;</span>,
+      Sourcefile: <span class="hljs-string">&quot;imaginary-file.js&quot;</span>,
+      Loader:     api.LoaderTS,
+    },
+    Format: api.FormatCommonJS,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h3 id="tsconfig" data-h2="advanced-options">
+        <a aria-hidden="true" href="#tsconfig">#</a>
+        Tsconfig
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>Normally the <a href="#build-api">build API</a> automatically discovers <code>tsconfig.json</code> files and reads their contents during a build. However, you can also configure a custom <code>tsconfig.json</code> file to use instead. This can be useful if you need to do multiple builds of the same code with different settings:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.ts --bundle --tsconfig=custom-tsconfig.json</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.ts&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">tsconfig</span>: <span class="hljs-string">&#x27;custom-tsconfig.json&#x27;</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.ts&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Tsconfig:    <span class="hljs-string">&quot;custom-tsconfig.json&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h3 id="tsconfig-raw" data-h2="advanced-options">
+        <a aria-hidden="true" href="#tsconfig-raw">#</a>
+        Tsconfig raw
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a></i></p>
+      <p>This option can be used to pass your <code>tsconfig.json</code> file to the <a href="#transform-api">transform API</a>, which doesn't access the file system. Using it looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;class Foo { foo }&#x27;</span> | esbuild --loader=ts --tsconfig-raw=<span class="hljs-string">&#x27;{&quot;compilerOptions&quot;:{&quot;useDefineForClassFields&quot;:true}}&#x27;</span></pre>
+      <pre class="switchable js3"><span class="hljs-keyword">let</span> ts = <span class="hljs-string">&#x27;class Foo { foo }&#x27;</span>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(ts, {
+  <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;ts&#x27;</span>,
+  <span class="hljs-attr">tsconfigRaw</span>: <span class="hljs-string">`{
+    &quot;compilerOptions&quot;: {
+      &quot;useDefineForClassFields&quot;: true,
+    },
+  }`</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  ts := <span class="hljs-string">&quot;class Foo { foo }&quot;</span>
+
+  result := api.Transform(ts, api.TransformOptions{
+    Loader: api.LoaderTS,
+    TsconfigRaw: <span class="hljs-string">`{
+      &quot;compilerOptions&quot;: {
+        &quot;useDefineForClassFields&quot;: true,
+      },
+    }`</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <h2 id="js-specific-details">
+        <a aria-hidden="true" href="#js-specific-details">#</a>
+        JS-specific details
+      </h2>
+      <p>Because JavaScript is single-threaded, there are several different ways to invoke the API with different performance and convenience tradeoffs. It's important to be aware of the differences to pick.</p>
+      <p>First there is the synchronous API. This is the most convenient option because single-threaded JavaScript code has the cleanest syntax. It's also optimal performance-wise if all you need to do is run esbuild and then exit. However, it blocks the main thread so you do not want to use it if you have other work to perform in the meantime. It looks like this:</p>
+      <pre><span class="hljs-keyword">let</span> esbuild = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>)
+<span class="hljs-keyword">let</span> result1 = esbuild.transformSync(code, options)
+<span class="hljs-keyword">let</span> result2 = esbuild.buildSync(options)</pre>
+      <p>Then there is the asynchronous API. Each call returns a promise instead of completing immediately. Under the hood, each call spawns a new child process using the esbuild binary and communicates with it over the stdin, stdout, and stderr pipes using a custom binary protocol. This is ideal if you only need to run esbuild once but you need to do other work in the background. Using it looks something like this:</p>
+      <pre><span class="hljs-keyword">let</span> esbuild = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>)
+esbuild.transform(code, options).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> { ... })
+esbuild.build(options).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> { ... })</pre>
+      <p>However, if you need to run esbuild many times (for example, you want to transform lots of files) then you should use the service API for maximum performance. This keeps a long-running esbuild child process in the background and streams API calls to it, which are then processed in parallel. While API calls still have relatively high latency, together they have very high throughput. This is the least convenient option because you need to keep the service object around and remember to call <code>service.stop()</code> when you are done with it. Using it might look something like this:</p>
+      <pre><span class="hljs-keyword">let</span> esbuild = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>)
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">example</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">let</span> service = <span class="hljs-keyword">await</span> esbuild.startService()
+
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">let</span> promises = []
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) {
+      promises.push(service.transform(code, options))
+      promises.push(service.build(options))
+    }
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">await</span> <span class="hljs-built_in">Promise</span>.all(promises))
+  }
+
+  <span class="hljs-keyword">finally</span> {
+    service.stop()
+  }
+}</pre>
+      <h3 id="running-in-the-browser" data-h2="js-specific-details">
+        <a aria-hidden="true" href="#running-in-the-browser">#</a>
+        Running in the browser
+      </h3>
+      <p>The esbuild transform API can also run in the browser using WebAssembly in a Web Worker (the build API is currently not supported in the browser). To take advantage of this you will need to install the <code>esbuild-wasm</code> package instead of the <code>esbuild</code> package:</p>
+      <pre>npm install esbuild-wasm</pre>
+      <p>The API for the browser is similar to the API for node except that only the <code>createService()</code> function works and you need to pass the URL of the WebAssembly binary when creating the service. Assuming you are using a bundler, that would look something like this:</p>
+      <pre><span class="hljs-keyword">let</span> esbuild = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild-wasm&#x27;</span>)
+
+(<span class="hljs-keyword">async</span> () =&gt; {
+  <span class="hljs-keyword">let</span> service = <span class="hljs-keyword">await</span> esbuild.startService({
+    <span class="hljs-attr">wasmURL</span>: <span class="hljs-string">&#x27;node_modules/esbuild-wasm/esbuild.wasm&#x27;</span>,
+  })
+
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">let</span> promises = []
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) {
+      promises.push(service.transform(code, options))
+      promises.push(service.build(options))
+    }
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">await</span> <span class="hljs-built_in">Promise</span>.all(promises))
+  }
+
+  <span class="hljs-keyword">finally</span> {
+    service.stop()
+  }
+})()</pre>
+      <p>If you're already running this code from a worker and don't want <code>startService</code> to create another worker, you can pass <code>worker: <wbr>false</code> to it. Then it will create a WebAssembly module in the same thread as the thread that calls <code>startService</code>.</p>
+      <p>You can also use esbuild's API as a script tag in a HTML file without needing to use a bundler by injecting the <code>lib/browser.js</code> file. In this case the API creates a global called <code>esbuild</code> with a <code>startService</code> property:</p>
+      <pre><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;node_modules/esbuild-wasm/lib/browser.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
+  esbuild.startService({
+    <span class="hljs-attr">wasmURL</span>: <span class="hljs-string">&#x27;node_modules/esbuild-wasm/esbuild.wasm&#x27;</span>,
+  }).then(<span class="hljs-function"><span class="hljs-params">service</span> =&gt;</span> { ... })
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></pre>
+      <p>If you need to use this API with ECMAScript modules, you should import the <code>esm/browser.js</code> file instead:</p>
+      <pre><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;module&quot;</span>&gt;</span><span class="javascript">
+  <span class="hljs-keyword">import</span> { startService } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;node_modules/esbuild-wasm/esm/browser.js&#x27;</span>
+  startService({
+    <span class="hljs-attr">wasmURL</span>: <span class="hljs-string">&#x27;node_modules/esbuild-wasm/esbuild.wasm&#x27;</span>,
+  }).then(<span class="hljs-function"><span class="hljs-params">service</span> =&gt;</span> { ... })
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></pre>
+    </main>
+  </body>
+</html>
