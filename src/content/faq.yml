@@ -1,0 +1,254 @@
+title: FAQ
+body:
+  - h1: FAQ
+
+  - p: >
+      This is a collection of common questions about esbuild. You can also
+      ask questions on the [GitHub issue tracker](https://github.com/evanw/esbuild/issues).
+
+  - toc: true
+
+  - h2: Why is esbuild fast?
+
+  - p: >
+      Several reasons:
+
+  - ul:
+    - It's written in [Go](https://golang.org/), a language that compiles to native code
+    - Parsing, printing, and source map generation are all fully parallelized
+    - Everything is done in very few passes without expensive data transformations
+    - Code is written with speed in mind, and tries to avoid unnecessary allocations
+
+  - h2: Benchmark details
+
+  - p: >
+      Here are the details about each benchmark:
+
+  - figcaption: JavaScript benchmark
+  - benchmark:
+      '[esbuild](https://github.com/evanw/esbuild)': 0.37
+      '[esbuild](https://github.com/evanw/esbuild) (1 thread)': 1.54
+      '[rollup](https://github.com/rollup/rollup) + [terser](https://github.com/terser/terser)': 36.00
+      '[webpack](https://github.com/webpack/webpack) 4': 41.91
+      '[webpack](https://github.com/webpack/webpack) 5': 63.83
+      '[parcel](https://github.com/parcel-bundler/parcel) 2': 108.66
+      '[parcel](https://github.com/parcel-bundler/parcel) 1': 118.51
+
+  - p: >
+      This benchmark approximates a large JavaScript codebase by duplicating
+      the [three.js](https://github.com/mrdoob/three.js) library 10 times
+      and building a single bundle from scratch, without any caches. The
+      benchmark can be run with `make bench-three` in the
+      [esbuild repo](https://github.com/evanw/esbuild).
+
+  - table: |
+      | Bundler            |    Time | Relative slowdown | Absolute speed | Output size |
+      | :----------------- | ------: | ----------------: | -------------: | ----------: |
+      | esbuild            |   0.37s |                1x |  1479.6 kloc/s |      5.81mb |
+      | esbuild (1 thread) |   1.54s |                4x |   355.5 kloc/s |      5.81mb |
+      | rollup + terser    |  36.00s |               97x |    15.2 kloc/s |      5.81mb |
+      | webpack 4          |  41.91s |              113x |    13.1 kloc/s |      5.97mb |
+      | webpack 5          |  63.83s |              173x |     8.6 kloc/s |      5.84mb |
+      | parcel 2           | 108.66s |              294x |     5.0 kloc/s |      5.81mb |
+      | parcel 1           | 118.51s |              320x |     4.6 kloc/s |      5.89mb |
+
+  - p: >
+      Each time reported is the best of three runs. I'm running esbuild with
+      <code>--bundle <wbr>--minify <wbr>--sourcemap</code> (the
+      single-threaded version uses `GOMAXPROCS=1`). I used the
+      <code>rollup-<wbr>plugin-<wbr>terser</code> plugin because Rollup
+      itself doesn't support minification. Webpack uses
+      <code>--mode=<wbr>production <wbr>--devtool=<wbr>sourcemap</code>.
+      Parcel uses the default options. Absolute speed is based on the total
+      line count including comments and blank lines, which is currently 547,441.
+      The tests were done on a 6-core 2019 MacBook Pro with 16gb of RAM.
+
+  - p: >
+      Caveats:
+
+  - ul:
+      - 'Parcel 1: The bundle crashes at run time with <code>TypeError:
+        <wbr>Cannot <wbr>redefine <wbr>property: <wbr>dynamic</code>'
+      - 'Parcel 2: Must be given extra memory with <code>node
+        <wbr>--max-<wbr>old-<wbr>space-<wbr>size</code> or it runs out of
+        memory'
+
+  - figcaption: TypeScript benchmark
+  - benchmark:
+      '[esbuild](https://github.com/evanw/esbuild)': 0.11
+      '[esbuild](https://github.com/evanw/esbuild) (1 thread)': 0.38
+      '[parcel](https://github.com/parcel-bundler/parcel) 1': 15.43
+      '[webpack](https://github.com/webpack/webpack) 4': 18.03
+      '[webpack](https://github.com/webpack/webpack) 5': 23.85
+
+  - p: >
+      This benchmark uses the [Rome](https://github.com/facebookexperimental/rome)
+      build tool to approximate a large TypeScript codebase. All code must be
+      combined into a single minified bundle with source maps and the resulting
+      bundle must work correctly. The benchmark can be run with `make bench-rome`
+      in the [esbuild repo](https://github.com/evanw/esbuild).
+
+  - table: |
+      | Bundler            |    Time | Relative slowdown | Absolute speed | Output size |
+      | :----------------- | ------: | ----------------: | -------------: | ----------: |
+      | esbuild            |   0.11s |                1x |  1198.5 kloc/s |      0.98mb |
+      | esbuild (1 thread) |   0.38s |                3x |   346.9 kloc/s |      0.98mb |
+      | parcel 1           |  15.43s |              140x |     8.5 kloc/s |      1.55mb |
+      | webpack 4          |  18.03s |              164x |     7.3 kloc/s |      1.26mb |
+      | webpack 5          |  23.85s |              217x |     5.5 kloc/s |      1.26mb |
+
+  - p: >
+      Each time reported is the best of three runs. I'm running esbuild with
+      <code>--bundle <wbr>--minify <wbr>--sourcemap
+      <wbr>--platform=<wbr>node</code> (the single-threaded version uses
+      `GOMAXPROCS=1`). Webpack uses `ts-loader` with <code>transpileOnly:
+      <wbr>true</code> and <code>--mode=<wbr>production
+      <wbr>--devtool=<wbr>sourcemap</code>. Parcel 1 uses <code>--target
+      <wbr>node --bundle-<wbr>node-<wbr>modules</code>. Absolute speed is
+      based on the total line count including comments and blank lines, which
+      is currently 131,836. The tests were done on a 6-core 2019 MacBook Pro
+      with 16gb of RAM.
+
+  - p: >
+      The results don't include Rollup because I couldn't get it to work. I
+      tried <code>rollup-<wbr>plugin-<wbr>typescript</code>,
+      <code>@rollup/<wbr>plugin-<wbr>typescript</code>, and
+      <code>@rollup/<wbr>plugin-<wbr>sucrase</code> and they all didn't work
+      for different reasons relating to TypeScript compilation. Parcel 2 is
+      excluded because it cannot currently build the benchmark.
+
+  - h2: Upcoming roadmap
+
+  - p: >
+      These features are already in progress and are first priority:
+
+  - ul:
+    - 'Code splitting ([#16](https://github.com/evanw/esbuild/issues/16), [docs](/api/#splitting))'
+    - 'CSS content type ([#20](https://github.com/evanw/esbuild/issues/20), [docs](/content-types/#css))'
+    - 'Plugin API ([#111](https://github.com/evanw/esbuild/issues/111))'
+
+  - p: >
+      These are potential future features but may not happen or may happen
+      to a more limited extent:
+
+  - ul:
+    - 'Watch/serve mode ([#21](https://github.com/evanw/esbuild/issues/21))'
+    - 'HTML content type ([#31](https://github.com/evanw/esbuild/issues/31))'
+    - 'Lowering to ES5 ([#297](https://github.com/evanw/esbuild/issues/297))'
+    - 'Bundling top-level await ([#253](https://github.com/evanw/esbuild/issues/253))'
+
+  - p: >
+      After that point, I will consider esbuild to be relatively complete.
+      I'm planning for esbuild to reach a mostly stable state and then stop
+      accumulating more features. This will involve saying "no" to requests
+      for adding major features to esbuild itself. I don't think esbuild
+      should become an all-in-one solution for all frontend needs. In
+      particular, I want to avoid the pain and problems of the "webpack
+      config" model where the underlying tool is too flexible and usability
+      suffers.
+
+  - p: >
+      For example, I am _not_ planning to include these features in esbuild's
+      core itself:
+
+  - ul:
+    - 'Support for other frontend languages (e.g. [Elm](https://elm-lang.org/),
+      [Svelte](https://svelte.dev/), [Vue](https://vuejs.org/),
+      [Angular](https://angular.io/))'
+    - TypeScript type checking (just run `tsc` separately)
+    - An API for custom AST manipulation
+    - Hot-module reloading
+    - Module federation
+
+  - p: >
+      I hope that the extensibility points I'm adding to esbuild
+      (the [API](/api/) and soon plugins too) will make esbuild useful to
+      include as part of more customized build workflows, but I'm not
+      intending or expecting these extensibility points to cover all use
+      cases. If you have very custom requirements then you should be using
+      other tools. I also hope esbuild inspires other build tools to
+      dramatically improve performance by overhauling their implementations
+      so that everyone can benefit, not just those that use esbuild.
+
+  - p: >
+      I am planning to continue to maintain everything in esbuild's existing
+      scope even after esbuild reaches stability. This means implementing
+      support for newly-released JavaScript and TypeScript syntax features,
+      for example.
+
+  - h2: Production readiness
+
+  - p: >
+      This project has not yet hit version 1.0.0 and is still in active
+      development. That said, it is far beyond the alpha stage and is pretty
+      stable. I think of it as a late-stage beta. For some early-adopters
+      that means it's good enough to use for real things. Some other people
+      think this means esbuild isn't ready yet. This section doesn't try to
+      convince you either way. It just tries to give you enough information
+      so you can decide for yourself whether you want to use esbuild as your
+      bundler.
+
+  - p: >
+      Some data points:
+
+  - ul:
+    - >
+      **Used by other projects**
+      <p>
+      The API is already being used as a library within some other
+      developer tools. For example, [Vite](https://github.com/vitejs/vite)
+      and [Snowpack](https://github.com/pikapkg/snowpack) are using
+      esbuild's [transform API](/api/#transform-api) to transform
+      TypeScript into JavaScript. And [Hugo](https://github.com/gohugoio/hugo)
+      is using esbuild's bundler to package JavaScript code during a build.
+      I have also heard reports of others using it in production successfully,
+      although I don't know the details. I intend to use esbuild in
+      production myself once it has enough features but haven't done that yet.
+      </p>
+
+    - >
+      **API stability**
+      <p>
+      Even though esbuild's version is not yet 1.0.0, effort is still made to
+      keep the API stable. Patch versions are intended for backwards-compatible
+      changes and minor versions are intended for backwards-incompatible changes
+      (as [recommended by npm](https://docs.npmjs.com/misc/semver)). If you
+      plan to use esbuild for something real, you should either pin the exact
+      version (maximum safety) or pin the major and minor versions (only accept
+      backwards-compatible upgrades).
+      </p>
+
+    - >
+      **Only one main developer**
+      <p>
+      This tool is primarily built by [me](https://github.com/evanw). For
+      some people this is fine, but for others this means esbuild is not a
+      suitable tool for their organization. That's ok with me. I'm building
+      esbuild because I find it fun to build and because it's the tool I'd
+      want to use. I'm sharing it with the world because there are others
+      that want to use it too, because the feedback makes the tool itself
+      better, and because I think it will inspire the ecosystem to make
+      better tools.
+      </p>
+
+    - >
+      **Not always open to scope expansion**
+      <p>
+      I'm not planning on including major features that I'm not interested
+      in building and/or maintaining. I also want to limit the project's
+      scope so it doesn't get too complex and unwieldy, both from an
+      architectural perspective, a testing and correctness perspective, and
+      from a usability perspective. Think of esbuild as a "linker" for the
+      web. It knows how to transform and bundle JavaScript and CSS. But the
+      details of how your source code ends up as plain JavaScript or CSS
+      may need to be 3rd-party code.
+      </p>
+      <p>
+      I'm hoping that the upcoming plugin API will allow the community to add
+      major features (e.g. WebAssembly import) without needing to contribute
+      to esbuild itself. However, not everything is exposed in the plugin
+      API and it may be the case that it's not possible to add a particular
+      feature to esbuild that you may want to add. This is intentional;
+      esbuild is not meant to be an all-in-one solution for all frontend
+      needs.
+      </p>

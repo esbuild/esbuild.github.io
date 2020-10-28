@@ -1,0 +1,3006 @@
+title: API
+body:
+  - h1: API
+  - p: >
+      The API can be accessed in one of three ways: on the command line, in
+      JavaScript, and in Go. The concepts and parameters are largely identical
+      between the three languages so they will be presented together here
+      instead of having separate documentation for each language.
+
+  - p: >
+      There are two main API calls in esbuild's API: [transform](#transform-api)
+      and [build](#build-api). It's important to understand which one you should
+      be using because they work differently.
+
+  - p: >
+      If you are using JavaScript be sure to check out the
+      [JS-specific details](#js-specific-details) section below. You may also
+      find the [TypeScript type definitions](https://github.com/evanw/esbuild/blob/master/lib/types.ts)
+      for esbuild helpful as a reference. If you are using Go be sure to check
+      out the automatically generated [Go documentation](https://pkg.go.dev/github.com/evanw/esbuild/pkg/api).
+
+  - h2: Transform API
+
+  - p: >
+      The transform API call operates on a single string without access to a
+      file system. This makes it ideal for use in environments without a file
+      system (such as a browser) or as part of another tool chain. Here is
+      what a simple transform looks like:
+
+  - example:
+      cli:
+        - $: |
+            echo 'let x: number = 1' | esbuild --loader=ts
+        - expect: |
+            let x = 1;
+
+      js:
+        - $: |
+            require('esbuild').transformSync('let x: number = 1', {
+              loader: 'ts',
+            })
+        - expect: |
+            {
+              code: 'let x = 1;\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          result := api.Transform("let x: number = 1", api.TransformOptions{
+            Loader: api.LoaderTS,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      This API call is used by the command-line interface if no input files
+      are provided and the `--bundle` flag is not present. In this case the
+      input string comes from stdin and the output string goes to stdout.
+      The transform API can take the following options:
+
+  - available-options:
+    - Avoid TDZ
+    - Charset
+    - Color
+    - Define
+    - Error limit
+    - Format
+    - Global name
+    - JSX factory
+    - JSX fragment
+    - Loader
+    - Log level
+    - Minify
+    - Pure
+    - Sourcefile
+    - Sourcemap
+    - Target
+    - Tsconfig raw
+
+  - h2: Build API
+
+  - p: >
+      The build API call operates on one or more files in the file system.
+      This allows the files to reference each other and be bundled together.
+      Here is what a simple build looks like:
+
+  - example:
+      cli:
+        - $: |
+            echo 'let x: number = 1' > in.ts
+        - $: |
+            esbuild in.ts --outfile=out.js
+        - $: |
+            cat out.js
+        - expect: |
+            let x = 1;
+
+      js:
+        - $: |
+            require('fs').writeFileSync('in.ts', 'let x: number = 1')
+        - $: |
+            require('esbuild').buildSync({
+              entryPoints: ['in.ts'],
+              outfile: 'out.js',
+            })
+        - expect: |
+            { warnings: [] }
+        - $: |
+            require('fs').readFileSync('out.js', 'utf8')
+        - expect: |
+            'let x = 1;\n'
+
+      go: |
+        package main
+
+        import "io/ioutil"
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          ioutil.WriteFile("in.ts", []byte("let x: number = 1"), 0644)
+
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"in.ts"},
+            Outfile:     "out.js",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      This API call is used by the command-line interface if there is at
+      least one input file provided or the `--bundle` flag is present.
+      Note that esbuild does _not_ bundle by default. You have to explicitly
+      pass the `--bundle` flag to enable bundling. If no input files are
+      provided then a single input file is read from stdin. The build API can
+      take the following options:
+
+  - available-options:
+    - Avoid TDZ
+    - Bundle
+    - Charset
+    - Color
+    - Define
+    - Error limit
+    - External
+    - Format
+    - Global name
+    - Inject
+    - JSX factory
+    - JSX fragment
+    - Loader
+    - Log level
+    - Main fields
+    - Metafile
+    - Minify
+    - Out extension
+    - Outdir
+    - Outfile
+    - Public path
+    - Pure
+    - Resolve extensions
+    - Sourcefile
+    - Sourcemap
+    - Stdin
+    - Target
+    - Tsconfig
+    - Write
+
+  - h2: Simple options
+
+  - h3: Bundle
+
+  - p: >
+      To bundle a file means to inline any imported dependencies into the
+      file itself. This process is recursive so dependencies of dependencies
+      (and so on) will also be inlined. By default esbuild will _not_ bundle
+      the input files. Bundling must be explicitly enabled like this:
+
+  - example:
+      in:
+        in.js: '1 + 2'
+
+      cli: |
+          esbuild in.js --bundle
+
+      js:
+        - $: |
+            require('esbuild').buildSync({
+              entryPoints: ['in.js'],
+              bundle: true,
+              outfile: 'out.js',
+            })
+        - expect: |
+            { warnings: [] }
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"in.js"},
+            Bundle:      true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Refer to the [getting started guide](http://localhost:8004/getting-started/#your-first-bundle)
+      for an example of bundling with real-world code.
+
+  - p: >
+      Note that bundling is different than file concatentation. Passing
+      esbuild multiple input files with bundling enabled will create two
+      separate bundles instead of joining the input files together. To join
+      a set of files together with esbuild, import them all into a single
+      entry point file and bundle just that one file with esbuild.
+
+  - h3: Define
+
+  - p: >
+      This feature provides a way to replace global identifiers with
+      constant expressions. It can be a way to change the behavior some code
+      between builds without changing the code itself:
+
+  - example:
+      cli:
+        - $: |
+            echo 'DEBUG && require("hooks")' | esbuild --define:DEBUG=true
+        - expect: |
+            require("hooks");
+
+        - $: |
+            echo 'DEBUG && require("hooks")' | esbuild --define:DEBUG=false
+        - expect: |
+            false;
+
+      js:
+        - $: let js = 'DEBUG && require("hooks")'
+
+        - $: |
+            require('esbuild').transformSync(js, {
+              define: { DEBUG: 'true' },
+            })
+        - expect: |
+            {
+              code: 'require("hooks");\n',
+              map: '',
+              warnings: []
+            }
+
+        - $: |
+            require('esbuild').transformSync(js, {
+              define: { DEBUG: 'false' },
+            })
+        - expect: |
+            {
+              code: 'false;\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "DEBUG && require('hooks')"
+
+          result1 := api.Transform(js, api.TransformOptions{
+            Define: map[string]string{"DEBUG": "true"},
+          })
+
+          if len(result1.Errors) == 0 {
+            fmt.Printf("%s", result1.Code)
+          }
+
+          result2 := api.Transform(js, api.TransformOptions{
+            Define: map[string]string{"DEBUG": "false"},
+          })
+
+          if len(result2.Errors) == 0 {
+            fmt.Printf("%s", result2.Code)
+          }
+        }
+
+  - p: >
+      Supported replacement values are JSON primitives (null, booleans,
+      numbers, and strings) and identifiers. If you want to replace something
+      with a string literal, the replacement value passed to esbuild must
+      itself contain quotes. Omitting the quotes means the replacement value is
+      an identifier instead:
+
+  - example:
+      cli:
+        - $: |
+            echo 'id, str' | esbuild --define:id=text '--define:str="text"'
+        - expect: |
+            text, "text";
+
+      js:
+        - $: |
+            require('esbuild').transformSync('id, str', {
+              define: { id: 'text', str: '"text"' },
+            })
+        - expect: |
+            {
+              code: 'text, "text";\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          result := api.Transform("id, text", api.TransformOptions{
+            Define: map[string]string{
+              "id":  "text",
+              "str": "\"text\"",
+            },
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      If you're using the CLI, keep in mind that different shells have different
+      rules for how to escape quote characters (which are necessary when the
+      replacement value is a string). For example, bash will remove the outer
+      quote characters while the Windows command prompt won't. If you need to
+      replace something with a string literal and have it work on both Unix and
+      Windows, you may not be able to use the CLI for this. You may have to use
+      the JavaScript or Go API instead.
+
+  - h3: External
+
+  - p: >
+      You can mark a file or a package as external to exclude it from your
+      build. Instead of being bundled, the import will be preserved (using
+      `require` for the `iife` and `cjs` formats and using `import` for the
+      `esm` format) and will be evaluated at run time instead.
+
+  - p: >
+      This has several uses. First of all, it can be used to trim unnecessary
+      code from your bundle for a code path that you know will never be
+      executed. For example, a package may contain code that only runs in node
+      but you will only be using that package in the browser. It can also be
+      used to import code in node at run time from a package that cannot be
+      bundled. For example, the `fsevents` package contains a native extension,
+      which esbuild doesn't support. Marking something as external looks like
+      this:
+
+  - example:
+      cli:
+        - $: |
+            echo 'require("fsevents")' > app.js
+        - $: |
+            esbuild app.js --bundle --external:fsevents
+        - expect: |
+            (() => {
+              // app.js
+              require("fsevents");
+            })();
+
+      js:
+        - $: |
+            require('fs').writeFileSync('app.js', 'require("fsevents")')
+        - $: |
+            require('esbuild').buildSync({
+              entryPoints: ['app.js'],
+              outfile: 'out.js',
+              bundle: true,
+              external: ['fsevents'],
+            })
+        - expect: |
+            { warnings: [] }
+
+      go: |
+        package main
+
+        import "io/ioutil"
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          ioutil.WriteFile("app.js", []byte("require(\"fsevents\")"), 0644)
+
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Outfile:     "out.js",
+            Bundle:      true,
+            Write:       true,
+            External:    []string{"fsevents"},
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Format
+
+  - p: >
+      This sets the output format for the generated JavaScript files. There are
+      currently three possible values: `iife`, `cjs`, and `esm`.
+
+  - h4: IIFE
+
+  - p: >
+      The `iife` format stands for "immediately-invoked function expression" and
+      is intended to be run in the browser. Wrapping your code in a function
+      expression ensures that any variables in your code don't accidentally
+      conflict with variables in the global scope. If your entry point has
+      exports that you want to expose as a global in the browser, you can
+      configure that global's name using the [global name](#global-name)
+      setting. The `iife` format is the default format unless you set
+      [platform](#platform) to `node`. Using it looks like this:
+
+  - example:
+      cli:
+        - $: |
+            echo 'alert("test")' | esbuild --format=iife
+        - expect: |
+            (() => {
+              alert("test");
+            })();
+
+      js: |
+        let js = 'alert("test")'
+        let out = require('esbuild').transformSync(js, {
+          format: 'iife',
+        })
+        process.stdout.write(out.code)
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "alert(\"test\")"
+
+          result := api.Transform(js, api.TransformOptions{
+            Format: api.FormatIIFE,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - h4: CommonJS
+
+  - p: >
+      The `cjs` format stands for "CommonJS" and is intended to be run in node.
+      It assumes the environment contains `exports`, `require`, and `module`.
+      Entry points with exports in ECMAScript module syntax will be converted
+      to a module with a getter on `exports` for each export name. The `cjs`
+      format is the default format when you set [platform](#platform) to `node`.
+      Using it looks like this:
+
+  - example:
+      cli:
+        - $: |
+            echo 'export default "test"' | esbuild --format=cjs
+        - expect: |
+            ...
+            __export(exports, {
+              default: () => stdin_default
+            });
+            var stdin_default = "test";
+
+      js: |
+        let js = 'export default "test"'
+        let out = require('esbuild').transformSync(js, {
+          format: 'cjs',
+        })
+        process.stdout.write(out.code)
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "export default 'test'"
+
+          result := api.Transform(js, api.TransformOptions{
+            Format: api.FormatCommonJS,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - h4: ESM
+
+  - p: >
+      The `esm` format stands for "ECMAScript module". It assumes the environment
+      supports `import` and `export` syntax. Entry points with exports in CommonJS
+      module syntax will be converted to a single `default` export of the value
+      of `module.exports`. Using it looks like this:
+
+  - example:
+      cli:
+        - $: |
+            echo 'module.exports = "test"' | esbuild --format=esm
+        - expect: |
+            ...
+            var require_stdin = __commonJS((exports, module) => {
+              module.exports = "test";
+            });
+            export default require_stdin();
+
+      js: |
+        let js = 'module.exports = "test"'
+        let out = require('esbuild').transformSync(js, {
+          format: 'esm',
+        })
+        process.stdout.write(out.code)
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "module.exports = 'test'"
+
+          result := api.Transform(js, api.TransformOptions{
+            Format: api.FormatESModule,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      The `esm` format can be used either in the browser or in node, but you
+      have to explicitly load it as a module. This happens automatically if you
+      `import` it from another module. Otherwise:
+
+  - ul:
+    - >
+      In the browser, you can load a module using <code>&lt;script <wbr>src="<wbr>file.js" <wbr>type="<wbr>module"&gt;<wbr>&lt;/script&gt;</code>.
+      <br>&nbsp;
+
+    - >
+      In node, you can load a module using <code>node <wbr>--experimental-<wbr>modules <wbr>file.mjs</code>.
+      Note that node requires the `.mjs` extension unless you have configured
+      <code>"type": <wbr>"module"</code> in your `package.json` file.
+      You can use the [out extension](#out-extension) setting in esbuild to
+      customize the output extension for the files esbuild generates. You can
+      read more about using ECMAScript modules in node [here](https://nodejs.org/api/esm.html).
+
+  - h3: Global name
+
+  - p: >
+      This option only matters when the [format](#format) setting is `iife`
+      (which stands for immediately-invoked function expression). It sets the
+      name of the global variable which is used to store the exports from the
+      entry point:
+
+  - example:
+      cli: |
+        echo 'module.exports = "test"' | esbuild --format=iife --global-name=xyz
+
+      js: |
+        let js = 'module.exports = "test"'
+        require('esbuild').transformSync(js, {
+          format: 'iife',
+          globalName: 'xyz',
+        })
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "module.exports = 'test'"
+
+          result := api.Transform(js, api.TransformOptions{
+            Format:     api.FormatIIFE,
+            GlobalName: "xyz",
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      Specifying the global name with the `iife` format will generate code that
+      looks something like this:
+
+  - pre.js: |
+      var xyz = (() => {
+        ...
+        var require_stdin = __commonJS((exports, module) => {
+          module.exports = "test";
+        });
+        return require_stdin();
+      })();
+
+  - p: >
+      The global name can also be a compound property expression, in which case
+      esbuild will generate a global variable with that property. Existing
+      global variables that conflict will not be overwritten. This can be used
+      to implement "namespacing" where multiple independent scripts add their
+      exports onto the same global object. For example:
+
+  - example:
+      cli: |
+        echo 'module.exports = "test"' | esbuild --format=iife --global-name='example.versions["1.0"]'
+
+      js: |
+        let js = 'module.exports = "test"'
+        require('esbuild').transformSync(js, {
+          format: 'iife',
+          globalName: 'example.versions["1.0"]',
+        })
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "module.exports = 'test'"
+
+          result := api.Transform(js, api.TransformOptions{
+            Format:     api.FormatIIFE,
+            GlobalName: `example.versions["1.0"]`,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      The compound global name used above generates code that looks like this:
+
+  - pre.js: |
+      var example = example || {};
+      example.versions = example.versions || {};
+      example.versions["1.0"] = (() => {
+        ...
+        var require_stdin = __commonJS((exports, module) => {
+          module.exports = "test";
+        });
+        return require_stdin();
+      })();
+
+  - h3: Inject
+
+  - p: >
+      This option allows you to automatically replace a global variable with an
+      import from another file. This can be a useful tool for adapting code that
+      you don't control to a new environment. For example, assume you have a
+      file called `process-shim.js` that exports a variable named `process`:
+
+  - pre.js: |
+      // process-shim.js
+      export let process = {
+        cwd: () => ''
+      }
+
+  - pre.js: |
+      // entry.js
+      console.log(process.cwd())
+
+  - p: >
+      This is intended to replace uses of node's `process.cwd()` function to
+      prevent packages that call it from crashing when run in the browser.
+      You can use the inject feature to replace all uses of the global identifier
+      `process` with an import to that file:.
+
+  - example:
+      in:
+        process-shim.js: 'export let process = { cwd: () => "" }'
+        entry.js: 'console.log(process.cwd())'
+
+      cli: |
+        esbuild entry.js --bundle --inject:./process-shim.js --outfile=out.js
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['entry.js'],
+          bundle: true,
+          inject: ['./process-shim.js'],
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"entry.js"},
+            Bundle:      true,
+            Inject:      []string{"./process-shim.js"},
+            Outfile:     "out.js",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      That results in something like this:
+
+  - pre.js: |
+      // out.js
+      let process = {cwd: () => ""};
+      console.log(process.cwd());
+
+  - h4: Use with [define](#define)
+
+  - p: >
+      You can also combine this with the [define](#define) feature to be more
+      selective about what you import. For example:
+
+  - pre.js: |
+      // process-shim.js
+      export function dummy_process_cwd() {
+        return ''
+      }
+
+  - pre.js: |
+      // entry.js
+      console.log(process.cwd())
+
+  - p: >
+      You can map `process.cwd` to `dummy_process_cwd` with the [define](#define)
+      feature, then inject `dummy_process_cwd` from `process-shim.js` with the
+      inject feature:
+
+  - example:
+      in:
+        process-shim.js: 'export function dummy_process_cwd() { return "" }'
+        entry.js: 'console.log(process.cwd())'
+
+      cli: |
+        esbuild entry.js --bundle --define:process.cwd=dummy_process_cwd --inject:./process-shim.js --outfile=out.js
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['entry.js'],
+          bundle: true,
+          define: { 'process.cwd': 'dummy_process_cwd' },
+          inject: ['./process-shim.js'],
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"entry.js"},
+            Bundle:      true,
+            Define: map[string]string{
+              "process.cwd": "dummy_process_cwd",
+            },
+            Inject:  []string{"./process-shim.js"},
+            Outfile: "out.js",
+            Write:   true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      That results in the following output:
+
+  - pre.js: |
+      // out.js
+      function dummy_process_cwd() {
+        return "";
+      }
+      console.log(dummy_process_cwd());
+
+  - h4: Auto-import for [JSX](/content-types/#jsx)
+
+  - p: >
+      You can use the inject feature to automatically provide the implementation
+      for JSX expressions. For example, you can auto-import the `react` package
+      with a small shim file and inject:
+
+  - pre.js: |
+      // react-shim.js
+      export * as React from 'react'
+
+  - pre.jsx: |
+      // entry.jsx
+      console.log(<div/>)
+
+  - p: >
+      Building `entry.jsx` and injecting `react-shim.js` results in the
+      following output:
+
+  - pre.js: |
+      // out.js
+      import * as React from "react";
+      console.log(React.createElement("div", null));
+
+  - h4: Files without imports
+
+  - p: >
+      You can also use this feature with files that have no exports. In that
+      case the injected file just comes first before the rest of the output
+      as if every input file contained <code>import <wbr>"./file.js"</code>.
+      Because of the way ECMAScript modules work, this injection is still
+      "hygienic" in that symbols with the same name in different files are
+      renamed so they don't collide with each other.
+
+  - h4: Conditionally injecting a file
+
+  - p: >
+      If you want to _conditionally_ import a file only if the export is
+      actually used, you should mark the injected file as not having side
+      effects by putting it in a package and adding <code>"sideEffects": <wbr>false</code>
+      in that package's `package.json` file. This setting is a
+      [convention from Webpack](https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free)
+      that esbuild respects for any imported file, not just files used with inject.
+
+  - h3: JSX factory
+
+  - p: >
+      This sets the function that is called for each JSX element. Normally a
+      JSX expression such as this:
+
+  - pre.js: |
+      <div>Example text</div>
+
+  - p: >
+      is compiled into a function call to `React.createElement` like this:
+
+  - pre.js: |
+      React.createElement("div", null, "Example text");
+
+  - p: >
+      You can call something other than `React.createElement` by changing the
+      JSX factory. For example, to call the function `h` instead (which is
+      used by other libraries such as [Preact](https://preactjs.com/)):
+
+  - example:
+      cli:
+        - $: |
+            echo '<div/>' | esbuild --jsx-factory=h --loader=jsx
+        - expect: |
+            /* @__PURE__ */ h("div", null);
+
+      js:
+        - $: |
+            require('esbuild').transformSync('<div/>', {
+              jsxFactory: 'h',
+              loader: 'jsx',
+            })
+        - expect: |
+            {
+              code: '/* @__PURE__ */ h("div", null);\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          result := api.Transform("<div/>", api.TransformOptions{
+            JSXFactory: "h",
+            Loader:     api.LoaderJSX,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      Alternatively, if you are using TypeScript, you can just configure JSX
+      for TypeScript by adding this to your `tsconfig.json` file and esbuild
+      should pick it up automatically without needing to be configured:
+
+  - pre.json: |
+      {
+        "compilerOptions": {
+          "jsxFactory": "h"
+        }
+      }
+
+  - h3: JSX fragment
+
+  - p: >
+      This sets the function that is called for each JSX fragment. Normally a
+      JSX fragment expression such as this:
+
+  - pre.js: |
+      <>Stuff</>
+
+  - p: >
+      is compiled into a use of the `React.Fragment` component like this:
+
+  - pre.js: |
+      React.createElement(React.Fragment, null, "Stuff");
+
+  - p: >
+      You can use a component other than `React.Fragment` by changing the
+      JSX fragment. For example, to use the component `Fragment` instead
+      (which is used by other libraries such as [Preact](https://preactjs.com/)):
+
+  - example:
+      cli:
+        - $: |
+            echo '<>x</>' | esbuild --jsx-fragment=Fragment --loader=jsx
+        - expect: |
+            /* @__PURE__ */ React.createElement(Fragment, null, "x");
+
+      js:
+        - $: |
+            require('esbuild').transformSync('<>x</>', {
+              jsxFragment: 'Fragment',
+              loader: 'jsx',
+            })
+        - expect: |
+            {
+              code: '/* @__PURE__ */ React.createElement(Fragment, null, "x");\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          result := api.Transform("<>x</>", api.TransformOptions{
+            JSXFragment: "Fragment",
+            Loader:      api.LoaderJSX,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      Alternatively, if you are using TypeScript, you can just configure JSX
+      for TypeScript by adding this to your `tsconfig.json` file and esbuild
+      should pick it up automatically without needing to be configured:
+
+  - pre.json: |
+      {
+        "compilerOptions": {
+          "jsxFragmentFactory": "Fragment"
+        }
+      }
+
+  - h3: Loader
+
+  - p: >
+      This option changes how a given input file is interpreted. For example,
+      the [`js`](/content-types/#javascript) loader interprets the file as
+      JavaScript and the [`css`](/content-types/#css) loader interprets the
+      file as CSS. See the [content types](/content-types/) page for a
+      complete list of all built-in loaders.
+
+  - p: >
+      Configuring a loader for a given file type lets you load that file type
+      with an `import` statement or a `require` call. For example, configuring
+      the `.png` file extension to use the [data URL](/content-types/#data-url)
+      loader means importing a `.png` file gives you a data URL containing the
+      contents of that image:
+
+  - pre.js: |
+      import url from './example.png'
+      let image = new Image
+      image.src = url
+      document.body.appendChild(image)
+
+  - p: >
+      The above code can be bundled using the [build API](#build-api) call like
+      this:
+
+  - example:
+      in:
+        app.js: |
+          import url from './example.png'
+          let image = new Image
+          image.src = url
+          document.body.appendChild(image)
+        example.png: |
+          this is some data
+
+      cli: |
+        esbuild app.js --bundle --loader:.png=dataurl
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          loader: { '.png': 'dataurl' },
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Loader: map[string]api.Loader{
+              ".png": api.LoaderDataURL,
+            },
+            Write: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      This option is specified differently if you are using the build API with
+      input from [stdin](#stdin), since stdin does not have a file extension.
+      Configuring a loader for stdin with the build API looks like this:
+
+  - example:
+      in:
+        pkg.js: |
+          module.exports = 123
+
+      cli: |
+        echo 'import pkg = require("./pkg")' | esbuild --loader=ts --bundle
+
+      js: |
+        require('esbuild').buildSync({
+          stdin: {
+            contents: 'import pkg = require("./pkg")',
+            loader: 'ts',
+            resolveDir: __dirname,
+          },
+          bundle: true,
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "log"
+        import "os"
+
+        func main() {
+          cwd, err := os.Getwd()
+          if err != nil {
+            log.Fatal(err)
+          }
+
+          result := api.Build(api.BuildOptions{
+            Stdin: &api.StdinOptions{
+              Contents:   "import pkg = require('./pkg')",
+              Loader:     api.LoaderTS,
+              ResolveDir: cwd,
+            },
+            Bundle: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      The [transform API](#transform-api) call just takes a single loader since
+      it doesn't involve interacting with the file system, and therefore doesn't
+      deal with file extensions. Configuring a loader (in this case the
+      [`ts`](/content-types/#typescript) loader) for the transform API looks
+      like this:
+
+  - example:
+      cli:
+        - $: |
+            echo 'let x: number = 1' | esbuild --loader=ts
+        - expect: |
+            let x = 1;
+
+      js:
+        - $: |
+            let ts = 'let x: number = 1'
+        - $: |
+            require('esbuild').transformSync(ts, {
+              loader: 'ts',
+            })
+        - expect: |
+            {
+              code: 'let x = 1;\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          ts := "let x: number = 1"
+
+          result := api.Transform(ts, api.TransformOptions{
+            Loader: api.LoaderTS,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - h3: Minify
+
+  - p: >
+      When enabled, the generated code will be minified instead of
+      pretty-printed. Minified code is generally equivalent to non-minified
+      code but is smaller, which means it downloads faster but is harder to
+      debug. Usually you minify code in production but not in development.
+
+  - p: >
+      Enabling minification in esbuild looks like this:
+
+  - example:
+      cli:
+        - $: |
+            echo 'fn = obj => { return obj.x }' | esbuild --minify
+        - expect: |
+            fn=n=>n.x;
+
+      js:
+        - $: |
+            var js = 'fn = obj => { return obj.x }'
+        - $: |
+            require('esbuild').transformSync(js, {
+              minify: true,
+            })
+        - expect: |
+            {
+              code: 'fn=n=>n.x;\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "fn = obj => { return obj.x }"
+
+          result := api.Transform(js, api.TransformOptions{
+            MinifyWhitespace:  true,
+            MinifyIdentifiers: true,
+            MinifySyntax:      true,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      This option does three separate things in combination: it removes
+      whitespace, it rewrites your syntax to be more compact, and it renames
+      local variables to be shorter. Usually you want to do all of these
+      things, but these options can also be enabled individually if necessary:
+
+  - example:
+      cli:
+        - $: |
+            echo 'fn = obj => { return obj.x }' | esbuild --minify-whitespace
+        - expect: |
+            fn=obj=>{return obj.x};
+
+        - $: |
+            echo 'fn = obj => { return obj.x }' | esbuild --minify-identifiers
+        - expect: |
+            fn = (n) => {
+              return n.x;
+            };
+
+        - $: |
+            echo 'fn = obj => { return obj.x }' | esbuild --minify-syntax
+        - expect: |
+            fn = (obj) => obj.x;
+
+      js:
+        - $: |
+            var js = 'fn = obj => { return obj.x }'
+
+        - $: |
+            require('esbuild').transformSync(js, {
+              minifyWhitespace: true,
+            })
+        - expect: |
+            {
+              code: 'fn=obj=>{return obj.x};\n',
+              map: '',
+              warnings: []
+            }
+
+        - $: |
+            require('esbuild').transformSync(js, {
+              minifyIdentifiers: true,
+            })
+        - expect: |
+            {
+              code: 'fn = (n) => {\n  return n.x;\n};\n',
+              map: '',
+              warnings: []
+            }
+
+        - $: |
+            require('esbuild').transformSync(js, {
+              minifySyntax: true,
+            })
+        - expect: |
+            {
+              code: 'fn = (obj) => obj.x;\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          css := "div { color: yellow }"
+
+          result1 := api.Transform(css, api.TransformOptions{
+            Loader:           api.LoaderCSS,
+            MinifyWhitespace: true,
+          })
+
+          if len(result1.Errors) == 0 {
+            fmt.Printf("%s", result1.Code)
+          }
+
+          result2 := api.Transform(css, api.TransformOptions{
+            Loader:            api.LoaderCSS,
+            MinifyIdentifiers: true,
+          })
+
+          if len(result2.Errors) == 0 {
+            fmt.Printf("%s", result2.Code)
+          }
+
+          result3 := api.Transform(css, api.TransformOptions{
+            Loader:       api.LoaderCSS,
+            MinifySyntax: true,
+          })
+
+          if len(result3.Errors) == 0 {
+            fmt.Printf("%s", result3.Code)
+          }
+        }
+
+  - p: >
+      These same concepts also apply to CSS, not just to JavaScript:
+
+  - example:
+      cli:
+        - $: |
+            echo 'div { color: yellow }' | esbuild --loader=css --minify
+        - expect: |
+            div{color:#ff0}
+
+      js:
+        - $: |
+            var css = 'div { color: yellow }'
+        - $: |
+            require('esbuild').transformSync(css, {
+              loader: 'css',
+              minify: true,
+            })
+        - expect: |
+            {
+              code: 'div{color:#ff0}\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          css := "div { color: yellow }"
+
+          result := api.Transform(css, api.TransformOptions{
+            Loader:            api.LoaderCSS,
+            MinifyWhitespace:  true,
+            MinifyIdentifiers: true,
+            MinifySyntax:      true,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      The JavaScript minification algorithm in esbuild usually generates output
+      that is very close in size to the minified output of industry-standard
+      JavaScript minification tools. You can check out
+      [this benchmark](https://github.com/privatenumber/minification-benchmarks/blob/cc9205d26756a0c32fe47cc22046d850b5c1fbbe/readme.md)
+      for an example comparison of output sizes between tools. While esbuild is
+      not the optimal JavaScript minifier in all cases (and doesn't try to be),
+      it strives to generate minified output within a few percent of the size
+      of dedicated minification tools, and of course to do so much faster.
+
+  - h3: Outdir
+
+  - p: >
+      This option sets the output directory for the build operation. For
+      example, this command will generate a directory called `out`:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --bundle --outdir=out
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          outdir: 'out',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Outdir:      "out",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      The output directory will be generated if it does not already exist, but
+      it will not be cleared if it already contains some files. Any generated
+      files will silently overwrite existing files with the same name. You
+      should clear the output directory yourself before running esbuild if you
+      want the output directory to only contain files from the current run of
+      esbuild.
+
+  - p: >
+      If your build contains multiple entry points in separate directories, the
+      directory structure will be replicated into the output directory starting
+      from the [lowest common ancestor](https://en.wikipedia.org/wiki/Lowest_common_ancestor)
+      directory among all input entry point paths. For example, if there are
+      two entry points <code>src/<wbr>home/<wbr>index.ts</code> and
+      <code>src/<wbr>about/<wbr>index.ts</code>, the output directory will
+      contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code>.
+
+  - h3: Outfile
+
+  - p: >
+      This option sets the output file name for the build operation. This is
+      only applicable if there is a single entry point. If there are multiple
+      entry points, you must use the [outdir](#outdir) option instead to
+      specify an output directory. Using outfile looks like this:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --bundle --outfile=out.js
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Outdir:      "out.js",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Platform
+
+  - p: >
+      By default, esbuild's bundler is configured to generate code intended for
+      the browser. If your bundled code is intended to run in node instead, you
+      should set the platform to node:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --bundle --platform=node
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          platform: 'node',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Platform:    api.PlatformNode,
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      When the platform is set to `browser` (the default value):
+
+  - ul:
+    - >
+      <p>
+      The default output [format](#format) is set to `iife`, which wraps the
+      generated JavaScript code in an immediately-invoked function expression
+      to prevent variables from leaking into the global scope.
+      </p>
+    - >
+      <p>
+      If a package specifies a map for the
+      [`browser`](https://gist.github.com/defunctzombie/4339901/49493836fb873ddaa4b8a7aa0ef2352119f69211)
+      field in its `package.json` file, esbuild will use that map to replace
+      specific files or modules with their browser-friendly versions. For
+      example, a package might contain a substitution of [`path`](https://nodejs.org/api/path.html)
+      with [`path-browserify`](https://www.npmjs.com/package/path-browserify).
+      </p>
+    - >
+      <p>
+      The [main fields](#main-fields) setting is set to <code>browser,<wbr>module,<wbr>main</code>
+      but with some additional special behavior. If a package supports `module`
+      and `main` but not `browser` then `main` is used instead of `module` if
+      that package is ever imported using `require()`. This behavior improves
+      compatibility with CommonJS modules that export a function by assigning
+      it to `module.exports`.
+      </p>
+    - >
+      <p>
+      To avoid warning about the use of `require` in code generated by Browserify,
+      the specific expression <code>typeof <wbr>require <wbr>== <wbr>'function' <wbr>&& <wbr>require</code>
+      is substituted with `false`. This code is present in some packages that
+      have been published to npm.
+      </p>
+
+  - p: >
+      When the platform is set to `node`:
+
+  - ul:
+    - >
+      <p>
+      The default output [format](#format) is set to `cjs`, which stands for
+      CommonJS (the module format used by node). ES6-style exports using
+      `export` statements will be converted into getters on the CommonJS
+      `exports` object.
+      </p>
+    - >
+      <p>
+      All [built-in node modules](https://nodejs.org/docs/latest/api/) such
+      as `fs` are automatically marked as [external](#external) so they don't
+      cause errors when the bundler tries to bundle them.
+      </p>
+    - >
+      <p>
+      The [main fields](#main-fields) setting is set to <code>main,<wbr>module</code>. This
+      means tree shaking will likely not happen for packages that provide both
+      `module` and `main` since tree shaking works with ECMAScript modules but
+      not with CommonJS modules.
+      </p>
+      <p>
+      Unfortunately some packages incorrectly treat `module` as meaning "browser
+      code" instead of "ECMAScript module code" so this default behavior is
+      required for compatibility. You can manually configure the [main fields](#main-fields)
+      setting to <code>module,<wbr>main</code> if you want to enable tree shaking and know it
+      is safe to do so.
+      </p>
+
+  - p: >
+      See also [bundling for the browser](/getting-started/#bundling-for-the-browser)
+      and [bundling for node](/getting-started/#bundling-for-node).
+
+  - h3: Sourcemap
+
+  - p: >
+      Source maps can make it easier to debug your code. They encode the
+      information necessary to translate from a line/column offset in a
+      generated output file back to a line/column offset in the corresponding
+      original input file. This is useful if your generated code is
+      sufficiently different from your original code (e.g. your original code
+      is TypeScript or you enabled [minification](#minify)).
+
+  - p: >
+      Enabling source map generation will generate a `.js.map` file alongside
+      any generated `.js` file and add a special `//# sourceMappingURL=` comment
+      to the bottom of the `.js` file pointing to the `.js.map` file:
+
+  - example:
+      in:
+        app.ts: 'let x: number = 1'
+
+      cli: |
+        esbuild app.ts --sourcemap --outfile=out.js
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.ts'],
+          sourcemap: true,
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.ts"},
+            Sourcemap:   api.SourceMapLinked,
+            Outfile:     "out.js",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      If the input file itself contains a special `//# sourceMappingURL=`
+      comment, esbuild will automatically try to parse the linked source map.
+      If successful, the mappings in the generated source map will map all the
+      way back to the original source code referenced in the input source map.
+
+  - p: >
+      If you want to omit the special `//# sourceMappingURL=` comment from the
+      generated `.js` file but you still want to generate the `.js.map` files,
+      you should set the source map mode to `external`:
+
+  - example:
+      in:
+        app.ts: 'let x: number = 1'
+
+      cli: |
+        esbuild app.ts --sourcemap=external --outfile=out.js
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.ts'],
+          sourcemap: 'external',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.ts"},
+            Sourcemap:   api.SourceMapExternal,
+            Outfile:     "out.js",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      If you want to insert the entire source map into the `.js` file instead
+      of generating a separate `.js.map` file, you should set the source map
+      mode to `inline`:
+
+  - example:
+      in:
+        app.ts: 'let x: number = 1'
+
+      cli: |
+        esbuild app.ts --sourcemap=inline --outfile=out.js
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.ts'],
+          sourcemap: 'inline',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.ts"},
+            Sourcemap:   api.SourceMapInline,
+            Outfile:     "out.js",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Keep in mind that source maps are usually very big because they contain
+      all of your original source code, so you usually do not want to ship code
+      containing `inline` source maps.
+
+  - h3: Splitting
+
+  - warning: >
+      Code splitting is still a work in progress. It currently only works with
+      the `esm` output [format](#format). There is also a known
+      [ordering issue](https://github.com/evanw/esbuild/issues/399) with
+      `import` statements across code splitting chunks. You can follow
+      [the tracking issue](https://github.com/evanw/esbuild/issues/16) for
+      updates about this feature.
+
+  - p: >
+      This enables "code splitting" which serves two purposes:
+
+  - ul:
+      - >
+        <p>
+        Code shared between multiple entry points is split off into a separate
+        shared file that both entry points import. That way if the user first
+        browses to one page and then to another page, they don't have to
+        download all of the JavaScript for the second page from scratch if the
+        shared part has already been downloaded and cached by their browser.
+        </p>
+
+      - >
+        <p>
+        Code referenced through an asynchronous `import()` expression will be
+        split off into a separate file and only loaded when that expression is
+        evaluated. This allows you to improve the initial download time of your
+        app by only downloading the code you need at startup, and then lazily
+        downloading additional code if needed later.
+        </p>
+        <p>
+        Without code splitting enabled, an `import()` expression becomes
+        <code>Promise<wbr>.resolve()<wbr>.then(() =&gt; <wbr>require())</code>
+        instead. This still preserves the asynchronous semantics of the
+        expression but it means the imported code is included in the same
+        bundle instead of being split off into a separate file.
+        </p>
+
+  - p: >
+      When you enable code splitting you must also configure the output
+      directory using the [outdir](#outdir) setting:
+
+  - example:
+      in:
+        home.ts: '1 + 2'
+        about.ts: '1 + 2'
+
+      cli: |
+        esbuild home.ts about.ts --bundle --splitting --outdir=out --format=esm
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['home.ts', 'about.ts'],
+          bundle: true,
+          splitting: true,
+          outdir: 'out',
+          format: 'esm',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"home.ts", "about.ts"},
+            Bundle:      true,
+            Splitting:   true,
+            Outdir:      "out",
+            Format:      api.FormatESModule,
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Target
+
+  - p: >
+      This sets the target environment for the generated JavaScript code. For
+      example, you can configure esbuild to not generate any newer JavaScript
+      that node version 10 can't handle. The target can either be set to a
+      JavaScript language version such as `es2020` or to a list of versions of
+      individual engines (currently either `chrome`, `firefox`, `safari`, `edge`,
+      or `node`).
+
+  - p: >
+      Here is an example with all possible target environments specified (you
+      don't have to specify all of them):
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --target=es2020,chrome58,firefox57,safari11,edge16,node12.19.0
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          target: [
+            'es2020',
+            'chrome58',
+            'firefox57',
+            'safari11',
+            'edge16',
+            'node12.19.0',
+          ],
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Target:      api.ES2020,
+            Engines: []api.Engine{
+              {Name: api.EngineChrome, Version: "58"},
+              {Name: api.EngineFirefox, Version: "57"},
+              {Name: api.EngineSafari, Version: "11"},
+              {Name: api.EngineEdge, Version: "16"},
+              {Name: api.EngineNode, Version: "12.19.0"},
+            },
+            Write: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      You can refer to the [JavaScript loader](/content-types/#javascript) for
+      the details about which syntax features were introduced with which language
+      versions. Keep in mind that while JavaScript language versions such as
+      `es2020` are identified by year, that is the year the specification is
+      approved. It has nothing to do with the year all major browsers implement
+      that specification which often happens earlier or later than that year.
+
+  - p: >
+      Note that if you use a syntax feature that esbuild doesn't yet have
+      support for transforming to your current language target, esbuild will
+      generate an error where the unsupported syntax is used. This is often the
+      case when targeting the `es5` language version, for example, since esbuild
+      only supports transforming most newer JavaScript syntax features to `es6`.
+
+  - h3: Write
+
+  - p: >
+      The build API call can either write to the file system directly or return
+      the files that would have been written as in-memory buffers. By default
+      the CLI and JavaScript APIs write to the file system and the Go API
+      doesn't. To use the in-memory buffers:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      js: |
+        let result = require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          sourcemap: 'external',
+          write: false,
+          outdir: 'out',
+        })
+
+        for (let out of result.outputFiles) {
+          console.log(out.path, out.contents)
+        }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Sourcemap:   api.SourceMapExternal,
+            Write:       false,
+            Outdir:      "out",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+
+          for _, out := range result.OutputFiles {
+            fmt.Printf("%v %v\n", out.Path, out.Contents)
+          }
+        }
+
+  - h2: Advanced options
+
+  - h3: Avoid TDZ
+
+  - p: >
+      This is a workaround for a performance issue with certain large JavaScript
+      files in Safari. Enabling this setting means the bundle generated by
+      esbuild may initialize up to 10x faster than with this setting disabled.
+      However, it subtly changes the meaning of your code so it's not enabled
+      by default and you should only enable it if you know what you're doing.
+
+  - p: >
+      First, some background. In JavaScript the `var` statement is "hoisted"
+      meaning the variable is declared immediately in the closest surrounding
+      function, module, or global scope. Accessing one of these variables before
+      its declaration has been evaluated results in the value `undefined`. In ES6
+      the `const`, `let`, and `class` statements introduce what's called a
+      "temporal dead zone" or TDZ. This means that, unlike `var` statements,
+      accessing one of these variable before its declaration has been evaluated
+      results in a `ReferenceError` being thrown. It's called a "temporal dead
+      zone" because it's a zone of time in which the variable is inaccessible.
+
+  - p: >
+      According to [this WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=199866),
+      there's a severe performance issue with the tracking of TDZ checks in
+      JavaScriptCore, the JavaScript JIT compiler used by WebKit. For example,
+      in one extreme case replacing top-level `const`, `let`, and `class`
+      statements with `var` statements improved the bundle initialization time
+      from 2000ms to 200ms. This transformation is not enabled by default
+      because it changes the semantics of the code (it removes the TDZ and
+      `const` assignment checks). However, this change in semantics may be
+      acceptable for you given the performance trade-off.
+
+  - p: >
+      Here's how to enable it:
+
+  - example:
+      cli:
+        - $: |
+            echo 'const x = 1' | esbuild --avoid-tdz
+        - expect: |
+            var x = 1;
+
+      js:
+        - $: |
+            require('esbuild').transformSync('const x = 1', {
+              avoidTDZ: true,
+            })
+        - expect: |
+            {
+              code: 'var x = 1;\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          result := api.Transform("const x = 1", api.TransformOptions{
+            AvoidTDZ: true,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - h3: Charset
+
+  - p: >
+      By default esbuild's output is ASCII-only. Any non-ASCII characters are
+      escaped using backslash escape sequences. One reason is because non-ASCII
+      characters are misinterpreted by the browser by default, which causes
+      confusion. You have to explicitly add <code>&lt;meta <wbr>charset=<wbr>"utf-8"&gt;</code> to your
+      HTML or serve it with the correct <code>Content-<wbr>Type</code> header for the browser
+      to not mangle your code. Another reason is that non-ASCII characters can
+      significantly [slow down the browser's parser](https://v8.dev/blog/scanner).
+      However, using escape sequences makes the generated output slightly bigger,
+      and also makes it harder to read.
+
+  - p: >
+      If you would like for esbuild to print the original characters without
+      using escape sequences and you have ensured that the browser will
+      interpret your code as UTF-8, you can disable character escaping by
+      setting the charset:
+
+  - example:
+      cli:
+        - $: |
+            echo 'let π = Math.PI' | esbuild
+        - expect: |
+            let \u03C0 = Math.PI;
+        - $: |
+            echo 'let π = Math.PI' | esbuild --charset=utf8
+        - expect: |
+            let π = Math.PI;
+
+      js:
+        - $: |
+            let js = 'let π = Math.PI'
+        - $: |
+            require('esbuild').transformSync(js)
+        - expect: |
+            {
+              code: 'let \\u03C0 = Math.PI;\n',
+              map: '',
+              warnings: []
+            }
+        - $: |
+            require('esbuild').transformSync(js, {
+              charset: 'utf8',
+            })
+        - expect: |
+            {
+              code: 'let π = Math.PI;\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "let π = Math.PI"
+
+          result1 := api.Transform(js, api.TransformOptions{})
+
+          if len(result1.Errors) == 0 {
+            fmt.Printf("%s", result1.Code)
+          }
+
+          result2 := api.Transform(js, api.TransformOptions{
+            Charset: api.CharsetUTF8,
+          })
+
+          if len(result2.Errors) == 0 {
+            fmt.Printf("%s", result2.Code)
+          }
+        }
+
+  - p: >
+      Some caveats:
+
+  - ul:
+    - >
+      <p>
+      This does not yet escape non-ASCII characters embedded in regular
+      expressions. This is because esbuild does not currently parse the contents
+      of regular expressions at all. The flag was added despite this limitation
+      because it's still useful for code that doesn't contain cases like this.
+      </p>
+    - >
+      <p>
+      This flag does not apply to comments. I believe preserving non-ASCII data
+      in comments should be fine because even if the encoding is wrong, the run
+      time environment should completely ignore the contents of all comments.
+      For example, the [V8 blog post](https://v8.dev/blog/scanner) mentions an
+      optimization that avoids decoding comment contents completely. And all
+      comments other than license-related comments are stripped out by esbuild
+      anyway.
+      </p>
+    - >
+      <p>
+      This option simultaneously applies to all output file types (JavaScript,
+      CSS, and JSON). So if you configure your server to send the correct
+      <code>Content-<wbr>Type</code> header and want to use the UTF-8 charset, make sure your
+      server is configured to treat both `.js` and `.css` files as UTF-8.
+      </p>
+
+  - h3: Color
+
+  - p: >
+      This option enables or disables colors in the error and warning messages
+      that esbuild writes to stderr file descriptor in the terminal. By
+      default, color is automatically enabled if stderr is a TTY session and
+      automatically disabled otherwise. Colored output in esbuild looks like this:
+
+  - pre.raw: |
+      <b>&lt;stdin&gt;:1:16: <span class="color-red">error:</span> Could not resolve "logger" (mark it as external to exclude it from the bundle)</b>
+      import log from <span class="color-green">"logger"</span>
+                      <span class="color-green">~~~~~~~~</span>
+      <b>&lt;stdin&gt;:2:16: <span class="color-purple">warning:</span> The "typeof" operator will never evaluate to "null"</b>
+      log(typeof x == <span class="color-green">"null"</span>)
+                      <span class="color-green">~~~~~~</span>
+      1 warning and 1 error
+
+  - p: >
+      Colored output can be force-enabled by setting color to `true`. This is
+      useful if you are piping esbuild's stderr output into a TTY yourself:
+
+  - example:
+      cli: |
+        echo 'typeof x == "null"' | esbuild --color=true 2> stderr.txt
+
+      js: |
+        let js = 'typeof x == "null"'
+        require('esbuild').transformSync(js, {
+          color: true,
+        })
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "typeof x == 'null'"
+
+          result := api.Transform(js, api.TransformOptions{
+            Color: api.ColorAlways,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      Colored output can also be set to `false` to disable colors.
+
+  - h3: Error limit
+
+  - p: >
+      By default, esbuild stops reporting errors after 10 errors have been
+      reached. This avoids the accidental generation of an overwhelming number
+      of error messages, which can easily lock up slower terminal emulators
+      such as Windows command prompt. It also avoids accidentally using up the
+      whole scroll buffer for terminal emulators with limited scroll buffers.
+
+  - p: >
+      The error limit can be changed to another value, and can also be disabled
+      completely by setting it to zero. This will show all build errors:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --error-limit=0
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          errorLimit: 0,
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            ErrorLimit:  0,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Log level
+
+  - p: >
+      The log level can be changed to prevent esbuild from printing warning
+      and/or error messages to the terminal. The four log levels are `info`
+      (show everything), `warning` (show warnings and errors), `error`
+      (just show errors), and `silent` (show nothing).
+
+  - p: >
+      For example, you can hide all warnings by setting the log level to
+      `error`:
+
+  - example:
+      cli: |
+        echo 'typeof x == "null"' | esbuild --log-level=error
+
+      js: |
+        let js = 'typeof x == "null"'
+        require('esbuild').transformSync(js, {
+          logLevel: 'error',
+        })
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "typeof x == 'null'"
+
+          result := api.Transform(js, api.TransformOptions{
+            LogLevel: api.LogLevelError,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - h3: Main fields
+
+  - p: >
+      When you import a package in node, the `main` field in that package's
+      `package.json` file determines which file is imported (along with
+      [a lot of other rules](https://nodejs.org/api/modules.html#modules_all_together)).
+      Major JavaScript bundlers including esbuild let you specify additional
+      `package.json` fields to try when resolving a package. There are at least
+      three such fields commonly in use:
+
+  - ul:
+    - >
+      `main`
+      <p>
+      This is [the standard field](https://docs.npmjs.com/files/package.json#main)
+      for all packages that are meant to be used with node. The name `main` is
+      hard-coded in to node's module resolution logic itself. Because it's
+      intended for use with node, it's reasonable to expect that the file path
+      in this field is a CommonJS-style module.
+      </p>
+
+    - >
+      `module`
+      <p>
+      This field came from [a proposal](https://github.com/dherman/defense-of-dot-js/blob/f31319be735b21739756b87d551f6711bd7aa283/proposal.md)
+      for how to integrate ECMAScript modules into node. Because of this, it's
+      reasonable to expect that the file path in this field is an
+      ECMAScript-style module. This proposal wasn't adopted by node (node uses
+      <code>"type": <wbr>"module"</code> instead) but it was adopted by major
+      bundlers because ECMAScript-style modules lead to better tree shaking, or
+      dead code removal.
+      </p>
+      <p>
+      For package authors: Some packages incorrectly use the `module` field for
+      browser-specific code, leaving node-specific code for the `main` field.
+      This is probably because node ignores the `module` field and people
+      typically only use bundlers for browser-specific code. However, bundling
+      node-specific code is valuable too (e.g. it decreases download and boot
+      time) and packages that put browser-specific code in `module` prevent
+      bundlers from being able to do tree shaking effectively. If you are
+      trying to publish browser-specific code in a package, use the `browser`
+      field instead.
+      </p>
+
+    - >
+      `browser`
+      <p>
+      This field came from [a proposal](https://gist.github.com/defunctzombie/4339901/49493836fb873ddaa4b8a7aa0ef2352119f69211)
+      that allows bundlers to replace node-specific files or modules with their
+      browser-friendly versions. It lets you specify an alternate
+      browser-specific entry point. Note that it is possible for a package to
+      use both the `browser` and `module` field together (see the note below).
+      </p>
+
+  - p: >
+      The default main fields depend on the current [platform](#platform)
+      setting and are essentially <code>browser,<wbr>module,<wbr>main</code>
+      for the browser and <code>main,<wbr>module</code> for node. These
+      defaults should be the most widely compatible with the existing package
+      ecosystem. But you can customize them like this if you want to:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --bundle --main-fields=module,main
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          mainFields: ['module', 'main'],
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            MainFields:  []string{"module", "main"},
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      For package authors: If you want to author a package that uses the
+      `browser` field in combination with the `module` field to fill out all
+      four entries in the full CommonJS-vs-ESM and browser-vs-node compatibility
+      matrix, you want to use the expanded form of the `browser` field that is a
+      map instead of just a string:
+
+  - pre.json: >
+      {
+        "main": "./node-cjs.js",
+        "module": "./node-esm.js",
+        "browser": {
+          "./node-cjs.js": "./browser-cjs.js",
+          "./node-esm.js": "./browser-esm.js"
+        }
+      }
+
+  - h3: Metafile
+
+  - p: >
+      This option tells esbuild to write out a JSON file with metadata about
+      the build.
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --bundle --metafile=meta.json --outfile=out.js
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          metafile: 'meta.json',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Metafile:    "meta.json",
+            Outfile:     "out.js",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      The metadata in this JSON file follows this schema (specified using
+      TypeScript syntax):
+
+  - pre.ts: |
+      {
+        inputs: {
+          [path: string]: {
+            bytes: number
+            imports: { path: string }[]
+          }
+        }
+        outputs: {
+          [path: string]: {
+            bytes: number
+            inputs: {
+              [path: string]: { bytesInOutput: number }
+            }
+            imports: { path: string }[]
+          }
+        }
+      }
+
+  - p: >
+      This data can then be analyzed by other tools. For example,
+      [bundle buddy](https://www.bundle-buddy.com/esbuild) can consume esbuild's
+      metadata format and generates a treemap visualization of the modules in
+      your bundle and how much space each one takes up.
+
+  - h3: Out extension
+
+  - p: >
+      This option lets you customize the file extension of the files that
+      esbuild generates to something other than `.js` or `.css`. In particular,
+      the `.mjs` and `.cjs` file extensions have special meaning in node (they
+      indicate a file in ESM and CommonJS format, respectively). This option is
+      useful if you are using esbuild to generate multiple files and you have
+      to use the [outdir](#outdir) option instead of the [outfile](#outfile)
+      option. You can use it like this:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --bundle --outdir=dist --out-extension:.js=.mjs
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          outdir: 'dist',
+          outExtension: { '.js': '.mjs' },
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Outdir:      "dist",
+            OutExtensions: map[string]string{
+              ".js": ".mjs",
+            },
+            Write: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Public path
+
+  - p: >
+      This is useful in combination with the [external file](/content-types/#external-file)
+      loader. By default that loader exports the name of the imported file as a
+      string using the `default` export. The public path option lets you
+      prepend a base path to the exported string of each file loaded by this
+      loader:
+
+  - example:
+      in:
+        app.js: |
+          import url from './example.png'
+          let image = new Image
+          image.src = url
+          document.body.appendChild(image)
+        example.png: |
+          this is some data
+
+      cli: |
+        esbuild app.js --bundle --loader:.png=file --public-path=https://www.example.com/v1 --outdir=out
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          loader: { '.png': 'file' },
+          publicPath: 'https://www.example.com/v1',
+          outdir: 'out',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Loader: map[string]api.Loader{
+              ".png": api.LoaderFile,
+            },
+            Outdir:     "out",
+            PublicPath: "https://www.example.com/v1",
+            Write:      true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Pure
+
+  - p: >
+      There is a convention used by various JavaScript tools where a special
+      comment containing either `/* @__PURE__ */` or `/* #__PURE__ */` before
+      a new or call expression means that that expression can be removed if the
+      resulting value is unused. It looks like this:
+
+  - pre.js: |
+      let button = /* @__PURE__ */ React.createElement(Button, null);
+
+  - p: >
+      This information is used by bundlers such as esbuild during tree shaking
+      (a.k.a. dead code removal) to perform fine-grained removal of unused
+      imports across module boundaries in situations where the bundler is not
+      able to prove by itself that the removal is safe due to the dynamic
+      nature of JavaScript code.
+
+  - p: >
+      Note that while the comment says "pure", it confusingly does _not_
+      indicate that the function being called is pure. For example, it does not
+      indicate that it is ok to cache repeated calls to that function. The name
+      is essentially just an abstract shorthand for "ok to be removed if unused".
+
+  - p: >
+      Some expressions such as JSX and certain built-in globals are automatically
+      annoated as `/* @__PURE__ */` in esbuild. You can also configure additional
+      globals to be marked `/* @__PURE__ */` as well. For example, you can mark
+      the global `console.log` function as such to have it be automatically
+      removed from your bundle when the bundle is minified as long as the result
+      isn't used.
+
+  - p: >
+      It's worth mentioning that the effect of the annotation only extends to
+      the call itself, not to the arguments. Arguments with side effects are
+      still kept:
+
+  - example:
+      cli:
+        - $: |
+            echo 'console.log("foo:", foo())' | esbuild --pure:console.log
+        - expect: |
+            /* @__PURE__ */ console.log("foo:", foo());
+        - $: |
+            echo 'console.log("foo:", foo())' | esbuild --pure:console.log --minify
+        - expect: |
+            foo();
+
+      js:
+        - $: |
+            let js = 'console.log("foo:", foo())'
+        - $: |
+            require('esbuild').transformSync(js, {
+              pure: ['console.log'],
+            })
+        - expect: |
+            {
+              code: '/* @__PURE__ */ console.log("foo:", foo());\n',
+              map: '',
+              warnings: []
+            }
+        - $: |
+            require('esbuild').transformSync(js, {
+              pure: ['console.log'],
+              minify: true,
+            })
+        - expect: |
+            {
+              code: 'foo();\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "console.log('foo:', foo())"
+
+          result1 := api.Transform(js, api.TransformOptions{
+            Pure: []string{"console.log"},
+          })
+
+          if len(result1.Errors) == 0 {
+            fmt.Printf("%s", result1.Code)
+          }
+
+          result2 := api.Transform(js, api.TransformOptions{
+            Pure:         []string{"console.log"},
+            MinifySyntax: true,
+          })
+
+          if len(result2.Errors) == 0 {
+            fmt.Printf("%s", result2.Code)
+          }
+        }
+
+  - h3: Resolve extensions
+
+  - p: >
+      The [resolution algorithm used by node](https://nodejs.org/api/modules.html#modules_file_modules)
+      supports implicit file extensions. You can <code>require(<wbr>'./file')</code> and it
+      will check for `./file`, `./file.js`, `./file.json`, and `./file.node` in
+      that order. Modern bundlers including esbuild extend this concept to other
+      file types as well. The full order of implicit file extensions in esbuild
+      can be customized using the resolve extensions setting, which defaults to
+      <code>.tsx,<wbr>.ts,<wbr>.jsx,<wbr>.mjs,<wbr>.cjs,<wbr>.js,<wbr>.css,<wbr>.json</code>:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+          esbuild app.js --bundle --resolve-extensions=.ts,.js
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          resolveExtensions: ['.ts', '.js'],
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints:       []string{"app.js"},
+            Bundle:            true,
+            ResolveExtensions: []string{".ts", ".js"},
+            Write:             true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Sourcefile
+
+  - p: >
+      This option sets the file name when using an input which has no file
+      name. This happens when using the transform API and when using the build
+      API with stdin. The configured file name is reflected in error messages
+      and in source maps. If it's not configured, the file name defaults to
+      `<stdin>`. It can be configured like this:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        cat app.js | esbuild --sourcefile=example.js --sourcemap
+
+      js: |
+        let fs = require('fs')
+        let js = fs.readFileSync('app.js', 'utf8')
+
+        require('esbuild').transformSync(js, {
+          sourcefile: 'example.js',
+          sourcemap: 'inline',
+        })
+
+      go: |
+        package main
+
+        import "fmt"
+        import "io/ioutil"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js, err := ioutil.ReadFile("app.js")
+          if err != nil {
+            panic(err)
+          }
+
+          result := api.Transform(string(js),
+            api.TransformOptions{
+              Sourcefile: "example.js",
+              Sourcemap:  api.SourceMapInline,
+            })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - h3: Stdin
+
+  - p: >
+      Normally the build API call takes one or more file names as input.
+      However, this option can be used to run a build without a file existing
+      on disk at all. It's called "stdin" because it corresponds to piping a
+      file to stdin on the command line.
+
+  - p: >
+      In addition to specifying the contents of the stdin file, you can
+      optionally also specify the resolve directory (used to determine where
+      relative imports are located), the [sourcefile](#sourcefile) (the file
+      name to use in error messages and source maps), and the [loader](#loader)
+      (which determines how the file contents are interpreted). The CLI doesn't
+      have a way to specify the resolve directory. Instead, it's automatically
+      set to the current working directory.
+
+  - p: >
+      Here's how to use this feature:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+        another-file.js: 'export let foo = 123'
+
+      cli: |
+        echo 'export * from "./another-file"' | esbuild --bundle --sourcefile=imaginary-file.js --loader=ts --format=cjs
+
+      js: |
+        let result = require('esbuild').buildSync({
+          stdin: {
+            contents: `export * from "./another-file"`,
+
+            // These are all optional:
+            resolveDir: require('path').join(__dirname, 'src'),
+            sourcefile: 'imaginary-file.js',
+            loader: 'ts',
+          },
+          format: 'cjs',
+          write: false,
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            Stdin: &api.StdinOptions{
+              Contents: "export * from './another-file'",
+
+              // These are all optional:
+              ResolveDir: "./src",
+              Sourcefile: "imaginary-file.js",
+              Loader:     api.LoaderTS,
+            },
+            Format: api.FormatCommonJS,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Tsconfig
+
+  - p: >
+      Normally the [build API](#build-api) automatically discovers `tsconfig.json`
+      files and reads their contents during a build. However, you can also
+      configure a custom `tsconfig.json` file to use instead. This can be
+      useful if you need to do multiple builds of the same code with different
+      settings:
+
+  - example:
+      in:
+        app.ts: '1 + 2'
+        custom-tsconfig.json: '{}'
+
+      cli: |
+          esbuild app.ts --bundle --tsconfig=custom-tsconfig.json
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.ts'],
+          bundle: true,
+          tsconfig: 'custom-tsconfig.json',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.ts"},
+            Bundle:      true,
+            Tsconfig:    "custom-tsconfig.json",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Tsconfig raw
+
+  - p: >
+      This option can be used to pass your `tsconfig.json` file to the
+      [transform API](#transform-api), which doesn't access the file system.
+      Using it looks like this:
+
+  - example:
+      cli: |
+          echo 'class Foo { foo }' | esbuild --loader=ts --tsconfig-raw='{"compilerOptions":{"useDefineForClassFields":true}}'
+
+      js: |
+        let ts = 'class Foo { foo }'
+        require('esbuild').transformSync(ts, {
+          loader: 'ts',
+          tsconfigRaw: `{
+            "compilerOptions": {
+              "useDefineForClassFields": true,
+            },
+          }`,
+        })
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          ts := "class Foo { foo }"
+
+          result := api.Transform(ts, api.TransformOptions{
+            Loader: api.LoaderTS,
+            TsconfigRaw: `{
+              "compilerOptions": {
+                "useDefineForClassFields": true,
+              },
+            }`,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - h2: JS-specific details
+
+  - p: >
+      Because JavaScript is single-threaded, there are several different ways
+      to invoke the API with different performance and convenience tradeoffs.
+      It's important to be aware of the differences to pick.
+
+  - p: >
+      First there is the synchronous API. This is the most convenient option
+      because single-threaded JavaScript code has the cleanest syntax. It's
+      also optimal performance-wise if all you need to do is run esbuild and
+      then exit. However, it blocks the main thread so you do not want to use
+      it if you have other work to perform in the meantime. It looks like this:
+
+  - pre.js: |
+      let esbuild = require('esbuild')
+      let result1 = esbuild.transformSync(code, options)
+      let result2 = esbuild.buildSync(options)
+
+  - p: >
+      Then there is the asynchronous API. Each call returns a promise instead
+      of completing immediately. Under the hood, each call spawns a new
+      child process using the esbuild binary and communicates with it over
+      the stdin, stdout, and stderr pipes using a custom binary protocol.
+      This is ideal if you only need to run esbuild once but you need to do
+      other work in the background. Using it looks something like this:
+
+  - pre.js: |
+      let esbuild = require('esbuild')
+      esbuild.transform(code, options).then(result => { ... })
+      esbuild.build(options).then(result => { ... })
+
+  - p: >
+      However, if you need to run esbuild many times (for example, you want
+      to transform lots of files) then you should use the service API for
+      maximum performance. This keeps a long-running esbuild child process in
+      the background and streams API calls to it, which are then processed in
+      parallel. While API calls still have relatively high latency, together
+      they have very high throughput. This is the least convenient option
+      because you need to keep the service object around and remember to call
+      `service.stop()` when you are done with it. Using it might look something
+      like this:
+
+  - pre.js: |
+      let esbuild = require('esbuild')
+
+      async function example() {
+        let service = await esbuild.startService()
+
+        try {
+          let promises = []
+          for (let i = 0; i < 10; i++) {
+            promises.push(service.transform(code, options))
+            promises.push(service.build(options))
+          }
+          console.log(await Promise.all(promises))
+        }
+
+        finally {
+          service.stop()
+        }
+      }
+
+  - h3: Running in the browser
+  - p: >
+      The esbuild transform API can also run in the browser using WebAssembly
+      in a Web Worker (the build API is currently not supported in the
+      browser). To take advantage of this you will need to install the
+      `esbuild-wasm` package instead of the `esbuild` package:
+
+  - pre: |
+      npm install esbuild-wasm
+
+  - p: >
+      The API for the browser is similar to the API for node except that only
+      the `createService()` function works and you need to pass the URL of
+      the WebAssembly binary when creating the service. Assuming you are
+      using a bundler, that would look something like this:
+
+  - pre.js: |
+      let esbuild = require('esbuild-wasm')
+
+      (async () => {
+        let service = await esbuild.startService({
+          wasmURL: 'node_modules/esbuild-wasm/esbuild.wasm',
+        })
+
+        try {
+          let promises = []
+          for (let i = 0; i < 10; i++) {
+            promises.push(service.transform(code, options))
+            promises.push(service.build(options))
+          }
+          console.log(await Promise.all(promises))
+        }
+
+        finally {
+          service.stop()
+        }
+      })()
+
+  - p: >
+      If you're already running this code from a worker and don't want
+      `startService` to create another worker, you can pass <code>worker: <wbr>false</code>
+      to it. Then it will create a WebAssembly module in the same thread
+      as the thread that calls `startService`.
+
+  - p: >
+      You can also use esbuild's API as a script tag in a HTML file without
+      needing to use a bundler by injecting the `lib/browser.js` file. In
+      this case the API creates a global called `esbuild` with a
+      `startService` property:
+
+  - pre.html: |
+      <script src="node_modules/esbuild-wasm/lib/browser.js"></script>
+      <script>
+        esbuild.startService({
+          wasmURL: 'node_modules/esbuild-wasm/esbuild.wasm',
+        }).then(service => { ... })
+      </script>
+
+  - p: >
+      If you need to use this API with ECMAScript modules, you should import
+      the `esm/browser.js` file instead:
+
+  - pre.html: |
+      <script type="module">
+        import { startService } from 'node_modules/esbuild-wasm/esm/browser.js'
+        startService({
+          wasmURL: 'node_modules/esbuild-wasm/esbuild.wasm',
+        }).then(service => { ... })
+      </script>

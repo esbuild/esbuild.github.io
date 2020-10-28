@@ -1,0 +1,680 @@
+title: Content Types
+body:
+  - h1: Content Types
+  - p: >
+      All of the built-in content types are listed below. Each content type
+      has an associated "loader" which tells esbuild how to interpret the
+      file contents. Some file extensions already have a loader configured
+      for them by default, although the defaults can be overridden.
+
+  - h2: JavaScript
+  - p: 'Loader: `js`'
+
+  - p: >
+      This loader is enabled by default for `.js`, `.cjs`, and `.mjs` files.
+      The `.cjs` extension is used by node for CommonJS modules and the `.mjs`
+      extension is used by node for ECMAScript modules, although esbuild
+      doesn't make a distinction between the two.
+
+  - p: >
+      All modern JavaScript syntax is supported by esbuild. Newer syntax may
+      not be supported by older browsers, however, so you may want to
+      configure the [target](/api/#target) option to tell esbuild to convert
+      newer syntax to older syntax as appropriate.
+
+  - p: >
+      These syntax features are always transformed for older browsers:
+
+  - table: |
+      | Syntax transform                                                                                                   | Language version | Example       |
+      |--------------------------------------------------------------------------------------------------------------------|------------------|---------------|
+      | [Trailing commas in function parameter lists and calls](https://github.com/tc39/proposal-trailing-function-commas) | `es2017`         | `foo(a, b, )` |
+      | [Numeric separators](https://github.com/tc39/proposal-numeric-separator)                                           | `esnext`         | `1_000_000`   |
+
+  - p: >
+      These syntax features are conditionally transformed for older browsers depending on the configured language target:
+
+  - table: |
+      | Syntax transform                                                                    | Transformed when `--target` is below | Example                    |
+      |-------------------------------------------------------------------------------------|--------------------------------------|----------------------------|
+      | [Exponentiation operator](https://github.com/tc39/proposal-exponentiation-operator) | `es2016`                             | `a ** b`                   |
+      | [Async functions](https://github.com/tc39/ecmascript-asyncawait)                    | `es2017`                             | `async () => {}`           |
+      | [Spread properties](https://github.com/tc39/proposal-object-rest-spread)            | `es2018`                             | `let x = {...y}`           |
+      | [Rest properties](https://github.com/tc39/proposal-object-rest-spread)              | `es2018`                             | `let {...x} = y`           |
+      | [Optional catch binding](https://github.com/tc39/proposal-optional-catch-binding)   | `es2019`                             | `try {} catch {}`          |
+      | [Optional chaining](https://github.com/tc39/proposal-optional-chaining)             | `es2020`                             | `a?.b`                     |
+      | [Nullish coalescing](https://github.com/tc39/proposal-nullish-coalescing)           | `es2020`                             | `a ?? b`                   |
+      | [`import.meta`](https://github.com/tc39/proposal-import-meta)                       | `es2020`                             | `import.meta`              |
+      | [Class instance fields](https://github.com/tc39/proposal-class-fields)              | `esnext`                             | `class { x }`              |
+      | [Static class fields](https://github.com/tc39/proposal-static-class-features)       | `esnext`                             | `class { static x }`       |
+      | [Private instance methods](https://github.com/tc39/proposal-private-methods)        | `esnext`                             | `class { #x() {} }`        |
+      | [Private instance fields](https://github.com/tc39/proposal-class-fields)            | `esnext`                             | `class { #x }`             |
+      | [Private static methods](https://github.com/tc39/proposal-static-class-features)    | `esnext`                             | `class { static #x() {} }` |
+      | [Private static fields](https://github.com/tc39/proposal-static-class-features)     | `esnext`                             | `class { static #x }`      |
+      | [Logical assignment operators](https://github.com/tc39/proposal-logical-assignment) | `esnext`                             | `a ??= b`                  |
+
+  - p: >
+      These syntax features are currently always passed through un-transformed:
+
+  - table: |
+      | Syntax transform                                                                    | Unsupported when `--target` is below | Example                     |
+      |-------------------------------------------------------------------------------------|--------------------------------------|-----------------------------|
+      | [Asynchronous iteration](https://github.com/tc39/proposal-async-iteration)          | `es2018`                             | `for await (let x of y) {}` |
+      | [Async generators](https://github.com/tc39/proposal-async-iteration)                | `es2018`                             | `async function* foo() {}`  |
+      | [BigInt](https://github.com/tc39/proposal-bigint)                                   | `es2020`                             | `123n`                      |
+      | [Hashbang grammar](https://github.com/tc39/proposal-hashbang)                       | `esnext`                             | `#!/usr/bin/env node`       |
+      | [Top-level await](https://github.com/tc39/proposal-top-level-await)                 | `esnext`                             | `await import(x)`           |
+
+  - p: >
+      See also [the list of finished ECMAScript proposals](https://github.com/tc39/proposals/blob/master/finished-proposals.md)
+      and [the list of active ECMAScript proposals](https://github.com/tc39/proposals/blob/master/README.md).
+      Note that while transforming code containing top-level await is
+      supported, bundling code containing top-level await is not yet
+      supported.
+
+  - p: >
+      Some additional details:
+
+  - ul:
+    - >
+      **ES5 support**
+      <p>
+      Transforming ES6+ syntax to ES5 is not supported yet. However, if you're
+      using esbuild to transform ES5 code, you should still set the
+      [target](/api/#target) to `es5`. This prevents esbuild from introducing
+      ES6 syntax into your ES5 code. For example, without this flag the object
+      literal `{x: x}` will become `{x}` and the string `"a\nb"` will become
+      a multi-line template literal when minifying. Both of these substitutions
+      are done because the resulting code is shorter, but the substitutions
+      will not be performed if the [target](/api/#target) is `es5`.
+      </p>
+
+    - >
+      **Private member performance**
+      <p>
+      The private member transform (for the `#name` syntax) uses `WeakMap` and
+      `WeakSet` to preserve the privacy properties of this feature. This is
+      similar to the corresponding transforms in the Babel and TypeScript
+      compilers. Most modern JavaScript engines (V8, JavaScriptCore, and
+      SpiderMonkey but not ChakraCore) may not have good performance
+      characteristics for large `WeakMap` and `WeakSet` objects.
+      </p>
+      <p>
+      Creating many instances of classes with private fields or private
+      methods with this syntax transform active may cause a lot of overhead
+      for the garbage collector.
+      This is because modern engines (other than ChakraCore) store weak
+      values in an actual map object instead of as hidden properties on the
+      keys themselves, and large map objects can cause performance issues with
+      garbage collection. See [this reference](https://github.com/tc39/ecma262/issues/1657#issuecomment-518916579)
+      for more information.
+      </p>
+
+  - h2: TypeScript
+  - p: 'Loader: `ts` or `tsx`'
+
+  - p: >
+      This loader is enabled by default for `.ts` and `.tsx` files, which
+      means esbuild has built-in support for parsing TypeScript syntax and
+      discarding the type annotations. However, esbuild _does not_ do any type
+      checking so you will still need to run `tsc -noEmit` in parallel with
+      esbuild to check types. This is not something esbuild does itself.
+
+  - p: >
+      TypeScript type declarations like these are parsed and ignored (a
+      non-exhaustive list):
+
+  - table: |
+      | Syntax feature         | Example                         |
+      |------------------------|---------------------------------|
+      | Interface declarations | `interface Foo {}`              |
+      | Type declarations      | `type Foo = number`             |
+      | Function declarations  | `function foo(): void;`         |
+      | Ambient declarations   | `declare module 'foo' {}`       |
+      | Type-only imports      | `import type {Type} from 'foo'` |
+      | Type-only exports      | `export type {Type} from 'foo'` |
+
+  - p: >
+      TypeScript-only syntax extensions are supported, and are always
+      converted to JavaScript (a non-exhaustive list):
+
+  - table: |
+      | Syntax feature          | Example                    | Notes |
+      |-------------------------|----------------------------|-------|
+      | Namespaces              | `namespace Foo {}`         | |
+      | Enums                   | `enum Foo { A, B }`        | |
+      | Const enums             | `const enum Foo { A, B }`  | Behaves the same as regular enums |
+      | Generic type parameters | `<T>(a: T): T => a`        | Not available with the `tsx` loader |
+      | JSX with types          | `<Element<T>/>`            | |
+      | Type casts              | `a as B` and `<B>a`        | |
+      | Type imports            | `import {Type} from 'foo'` | Handled by removing all unused imports |
+      | Type exports            | `export {Type} from 'foo'` | Handled by ignoring missing exports in TypeScript files |
+      | Experimental decorators | `@sealed class Foo {}`     | The `emitDecoratorMetadata` flag is not supported |
+
+  - p: >
+      Some additional caveats:
+
+  - ul:
+    - >
+        <p>
+        You should probably enable the [`isolatedModules`](https://www.typescriptlang.org/tsconfig#isolatedModules)
+        TypeScript configuration option if you use TypeScript with esbuild.
+        This prevents you from using features which could cause mis-compilation
+        in environments like esbuild where each file is compiled independently
+        without tracing type references across files. For example, it prevents
+        you from re-exporting types from another module using <code>export <wbr>{T} <wbr>from <wbr>'./types'</code>
+        (you need to use <code>export <wbr>type <wbr>{T} <wbr>from <wbr>'./types'</code> instead).
+        </p>
+
+    - >
+        <p>
+        The [`emitDecoratorMetadata`](https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata)
+        TypeScript configuration option is not supported. It passes type
+        annotations to decorators and is an exception to the "TypeScript
+        is just JavaScript" philosophy that TypeScript started with where
+        type annotations are not supposed to change the output of the
+        compiler. Since esbuild does not replicate TypeScript's type system,
+        it does not have enough information to implement this feature.
+        </p>
+
+    - >
+        <p>
+        The `tsx` loader is _not_ a superset of the `ts` loader. They are two
+        different partially-incompatible syntaxes. For example, the character
+        sequence `<a>1</a>/g` parses as `<a>(1 < (/a>/g))` with the `ts` loader
+        and `(<a>1</a>) / g` with the `tsx` loader.
+        </p>
+        <p>The most common issue this causes is not being able to use generic
+        type parameters on arrow function expressions such as `<T>() => {}`
+        with the `tsx` loader. This is intentional, and matches the behavior of
+        the official TypeScript compiler. That space in the `tsx` grammar is
+        reserved for JSX elements.
+        </p>
+
+  - h2: JSX
+  - p: 'Loader: `jsx` or `tsx`'
+
+  - p: >
+      [JSX](https://facebook.github.io/jsx/) is an XML-like syntax extension
+      for JavaScript that was created for [React](https://github.com/facebook/react).
+      It's intended to be converted into normal JavaScript by your build tool.
+      Each XML element becomes a normal JavaScript function call. For example,
+      the following JSX code:
+
+  - pre.jsx: |
+      import Button from './button'
+      let button = <Button>Click me</Button>
+      render(button)
+
+  - p: >
+      Will be converted to the following JavaScript code:
+
+  - pre.js: |
+      import Button from "./button";
+      let button = React.createElement(Button, null, "Click me");
+      render(button);
+
+  - p: >
+      This loader is enabled by default for `.jsx` and `.tsx` files.
+      Note that JSX syntax is not enabled in `.js` files by default. If you
+      would like to enable that, you will need to configure it:
+
+  - example:
+      in:
+        app.js: '<div/>'
+
+      cli: |
+        esbuild app.js --bundle --loader:.js=jsx
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          loader: { '.js': 'jsx' },
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Loader: map[string]api.Loader{
+              ".js": api.LoaderJSX,
+            },
+            Write: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Using JSX without React
+
+  - p: >
+      If you're using JSX with a library other than React (such as
+      [Preact](https://preactjs.com/)), you'll likely need to configure the
+      JSX factory and fragment settings since they default to
+      <code>React<wbr>.createElement</code> and
+      <code>React<wbr>.Fragment</code> respectively:
+
+  - example:
+      in:
+        app.jsx: '<div/>'
+
+      cli: |
+        esbuild app.jsx --jsx-factory=h --jsx-fragment=Fragment
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.jsx'],
+          jsxFactory: 'h',
+          jsxFragment: 'Fragment',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.jsx"},
+            JSXFactory:  "h",
+            JSXFragment: "Fragment",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Alternatively, if you are using TypeScript, you can just configure JSX
+      for TypeScript by adding this to your `tsconfig.json` file and esbuild
+      should pick it up automatically without needing to be configured:
+
+  - pre.json: |
+      {
+        "compilerOptions": {
+          "jsxFactory": "h",
+          "jsxFragmentFactory": "Fragment"
+        }
+      }
+
+  - p: >
+      You will also have to add <code>import <wbr>{h, <wbr>Fragment} <wbr>from <wbr>'preact'</code>
+      in files containing JSX syntax.
+
+  - h2: JSON
+  - div: 'Loader: `json`'
+
+  - p: >
+      This loader is enabled by default for `.json` files. It parses the JSON
+      file into a JavaScript object at build time and exports the object as
+      the default export. Using it looks something like this:
+
+  - pre.js: |
+      import object from './example.json'
+      console.log(object)
+
+  - p: >
+      In addition to the default export, there are also named exports for each
+      top-level property in the JSON object. Importing a named export directly
+      means esbuild can automatically remove unused parts of the JSON file from
+      the bundle, leaving only the named exports that you actually used. For
+      example, this code will only include the `version` field when bundled:
+
+  - pre.js: |
+      import { version } from './package.json'
+      console.log(version)
+
+  - h2: CSS
+  - p: 'Loader: `css`'
+
+  - warning: >
+      The CSS content type is new and is still a work in progress. There is
+      also a known [ordering issue](https://github.com/evanw/esbuild/issues/465)
+      with importing CSS files from JavaScript files. You can follow
+      [the tracking issue](https://github.com/evanw/esbuild/issues/20)
+      for updates about this feature.
+
+  - p: >
+      This loader is enabled by default for `.css` files. It loads the file
+      as CSS syntax. CSS is a first-class content type in esbuild, which means
+      esbuild can bundle CSS files directly without needing to import your CSS
+      from JavaScript code:
+
+  - example:
+      in:
+        app.css: 'body {}'
+
+      cli: |
+        esbuild --bundle app.css --outfile=out.css
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.css'],
+          bundle: true,
+          outfile: 'out.css',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.css"},
+            Bundle:      true,
+            Outfile:     "out.css",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      You can `@import` other CSS files and reference image and font files with
+      `url()` and esbuild will bundle everything together. Note that you will
+      have to configure a loader for image and font files, since esbuild
+      doesn't have any pre-configured. Usually this is either the
+      [data URL](#data-url) loader or the [external file](#external-file) loader.
+
+  - p: >
+      You can also import CSS from JavaScript. When you do this, esbuild will
+      gather all CSS files referenced from a given entry point and bundle it
+      into a sibling CSS output file next to the JavaScript output file for
+      that JavaScript entry point. So if esbuild generates `app.js` it would
+      also generate `app.css` containing all CSS files referenced by `app.js`.
+      Here's an example of importing a CSS file from JavaScript:
+
+  - pre.jsx: |
+      import './button.css'
+
+      export let Button = ({ text }) =>
+        <div className="button">{text}</div>
+
+  - p: >
+      Note that esbuild doesn't yet support CSS modules, so the set of export
+      names from a CSS file is currently always empty. Supporting a basic form
+      of CSS modules is on the roadmap.
+
+  - h2: Text
+  - p: 'Loader: `text`'
+
+  - p: >
+      This loader is enabled by default for `.txt` files. It loads the file
+      as a string at build time and exports the string as the default export.
+      Using it looks something like this:
+
+  - pre.js: |
+      import string from './example.txt'
+      console.log(string)
+
+  - h2: Binary
+  - p: 'Loader: `binary`'
+
+  - p: >
+      This loader will load the file as a binary buffer at build time and
+      embed it into the bundle using Base64 encoding. The original bytes of
+      the file are decoded from Base64 at run time and exported as a
+      `Uint8Array` using the default export. Using it looks like this:
+
+  - pre.js: |
+      import uint8array from './example.data'
+      console.log(uint8array)
+
+  - p: >
+      If you need an `ArrayBuffer` instead, you can just access
+      <code>uint8array<wbr>.buffer</code>. Note that this loader is not
+      enabled by default. You will need to configure it for the appropriate
+      file extension like this:
+
+  - example:
+      in:
+        app.js: |
+          import uint8array from './example.data'
+          console.log(uint8array)
+        example.data: |
+          this is some data
+
+      cli: |
+        esbuild app.js --bundle --loader:.data=binary
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          loader: { '.data': 'binary' },
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Loader: map[string]api.Loader{
+              ".data": api.LoaderBinary,
+            },
+            Write: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h2: Base64
+  - p: 'Loader: `base64`'
+
+  - p: >
+      This loader will load the file as a binary buffer at build time and
+      embed it into the bundle as a string using Base64 encoding. This
+      string is exported using the default export. Using it looks like this:
+
+  - pre.js: |
+      import base64string from './example.data'
+      console.log(base64string)
+
+  - p: >
+      Note that this loader is not enabled by default. You will need to
+      configure it for the appropriate file extension like this:
+
+  - example:
+      in:
+        app.js: |
+          import base64string from './example.data'
+          console.log(base64string)
+        example.data: |
+          this is some data
+
+      cli: |
+        esbuild app.js --bundle --loader:.data=base64
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          loader: { '.data': 'base64' },
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Loader: map[string]api.Loader{
+              ".data": api.LoaderBase64,
+            },
+            Write: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      If you intend to turn this into a `Uint8Array` or an `ArrayBuffer`, you
+      should use the `binary` loader instead. It uses an optimized
+      Base64-to-binary converter that is faster than the usual `atob`
+      conversion process.
+
+  - h2: Data URL
+  - p: 'Loader: `dataurl`'
+
+  - p: >
+      This loader will load the file as a binary buffer at build time and
+      embed it into the bundle as a Base64-encoded data URL. This string is
+      exported using the default export. Using it looks like this:
+
+  - pre.js: |
+      import url from './example.png'
+      let image = new Image
+      image.src = url
+      document.body.appendChild(image)
+
+  - p: >
+      The data URL includes a best guess at the MIME type based on the file
+      extension and/or the file contents, and will look something like this:
+
+  - pre: |
+      data:image/png;base64,iVBORw0KGgo=
+
+  - p: >
+      Note that this loader is not enabled by default. You will need to
+      configure it for the appropriate file extension like this:
+
+  - example:
+      in:
+        app.js: |
+          import url from './example.png'
+          let image = new Image
+          image.src = url
+          document.body.appendChild(image)
+        example.png: |
+          this is some data
+
+      cli: |
+        esbuild app.js --bundle --loader:.png=dataurl
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          loader: { '.png': 'dataurl' },
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Loader: map[string]api.Loader{
+              ".png": api.LoaderDataURL,
+            },
+            Write: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h2: External file
+  - p: 'Loader: `file`'
+
+  - p: >
+      This loader will copy the file to the output directory and embed the
+      file name into the bundle as a string. This string is exported using
+      the default export. Using it looks like this:
+
+  - pre.js: |
+      import url from './example.png'
+      let image = new Image
+      image.src = url
+      document.body.appendChild(image)
+
+  - p: >
+      Note that this loader is not enabled by default. You will need to
+      configure it for the appropriate file extension like this:
+
+  - example:
+      in:
+        app.js: |
+          import url from './example.png'
+          let image = new Image
+          image.src = url
+          document.body.appendChild(image)
+        example.png: |
+          this is some data
+
+      cli: |
+        esbuild app.js --bundle --loader:.png=file --outdir=out
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          loader: { '.png': 'file' },
+          outdir: 'out',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Loader: map[string]api.Loader{
+              ".png": api.LoaderFile,
+            },
+            Outdir: "out",
+            Write:  true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      By default the exported string is just the file name. If you would like to
+      prepend a base path to the exported string, this can be done with the
+      [public path](/api/#public-path) API option.

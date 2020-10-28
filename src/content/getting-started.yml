@@ -1,0 +1,331 @@
+title: Getting Started
+body:
+  - h1: Getting Started
+
+  - h2: Install esbuild
+
+  - p: >
+      First, download and install the esbuild command locally. A prebuilt
+      binary can be installed using npm:
+
+  - pre: |
+      npm install esbuild
+
+  - p: >
+      This should have installed esbuild in your local `node_modules` folder.
+      You can run the esbuild binary to verify that everything is working
+      correctly:
+
+  - pre: |
+      ./node_modules/.bin/esbuild --version
+
+  - h2: Your first bundle
+
+  - p: >
+      This is a quick real-world example of what esbuild is capable of and
+      how to use it. First, install the `react` and `react-dom` packages:
+
+  - pre: |
+      npm install react react-dom
+
+  - p: >
+      Then create a file called `app.jsx` containing the following code:
+
+  - pre.js: |
+      import * as React from 'react'
+      import * as Server from 'react-dom/server'
+
+      let Greet = () => <h1>Hello, world!</h1>
+      console.log(Server.renderToString(<Greet />))
+
+  - p: >
+      Finally, tell esbuild to bundle the file:
+
+  - pre: |
+      ./node_modules/.bin/esbuild app.jsx --bundle --outfile=out.js
+
+  - p: >
+      This should have created a file called `out.js` containing your code
+      and the React library bundled together. The code is completely
+      self-contained and no longer depends on your `node_modules` directory.
+      If you run the code using `node out.js`, you should see something like
+      this:
+
+  - pre.html: |
+      <h1 data-reactroot="">Hello, world!</h1>
+
+  - p: >
+      Notice that esbuild also converted JSX syntax to JavaScript without any
+      configuration other than the `.jsx` extension. While esbuild can be
+      configured, it attempts to have reasonable defaults so that many common
+      situations work automatically. If you would like to use JSX syntax in
+      `.js` files instead, you can tell esbuild to allow this using the
+      `--loader:.js=jsx` flag. You can read more about the available
+      configuration options in the [API documentation](/api/).
+
+  - h2: Build scripts
+
+  - p: >
+      Your build command is something you will be running repeatedly, so you
+      will want to automate it. A natural way of doing this is to add a build
+      script to your `package.json` file like this:
+
+  - pre.json: |
+      {
+        "scripts": {
+          "build": "esbuild app.jsx --bundle --outfile=out.js"
+        }
+      }
+
+  - p: >
+      The build script can be invoked like this:
+
+  - pre: |
+      npm run build
+
+  - p: >
+      However, using the command-line interface can become unwieldy if you
+      need to pass many options to esbuild. For more sophisticated uses
+      you will likely want to write a build script in JavaScript using
+      esbuild's JavaScript API. That might look something like this:
+
+  - example:
+      in:
+        app.jsx: '<div/>'
+
+      js: |
+        require('esbuild').build({
+          entryPoints: ['app.jsx'],
+          bundle: true,
+          outfile: 'out.js',
+        }).catch(() => process.exit(1))
+
+  - p: >
+      The `build` function runs the esbuild binary in a child process and
+      returns a promise that resolves when the build is complete. The code above
+      doesn't print out the captured exception because any error messages in
+      the exception will also be printed to the console by default (although
+      you can change the [log level](/api/#log-level) to turn that off if you'd like).
+
+  - h2: Bundling for the browser
+
+  - p: >
+      The bundler outputs code for the browser by default, so no additional
+      configuration is necessary to get started. For development builds you
+      probably want to enable source maps with `--sourcemap`, and for
+      production builds you probably want to enable minification with
+      `--minify`. You probably also want to configure the target environment
+      for the browsers you support. All of that might looks something like this:
+
+  - example:
+      in:
+        app.jsx: '<div/>'
+
+      cli: |
+        esbuild app.jsx --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.jsx'],
+          bundle: true,
+          minify: true,
+          sourcemap: true,
+          target: ['chrome58', 'firefox57', 'safari11', 'edge16'],
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints:       []string{"app.jsx"},
+            Bundle:            true,
+            MinifyWhitespace:  true,
+            MinifyIdentifiers: true,
+            MinifySyntax:      true,
+            Engines: []api.Engine{
+              {api.EngineChrome, "58"},
+              {api.EngineFirefox, "57"},
+              {api.EngineSafari, "11"},
+              {api.EngineEdge, "16"},
+            },
+            Write: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Some npm packages you want to use may not be designed to be run in the
+      browser. Sometimes you can use esbuild's configuration options to
+      work around certain issues and successfully bundle the package anyway.
+      For example, the `react` library contains code that checks the value of
+      <code>process<wbr>.env<wbr>.NODE_ENV</code>. This will crash in the
+      browser because the variable called `process` only exists in node, not
+      in the browser. To work around this you can define a custom value for
+      this variable at build time:
+
+  - example:
+      in:
+        app.jsx: '<div/>'
+
+      cli: |
+        esbuild app.jsx --bundle --define:process.env.NODE_ENV='"production"'
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.jsx'],
+          bundle: true,
+          outfile: 'out.js',
+          define: {
+            'process.env.NODE_ENV': '"production"',
+          },
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.jsx"},
+            Outfile:     "out.js",
+            Bundle:      true,
+            Define: map[string]string{
+              "process.env.NODE_ENV": `"production"`,
+            },
+            Write: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Sometimes a package you want to use may import another package that is
+      only available on node, such as the built-in `path` package. When that
+      happens you can substitute the package for a browser-friendly alternative
+      by using the [browser field](https://github.com/defunctzombie/package-browser-field-spec)
+      in your `package.json` file like this:
+
+  - pre.json: |
+      {
+        "browser": {
+          "path": "path-browserify"
+        }
+      }
+
+  - h2: Bundling for node
+
+  - p: >
+      Even though a bundler is not necessary when using node, sometimes it
+      can still be beneficial to process your code with esbuild before running
+      it in node. Bundling can automatically strip TypeScript types, convert
+      ECMAScript module syntax to CommonJS, and transform newer JavaScript
+      syntax into older syntax for a specific version of node. And it may be
+      beneficial to bundle your package before publishing it so that it's
+      a smaller download and so it spends less time reading from the file
+      system when being loaded.
+
+  - p: >
+      If you are bundling code that will be run in node, you should configure
+      the [platform](/api/#platform) setting by passing <code>--platform=<wbr>node</code>
+      to esbuild. This simultaneously changes a few different settings to
+      node-friendly default values. For example, all packages that are
+      built-in to node such as `fs` are automatically marked as external so
+      esbuild doesn't try to bundle them. This setting also disables the
+      interpretation of the browser field in `package.json`.
+
+  - p: >
+      If your code uses newer JavaScript syntax that doesn't work in your
+      version of node, you will want to configure the target version of node:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --bundle --platform=node --target=node10.4
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          platform: 'node',
+          target: ['node10.4'],
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Platform:    api.PlatformNode,
+            Engines: []api.Engine{
+              {api.EngineNode, "10.4"},
+            },
+            Write: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Sometimes the packages you want to use contain code that can't be
+      bundled for some reason. An example of this is a package with
+      native extensions such as `fsevents`. Or, you may want to exclude
+      a package from the bundle for other reasons. This can be done by
+      marking the package as external:
+
+  - example:
+      in:
+        app.jsx: '<div/>'
+
+      cli: |
+        esbuild app.jsx --bundle --platform=node --external:fsevents
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.jsx'],
+          bundle: true,
+          platform: 'node',
+          external: ['fsevents'],
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.jsx"},
+            Bundle:      true,
+            Platform:    api.PlatformNode,
+            External:    []string{"fsevents"},
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }

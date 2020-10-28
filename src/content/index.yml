@@ -1,0 +1,44 @@
+index:
+  title: An extremely fast JavaScript bundler
+  body:
+    - h1: esbuild
+    - blockquote: An extremely fast JavaScript bundler
+
+    - benchmark.animated:
+        '[esbuild](https://github.com/evanw/esbuild)': 0.37
+        '[rollup](https://github.com/rollup/rollup) + [terser](https://github.com/terser/terser)': 36.00
+        '[webpack](https://github.com/webpack/webpack) 4': 41.91
+        '[webpack](https://github.com/webpack/webpack) 5': 63.83
+        '[parcel](https://github.com/parcel-bundler/parcel) 2': 108.66
+        '[parcel](https://github.com/parcel-bundler/parcel) 1': 118.51
+
+    - figcaption: >
+        Above: the time to do a production bundle of 10 copies of the
+        [three.js](https://github.com/mrdoob/three.js)
+        library from scratch using default settings, including minification and
+        source maps. More info [here](/faq/#benchmark-details).
+
+    - p: >
+        Our current build tools for the web are 10-100x slower than they could
+        be. The main goal of the esbuild bundler project is to bring about a new
+        era of build tool performance, and create an easy-to-use modern bundler
+        along the way.
+
+    - p: 'Major features:'
+    - ul:
+      - 'Extreme speed without needing a cache'
+      - 'ES6 and CommonJS modules'
+      - 'Tree shaking of ES6 modules'
+      - 'An [API](/api/) for JavaScript and Go'
+      - '[TypeScript](/content-types/#typescript) and [JSX](/content-types/#jsx) syntax'
+      - '[Source maps](/api/#sourcemap)'
+      - '[Minification](/api/#minify)'
+
+    - p: >
+        Check out the [getting started](/getting-started/) instructions if you
+        want to give esbuild a try.
+
+getting-started: 'getting-started.yml'
+api: 'api.yml'
+content-types: 'content-types.yml'
+faq: 'faq.yml'
