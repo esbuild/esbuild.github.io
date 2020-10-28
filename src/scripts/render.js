@@ -10,6 +10,7 @@ const outDir = path.join(__dirname, '..', '..', 'out')
 fs.mkdirSync(outDir, { recursive: true })
 fs.copyFileSync(path.join(srcDir, 'style.css'), path.join(outDir, 'style.css'))
 fs.copyFileSync(path.join(srcDir, 'script.js'), path.join(outDir, 'script.js'))
+fs.copyFileSync(path.join(srcDir, 'index.png'), path.join(outDir, 'index.png'))
 
 const data = yaml.safeLoad(fs.readFileSync(path.join(contentDir, 'index.yml'), 'utf8'))
 const pages = Object.entries(data)
@@ -307,6 +308,12 @@ for (let [key, page] of pages) {
   <head>
     <meta charset="utf8">
     <title>esbuild - ${escapeHTML(page.title)}</title>
+    <meta property="og:title" content="esbuild - ${escapeAttribute(page.title)}"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="https://esbuild.github.io/index.png"/>
+    <meta property="twitter:card" content="summary_large_image"/>
+    <meta property="twitter:title" content="esbuild - ${escapeAttribute(page.title)}"/>
+    <meta property="twitter:image" content="https://esbuild.github.io/index.png"/>
     <link rel="stylesheet" href="/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
