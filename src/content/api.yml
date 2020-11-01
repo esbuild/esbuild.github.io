@@ -168,6 +168,7 @@ body:
     - Metafile
     - Minify
     - Out extension
+    - Outbase
     - Outdir
     - Outfile
     - Public path
@@ -1434,6 +1435,8 @@ body:
       two entry points <code>src/<wbr>home/<wbr>index.ts</code> and
       <code>src/<wbr>about/<wbr>index.ts</code>, the output directory will
       contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code>.
+      If you want to customize this behavior, you chould change the
+      [outbase directory](#outbase).
 
   - h3: Outfile
 
@@ -2468,6 +2471,66 @@ body:
             os.Exit(1)
           }
         }
+
+  - h3: Outbase
+
+  - p: >
+      If your build contains multiple entry points in separate directories, the
+      directory structure will be replicated into the [output directory](#outdir)
+      relative to the outbase directory. For example, if there are two entry
+      points <code>src/<wbr>pages/<wbr>home/<wbr>index.ts</code> and
+      <code>src/<wbr>pages/<wbr>about/<wbr>index.ts</code> and the outbase directory is
+      `src`, the output directory will contain <code>pages/<wbr>home/<wbr>index.js</code>
+      and <code>pages/<wbr>about/<wbr>index.js</code>. Here's how to use it:
+
+  - example:
+      in:
+        src/pages/home/index.ts: '1 + 2'
+        src/pages/about/index.ts: '3 + 4'
+
+      cli: |
+        esbuild src/pages/home/index.ts src/pages/about/index.ts --bundle --outdir=out --outbase=src
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: [
+            'src/pages/home/index.ts',
+            'src/pages/about/index.ts',
+          ],
+          bundle: true,
+          outdir: 'out',
+          outbase: 'src',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{
+              "src/pages/home/index.ts",
+              "src/pages/about/index.ts",
+            },
+            Bundle:  true,
+            Outdir:  "out",
+            Outbase: "src",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      If the outbase directory isn't specified, it defaults to the
+      [lowest common ancestor](https://en.wikipedia.org/wiki/Lowest_common_ancestor)
+      directory among all input entry point paths. This is <code>src/<wbr>pages</code>
+      in the example above, which means by default the output directory will
+      contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code>
+      instead.
 
   - h3: Public path
 

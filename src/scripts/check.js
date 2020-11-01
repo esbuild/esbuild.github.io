@@ -26,7 +26,9 @@ async function checkCommon(kind, text, value, callback) {
 
     if (value.in) {
       for (let name in value.in) {
-        await fs.writeFile(path.join(testDir, name), value.in[name])
+        const absPath = path.join(testDir, name)
+        await fs.mkdir(path.dirname(absPath), { recursive: true })
+        await fs.writeFile(absPath, value.in[name])
       }
     }
 
