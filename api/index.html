@@ -82,6 +82,7 @@
               <li id="nav-main-fields"><a href="#main-fields">Main fields</a></li>
               <li id="nav-metafile"><a href="#metafile">Metafile</a></li>
               <li id="nav-out-extension"><a href="#out-extension">Out extension</a></li>
+              <li id="nav-outbase"><a href="#outbase">Outbase</a></li>
               <li id="nav-public-path"><a href="#public-path">Public path</a></li>
               <li id="nav-pure"><a href="#pure">Pure</a></li>
               <li id="nav-resolve-extensions"><a href="#resolve-extensions">Resolve extensions</a></li>
@@ -258,6 +259,7 @@
         <li><a href="#main-fields">Main fields</a></li>
         <li><a href="#metafile">Metafile</a></li>
         <li><a href="#out-extension">Out extension</a></li>
+        <li><a href="#outbase">Outbase</a></li>
         <li><a href="#public-path">Public path</a></li>
         <li><a href="#pure">Pure</a></li>
         <li><a href="#resolve-extensions">Resolve extensions</a></li>
@@ -1097,7 +1099,7 @@ image.src = url
   }
 }</pre>
       <p>The output directory will be generated if it does not already exist, but it will not be cleared if it already contains some files. Any generated files will silently overwrite existing files with the same name. You should clear the output directory yourself before running esbuild if you want the output directory to only contain files from the current run of esbuild.</p>
-      <p>If your build contains multiple entry points in separate directories, the directory structure will be replicated into the output directory starting from the <a href="https://en.wikipedia.org/wiki/Lowest_common_ancestor">lowest common ancestor</a> directory among all input entry point paths. For example, if there are two entry points <code>src/<wbr>home/<wbr>index.ts</code> and <code>src/<wbr>about/<wbr>index.ts</code>, the output directory will contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code>.</p>
+      <p>If your build contains multiple entry points in separate directories, the directory structure will be replicated into the output directory starting from the <a href="https://en.wikipedia.org/wiki/Lowest_common_ancestor">lowest common ancestor</a> directory among all input entry point paths. For example, if there are two entry points <code>src/<wbr>home/<wbr>index.ts</code> and <code>src/<wbr>about/<wbr>index.ts</code>, the output directory will contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code>. If you want to customize this behavior, you chould change the <a href="#outbase">outbase directory</a>.</p>
       <h3 id="outfile" data-h2="simple-options">
         <a aria-hidden="true" href="#outfile">#</a>
         Outfile
@@ -1731,6 +1733,48 @@ log(typeof x == <span class="color-green">"null"</span>)
     os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
+      <h3 id="outbase" data-h2="advanced-options">
+        <a aria-hidden="true" href="#outbase">#</a>
+        Outbase
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>If your build contains multiple entry points in separate directories, the directory structure will be replicated into the <a href="#outdir">output directory</a> relative to the outbase directory. For example, if there are two entry points <code>src/<wbr>pages/<wbr>home/<wbr>index.ts</code> and <code>src/<wbr>pages/<wbr>about/<wbr>index.ts</code> and the outbase directory is <code>src</code>, the output directory will contain <code>pages/<wbr>home/<wbr>index.js</code> and <code>pages/<wbr>about/<wbr>index.js</code>. Here's how to use it:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild src/pages/home/index.ts src/pages/about/index.ts --bundle --outdir=out --outbase=src</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [
+    <span class="hljs-string">&#x27;src/pages/home/index.ts&#x27;</span>,
+    <span class="hljs-string">&#x27;src/pages/about/index.ts&#x27;</span>,
+  ],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;out&#x27;</span>,
+  <span class="hljs-attr">outbase</span>: <span class="hljs-string">&#x27;src&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{
+      <span class="hljs-string">&quot;src/pages/home/index.ts&quot;</span>,
+      <span class="hljs-string">&quot;src/pages/about/index.ts&quot;</span>,
+    },
+    Bundle:  <span class="hljs-literal">true</span>,
+    Outdir:  <span class="hljs-string">&quot;out&quot;</span>,
+    Outbase: <span class="hljs-string">&quot;src&quot;</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>If the outbase directory isn't specified, it defaults to the <a href="https://en.wikipedia.org/wiki/Lowest_common_ancestor">lowest common ancestor</a> directory among all input entry point paths. This is <code>src/<wbr>pages</code> in the example above, which means by default the output directory will contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code> instead.</p>
       <h3 id="public-path" data-h2="advanced-options">
         <a aria-hidden="true" href="#public-path">#</a>
         Public path
