@@ -69,6 +69,15 @@
             <li><a href="/content-types/#data-url">Data URL</a></li>
             <li><a href="/content-types/#external-file">External file</a></li>
           </ul>
+          <li><a href="/plugins/">Plugins</a></li>
+          <ul class="h2">
+            <li><a href="/plugins/#using-plugins">Using plugins</a></li>
+            <li><a href="/plugins/#concepts">Concepts</a></li>
+            <li><a href="/plugins/#resolve-callbacks">Resolve callbacks</a></li>
+            <li><a href="/plugins/#load-callbacks">Load callbacks</a></li>
+            <li><a href="/plugins/#example-plugins">Example plugins</a></li>
+            <li><a href="/plugins/#plugin-api-limitations">Plugin API limitations</a></li>
+          </ul>
           <li><a href="/faq/">FAQ</a></li>
         </ul>
         <div id="icons">
@@ -141,6 +150,7 @@
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
 }).catch(<span class="hljs-function">() =&gt;</span> process.exit(<span class="hljs-number">1</span>))</pre>
       <p>The <code>build</code> function runs the esbuild binary in a child process and returns a promise that resolves when the build is complete. The code above doesn't print out the captured exception because any error messages in the exception will also be printed to the console by default (although you can change the <a href="/api/#log-level">log level</a> to turn that off if you'd like).</p>
+      <p>Although there is also a <code>buildSync</code> API that is not asynchronous, the asynchronous API is better for build scripts because <a href="/plugins/">plugins</a> only work with the asynchronous API. You can read more about the configuration options for the build API in the <a href="/api/#build-api">API documentation</a>.</p>
       <h2 id="bundling-for-the-browser">
         <a aria-hidden="true" href="#bundling-for-the-browser">#</a>
         Bundling for the browser

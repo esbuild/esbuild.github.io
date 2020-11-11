@@ -563,10 +563,14 @@ body:not([data-theme=dark]) .warning {
 /* ---------- Dark colors ---------- */
 
 body[data-theme=dark],
-body[data-theme=dark] #menubar,
 body[data-theme=dark] #menu,
 body[data-theme=dark] nav ul ul {
   background: #191919;
+  color: #aaa;
+}
+
+body[data-theme=dark] #menubar {
+  background: #222;
   color: #aaa;
 }
 
@@ -643,10 +647,14 @@ body[data-theme=dark] .warning {
 
 @media (prefers-color-scheme: dark) {
   body:not([data-theme=light]),
-  body:not([data-theme=light]) #menubar,
   body:not([data-theme=light]) #menu,
   body:not([data-theme=light]) nav ul ul {
     background: #191919;
+    color: #aaa;
+  }
+
+  body:not([data-theme=light]) #menubar {
+    background: #222;
     color: #aaa;
   }
 

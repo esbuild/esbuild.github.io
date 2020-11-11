@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>esbuild - Plugins</title>
+    <meta property="og:title" content="esbuild - Plugins"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="https://esbuild.github.io/index.png"/>
+    <meta property="twitter:card" content="summary_large_image"/>
+    <meta property="twitter:title" content="esbuild - Plugins"/>
+    <meta property="twitter:image" content="https://esbuild.github.io/index.png"/>
+    <link rel="stylesheet" href="/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <script>
+      try {
+        document.body.dataset.mode3 = localStorage.getItem('mode3') || 'cli'
+        document.body.dataset.mode2 = localStorage.getItem('mode2') || 'js'
+        document.body.dataset.theme = localStorage.getItem('theme')
+      } catch (e) {
+        document.body.dataset.mode3 = 'cli'
+        document.body.dataset.mode2 = 'js'
+        document.body.dataset.theme = null
+      }
+      document.body.classList.add('has-js')
+    </script>
+    <script src="/script.js" defer></script>
+    <div id="menubar">
+      <a id="menutoggle" href="javascript:void 0">
+        <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="18" width="20" height="2" stroke-width="0"/>
+          <rect x="15" y="24" width="20" height="2" stroke-width="0"/>
+          <rect x="15" y="30" width="20" height="2" stroke-width="0"/>
+        </svg>
+      </a>
+    </div>
+    <nav>
+      <div id="shadow"></div>
+      <div id="menu">
+        <a href="/" class="logo">esbuild</a>
+        <ul>
+          <li><a href="/getting-started/">Getting Started</a></li>
+          <ul class="h2">
+            <li><a href="/getting-started/#install-esbuild">Install esbuild</a></li>
+            <li><a href="/getting-started/#your-first-bundle">Your first bundle</a></li>
+            <li><a href="/getting-started/#build-scripts">Build scripts</a></li>
+            <li><a href="/getting-started/#bundling-for-the-browser">Bundling for the browser</a></li>
+            <li><a href="/getting-started/#bundling-for-node">Bundling for node</a></li>
+          </ul>
+          <li><a href="/api/">API</a></li>
+          <ul class="h2">
+            <li><a href="/api/#transform-api">Transform API</a></li>
+            <li><a href="/api/#build-api">Build API</a></li>
+            <li><a href="/api/#simple-options">Simple options</a></li>
+            <li><a href="/api/#advanced-options">Advanced options</a></li>
+            <li><a href="/api/#js-specific-details">JS-specific details</a></li>
+          </ul>
+          <li><a href="/content-types/">Content Types</a></li>
+          <ul class="h2">
+            <li><a href="/content-types/#javascript">JavaScript</a></li>
+            <li><a href="/content-types/#typescript">TypeScript</a></li>
+            <li><a href="/content-types/#jsx">JSX</a></li>
+            <li><a href="/content-types/#json">JSON</a></li>
+            <li><a href="/content-types/#css">CSS</a></li>
+            <li><a href="/content-types/#text">Text</a></li>
+            <li><a href="/content-types/#binary">Binary</a></li>
+            <li><a href="/content-types/#base64">Base64</a></li>
+            <li><a href="/content-types/#data-url">Data URL</a></li>
+            <li><a href="/content-types/#external-file">External file</a></li>
+          </ul>
+          <li><a href="/plugins/">Plugins</a></li>
+          <ul class="h2">
+            <li id="nav-using-plugins"><a href="#using-plugins">Using plugins</a></li>
+            <li id="nav-concepts"><a href="#concepts">Concepts</a></li>
+            <ul class="h3">
+              <li id="nav-namespaces"><a href="#namespaces">Namespaces</a></li>
+              <li id="nav-filters"><a href="#filters">Filters</a></li>
+            </ul>
+            <li id="nav-resolve-callbacks"><a href="#resolve-callbacks">Resolve callbacks</a></li>
+            <ul class="h3">
+              <li id="nav-resolve-options"><a href="#resolve-options">Resolve options</a></li>
+              <li id="nav-resolve-arguments"><a href="#resolve-arguments">Resolve arguments</a></li>
+              <li id="nav-resolve-results"><a href="#resolve-results">Resolve results</a></li>
+            </ul>
+            <li id="nav-load-callbacks"><a href="#load-callbacks">Load callbacks</a></li>
+            <ul class="h3">
+              <li id="nav-load-options"><a href="#load-options">Load options</a></li>
+              <li id="nav-load-arguments"><a href="#load-arguments">Load arguments</a></li>
+              <li id="nav-load-results"><a href="#load-results">Load results</a></li>
+            </ul>
+            <li id="nav-example-plugins"><a href="#example-plugins">Example plugins</a></li>
+            <ul class="h3">
+              <li id="nav-http-plugin"><a href="#http-plugin">HTTP plugin</a></li>
+              <li id="nav-webassembly-plugin"><a href="#webassembly-plugin">WebAssembly plugin</a></li>
+              <li id="nav-svelte-plugin"><a href="#svelte-plugin">Svelte plugin</a></li>
+            </ul>
+            <li id="nav-plugin-api-limitations"><a href="#plugin-api-limitations">Plugin API limitations</a></li>
+          </ul>
+          <li><a href="/faq/">FAQ</a></li>
+        </ul>
+        <div id="icons">
+          <a href="https://github.com/evanw/esbuild">
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
+            <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
+              -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+              -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+              -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
+              .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
+              .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
+              8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
+          </svg>
+          </a><a href="javascript:void 0" id="theme">
+            <svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"/>
+              <circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"/>
+            </svg>
+            <svg id="theme-dark" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10.1 6.6a8.08 8.08 0 00.24 11.06 8.08 8.08 0 0011.06.24c-6.46.9-12.2-4.84-11.3-11.3z" stroke-width="0"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <h1>Plugins</h1>
+      <div class="warning">The plugin API is new and still experimental. It may change in the future before version 1.0.0 of esbuild as new use cases are uncovered. Consider this particular plugin API as being specific to the 0.8.x version of esbuild. You can follow <a href="https://github.com/evanw/esbuild/issues/111">the tracking issue</a> for updates about this feature.</div>
+      <p>The plugin API allows you to inject code into various parts of the build process. Unlike the rest of the API, it's not available from the command line. You must write either JavaScript or Go code to use the plugin API. Plugins can also only be used with the <a href="/api/#build-api">build API</a>, not with the <a href="/api/#transform-api">transform API</a>.</p>
+      <h2 id="using-plugins">
+        <a aria-hidden="true" href="#using-plugins">#</a>
+        Using plugins
+      </h2>
+      <p>An esbuild plugin is an object with a <code>name</code> and a <code>setup</code> function. They are passed in an array to the <a href="/api/#build">build API</a> call. The <code>setup</code> function is run once for each build API call.</p>
+      <p>Here's a simple plugin example that allows you to import the current environment variables at build time:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-keyword">let</span> envPlugin = {
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;env&#x27;</span>,
+  setup(build) {
+    <span class="hljs-comment">// Intercept import paths called &quot;env&quot; so esbuild doesn&#x27;t attempt</span>
+    <span class="hljs-comment">// to map them to a file system location. Tag them with the &quot;env-ns&quot;</span>
+    <span class="hljs-comment">// namespace to reserve them for this plugin.</span>
+    build.onResolve({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/^env$/</span> }, <span class="hljs-function"><span class="hljs-params">args</span> =&gt;</span> ({
+      <span class="hljs-attr">path</span>: args.path,
+      <span class="hljs-attr">namespace</span>: <span class="hljs-string">&#x27;env-ns&#x27;</span>,
+    }))
+
+    <span class="hljs-comment">// Load paths tagged with the &quot;env-ns&quot; namespace and behave as if</span>
+    <span class="hljs-comment">// they point to a JSON file containing the environment variables.</span>
+    build.onLoad({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/.*/</span>, namespace: <span class="hljs-string">&#x27;env-ns&#x27;</span> }, <span class="hljs-function">() =&gt;</span> ({
+      <span class="hljs-attr">contents</span>: <span class="hljs-built_in">JSON</span>.stringify(process.env),
+      <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;json&#x27;</span>,
+    }))
+  },
+}
+
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+  <span class="hljs-attr">plugins</span>: [envPlugin],
+}).catch(<span class="hljs-function">() =&gt;</span> process.exit(<span class="hljs-number">1</span>))</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;encoding/json&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;strings&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-keyword">var</span> envPlugin = api.Plugin{
+  Name: <span class="hljs-string">&quot;env&quot;</span>,
+  Setup: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(build api.PluginBuild)</span></span> {
+    <span class="hljs-comment">// Intercept import paths called &quot;env&quot; so esbuild doesn&#x27;t attempt</span>
+    <span class="hljs-comment">// to map them to a file system location. Tag them with the &quot;env-ns&quot;</span>
+    <span class="hljs-comment">// namespace to reserve them for this plugin.</span>
+    build.OnResolve(api.OnResolveOptions{Filter: <span class="hljs-string">`^env$`</span>},
+      <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(args api.OnResolveArgs)</span> <span class="hljs-params">(api.OnResolveResult, error)</span></span> {
+        <span class="hljs-keyword">return</span> api.OnResolveResult{
+          Path:      args.Path,
+          Namespace: <span class="hljs-string">&quot;env-ns&quot;</span>,
+        }, <span class="hljs-literal">nil</span>
+      })
+
+    <span class="hljs-comment">// Load paths tagged with the &quot;env-ns&quot; namespace and behave as if</span>
+    <span class="hljs-comment">// they point to a JSON file containing the environment variables.</span>
+    build.OnLoad(api.OnLoadOptions{Filter: <span class="hljs-string">`.*`</span>, Namespace: <span class="hljs-string">&quot;env-ns&quot;</span>},
+      <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(args api.OnLoadArgs)</span> <span class="hljs-params">(api.OnLoadResult, error)</span></span> {
+        mappings := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">string</span>)
+        <span class="hljs-keyword">for</span> _, item := <span class="hljs-keyword">range</span> os.Environ() {
+          <span class="hljs-keyword">if</span> equals := strings.IndexByte(item, <span class="hljs-string">&#x27;=&#x27;</span>); equals != <span class="hljs-number">-1</span> {
+            mappings[item[:equals]] = item[equals+<span class="hljs-number">1</span>:]
+          }
+        }
+        bytes, err := json.Marshal(mappings)
+        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+          <span class="hljs-keyword">return</span> api.OnLoadResult{}, err
+        }
+        contents := <span class="hljs-keyword">string</span>(bytes)
+        <span class="hljs-keyword">return</span> api.OnLoadResult{
+          Contents: &amp;contents,
+          Loader:   api.LoaderJSON,
+        }, <span class="hljs-literal">nil</span>
+      })
+  },
+}
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Plugins:     []api.Plugin{envPlugin},
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>You would use it like this:</p>
+      <pre><span class="hljs-keyword">import</span> { PATH } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;env&#x27;</span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`PATH is <span class="hljs-subst">${PATH}</span>`</span>)</pre>
+      <h2 id="concepts">
+        <a aria-hidden="true" href="#concepts">#</a>
+        Concepts
+      </h2>
+      <p>Writing a plugin for esbuild works a little differently than writing a plugin for other bundlers. The concepts below are important to understand before developing your plugin:</p>
+      <h3 id="namespaces" data-h2="concepts">
+        <a aria-hidden="true" href="#namespaces">#</a>
+        Namespaces
+      </h3>
+      <p>Every module as an associated namespace. By default esbuild operates in the <code>file</code> namespace, which corresponds to files on the file system. But esbuild can also handle &quot;virtual&quot; modules that don't have a corresponding location on the file system. One case when this happens is when a module is provided using <a href="/api/#stdin">stdin</a>.</p>
+      <p>Plugins can be used to create virtual modules. Virtual modules usually use a namespace other than <code>file</code> to distinguish them from file system modules. Usually the namespace is specific to the plugin that created them. For example, the sample <a href="#http-plugin">HTTP plugin</a> below uses the <code>http-url</code> namespace for downloaded files.</p>
+      <h3 id="filters" data-h2="concepts">
+        <a aria-hidden="true" href="#filters">#</a>
+        Filters
+      </h3>
+      <p>Every callback must provide a regular expression as a filter. This is used by esbuild to skip calling the callback when the path doesn't match its filter, which is done for performance. Calling from esbuild's highly-parallel internals into single-threaded JavaScript code is expensive and should be avoided whenever possible for maximum speed.</p>
+      <p>You should try to use the filter regular expression instead of using JavaScript code for filtering whenever you can. This is faster because the regular expression is evaluated inside of esbuild without calling out to JavaScript at all. For example, the sample <a href="#http-plugin">HTTP plugin</a> below uses a filter of <code>^https?://</code> to ensure that the performance overhead of running the plugin is only incurred for paths that start with <code>http://</code> or <code>https://</code>.</p>
+      <p>The allowed regular expression syntax is the syntax supported by Go's <a href="https://golang.org/pkg/regexp/">regular expression engine</a>. This is slightly different than JavaScript. Specifically, look-ahead, look-behind, and backreferences are not supported. Go's regular expression engine is designed to avoid the catastrophic exponential-time worst case performance issues that can affect JavaScript regular expressions.</p>
+      <p>Note that namespaces can also be used for filtering. Callbacks must provide a filter regular expression but can optionally also provide a namespace to further restrict what paths are matched. This can be useful for &quot;remembering&quot; where a virtual module came from. Keep in mind that namespaces are matched using an exact string equality test instead of a regular expression, so unlike module paths they are not intended for storing arbitrary data.</p>
+      <h2 id="resolve-callbacks">
+        <a aria-hidden="true" href="#resolve-callbacks">#</a>
+        Resolve callbacks
+      </h2>
+      <p>A callback added using <code>onResolve</code> will be run on each import path in each module that esbuild builds. The callback can customize how esbuild does path resolution. For example, it can intercept import paths and redirect them somewhere else. It can also mark paths as external. Here is an example:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-keyword">let</span> exampleOnResolvePlugin = {
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;example&#x27;</span>,
+  setup(build) {
+    <span class="hljs-keyword">let</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;path&#x27;</span>)
+
+    <span class="hljs-comment">// Redirect all paths starting with &quot;images/&quot; to &quot;./public/images/&quot;</span>
+    build.onResolve({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/^images\//</span> }, <span class="hljs-function"><span class="hljs-params">args</span> =&gt;</span> {
+      <span class="hljs-keyword">return</span> { <span class="hljs-attr">path</span>: path.join(args.resolveDir, <span class="hljs-string">&#x27;public&#x27;</span>, args.path) }
+    })
+
+    <span class="hljs-comment">// Mark all paths starting with &quot;http://&quot; or &quot;https://&quot; as external</span>
+    build.onResolve({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/^https?:\/\//</span> }, <span class="hljs-function"><span class="hljs-params">args</span> =&gt;</span> {
+      <span class="hljs-keyword">return</span> { <span class="hljs-attr">path</span>: args.path, <span class="hljs-attr">external</span>: <span class="hljs-literal">true</span> }
+    })
+  },
+}
+
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+  <span class="hljs-attr">plugins</span>: [exampleOnResolvePlugin],
+  <span class="hljs-attr">loader</span>: { <span class="hljs-string">&#x27;.png&#x27;</span>: <span class="hljs-string">&#x27;binary&#x27;</span> },
+}).catch(<span class="hljs-function">() =&gt;</span> process.exit(<span class="hljs-number">1</span>))</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;path/filepath&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-keyword">var</span> exampleOnResolvePlugin = api.Plugin{
+  Name: <span class="hljs-string">&quot;example&quot;</span>,
+  Setup: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(build api.PluginBuild)</span></span> {
+    <span class="hljs-comment">// Redirect all paths starting with &quot;images/&quot; to &quot;./public/images/&quot;</span>
+    build.OnResolve(api.OnResolveOptions{Filter: <span class="hljs-string">`^images/`</span>},
+      <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(args api.OnResolveArgs)</span> <span class="hljs-params">(api.OnResolveResult, error)</span></span> {
+        <span class="hljs-keyword">return</span> api.OnResolveResult{
+          Path: filepath.Join(args.ResolveDir, <span class="hljs-string">&quot;public&quot;</span>, args.Path),
+        }, <span class="hljs-literal">nil</span>
+      })
+
+    <span class="hljs-comment">// Mark all paths starting with &quot;http://&quot; or &quot;https://&quot; as external</span>
+    build.OnResolve(api.OnResolveOptions{Filter: <span class="hljs-string">`^https?://`</span>},
+      <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(args api.OnResolveArgs)</span> <span class="hljs-params">(api.OnResolveResult, error)</span></span> {
+        <span class="hljs-keyword">return</span> api.OnResolveResult{
+          Path:     args.Path,
+          External: <span class="hljs-literal">true</span>,
+        }, <span class="hljs-literal">nil</span>
+      })
+  },
+}
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Plugins:     []api.Plugin{exampleOnResolvePlugin},
+    Write:       <span class="hljs-literal">true</span>,
+    Loader: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]api.Loader{
+      <span class="hljs-string">&quot;.png&quot;</span>: api.LoaderBinary,
+    },
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>The callback can return without providing a path to pass on responsibility for path resolution to the next callback. For a given import path, all <code>onResolve</code> callbacks from all plugins will be run in the order they were registered until one takes responsibility for path resolution. If no callback returns a path, esbuild will run its default path resolution logic.</p>
+      <p>Keep in mind that many callbacks may be running concurrently. In JavaScript, if your callback does expensive work that can run on another thread such as <code>fs.<wbr>existsSync()</code>, you should make the callback <code>async</code> and use <code>await</code> (in this case with <code>fs.<wbr>promises.<wbr>exists()</code>) to allow other code to run in the meantime. In Go, each callback may be run on a separate goroutine. Make sure you have appropriate synchronization in place if your plugin uses any shared data structures.</p>
+      <h3 id="resolve-options" data-h2="resolve-callbacks">
+        <a aria-hidden="true" href="#resolve-options">#</a>
+        Resolve options
+      </h3>
+      <p>The <code>onResolve</code> API is meant to be called within the <code>setup</code> function and registers a callback to be triggered in certain situations. It takes a few options:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2">interface OnResolveOptions {
+  <span class="hljs-attr">filter</span>: <span class="hljs-built_in">RegExp</span>;
+  namespace?: string;
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">type</span> OnResolveOptions <span class="hljs-keyword">struct</span> {
+  Filter    <span class="hljs-keyword">string</span>
+  Namespace <span class="hljs-keyword">string</span>
+}</pre>
+      <ul><li><code>filter</code> <p> Every callback must provide a filter, which is a regular expression. The registered callback will be skipped when the path doesn't match this filter. You can read more about filters <a href="#filters">here</a>. </p></li><li><code>namespace</code> <p> This is optional. If provided, the callback is only run on paths within modules in the provided namespace. You can read more about namespaces <a href="#namespaces">here</a>. </p></li></ul>
+      <h3 id="resolve-arguments" data-h2="resolve-callbacks">
+        <a aria-hidden="true" href="#resolve-arguments">#</a>
+        Resolve arguments
+      </h3>
+      <p>When esbuild calls the callback registered by <code>onResolve</code>, it will provide these arguments with information about the imported path:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2">interface OnResolveArgs {
+  <span class="hljs-attr">path</span>: string;
+  importer: string;
+  namespace: string;
+  resolveDir: string;
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">type</span> OnResolveArgs <span class="hljs-keyword">struct</span> {
+  Path       <span class="hljs-keyword">string</span>
+  Importer   <span class="hljs-keyword">string</span>
+  Namespace  <span class="hljs-keyword">string</span>
+  ResolveDir <span class="hljs-keyword">string</span>
+}</pre>
+      <ul><li><code>path</code> <p> This is the verbatim unresolved path from the underlying module's source code. It can take any form. While esbuild's default behavior is to interpret import paths as either a relative path or a package name, plugins can be used to introduce new path forms. For example, the sample <a href="#http-plugin">HTTP plugin</a> below gives special meaning to paths starting with <code>http://</code>. </p></li><li><code>importer</code> <p> This is the path of the module containing this import to be resolved. Note that this path is only guaranteed to be a file system path if the namespace is <code>file</code>. If you want to resolve a path relative to the directory containing the importer module, you should use <code>resolveDir</code> instead since that also works for virtual modules. </p></li><li><code>namespace</code> <p> This is the namespace of the module containing this import to be resolved, as set by the <a href="#load-callbacks">load callback</a> that loaded this file. This defaults to the <code>file</code> namespace for modules loaded with esbuild's default behavior. You can read more about namespaces <a href="#namespaces">here</a>. </p></li><li><code>resolveDir</code> <p> This is the file system directory to use when resolving an import path to a real path on the file system. For modules in the <code>file</code> namespace, this value defaults to the directory part of the module path. For virtual modules this value defaults to empty but <a href="#load-callbacks">load callbacks</a> can optionally give virtual modules a resolve directory too. If that happens, it will be provided to resolve callbacks for unresolved paths in that file. </p></li></ul>
+      <h3 id="resolve-results" data-h2="resolve-callbacks">
+        <a aria-hidden="true" href="#resolve-results">#</a>
+        Resolve results
+      </h3>
+      <p>This is the object that can be returned by a callback added using <code>onResolve</code> to provide a custom path resolution. If you would like to return from the callback without providing a path, just return the default value (so <code>undefined</code> in JavaScript and <code>OnResolveResult{}</code> in Go). Here are the optional properties that can be returned:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2">interface OnResolveResult {
+  path?: string;
+  external?: boolean;
+  namespace?: string;
+  errors?: Message[];
+  warnings?: Message[];
+  pluginName?: string;
+}
+
+interface Message {
+  <span class="hljs-attr">text</span>: string;
+  location: Location | <span class="hljs-literal">null</span>;
+}
+
+interface Location {
+  <span class="hljs-attr">file</span>: string;
+  namespace: string;
+  line: number; <span class="hljs-comment">// 1-based</span>
+  column: number; <span class="hljs-comment">// 0-based, in bytes</span>
+  length: number; <span class="hljs-comment">// in bytes</span>
+  lineText: string;
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">type</span> OnResolveResult <span class="hljs-keyword">struct</span> {
+  Path       <span class="hljs-keyword">string</span>
+  External   <span class="hljs-keyword">bool</span>
+  Namespace  <span class="hljs-keyword">string</span>
+  Errors     []Message
+  Warnings   []Message
+  PluginName <span class="hljs-keyword">string</span>
+}
+
+<span class="hljs-keyword">type</span> Message <span class="hljs-keyword">struct</span> {
+  Text     <span class="hljs-keyword">string</span>
+  Location *Location
+}
+
+<span class="hljs-keyword">type</span> Location <span class="hljs-keyword">struct</span> {
+  File      <span class="hljs-keyword">string</span>
+  Namespace <span class="hljs-keyword">string</span>
+  Line      <span class="hljs-keyword">int</span> <span class="hljs-comment">// 1-based</span>
+  Column    <span class="hljs-keyword">int</span> <span class="hljs-comment">// 0-based, in bytes</span>
+  Length    <span class="hljs-keyword">int</span> <span class="hljs-comment">// in bytes</span>
+  LineText  <span class="hljs-keyword">string</span>
+}</pre>
+      <ul><li><code>path</code> <p> Set this to a non-empty string to resolve the import to a specific path. If this is set, no more on-resolve callbacks will be run for this import path in this module. If this is not set, esbuild will continue to run on-resolve callbacks that were registered after the current one. Then, if the path still isn't resolved, esbuild will default to resolving the path relative to the resolve directory of the current module. </p></li><li><code>external</code> <p> Set this to <code>true</code> to mark the module as <a href="/api/#external">external</a>, which means it will not be included in the bundle and will instead be imported at run-time. </p></li><li><code>namespace</code> <p> This is the namespace associated with the resolved path. If left empty, it will default to the <code>file</code> namespace for non-external paths. Paths in the file namespace must be an absolute path for the current file system (so starting with a forward slash on Unix and with a drive letter on Windows). </p> <p> If you want to resolve to a path that isn't a file system path, you should set the namespace to something other than <code>file</code> or an empty string. This tells esbuild to not treat the path as pointing to something on the file system. </p></li><li><code>errors</code> and <code>warnings</code> <p> These properties let you pass any log messages generated during path resolution to esbuild where they will be displayed in the terminal according to the current <a href="/api/#log-level">log level</a> and end up in the final build result. For example, if you are calling a library and that library can return errors and/or warnings, you will want to forward them using these properties. </p> <p> If you only have a single error to return, you don't have to pass it via <code>errors</code>. You can simply throw the error in JavaScript or return the <code>error</code> object as the second return value in Go. </p></li><li><code>pluginName</code> <p> This property lets you replace this plugin's name with another name for this path resolution operation. It's useful for proxying another plugin through this plugin. For example, it lets you have a single plugin that forwards to a child process containing multiple plugins. You probably won't need to use this. </p></li></ul>
+      <h2 id="load-callbacks">
+        <a aria-hidden="true" href="#load-callbacks">#</a>
+        Load callbacks
+      </h2>
+      <p>A callback added using <code>onLoad</code> will be run for each unique path/<wbr>namespace pair that has not been marked as external. Its job is to return the contents of the module and to tell esbuild how to interpret it. Here's an example plugin that converts <code>.txt</code> files into an array of words:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-keyword">let</span> exampleOnLoadPlugin = {
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;example&#x27;</span>,
+  setup(build) {
+    <span class="hljs-keyword">let</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>)
+
+    <span class="hljs-comment">// Load &quot;.txt&quot; files and return an array of words</span>
+    build.onLoad({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/\.txt$/</span> }, <span class="hljs-keyword">async</span> (args) =&gt; {
+      <span class="hljs-keyword">let</span> text = <span class="hljs-keyword">await</span> fs.promises.readFile(args.path, <span class="hljs-string">&#x27;utf8&#x27;</span>)
+      <span class="hljs-keyword">return</span> {
+        <span class="hljs-attr">contents</span>: <span class="hljs-built_in">JSON</span>.stringify(text.split(<span class="hljs-regexp">/\s+/</span>)),
+        <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;json&#x27;</span>,
+      }
+    })
+  },
+}
+
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+  <span class="hljs-attr">plugins</span>: [exampleOnLoadPlugin],
+}).catch(<span class="hljs-function">() =&gt;</span> process.exit(<span class="hljs-number">1</span>))</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;encoding/json&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;io/ioutil&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;strings&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-keyword">var</span> exampleOnLoadPlugin = api.Plugin{
+  Name: <span class="hljs-string">&quot;example&quot;</span>,
+  Setup: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(build api.PluginBuild)</span></span> {
+    <span class="hljs-comment">// Load &quot;.txt&quot; files and return an array of words</span>
+    build.OnLoad(api.OnLoadOptions{Filter: <span class="hljs-string">`\.txt$`</span>},
+      <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(args api.OnLoadArgs)</span> <span class="hljs-params">(api.OnLoadResult, error)</span></span> {
+        text, err := ioutil.ReadFile(args.Path)
+        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+          <span class="hljs-keyword">return</span> api.OnLoadResult{}, err
+        }
+        bytes, err := json.Marshal(strings.Fields(<span class="hljs-keyword">string</span>(text)))
+        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+          <span class="hljs-keyword">return</span> api.OnLoadResult{}, err
+        }
+        contents := <span class="hljs-keyword">string</span>(bytes)
+        <span class="hljs-keyword">return</span> api.OnLoadResult{
+          Contents: &amp;contents,
+          Loader:   api.LoaderJSON,
+        }, <span class="hljs-literal">nil</span>
+      })
+  },
+}
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Plugins:     []api.Plugin{exampleOnLoadPlugin},
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>The callback can return without providing the contents of the module. In that case the responsibility for loading the module is passed to the next registered callback. For a given module, all <code>onLoad</code> callbacks from all plugins will be run in the order they were registered until one takes responsibility for loading the module. If no callback returns contents for the module, esbuild will run its default module loading logic.</p>
+      <p>Keep in mind that many callbacks may be running concurrently. In JavaScript, if your callback does expensive work that can run on another thread such as <code>fs.<wbr>readFileSync()</code>, you should make the callback <code>async</code> and use <code>await</code> (in this case with <code>fs.<wbr>promises.<wbr>readFile()</code>) to allow other code to run in the meantime. In Go, each callback may be run on a separate goroutine. Make sure you have appropriate synchronization in place if your plugin uses any shared data structures.</p>
+      <h3 id="load-options" data-h2="load-callbacks">
+        <a aria-hidden="true" href="#load-options">#</a>
+        Load options
+      </h3>
+      <p>The <code>onLoad</code> API is meant to be called within the <code>setup</code> function and registers a callback to be triggered in certain situations. It takes a few options:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2">interface OnLoadOptions {
+  <span class="hljs-attr">filter</span>: <span class="hljs-built_in">RegExp</span>;
+  namespace?: string;
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">type</span> OnLoadOptions <span class="hljs-keyword">struct</span> {
+  Filter    <span class="hljs-keyword">string</span>
+  Namespace <span class="hljs-keyword">string</span>
+}</pre>
+      <ul><li><code>filter</code> <p> Every callback must provide a filter, which is a regular expression. The registered callback will be skipped when the path doesn't match this filter. You can read more about filters <a href="#filters">here</a>. </p></li><li><code>namespace</code> <p> This is optional. If provided, the callback is only run on paths within modules in the provided namespace. You can read more about namespaces <a href="#namespaces">here</a>. </p></li></ul>
+      <h3 id="load-arguments" data-h2="load-callbacks">
+        <a aria-hidden="true" href="#load-arguments">#</a>
+        Load arguments
+      </h3>
+      <p>When esbuild calls the callback registered by <code>onLoad</code>, it will provide these arguments with information about the module to load:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2">interface OnLoadArgs {
+  <span class="hljs-attr">path</span>: string;
+  namespace: string;
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">type</span> OnLoadArgs <span class="hljs-keyword">struct</span> {
+  Path      <span class="hljs-keyword">string</span>
+  Namespace <span class="hljs-keyword">string</span>
+}</pre>
+      <ul><li><code>path</code> <p> This is the fully-resolved path to the module. It should be considered a file system path if the namespace is <code>file</code>, but otherwise the path can take any form. For example, the sample <a href="#http-plugin">HTTP plugin</a> below gives special meaning to paths starting with <code>http://</code>. </p></li><li><code>namespace</code> <p> This is the namespace that the module path is in, as set by the <a href="#resolve-callbacks">resolve callback</a> that resolved this file. It defaults to the <code>file</code> namespace for modules loaded with esbuild's default behavior. You can read more about namespaces <a href="#namespaces">here</a>. </p></li></ul>
+      <h3 id="load-results" data-h2="load-callbacks">
+        <a aria-hidden="true" href="#load-results">#</a>
+        Load results
+      </h3>
+      <p>This is the object that can be returned by a callback added using <code>onLoad</code> to provide the contents of a module. If you would like to return from the callback without providing any contents, just return the default value (so <code>undefined</code> in JavaScript and <code>OnLoadResult{}</code> in Go). Here are the optional properties that can be returned:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2">interface OnLoadResult {
+  contents?: string | <span class="hljs-built_in">Uint8Array</span>;
+  loader?: Loader;
+  resolveDir?: string;
+  errors?: Message[];
+  warnings?: Message[];
+  pluginName?: string;
+}
+
+interface Message {
+  <span class="hljs-attr">text</span>: string;
+  location: Location | <span class="hljs-literal">null</span>;
+}
+
+interface Location {
+  <span class="hljs-attr">file</span>: string;
+  namespace: string;
+  line: number; <span class="hljs-comment">// 1-based</span>
+  column: number; <span class="hljs-comment">// 0-based, in bytes</span>
+  length: number; <span class="hljs-comment">// in bytes</span>
+  lineText: string;
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">type</span> OnLoadResult <span class="hljs-keyword">struct</span> {
+  Contents   *<span class="hljs-keyword">string</span>
+  Loader     Loader
+  ResolveDir <span class="hljs-keyword">string</span>
+  Errors     []Message
+  Warnings   []Message
+  PluginName <span class="hljs-keyword">string</span>
+}
+
+<span class="hljs-keyword">type</span> Message <span class="hljs-keyword">struct</span> {
+  Text     <span class="hljs-keyword">string</span>
+  Location *Location
+}
+
+<span class="hljs-keyword">type</span> Location <span class="hljs-keyword">struct</span> {
+  File      <span class="hljs-keyword">string</span>
+  Namespace <span class="hljs-keyword">string</span>
+  Line      <span class="hljs-keyword">int</span> <span class="hljs-comment">// 1-based</span>
+  Column    <span class="hljs-keyword">int</span> <span class="hljs-comment">// 0-based, in bytes</span>
+  Length    <span class="hljs-keyword">int</span> <span class="hljs-comment">// in bytes</span>
+  LineText  <span class="hljs-keyword">string</span>
+}</pre>
+      <ul><li><code>contents</code> <p> Set this to a string to specify the contents of the module. If this is set, no more on-load callbacks will be run for this resolved path. If this is not set, esbuild will continue to run on-load callbacks that were registered after the current one. Then, if the contents are still not set, esbuild will default to loading the contents from the file system if the resolved path is in the <code>file</code> namespace. </p></li><li><code>loader</code> <p> This tells esbuild how to interpret the contents. For example, the <a href="/content-types/#javascript"><code>js</code></a> loader interprets the contents as JavaScript and the <a href="/content-types/#css"><code>css</code></a> loader interprets the contents as CSS. The loader defaults to <code>js</code> if it's not specified. See the <a href="/content-types/">content types</a> page for a complete list of all built-in loaders. </p></li><li><code>resolveDir</code> <p> This is the file system directory to use when resolving an import path in this module to a real path on the file system. For modules in the <code>file</code> namespace, this value defaults to the directory part of the module path. Otherwise this value defaults to empty unless the plugin provides one. If the plugin doesn't provide one, esbuild's default behavior won't resolve any imports in this module. This directory will be passed to any <a href="#resolve-callbacks">resolve callbacks</a> that run on unresolved import paths in this module. </p></li><li><code>errors</code> and <code>warnings</code> <p> These properties let you pass any log messages generated during path resolution to esbuild where they will be displayed in the terminal according to the current <a href="/api/#log-level">log level</a> and end up in the final build result. For example, if you are calling a library and that library can return errors and/or warnings, you will want to forward them using these properties. </p> <p> If you only have a single error to return, you don't have to pass it via <code>errors</code>. You can simply throw the error in JavaScript or return the <code>error</code> object as the second return value in Go. </p></li><li><code>pluginName</code> <p> This property lets you replace this plugin's name with another name for this module load operation. It's useful for proxying another plugin through this plugin. For example, it lets you have a single plugin that forwards to a child process containing multiple plugins. You probably won't need to use this. </p></li></ul>
+      <h2 id="example-plugins">
+        <a aria-hidden="true" href="#example-plugins">#</a>
+        Example plugins
+      </h2>
+      <p>The example plugins below are meant to give you an idea of the different types of things you can do with the plugin API.</p>
+      <h3 id="http-plugin" data-h2="example-plugins">
+        <a aria-hidden="true" href="#http-plugin">#</a>
+        HTTP plugin
+      </h3>
+      <p><em>This example demonstrates: using a path format other than file system paths, namespace-specific path resolution, using resolve and load callbacks together.</em></p>
+      <p>This plugin allows you to import HTTP URLs into JavaScript code. The code will automatically be downloaded at build time. It enables the following workflow:</p>
+      <pre><span class="hljs-keyword">import</span> { zip } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;https://unpkg.com/lodash-es@4.17.15/lodash.js&#x27;</span>
+<span class="hljs-built_in">console</span>.log(zip([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>], [<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>]))</pre>
+      <p>This can be accomplished with the following plugin. Note that for real usage the downloads should be cached, but caching has been omitted from this example for brevity:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-keyword">let</span> httpPlugin = {
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;http&#x27;</span>,
+  setup(build) {
+    <span class="hljs-keyword">let</span> https = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;https&#x27;</span>)
+    <span class="hljs-keyword">let</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;http&#x27;</span>)
+
+    <span class="hljs-comment">// Intercept import paths starting with &quot;http:&quot; and &quot;https:&quot; so</span>
+    <span class="hljs-comment">// esbuild doesn&#x27;t attempt to map them to a file system location.</span>
+    <span class="hljs-comment">// Tag them with the &quot;http-url&quot; namespace to associate them with</span>
+    <span class="hljs-comment">// this plugin.</span>
+    build.onResolve({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/^https?:\/\//</span> }, <span class="hljs-function"><span class="hljs-params">args</span> =&gt;</span> ({
+      <span class="hljs-attr">path</span>: args.path,
+      <span class="hljs-attr">namespace</span>: <span class="hljs-string">&#x27;http-url&#x27;</span>,
+    }))
+
+    <span class="hljs-comment">// We also want to intercept all import paths inside downloaded</span>
+    <span class="hljs-comment">// files and resolve them against the original URL. All of these</span>
+    <span class="hljs-comment">// files will be in the &quot;http-url&quot; namespace. Make sure to keep</span>
+    <span class="hljs-comment">// the newly resolved URL in the &quot;http-url&quot; namespace so imports</span>
+    <span class="hljs-comment">// inside it will also be resolved as URLs recursively.</span>
+    build.onResolve({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/.*/</span>, namespace: <span class="hljs-string">&#x27;http-url&#x27;</span> }, <span class="hljs-function"><span class="hljs-params">args</span> =&gt;</span> ({
+      <span class="hljs-attr">path</span>: <span class="hljs-keyword">new</span> URL(args.path, args.importer).toString(),
+      <span class="hljs-attr">namespace</span>: <span class="hljs-string">&#x27;http-url&#x27;</span>,
+    }))
+
+    <span class="hljs-comment">// When a URL is loaded, we want to actually download the content</span>
+    <span class="hljs-comment">// from the internet. This has just enough logic to be able to</span>
+    <span class="hljs-comment">// handle the example import from unpkg.com but in reality this</span>
+    <span class="hljs-comment">// would probably need to be more complex.</span>
+    build.onLoad({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/.*/</span>, namespace: <span class="hljs-string">&#x27;http-url&#x27;</span> }, <span class="hljs-keyword">async</span> (args) =&gt; {
+      <span class="hljs-keyword">let</span> contents = <span class="hljs-keyword">await</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> {
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fetch</span>(<span class="hljs-params">url</span>) </span>{
+          <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Downloading: <span class="hljs-subst">${url}</span>`</span>)
+          <span class="hljs-keyword">let</span> lib = url.startsWith(<span class="hljs-string">&#x27;https&#x27;</span>) ? https : http
+          <span class="hljs-keyword">let</span> req = lib.get(url, <span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
+            <span class="hljs-keyword">if</span> ([<span class="hljs-number">301</span>, <span class="hljs-number">302</span>, <span class="hljs-number">307</span>].includes(res.statusCode)) {
+              fetch(<span class="hljs-keyword">new</span> URL(res.headers.location, url).toString())
+              req.abort()
+            } <span class="hljs-keyword">else</span> {
+              <span class="hljs-keyword">let</span> chunks = []
+              res.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function"><span class="hljs-params">chunk</span> =&gt;</span> chunks.push(chunk))
+              res.on(<span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-function">() =&gt;</span> resolve(Buffer.concat(chunks)))
+            }
+          }).on(<span class="hljs-string">&#x27;error&#x27;</span>, reject)
+        }
+        fetch(args.path)
+      })
+      <span class="hljs-keyword">return</span> { contents }
+    })
+  },
+}
+
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+  <span class="hljs-attr">plugins</span>: [httpPlugin],
+}).catch(<span class="hljs-function">() =&gt;</span> process.exit(<span class="hljs-number">1</span>))</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;io/ioutil&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;net/http&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;net/url&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-keyword">var</span> httpPlugin = api.Plugin{
+  Name: <span class="hljs-string">&quot;http&quot;</span>,
+  Setup: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(build api.PluginBuild)</span></span> {
+    <span class="hljs-comment">// Intercept import paths starting with &quot;http:&quot; and &quot;https:&quot; so</span>
+    <span class="hljs-comment">// esbuild doesn&#x27;t attempt to map them to a file system location.</span>
+    <span class="hljs-comment">// Tag them with the &quot;http-url&quot; namespace to associate them with</span>
+    <span class="hljs-comment">// this plugin.</span>
+    build.OnResolve(api.OnResolveOptions{Filter: <span class="hljs-string">`^https?://`</span>},
+      <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(args api.OnResolveArgs)</span> <span class="hljs-params">(api.OnResolveResult, error)</span></span> {
+        <span class="hljs-keyword">return</span> api.OnResolveResult{
+          Path:      args.Path,
+          Namespace: <span class="hljs-string">&quot;http-url&quot;</span>,
+        }, <span class="hljs-literal">nil</span>
+      })
+
+    <span class="hljs-comment">// We also want to intercept all import paths inside downloaded</span>
+    <span class="hljs-comment">// files and resolve them against the original URL. All of these</span>
+    <span class="hljs-comment">// files will be in the &quot;http-url&quot; namespace. Make sure to keep</span>
+    <span class="hljs-comment">// the newly resolved URL in the &quot;http-url&quot; namespace so imports</span>
+    <span class="hljs-comment">// inside it will also be resolved as URLs recursively.</span>
+    build.OnResolve(api.OnResolveOptions{Filter: <span class="hljs-string">&quot;.*&quot;</span>, Namespace: <span class="hljs-string">&quot;http-url&quot;</span>},
+      <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(args api.OnResolveArgs)</span> <span class="hljs-params">(api.OnResolveResult, error)</span></span> {
+        base, err := url.Parse(args.Importer)
+        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+          <span class="hljs-keyword">return</span> api.OnResolveResult{}, err
+        }
+        relative, err := url.Parse(args.Path)
+        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+          <span class="hljs-keyword">return</span> api.OnResolveResult{}, err
+        }
+        <span class="hljs-keyword">return</span> api.OnResolveResult{
+          Path:      base.ResolveReference(relative).String(),
+          Namespace: <span class="hljs-string">&quot;http-url&quot;</span>,
+        }, <span class="hljs-literal">nil</span>
+      })
+
+    <span class="hljs-comment">// When a URL is loaded, we want to actually download the content</span>
+    <span class="hljs-comment">// from the internet. This has just enough logic to be able to</span>
+    <span class="hljs-comment">// handle the example import from unpkg.com but in reality this</span>
+    <span class="hljs-comment">// would probably need to be more complex.</span>
+    build.OnLoad(api.OnLoadOptions{Filter: <span class="hljs-string">&quot;.*&quot;</span>, Namespace: <span class="hljs-string">&quot;http-url&quot;</span>},
+      <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(args api.OnLoadArgs)</span> <span class="hljs-params">(api.OnLoadResult, error)</span></span> {
+        res, err := http.Get(args.Path)
+        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+          <span class="hljs-keyword">return</span> api.OnLoadResult{}, err
+        }
+        <span class="hljs-keyword">defer</span> res.Body.Close()
+        bytes, err := ioutil.ReadAll(res.Body)
+        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+          <span class="hljs-keyword">return</span> api.OnLoadResult{}, err
+        }
+        contents := <span class="hljs-keyword">string</span>(bytes)
+        <span class="hljs-keyword">return</span> api.OnLoadResult{Contents: &amp;contents}, <span class="hljs-literal">nil</span>
+      })
+  },
+}
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Plugins:     []api.Plugin{httpPlugin},
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>The plugin first uses a resolver to move <code>http://</code> and <code>https://</code> URLs to the <code>http-url</code> namespace. Setting the namespace tells esbuild to not treat these paths as file system paths. Then, a loader for the <code>http-url</code> namespace downloads the module and returns the contents to esbuild. From there, another resolver for import paths inside modules in the <code>http-url</code> namespace picks up relative paths and translates them into full URLs by resolving them against the importing module's URL. That then feeds back into the loader allowing downloaded modules to download additional modules recursively.</p>
+      <h3 id="webassembly-plugin" data-h2="example-plugins">
+        <a aria-hidden="true" href="#webassembly-plugin">#</a>
+        WebAssembly plugin
+      </h3>
+      <p><em>This example demonstrates: working with binary data, creating virtual; modules using import statements, re-using the same path with different namespaces.</em></p>
+      <p>This plugin allows you to import <code>.wasm</code> files into JavaScript code. It does not generate the WebAssembly files themselves; that can either be done by another tool or by modifying this example plugin to suit your needs. It enables the following workflow:</p>
+      <pre><span class="hljs-keyword">import</span> load <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.wasm&#x27;</span>
+load(imports).then(<span class="hljs-function"><span class="hljs-params">exports</span> =&gt;</span> { ... })</pre>
+      <p>When you import a <code>.wasm</code> file, this plugin generates a virtual JavaScript module in the <code>wasm-stub</code> namespace with a single function that loads the WebAssembly module exported as the default export. That stub module looks something like this:</p>
+      <pre><span class="hljs-keyword">import</span> wasm <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;/path/to/example.wasm&#x27;</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (imports) =&gt;
+  WebAssembly.instantiate(wasm, imports).then(
+    <span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> result.instance.exports)</pre>
+      <p>Then that stub module imports the WebAssembly file itself as another module in the <code>wasm-binary</code> namespace using esbuild's built-in <a href="/content-types/#binary">binary</a> loader. This means importing a <code>.wasm</code> file actually generates two virtual modules. Here's the code for the plugin:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-keyword">let</span> wasmPlugin = {
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;wasm&#x27;</span>,
+  setup(build) {
+    <span class="hljs-keyword">let</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;path&#x27;</span>)
+    <span class="hljs-keyword">let</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>)
+
+    <span class="hljs-comment">// Resolve &quot;.wasm&quot; files to a path with a namespace</span>
+    build.onResolve({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/\.wasm$/</span> }, <span class="hljs-function"><span class="hljs-params">args</span> =&gt;</span> {
+      <span class="hljs-comment">// If this is the import inside the stub module, import the</span>
+      <span class="hljs-comment">// binary itself. Put the path in the &quot;wasm-binary&quot; namespace</span>
+      <span class="hljs-comment">// to tell our binary load callback to load the binary file.</span>
+      <span class="hljs-keyword">if</span> (args.namespace === <span class="hljs-string">&#x27;wasm-stub&#x27;</span>) {
+        <span class="hljs-keyword">return</span> {
+          <span class="hljs-attr">path</span>: args.path,
+          <span class="hljs-attr">namespace</span>: <span class="hljs-string">&#x27;wasm-binary&#x27;</span>,
+        }
+      }
+
+      <span class="hljs-comment">// Otherwise, generate the JavaScript stub module for this</span>
+      <span class="hljs-comment">// &quot;.wasm&quot; file. Put it in the &quot;wasm-stub&quot; namespace to tell</span>
+      <span class="hljs-comment">// our stub load callback to fill it with JavaScript.</span>
+      <span class="hljs-comment">//</span>
+      <span class="hljs-comment">// Resolve relative paths to absolute paths here since this</span>
+      <span class="hljs-comment">// resolve callback is given &quot;resolveDir&quot;, the directory to</span>
+      <span class="hljs-comment">// resolve imports against.</span>
+      <span class="hljs-keyword">if</span> (args.resolveDir === <span class="hljs-string">&#x27;&#x27;</span>) {
+        <span class="hljs-keyword">return</span> <span class="hljs-comment">// Ignore unresolvable paths</span>
+      }
+      <span class="hljs-keyword">return</span> {
+        <span class="hljs-attr">path</span>: path.isAbsolute(args.path) ? args.path : path.join(args.resolveDir, args.path),
+        <span class="hljs-attr">namespace</span>: <span class="hljs-string">&#x27;wasm-stub&#x27;</span>,
+      }
+    })
+
+    <span class="hljs-comment">// Virtual modules in the &quot;wasm-stub&quot; namespace are filled with</span>
+    <span class="hljs-comment">// the JavaScript code for compiling the WebAssembly binary. The</span>
+    <span class="hljs-comment">// binary itself is imported from a second virtual module.</span>
+    build.onLoad({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/.*/</span>, namespace: <span class="hljs-string">&#x27;wasm-stub&#x27;</span> }, <span class="hljs-keyword">async</span> (args) =&gt; ({
+      <span class="hljs-attr">contents</span>: <span class="hljs-string">`import wasm from <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(args.path)}</span>
+        export default (imports) =&gt;
+          WebAssembly.instantiate(wasm, imports).then(
+            result =&gt; result.instance.exports)`</span>,
+    }))
+
+    <span class="hljs-comment">// Virtual modules in the &quot;wasm-binary&quot; namespace contain the</span>
+    <span class="hljs-comment">// actual bytes of the WebAssembly file. This uses esbuild&#x27;s</span>
+    <span class="hljs-comment">// built-in &quot;binary&quot; loader instead of manually embedding the</span>
+    <span class="hljs-comment">// binary data inside JavaScript code ourselves.</span>
+    build.onLoad({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/.*/</span>, namespace: <span class="hljs-string">&#x27;wasm-binary&#x27;</span> }, <span class="hljs-keyword">async</span> (args) =&gt; ({
+      <span class="hljs-attr">contents</span>: <span class="hljs-keyword">await</span> fs.promises.readFile(args.path),
+      <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;binary&#x27;</span>,
+    }))
+  },
+}
+
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+  <span class="hljs-attr">plugins</span>: [wasmPlugin],
+}).catch(<span class="hljs-function">() =&gt;</span> process.exit(<span class="hljs-number">1</span>))</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;encoding/json&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;io/ioutil&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;path/filepath&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-keyword">var</span> wasmPlugin = api.Plugin{
+  Name: <span class="hljs-string">&quot;wasm&quot;</span>,
+  Setup: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(build api.PluginBuild)</span></span> {
+    <span class="hljs-comment">// Resolve &quot;.wasm&quot; files to a path with a namespace</span>
+    build.OnResolve(api.OnResolveOptions{Filter: <span class="hljs-string">`\.wasm$`</span>},
+      <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(args api.OnResolveArgs)</span> <span class="hljs-params">(api.OnResolveResult, error)</span></span> {
+        <span class="hljs-comment">// If this is the import inside the stub module, import the</span>
+        <span class="hljs-comment">// binary itself. Put the path in the &quot;wasm-binary&quot; namespace</span>
+        <span class="hljs-comment">// to tell our binary load callback to load the binary file.</span>
+        <span class="hljs-keyword">if</span> args.Namespace == <span class="hljs-string">&quot;wasm-stub&quot;</span> {
+          <span class="hljs-keyword">return</span> api.OnResolveResult{
+            Path:      args.Path,
+            Namespace: <span class="hljs-string">&quot;wasm-binary&quot;</span>,
+          }, <span class="hljs-literal">nil</span>
+        }
+
+        <span class="hljs-comment">// Otherwise, generate the JavaScript stub module for this</span>
+        <span class="hljs-comment">// &quot;.wasm&quot; file. Put it in the &quot;wasm-stub&quot; namespace to tell</span>
+        <span class="hljs-comment">// our stub load callback to fill it with JavaScript.</span>
+        <span class="hljs-comment">//</span>
+        <span class="hljs-comment">// Resolve relative paths to absolute paths here since this</span>
+        <span class="hljs-comment">// resolve callback is given &quot;resolveDir&quot;, the directory to</span>
+        <span class="hljs-comment">// resolve imports against.</span>
+        <span class="hljs-keyword">if</span> args.ResolveDir == <span class="hljs-string">&quot;&quot;</span> {
+          <span class="hljs-keyword">return</span> api.OnResolveResult{}, <span class="hljs-literal">nil</span> <span class="hljs-comment">// Ignore unresolvable paths</span>
+        }
+        <span class="hljs-keyword">if</span> !filepath.IsAbs(args.Path) {
+          args.Path = filepath.Join(args.ResolveDir, args.Path)
+        }
+        <span class="hljs-keyword">return</span> api.OnResolveResult{
+          Path:      args.Path,
+          Namespace: <span class="hljs-string">&quot;wasm-stub&quot;</span>,
+        }, <span class="hljs-literal">nil</span>
+      })
+
+    <span class="hljs-comment">// Virtual modules in the &quot;wasm-stub&quot; namespace are filled with</span>
+    <span class="hljs-comment">// the JavaScript code for compiling the WebAssembly binary. The</span>
+    <span class="hljs-comment">// binary itself is imported from a second virtual module.</span>
+    build.OnLoad(api.OnLoadOptions{Filter: <span class="hljs-string">`.*`</span>, Namespace: <span class="hljs-string">&quot;wasm-stub&quot;</span>},
+      <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(args api.OnLoadArgs)</span> <span class="hljs-params">(api.OnLoadResult, error)</span></span> {
+        bytes, err := json.Marshal(args.Path)
+        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+          <span class="hljs-keyword">return</span> api.OnLoadResult{}, err
+        }
+        contents := <span class="hljs-string">`import wasm from `</span> + <span class="hljs-keyword">string</span>(bytes) + <span class="hljs-string">`
+          export default (imports) =&gt;
+            WebAssembly.instantiate(wasm, imports).then(
+              result =&gt; result.instance.exports)`</span>
+        <span class="hljs-keyword">return</span> api.OnLoadResult{Contents: &amp;contents}, <span class="hljs-literal">nil</span>
+      })
+
+    <span class="hljs-comment">// Virtual modules in the &quot;wasm-binary&quot; namespace contain the</span>
+    <span class="hljs-comment">// actual bytes of the WebAssembly file. This uses esbuild&#x27;s</span>
+    <span class="hljs-comment">// built-in &quot;binary&quot; loader instead of manually embedding the</span>
+    <span class="hljs-comment">// binary data inside JavaScript code ourselves.</span>
+    build.OnLoad(api.OnLoadOptions{Filter: <span class="hljs-string">`.*`</span>, Namespace: <span class="hljs-string">&quot;wasm-binary&quot;</span>},
+      <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(args api.OnLoadArgs)</span> <span class="hljs-params">(api.OnLoadResult, error)</span></span> {
+        bytes, err := ioutil.ReadFile(args.Path)
+        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+          <span class="hljs-keyword">return</span> api.OnLoadResult{}, err
+        }
+        contents := <span class="hljs-keyword">string</span>(bytes)
+        <span class="hljs-keyword">return</span> api.OnLoadResult{
+          Contents: &amp;contents,
+          Loader:   api.LoaderBinary,
+        }, <span class="hljs-literal">nil</span>
+      })
+  },
+}
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Plugins:     []api.Plugin{wasmPlugin},
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>The plugin works in multiple steps. First, a resolve callback captures <code>.wasm</code> paths in normal modules and moves them to the <code>wasm-stub</code> namespace. Then load callback for the <code>wasm-stub</code> namespace generates a JavaScript stub module that exports the loader function and imports the <code>.wasm</code> path. This invokes the resolve callback again which this time moves the path to the <code>wasm-binary</code> namespace. Then the second load callback for the <code>wasm-binary</code> namespace causes the WebAssembly file to be loaded using the <code>binary</code> loader, which tells esbuild to embed the file itself in the bundle.</p>
+      <h3 id="svelte-plugin" data-h2="example-plugins">
+        <a aria-hidden="true" href="#svelte-plugin">#</a>
+        Svelte plugin
+      </h3>
+      <p><em>This example demonstrates: supporting a compile-to-JavaScript language, reporting warnings and errors, integrating source maps.</em></p>
+      <p>This plugin allows you to bundle <code>.svelte</code> files, which are from the <a href="https://svelte.dev/">Svelte</a> framework. You write code in an HTML-like syntax that is then converted to JavaScript by the Svelte compiler. Svelte code looks something like this:</p>
+      <pre><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
+  <span class="hljs-keyword">let</span> a = <span class="hljs-number">1</span>;
+  <span class="hljs-keyword">let</span> b = <span class="hljs-number">2</span>;
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;number&quot;</span> <span class="hljs-attr">bind:value</span>=<span class="hljs-string">{a}</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;number&quot;</span> <span class="hljs-attr">bind:value</span>=<span class="hljs-string">{b}</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>{a} + {b} = {a + b}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></pre>
+      <p>Compiling this code with the Svelte compiler generates a JavaScript module that depends on the <code>svelte/internal</code> package and that exports the component as a a single class using the <code>default</code> export. This means <code>.svelte</code> files can be compiled independently, which makes Svelte a good fit for an esbuild plugin. This plugin is triggered by importing a <code>.svelte</code> file like this:</p>
+      <pre><span class="hljs-keyword">import</span> Button <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./button.svelte&#x27;</span></pre>
+      <p>Here's the code for the plugin (there is no Go version of this plugin because the Svelte compiler is written in JavaScript):</p>
+      <pre><span class="hljs-keyword">let</span> sveltePlugin = {
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;svelte&#x27;</span>,
+  setup(build) {
+    <span class="hljs-keyword">let</span> svelte = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;svelte/compiler&#x27;</span>)
+    <span class="hljs-keyword">let</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;path&#x27;</span>)
+    <span class="hljs-keyword">let</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>)
+
+    build.onLoad({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/\.svelte$/</span> }, <span class="hljs-keyword">async</span> (args) =&gt; {
+      <span class="hljs-comment">// This converts a message in Svelte&#x27;s format to esbuild&#x27;s format</span>
+      <span class="hljs-keyword">let</span> convertMessage = <span class="hljs-function">(<span class="hljs-params">{ message, start, end }</span>) =&gt;</span> {
+        <span class="hljs-keyword">let</span> location
+        <span class="hljs-keyword">if</span> (start &amp;&amp; end) {
+          <span class="hljs-keyword">let</span> lineText = source.split(<span class="hljs-regexp">/\r\n|\r|\n/g</span>)[start.line - <span class="hljs-number">1</span>]
+          <span class="hljs-keyword">let</span> lineEnd = start.line === end.line ? end.column : lineText.length
+          location = {
+            <span class="hljs-attr">file</span>: filename,
+            <span class="hljs-attr">line</span>: start.line,
+            <span class="hljs-attr">column</span>: start.column,
+            <span class="hljs-attr">length</span>: lineEnd - start.column,
+            lineText,
+          }
+        }
+        <span class="hljs-keyword">return</span> { <span class="hljs-attr">text</span>: message, location }
+      }
+
+      <span class="hljs-comment">// Load the file from the file system</span>
+      <span class="hljs-keyword">let</span> source = <span class="hljs-keyword">await</span> fs.promises.readFile(args.path, <span class="hljs-string">&#x27;utf8&#x27;</span>)
+      <span class="hljs-keyword">let</span> filename = path.relative(process.cwd(), args.path)
+
+      <span class="hljs-comment">// Convert Svelte syntax to JavaScript</span>
+      <span class="hljs-keyword">try</span> {
+        <span class="hljs-keyword">let</span> { js, warnings } = svelte.compile(source, { filename })
+        <span class="hljs-keyword">let</span> contents = js.code + <span class="hljs-string">`//# sourceMappingURL=`</span> + js.map.toUrl()
+        <span class="hljs-keyword">return</span> { contents, <span class="hljs-attr">warnings</span>: warnings.map(convertMessage) }
+      } <span class="hljs-keyword">catch</span> (e) {
+        <span class="hljs-keyword">return</span> { <span class="hljs-attr">errors</span>: [convertMessage(e)] }
+      }
+    })
+  }
+}
+
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+  <span class="hljs-attr">plugins</span>: [sveltePlugin],
+}).catch(<span class="hljs-function">() =&gt;</span> process.exit(<span class="hljs-number">1</span>))</pre>
+      <p>This plugin only needs a load callback, not a resolve callback, because it's simple enough that it just needs to transform the loaded code into JavaScript without worrying about where the code comes from.</p>
+      <p>It appends a <code>//# sourceMappingURL=</code> comment to the generated JavaScript to tell esbuild how to map the generated JavaScript back to the original source code. If source maps are enabled during the build, esbuild will use this to ensure that the generated positions in the final source map are mapped all the way back to the original Svelte file instead of to the intermediate JavaScript code.</p>
+      <h2 id="plugin-api-limitations">
+        <a aria-hidden="true" href="#plugin-api-limitations">#</a>
+        Plugin API limitations
+      </h2>
+      <p>This API does not intend to cover all use cases. It's not possible to hook into every part of the bundling process. For example, it's not currently possible to modify the AST directly. This restriction exists to preserve the excellent performance characteristics of esbuild as well as to avoid exposing too much API surface which would be a maintenance burden and would prevent improvements that involve changing the AST.</p>
+      <p>One way to think about esbuild is as a &quot;linker&quot; for the web. Just like a linker for native code, esbuild's job is to take a set of files, resolve and bind references between them, and generate a single file containing all of the code linked together. A plugin's job is to generate the individual files that end up being linked.</p>
+      <p>Plugins in esbuild work best when they are relatively scoped and only customize a small aspect of the build. For example, a plugin for a special configuration file in a custom format (e.g. YAML) is very appropriate. The more plugins you use, the slower your build will get, especially if your plugin is written in JavaScript. If a plugin applies to every file in your build, then your build will likely be very slow. If caching is applicable, it must be done by the plugin itself.</p>
+    </main>
+  </body>
+</html>
