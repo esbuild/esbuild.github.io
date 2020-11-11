@@ -78,6 +78,7 @@ body:
     - Global name
     - JSX factory
     - JSX fragment
+    - Keep names
     - Loader
     - Log level
     - Minify
@@ -162,6 +163,7 @@ body:
     - Inject
     - JSX factory
     - JSX fragment
+    - Keep names
     - Loader
     - Log level
     - Main fields
@@ -2195,6 +2197,67 @@ body:
           result := api.Build(api.BuildOptions{
             EntryPoints: []string{"app.js"},
             ErrorLimit:  0,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Keep names
+
+  - p: >
+      In JavaScript the `name` property on functions and classes defaults to a
+      nearby identifier in the source code. These syntax forms all set the `name`
+      property of the function to `"fn"`:
+
+  - pre.js: |
+      function fn() {}
+      let fn = function() {};
+      obj.fn = function() {};
+      fn = function() {};
+      let [fn = function() {}] = [];
+      let {fn = function() {}} = {};
+      [fn = function() {}] = [];
+      ({fn = function() {}} = {});
+
+  - p: >
+      However, [minification](#minify) renames symbols to reduce code size and
+      [bundling](#bundle) sometimes need to rename symbols to avoid collisions.
+      That changes value of the `name` property for many of these cases. This
+      is usually fine because the `name` property is normally only used for
+      debugging. However, some frameworks rely on the `name` property for
+      registration and binding purposes. If this is the case, you can enable
+      this option to preserve the original `name` values even in minified code:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --minify --keep-names
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          minify: true,
+          keepNames: true,
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints:       []string{"app.js"},
+            MinifyWhitespace:  true,
+            MinifyIdentifiers: true,
+            MinifySyntax:      true,
+            KeepNames:         true,
           })
 
           if len(result.Errors) > 0 {
