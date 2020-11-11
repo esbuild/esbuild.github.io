@@ -23,12 +23,20 @@ async function checkCommon(kind, text, value, callback) {
 
   try {
     await fs.mkdir(testDir, { recursive: true })
+    await fs.writeFile(path.join(testDir, 'package.json'), '{}')
 
     if (value.in) {
       for (let name in value.in) {
         const absPath = path.join(testDir, name)
         await fs.mkdir(path.dirname(absPath), { recursive: true })
         await fs.writeFile(absPath, value.in[name])
+      }
+    }
+
+    if (value.install) {
+      for (let name in value.install) {
+        let version = value.install[name];
+        await execFileAsync('npm', ['i', `${name}@${version}`], { cwd: testDir, stdio: 'pipe' })
       }
     }
 
@@ -49,8 +57,7 @@ async function checkCommon(kind, text, value, callback) {
 
 async function checkCli(text, value) {
   return await checkCommon('cli', text, value, async ({ testDir }) => {
-    await fs.writeFile(path.join(testDir, 'package.json'), '{}')
-    await execAsync('npm i esbuild', { cwd: testDir, stdio: 'pipe' })
+    await execAsync(`npm i esbuild@${version}`, { cwd: testDir, stdio: 'pipe' })
 
     if (!Array.isArray(value.cli)) {
       await execAsync(value.cli, {
@@ -95,7 +102,6 @@ async function checkCli(text, value) {
 
 async function checkJs(text, value) {
   return await checkCommon('js', text, value, async ({ testDir }) => {
-    await fs.writeFile(path.join(testDir, 'package.json'), '{}')
     await execAsync(`npm i esbuild@${version}`, { cwd: testDir, stdio: 'pipe' })
 
     if (!Array.isArray(value.js)) {
@@ -193,7 +199,7 @@ async function main() {
       const value = obj[tag]
       if (tag === 'h2') h2 = value, h3 = null
       if (tag === 'h3') h3 = value
-      if (tag !== 'example') continue;
+      if (tag !== 'example' || value.typedef) continue;
       let text = `${page.title}` + (h2 ? ` :: ${h2}` + (h3 ? ` :: ${h3}` : '') : '')
       if (times[text]) text += ` :: ${++times[text]}`
       times[text] = 1

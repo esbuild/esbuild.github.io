@@ -33,6 +33,7 @@ index:
       - '[TypeScript](/content-types/#typescript) and [JSX](/content-types/#jsx) syntax'
       - '[Source maps](/api/#sourcemap)'
       - '[Minification](/api/#minify)'
+      - '[Plugins](/plugins/)'
 
     - p: >
         Check out the [getting started](/getting-started/) instructions if you
@@ -41,4 +42,5 @@ index:
 getting-started: 'getting-started.yml'
 api: 'api.yml'
 content-types: 'content-types.yml'
+plugins: 'plugins.yml'
 faq: 'faq.yml'

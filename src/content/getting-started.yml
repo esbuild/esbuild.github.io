@@ -107,6 +107,12 @@ body:
       the exception will also be printed to the console by default (although
       you can change the [log level](/api/#log-level) to turn that off if you'd like).
 
+  - p: >
+      Although there is also a `buildSync` API that is not asynchronous, the
+      asynchronous API is better for build scripts because [plugins](/plugins/)
+      only work with the asynchronous API. You can read more about the
+      configuration options for the build API in the [API documentation](/api/#build-api).
+
   - h2: Bundling for the browser
 
   - p: >

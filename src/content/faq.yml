@@ -162,7 +162,7 @@ body:
 
   - p: >
       I hope that the extensibility points I'm adding to esbuild
-      (the [API](/api/) and soon plugins too) will make esbuild useful to
+      ([plugins](/plugins/) and the [API](/api/)) will make esbuild useful to
       include as part of more customized build workflows, but I'm not
       intending or expecting these extensibility points to cover all use
       cases. If you have very custom requirements then you should be using
@@ -244,7 +244,7 @@ body:
       may need to be 3rd-party code.
       </p>
       <p>
-      I'm hoping that the upcoming plugin API will allow the community to add
+      I'm hoping that [plugins](/plugins/) will allow the community to add
       major features (e.g. WebAssembly import) without needing to contribute
       to esbuild itself. However, not everything is exposed in the plugin
       API and it may be the case that it's not possible to add a particular

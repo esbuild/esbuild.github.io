@@ -2847,9 +2847,9 @@ body:
 
   - p: >
       Normally the build API call takes one or more file names as input.
-      However, this option can be used to run a build without a file existing
-      on disk at all. It's called "stdin" because it corresponds to piping a
-      file to stdin on the command line.
+      However, this option can be used to run a build without a module existing
+      on the file system at all. It's called "stdin" because it corresponds to
+      piping a file to stdin on the command line.
 
   - p: >
       In addition to specifying the contents of the stdin file, you can
@@ -3010,7 +3010,9 @@ body:
       because single-threaded JavaScript code has the cleanest syntax. It's
       also optimal performance-wise if all you need to do is run esbuild and
       then exit. However, it blocks the main thread so you do not want to use
-      it if you have other work to perform in the meantime. It looks like this:
+      it if you have other work to perform in the meantime. This is also the
+      only option that cannot use plugins (since plugins are asynchronous).
+      It looks like this:
 
   - pre.js: |
       let esbuild = require('esbuild')
