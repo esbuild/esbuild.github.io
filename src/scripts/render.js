@@ -2,15 +2,22 @@ const yaml = require('js-yaml')
 const path = require('path')
 const md = require('markdown-it')({ html: true })
 const hljs = require('highlight.js')
+const esbuild = require('esbuild')
 const fs = require('fs')
-const srcDir = __dirname
-const contentDir = path.join(__dirname, '..', 'content')
-const outDir = path.join(__dirname, '..', '..', 'out')
+const repoDir = path.dirname(path.dirname(__dirname))
+const scriptsDir = path.join(repoDir, 'src', 'scripts')
+const contentDir = path.join(repoDir, 'src', 'content')
+const outDir = path.join(repoDir, 'out')
+
+function copyAndMinify(from, to) {
+  esbuild.buildSync({ entryPoints: [from], outfile: to, minify: true })
+}
 
 fs.mkdirSync(outDir, { recursive: true })
-fs.copyFileSync(path.join(srcDir, 'style.css'), path.join(outDir, 'style.css'))
-fs.copyFileSync(path.join(srcDir, 'script.js'), path.join(outDir, 'script.js'))
-fs.copyFileSync(path.join(srcDir, 'index.png'), path.join(outDir, 'index.png'))
+fs.copyFileSync(path.join(scriptsDir, 'index.png'), path.join(outDir, 'index.png'))
+
+copyAndMinify(path.join(scriptsDir, 'style.css'), path.join(outDir, 'style.css'))
+copyAndMinify(path.join(scriptsDir, 'script.js'), path.join(outDir, 'script.js'))
 
 const data = yaml.safeLoad(fs.readFileSync(path.join(contentDir, 'index.yml'), 'utf8'))
 const pages = Object.entries(data)
