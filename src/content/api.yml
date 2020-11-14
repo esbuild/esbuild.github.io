@@ -2477,6 +2477,7 @@ body:
               [path: string]: { bytesInOutput: number }
             }
             imports: { path: string }[]
+            exports: string[]
           }
         }
       }
