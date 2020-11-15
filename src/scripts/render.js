@@ -48,37 +48,67 @@ function escapeAttribute(text) {
 }
 
 function generateNav(key) {
-  let nav = []
+  let structure = []
 
   for (let [k, page] of pages) {
     if (k === 'index') continue
-    let target = k === key ? '' : `/${escapeAttribute(k)}/`
-    let level = 0
-
-    nav.push(`          <li><a href="/${escapeAttribute(k)}/">${escapeHTML(page.title)}</a></li>`)
+    let h2s = []
+    let root = { k, title: page.title, h2s }
+    structure.push(root)
 
     if (k !== 'faq' || k === key) {
+      let h3s
       for (let { tag, value } of page.body) {
         if (tag === 'h2') {
-          if (level < 1) nav.push(`          <ul class="h2">`)
-          if (level > 1) nav.push(`            </ul>`)
-          level = 1
-          let a = `<a href="${target}#${escapeAttribute(toID(value))}">${escapeHTML(value)}</a>`
-          nav.push(`            <li${k === key ? ` id="nav-${escapeAttribute(toID(value))}"` : ''}>${a}</li>`)
-        }
-
-        else if (tag === 'h3' && k === key) {
-          if (level < 1) nav.push(`          <ul class="h2">`)
-          if (level < 2) nav.push(`            <ul class="h3">`)
-          level = 2
-          let a = `<a href="#${escapeAttribute(toID(value))}">${escapeHTML(value)}</a>`
-          nav.push(`              <li id="nav-${escapeAttribute(toID(value))}">${a}</li>`)
+          h3s = []
+          h2 = { value, h3s }
+          h2s.push(h2)
+        } else if (tag === 'h3' && k === key) {
+          h3s.push({ value })
         }
       }
     }
+  }
 
-    if (level > 1) nav.push(`            </ul>`)
-    if (level > 0) nav.push(`          </ul>`)
+  let nav = []
+
+  for (let { k, title, h2s } of structure) {
+    let target = k === key ? '' : `/${escapeAttribute(k)}/`
+
+    if (h2s.length > 0) {
+      nav.push(`          <li>`)
+      nav.push(`            <a href="/${escapeAttribute(k)}/">${escapeHTML(title)}</a>`)
+      nav.push(`            <ul class="h2">`)
+
+      for (let { value, h3s } of h2s) {
+        let a = `<a href="${target}#${escapeAttribute(toID(value))}">${escapeHTML(value)}</a>`
+
+        if (h3s.length > 0) {
+          nav.push(`              <li${k === key ? ` id="nav-${escapeAttribute(toID(value))}"` : ''}>`)
+          nav.push(`                ${a}`)
+          nav.push(`                <ul class="h3">`)
+
+          for (let { value } of h3s) {
+            let a = `<a href="#${escapeAttribute(toID(value))}">${escapeHTML(value)}</a>`
+            nav.push(`                  <li id="nav-${escapeAttribute(toID(value))}">${a}</li>`)
+          }
+
+          nav.push(`                </ul>`)
+          nav.push(`              </li>`)
+        }
+
+        else {
+          nav.push(`              <li${k === key ? ` id="nav-${escapeAttribute(toID(value))}"` : ''}>${a}</li>`)
+        }
+      }
+
+      nav.push(`            </ul>`)
+      nav.push(`          </li>`)
+    }
+
+    else {
+      nav.push(`          <li><a href="/${escapeAttribute(k)}/">${escapeHTML(title)}</a></li>`)
+    }
   }
 
   return nav.join('\n')
@@ -220,7 +250,7 @@ function generateMain(key, main) {
     if (/^h[23]$/.test(tag)) {
       if (tag === 'h2') h2 = toID(value)
       let html = `      <${tag} id="${escapeAttribute(toID(value))}"${tag === 'h3' && h2 ? ` data-h2="${escapeAttribute(h2)}"` : ''}>
-        <a aria-hidden="true" href="#${escapeAttribute(toID(value))}">#</a>
+        <a href="#${escapeAttribute(toID(value))}">#</a>
         ${escapeHTML(value)}
       </${tag}>`
       let calls = apiCallsForOption[value]
@@ -311,7 +341,7 @@ for (let [key, page] of pages) {
   }
 
   let html = `<!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf8">
     <title>esbuild - ${escapeHTML(page.title)}</title>
@@ -339,7 +369,7 @@ for (let [key, page] of pages) {
     </script>
     <script src="/script.js" defer></script>
     <div id="menubar">
-      <a id="menutoggle" href="javascript:void 0">
+      <a id="menutoggle" href="javascript:void 0" aria-label="Toggle the menu">
         <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
           <rect x="15" y="18" width="20" height="2" stroke-width="0"/>
           <rect x="15" y="24" width="20" height="2" stroke-width="0"/>
@@ -355,17 +385,17 @@ for (let [key, page] of pages) {
 ${generateNav(key)}
         </ul>
         <div id="icons">
-          <a href="https://github.com/evanw/esbuild">
-          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
-            <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
-              -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
-              -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
-              -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
-              .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
-              .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
-              8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
-          </svg>
-          </a><a href="javascript:void 0" id="theme">
+          <a href="https://github.com/evanw/esbuild" aria-label="View this project on GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
+              <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
+                -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+                -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
+                .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
+                .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
+                8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
+            </svg>
+          </a><a href="javascript:void 0" id="theme" aria-label="Toggle dark mode">
             <svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
               <path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"/>
               <circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"/>
