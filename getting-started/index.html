@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf8">
     <title>esbuild - Getting Started</title>
@@ -27,7 +27,7 @@
     </script>
     <script src="/script.js" defer></script>
     <div id="menubar">
-      <a id="menutoggle" href="javascript:void 0">
+      <a id="menutoggle" href="javascript:void 0" aria-label="Toggle the menu">
         <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
           <rect x="15" y="18" width="20" height="2" stroke-width="0"/>
           <rect x="15" y="24" width="20" height="2" stroke-width="0"/>
@@ -40,58 +40,66 @@
       <div id="menu">
         <a href="/" class="logo">esbuild</a>
         <ul>
-          <li><a href="/getting-started/">Getting Started</a></li>
-          <ul class="h2">
-            <li id="nav-install-esbuild"><a href="#install-esbuild">Install esbuild</a></li>
-            <li id="nav-your-first-bundle"><a href="#your-first-bundle">Your first bundle</a></li>
-            <li id="nav-build-scripts"><a href="#build-scripts">Build scripts</a></li>
-            <li id="nav-bundling-for-the-browser"><a href="#bundling-for-the-browser">Bundling for the browser</a></li>
-            <li id="nav-bundling-for-node"><a href="#bundling-for-node">Bundling for node</a></li>
-          </ul>
-          <li><a href="/api/">API</a></li>
-          <ul class="h2">
-            <li><a href="/api/#transform-api">Transform API</a></li>
-            <li><a href="/api/#build-api">Build API</a></li>
-            <li><a href="/api/#simple-options">Simple options</a></li>
-            <li><a href="/api/#advanced-options">Advanced options</a></li>
-            <li><a href="/api/#js-specific-details">JS-specific details</a></li>
-          </ul>
-          <li><a href="/content-types/">Content Types</a></li>
-          <ul class="h2">
-            <li><a href="/content-types/#javascript">JavaScript</a></li>
-            <li><a href="/content-types/#typescript">TypeScript</a></li>
-            <li><a href="/content-types/#jsx">JSX</a></li>
-            <li><a href="/content-types/#json">JSON</a></li>
-            <li><a href="/content-types/#css">CSS</a></li>
-            <li><a href="/content-types/#text">Text</a></li>
-            <li><a href="/content-types/#binary">Binary</a></li>
-            <li><a href="/content-types/#base64">Base64</a></li>
-            <li><a href="/content-types/#data-url">Data URL</a></li>
-            <li><a href="/content-types/#external-file">External file</a></li>
-          </ul>
-          <li><a href="/plugins/">Plugins</a></li>
-          <ul class="h2">
-            <li><a href="/plugins/#using-plugins">Using plugins</a></li>
-            <li><a href="/plugins/#concepts">Concepts</a></li>
-            <li><a href="/plugins/#resolve-callbacks">Resolve callbacks</a></li>
-            <li><a href="/plugins/#load-callbacks">Load callbacks</a></li>
-            <li><a href="/plugins/#example-plugins">Example plugins</a></li>
-            <li><a href="/plugins/#plugin-api-limitations">Plugin API limitations</a></li>
-          </ul>
+          <li>
+            <a href="/getting-started/">Getting Started</a>
+            <ul class="h2">
+              <li id="nav-install-esbuild"><a href="#install-esbuild">Install esbuild</a></li>
+              <li id="nav-your-first-bundle"><a href="#your-first-bundle">Your first bundle</a></li>
+              <li id="nav-build-scripts"><a href="#build-scripts">Build scripts</a></li>
+              <li id="nav-bundling-for-the-browser"><a href="#bundling-for-the-browser">Bundling for the browser</a></li>
+              <li id="nav-bundling-for-node"><a href="#bundling-for-node">Bundling for node</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="/api/">API</a>
+            <ul class="h2">
+              <li><a href="/api/#transform-api">Transform API</a></li>
+              <li><a href="/api/#build-api">Build API</a></li>
+              <li><a href="/api/#simple-options">Simple options</a></li>
+              <li><a href="/api/#advanced-options">Advanced options</a></li>
+              <li><a href="/api/#js-specific-details">JS-specific details</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="/content-types/">Content Types</a>
+            <ul class="h2">
+              <li><a href="/content-types/#javascript">JavaScript</a></li>
+              <li><a href="/content-types/#typescript">TypeScript</a></li>
+              <li><a href="/content-types/#jsx">JSX</a></li>
+              <li><a href="/content-types/#json">JSON</a></li>
+              <li><a href="/content-types/#css">CSS</a></li>
+              <li><a href="/content-types/#text">Text</a></li>
+              <li><a href="/content-types/#binary">Binary</a></li>
+              <li><a href="/content-types/#base64">Base64</a></li>
+              <li><a href="/content-types/#data-url">Data URL</a></li>
+              <li><a href="/content-types/#external-file">External file</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="/plugins/">Plugins</a>
+            <ul class="h2">
+              <li><a href="/plugins/#using-plugins">Using plugins</a></li>
+              <li><a href="/plugins/#concepts">Concepts</a></li>
+              <li><a href="/plugins/#resolve-callbacks">Resolve callbacks</a></li>
+              <li><a href="/plugins/#load-callbacks">Load callbacks</a></li>
+              <li><a href="/plugins/#example-plugins">Example plugins</a></li>
+              <li><a href="/plugins/#plugin-api-limitations">Plugin API limitations</a></li>
+            </ul>
+          </li>
           <li><a href="/faq/">FAQ</a></li>
         </ul>
         <div id="icons">
-          <a href="https://github.com/evanw/esbuild">
-          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
-            <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
-              -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
-              -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
-              -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
-              .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
-              .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
-              8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
-          </svg>
-          </a><a href="javascript:void 0" id="theme">
+          <a href="https://github.com/evanw/esbuild" aria-label="View this project on GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
+              <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
+                -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+                -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
+                .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
+                .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
+                8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
+            </svg>
+          </a><a href="javascript:void 0" id="theme" aria-label="Toggle dark mode">
             <svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
               <path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"/>
               <circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"/>
@@ -107,7 +115,7 @@
     <main>
       <h1>Getting Started</h1>
       <h2 id="install-esbuild">
-        <a aria-hidden="true" href="#install-esbuild">#</a>
+        <a href="#install-esbuild">#</a>
         Install esbuild
       </h2>
       <p>First, download and install the esbuild command locally. A prebuilt binary can be installed using npm:</p>
@@ -115,7 +123,7 @@
       <p>This should have installed esbuild in your local <code>node_modules</code> folder. You can run the esbuild binary to verify that everything is working correctly:</p>
       <pre>./node_modules/.bin/esbuild --version</pre>
       <h2 id="your-first-bundle">
-        <a aria-hidden="true" href="#your-first-bundle">#</a>
+        <a href="#your-first-bundle">#</a>
         Your first bundle
       </h2>
       <p>This is a quick real-world example of what esbuild is capable of and how to use it. First, install the <code>react</code> and <code>react-dom</code> packages:</p>
@@ -132,7 +140,7 @@
       <pre><span class="hljs-tag">&lt;<span class="hljs-name">h1</span> <span class="hljs-attr">data-reactroot</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span>Hello, world!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></pre>
       <p>Notice that esbuild also converted JSX syntax to JavaScript without any configuration other than the <code>.jsx</code> extension. While esbuild can be configured, it attempts to have reasonable defaults so that many common situations work automatically. If you would like to use JSX syntax in <code>.js</code> files instead, you can tell esbuild to allow this using the <code>--loader:.js=jsx</code> flag. You can read more about the available configuration options in the <a href="/api/">API documentation</a>.</p>
       <h2 id="build-scripts">
-        <a aria-hidden="true" href="#build-scripts">#</a>
+        <a href="#build-scripts">#</a>
         Build scripts
       </h2>
       <p>Your build command is something you will be running repeatedly, so you will want to automate it. A natural way of doing this is to add a build script to your <code>package.json</code> file like this:</p>
@@ -152,7 +160,7 @@
       <p>The <code>build</code> function runs the esbuild binary in a child process and returns a promise that resolves when the build is complete. The code above doesn't print out the captured exception because any error messages in the exception will also be printed to the console by default (although you can change the <a href="/api/#log-level">log level</a> to turn that off if you'd like).</p>
       <p>Although there is also a <code>buildSync</code> API that is not asynchronous, the asynchronous API is better for build scripts because <a href="/plugins/">plugins</a> only work with the asynchronous API. You can read more about the configuration options for the build API in the <a href="/api/#build-api">API documentation</a>.</p>
       <h2 id="bundling-for-the-browser">
-        <a aria-hidden="true" href="#bundling-for-the-browser">#</a>
+        <a href="#bundling-for-the-browser">#</a>
         Bundling for the browser
       </h2>
       <p>The bundler outputs code for the browser by default, so no additional configuration is necessary to get started. For development builds you probably want to enable source maps with <code>--sourcemap</code>, and for production builds you probably want to enable minification with <code>--minify</code>. You probably also want to configure the target environment for the browsers you support. All of that might looks something like this:</p>
@@ -237,7 +245,7 @@
   }
 }</pre>
       <h2 id="bundling-for-node">
-        <a aria-hidden="true" href="#bundling-for-node">#</a>
+        <a href="#bundling-for-node">#</a>
         Bundling for node
       </h2>
       <p>Even though a bundler is not necessary when using node, sometimes it can still be beneficial to process your code with esbuild before running it in node. Bundling can automatically strip TypeScript types, convert ECMAScript module syntax to CommonJS, and transform newer JavaScript syntax into older syntax for a specific version of node. And it may be beneficial to bundle your package before publishing it so that it's a smaller download and so it spends less time reading from the file system when being loaded.</p>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf8">
     <title>esbuild - API</title>
@@ -27,7 +27,7 @@
     </script>
     <script src="/script.js" defer></script>
     <div id="menubar">
-      <a id="menutoggle" href="javascript:void 0">
+      <a id="menutoggle" href="javascript:void 0" aria-label="Toggle the menu">
         <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
           <rect x="15" y="18" width="20" height="2" stroke-width="0"/>
           <rect x="15" y="24" width="20" height="2" stroke-width="0"/>
@@ -40,99 +40,113 @@
       <div id="menu">
         <a href="/" class="logo">esbuild</a>
         <ul>
-          <li><a href="/getting-started/">Getting Started</a></li>
-          <ul class="h2">
-            <li><a href="/getting-started/#install-esbuild">Install esbuild</a></li>
-            <li><a href="/getting-started/#your-first-bundle">Your first bundle</a></li>
-            <li><a href="/getting-started/#build-scripts">Build scripts</a></li>
-            <li><a href="/getting-started/#bundling-for-the-browser">Bundling for the browser</a></li>
-            <li><a href="/getting-started/#bundling-for-node">Bundling for node</a></li>
-          </ul>
-          <li><a href="/api/">API</a></li>
-          <ul class="h2">
-            <li id="nav-transform-api"><a href="#transform-api">Transform API</a></li>
-            <li id="nav-build-api"><a href="#build-api">Build API</a></li>
-            <li id="nav-simple-options"><a href="#simple-options">Simple options</a></li>
-            <ul class="h3">
-              <li id="nav-bundle"><a href="#bundle">Bundle</a></li>
-              <li id="nav-define"><a href="#define">Define</a></li>
-              <li id="nav-external"><a href="#external">External</a></li>
-              <li id="nav-format"><a href="#format">Format</a></li>
-              <li id="nav-global-name"><a href="#global-name">Global name</a></li>
-              <li id="nav-inject"><a href="#inject">Inject</a></li>
-              <li id="nav-jsx-factory"><a href="#jsx-factory">JSX factory</a></li>
-              <li id="nav-jsx-fragment"><a href="#jsx-fragment">JSX fragment</a></li>
-              <li id="nav-loader"><a href="#loader">Loader</a></li>
-              <li id="nav-minify"><a href="#minify">Minify</a></li>
-              <li id="nav-outdir"><a href="#outdir">Outdir</a></li>
-              <li id="nav-outfile"><a href="#outfile">Outfile</a></li>
-              <li id="nav-platform"><a href="#platform">Platform</a></li>
-              <li id="nav-sourcemap"><a href="#sourcemap">Sourcemap</a></li>
-              <li id="nav-splitting"><a href="#splitting">Splitting</a></li>
-              <li id="nav-target"><a href="#target">Target</a></li>
-              <li id="nav-write"><a href="#write">Write</a></li>
+          <li>
+            <a href="/getting-started/">Getting Started</a>
+            <ul class="h2">
+              <li><a href="/getting-started/#install-esbuild">Install esbuild</a></li>
+              <li><a href="/getting-started/#your-first-bundle">Your first bundle</a></li>
+              <li><a href="/getting-started/#build-scripts">Build scripts</a></li>
+              <li><a href="/getting-started/#bundling-for-the-browser">Bundling for the browser</a></li>
+              <li><a href="/getting-started/#bundling-for-node">Bundling for node</a></li>
             </ul>
-            <li id="nav-advanced-options"><a href="#advanced-options">Advanced options</a></li>
-            <ul class="h3">
-              <li id="nav-avoid-tdz"><a href="#avoid-tdz">Avoid TDZ</a></li>
-              <li id="nav-charset"><a href="#charset">Charset</a></li>
-              <li id="nav-color"><a href="#color">Color</a></li>
-              <li id="nav-error-limit"><a href="#error-limit">Error limit</a></li>
-              <li id="nav-keep-names"><a href="#keep-names">Keep names</a></li>
-              <li id="nav-log-level"><a href="#log-level">Log level</a></li>
-              <li id="nav-main-fields"><a href="#main-fields">Main fields</a></li>
-              <li id="nav-metafile"><a href="#metafile">Metafile</a></li>
-              <li id="nav-out-extension"><a href="#out-extension">Out extension</a></li>
-              <li id="nav-outbase"><a href="#outbase">Outbase</a></li>
-              <li id="nav-public-path"><a href="#public-path">Public path</a></li>
-              <li id="nav-pure"><a href="#pure">Pure</a></li>
-              <li id="nav-resolve-extensions"><a href="#resolve-extensions">Resolve extensions</a></li>
-              <li id="nav-sourcefile"><a href="#sourcefile">Sourcefile</a></li>
-              <li id="nav-stdin"><a href="#stdin">Stdin</a></li>
-              <li id="nav-tsconfig"><a href="#tsconfig">Tsconfig</a></li>
-              <li id="nav-tsconfig-raw"><a href="#tsconfig-raw">Tsconfig raw</a></li>
+          </li>
+          <li>
+            <a href="/api/">API</a>
+            <ul class="h2">
+              <li id="nav-transform-api"><a href="#transform-api">Transform API</a></li>
+              <li id="nav-build-api"><a href="#build-api">Build API</a></li>
+              <li id="nav-simple-options">
+                <a href="#simple-options">Simple options</a>
+                <ul class="h3">
+                  <li id="nav-bundle"><a href="#bundle">Bundle</a></li>
+                  <li id="nav-define"><a href="#define">Define</a></li>
+                  <li id="nav-external"><a href="#external">External</a></li>
+                  <li id="nav-format"><a href="#format">Format</a></li>
+                  <li id="nav-global-name"><a href="#global-name">Global name</a></li>
+                  <li id="nav-inject"><a href="#inject">Inject</a></li>
+                  <li id="nav-jsx-factory"><a href="#jsx-factory">JSX factory</a></li>
+                  <li id="nav-jsx-fragment"><a href="#jsx-fragment">JSX fragment</a></li>
+                  <li id="nav-loader"><a href="#loader">Loader</a></li>
+                  <li id="nav-minify"><a href="#minify">Minify</a></li>
+                  <li id="nav-outdir"><a href="#outdir">Outdir</a></li>
+                  <li id="nav-outfile"><a href="#outfile">Outfile</a></li>
+                  <li id="nav-platform"><a href="#platform">Platform</a></li>
+                  <li id="nav-sourcemap"><a href="#sourcemap">Sourcemap</a></li>
+                  <li id="nav-splitting"><a href="#splitting">Splitting</a></li>
+                  <li id="nav-target"><a href="#target">Target</a></li>
+                  <li id="nav-write"><a href="#write">Write</a></li>
+                </ul>
+              </li>
+              <li id="nav-advanced-options">
+                <a href="#advanced-options">Advanced options</a>
+                <ul class="h3">
+                  <li id="nav-avoid-tdz"><a href="#avoid-tdz">Avoid TDZ</a></li>
+                  <li id="nav-charset"><a href="#charset">Charset</a></li>
+                  <li id="nav-color"><a href="#color">Color</a></li>
+                  <li id="nav-error-limit"><a href="#error-limit">Error limit</a></li>
+                  <li id="nav-keep-names"><a href="#keep-names">Keep names</a></li>
+                  <li id="nav-log-level"><a href="#log-level">Log level</a></li>
+                  <li id="nav-main-fields"><a href="#main-fields">Main fields</a></li>
+                  <li id="nav-metafile"><a href="#metafile">Metafile</a></li>
+                  <li id="nav-out-extension"><a href="#out-extension">Out extension</a></li>
+                  <li id="nav-outbase"><a href="#outbase">Outbase</a></li>
+                  <li id="nav-public-path"><a href="#public-path">Public path</a></li>
+                  <li id="nav-pure"><a href="#pure">Pure</a></li>
+                  <li id="nav-resolve-extensions"><a href="#resolve-extensions">Resolve extensions</a></li>
+                  <li id="nav-sourcefile"><a href="#sourcefile">Sourcefile</a></li>
+                  <li id="nav-stdin"><a href="#stdin">Stdin</a></li>
+                  <li id="nav-tsconfig"><a href="#tsconfig">Tsconfig</a></li>
+                  <li id="nav-tsconfig-raw"><a href="#tsconfig-raw">Tsconfig raw</a></li>
+                </ul>
+              </li>
+              <li id="nav-js-specific-details">
+                <a href="#js-specific-details">JS-specific details</a>
+                <ul class="h3">
+                  <li id="nav-running-in-the-browser"><a href="#running-in-the-browser">Running in the browser</a></li>
+                </ul>
+              </li>
             </ul>
-            <li id="nav-js-specific-details"><a href="#js-specific-details">JS-specific details</a></li>
-            <ul class="h3">
-              <li id="nav-running-in-the-browser"><a href="#running-in-the-browser">Running in the browser</a></li>
+          </li>
+          <li>
+            <a href="/content-types/">Content Types</a>
+            <ul class="h2">
+              <li><a href="/content-types/#javascript">JavaScript</a></li>
+              <li><a href="/content-types/#typescript">TypeScript</a></li>
+              <li><a href="/content-types/#jsx">JSX</a></li>
+              <li><a href="/content-types/#json">JSON</a></li>
+              <li><a href="/content-types/#css">CSS</a></li>
+              <li><a href="/content-types/#text">Text</a></li>
+              <li><a href="/content-types/#binary">Binary</a></li>
+              <li><a href="/content-types/#base64">Base64</a></li>
+              <li><a href="/content-types/#data-url">Data URL</a></li>
+              <li><a href="/content-types/#external-file">External file</a></li>
             </ul>
-          </ul>
-          <li><a href="/content-types/">Content Types</a></li>
-          <ul class="h2">
-            <li><a href="/content-types/#javascript">JavaScript</a></li>
-            <li><a href="/content-types/#typescript">TypeScript</a></li>
-            <li><a href="/content-types/#jsx">JSX</a></li>
-            <li><a href="/content-types/#json">JSON</a></li>
-            <li><a href="/content-types/#css">CSS</a></li>
-            <li><a href="/content-types/#text">Text</a></li>
-            <li><a href="/content-types/#binary">Binary</a></li>
-            <li><a href="/content-types/#base64">Base64</a></li>
-            <li><a href="/content-types/#data-url">Data URL</a></li>
-            <li><a href="/content-types/#external-file">External file</a></li>
-          </ul>
-          <li><a href="/plugins/">Plugins</a></li>
-          <ul class="h2">
-            <li><a href="/plugins/#using-plugins">Using plugins</a></li>
-            <li><a href="/plugins/#concepts">Concepts</a></li>
-            <li><a href="/plugins/#resolve-callbacks">Resolve callbacks</a></li>
-            <li><a href="/plugins/#load-callbacks">Load callbacks</a></li>
-            <li><a href="/plugins/#example-plugins">Example plugins</a></li>
-            <li><a href="/plugins/#plugin-api-limitations">Plugin API limitations</a></li>
-          </ul>
+          </li>
+          <li>
+            <a href="/plugins/">Plugins</a>
+            <ul class="h2">
+              <li><a href="/plugins/#using-plugins">Using plugins</a></li>
+              <li><a href="/plugins/#concepts">Concepts</a></li>
+              <li><a href="/plugins/#resolve-callbacks">Resolve callbacks</a></li>
+              <li><a href="/plugins/#load-callbacks">Load callbacks</a></li>
+              <li><a href="/plugins/#example-plugins">Example plugins</a></li>
+              <li><a href="/plugins/#plugin-api-limitations">Plugin API limitations</a></li>
+            </ul>
+          </li>
           <li><a href="/faq/">FAQ</a></li>
         </ul>
         <div id="icons">
-          <a href="https://github.com/evanw/esbuild">
-          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
-            <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
-              -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
-              -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
-              -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
-              .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
-              .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
-              8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
-          </svg>
-          </a><a href="javascript:void 0" id="theme">
+          <a href="https://github.com/evanw/esbuild" aria-label="View this project on GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
+              <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
+                -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+                -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
+                .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
+                .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
+                8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
+            </svg>
+          </a><a href="javascript:void 0" id="theme" aria-label="Toggle dark mode">
             <svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
               <path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"/>
               <circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"/>
@@ -151,7 +165,7 @@
       <p>There are two main API calls in esbuild's API: <a href="#transform-api">transform</a> and <a href="#build-api">build</a>. It's important to understand which one you should be using because they work differently.</p>
       <p>If you are using JavaScript be sure to check out the <a href="#js-specific-details">JS-specific details</a> section below. You may also find the <a href="https://github.com/evanw/esbuild/blob/master/lib/types.ts">TypeScript type definitions</a> for esbuild helpful as a reference. If you are using Go be sure to check out the automatically generated <a href="https://pkg.go.dev/github.com/evanw/esbuild/pkg/api">Go documentation</a>.</p>
       <h2 id="transform-api">
-        <a aria-hidden="true" href="#transform-api">#</a>
+        <a href="#transform-api">#</a>
         Transform API
       </h2>
       <p>The transform API call operates on a single string without access to a file system. This makes it ideal for use in environments without a file system (such as a browser) or as part of another tool chain. Here is what a simple transform looks like:</p>
@@ -208,7 +222,7 @@
         <li><a href="#tsconfig-raw">Tsconfig raw</a></li>
       </ul>
       <h2 id="build-api">
-        <a aria-hidden="true" href="#build-api">#</a>
+        <a href="#build-api">#</a>
         Build API
       </h2>
       <p>The build API call operates on one or more files in the file system. This allows the files to reference each other and be bundled together. Here is what a simple build looks like:</p>
@@ -280,11 +294,11 @@
         <li><a href="#tsconfig">Tsconfig</a></li>
       </ul>
       <h2 id="simple-options">
-        <a aria-hidden="true" href="#simple-options">#</a>
+        <a href="#simple-options">#</a>
         Simple options
       </h2>
       <h3 id="bundle" data-h2="simple-options">
-        <a aria-hidden="true" href="#bundle">#</a>
+        <a href="#bundle">#</a>
         Bundle
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -318,7 +332,7 @@
       <p>Refer to the <a href="http://localhost:8004/getting-started/#your-first-bundle">getting started guide</a> for an example of bundling with real-world code.</p>
       <p>Note that bundling is different than file concatentation. Passing esbuild multiple input files with bundling enabled will create two separate bundles instead of joining the input files together. To join a set of files together with esbuild, import them all into a single entry point file and bundle just that one file with esbuild.</p>
       <h3 id="define" data-h2="simple-options">
-        <a aria-hidden="true" href="#define">#</a>
+        <a href="#define">#</a>
         Define
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -399,7 +413,7 @@
 }</pre>
       <p>If you're using the CLI, keep in mind that different shells have different rules for how to escape quote characters (which are necessary when the replacement value is a string). For example, bash will remove the outer quote characters while the Windows command prompt won't. If you need to replace something with a string literal and have it work on both Unix and Windows, you may not be able to use the CLI for this. You may have to use the JavaScript or Go API instead.</p>
       <h3 id="external" data-h2="simple-options">
-        <a aria-hidden="true" href="#external">#</a>
+        <a href="#external">#</a>
         External
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -442,7 +456,7 @@
   }
 }</pre>
       <h3 id="format" data-h2="simple-options">
-        <a aria-hidden="true" href="#format">#</a>
+        <a href="#format">#</a>
         Format
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -547,7 +561,7 @@ process.stdout.write(out.code)</pre>
       <p>The <code>esm</code> format can be used either in the browser or in node, but you have to explicitly load it as a module. This happens automatically if you <code>import</code> it from another module. Otherwise:</p>
       <ul><li>In the browser, you can load a module using <code>&lt;script <wbr>src=&quot;<wbr>file.js&quot; <wbr>type=&quot;<wbr>module&quot;&gt;<wbr>&lt;/script&gt;</code>. <br> </li><li>In node, you can load a module using <code>node <wbr>--experimental-<wbr>modules <wbr>file.mjs</code>. Note that node requires the <code>.mjs</code> extension unless you have configured <code>&quot;type&quot;: <wbr>&quot;module&quot;</code> in your <code>package.json</code> file. You can use the <a href="#out-extension">out extension</a> setting in esbuild to customize the output extension for the files esbuild generates. You can read more about using ECMAScript modules in node <a href="https://nodejs.org/api/esm.html">here</a>.</li></ul>
       <h3 id="global-name" data-h2="simple-options">
-        <a aria-hidden="true" href="#global-name">#</a>
+        <a href="#global-name">#</a>
         Global name
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -628,7 +642,7 @@ example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span clas
   <span class="hljs-keyword">return</span> require_stdin();
 })();</pre>
       <h3 id="inject" data-h2="simple-options">
-        <a aria-hidden="true" href="#inject">#</a>
+        <a href="#inject">#</a>
         Inject
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -738,7 +752,7 @@ example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span clas
       <h4>Conditionally injecting a file</h4>
       <p>If you want to <em>conditionally</em> import a file only if the export is actually used, you should mark the injected file as not having side effects by putting it in a package and adding <code>&quot;sideEffects&quot;: <wbr>false</code> in that package's <code>package.json</code> file. This setting is a <a href="https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free">convention from Webpack</a> that esbuild respects for any imported file, not just files used with inject.</p>
       <h3 id="jsx-factory" data-h2="simple-options">
-        <a aria-hidden="true" href="#jsx-factory">#</a>
+        <a href="#jsx-factory">#</a>
         JSX factory
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -783,7 +797,7 @@ example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span clas
   }
 }</pre>
       <h3 id="jsx-fragment" data-h2="simple-options">
-        <a aria-hidden="true" href="#jsx-fragment">#</a>
+        <a href="#jsx-fragment">#</a>
         JSX fragment
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -828,7 +842,7 @@ example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span clas
   }
 }</pre>
       <h3 id="loader" data-h2="simple-options">
-        <a aria-hidden="true" href="#loader">#</a>
+        <a href="#loader">#</a>
         Loader
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -942,7 +956,7 @@ image.src = url
   }
 }</pre>
       <h3 id="minify" data-h2="simple-options">
-        <a aria-hidden="true" href="#minify">#</a>
+        <a href="#minify">#</a>
         Minify
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1078,7 +1092,7 @@ image.src = url
 }</pre>
       <p>The JavaScript minification algorithm in esbuild usually generates output that is very close in size to the minified output of industry-standard JavaScript minification tools. You can check out <a href="https://github.com/privatenumber/minification-benchmarks/blob/cc9205d26756a0c32fe47cc22046d850b5c1fbbe/readme.md">this benchmark</a> for an example comparison of output sizes between tools. While esbuild is not the optimal JavaScript minifier in all cases (and doesn't try to be), it strives to generate minified output within a few percent of the size of dedicated minification tools, and of course to do so much faster.</p>
       <h3 id="outdir" data-h2="simple-options">
-        <a aria-hidden="true" href="#outdir">#</a>
+        <a href="#outdir">#</a>
         Outdir
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1113,7 +1127,7 @@ image.src = url
       <p>The output directory will be generated if it does not already exist, but it will not be cleared if it already contains some files. Any generated files will silently overwrite existing files with the same name. You should clear the output directory yourself before running esbuild if you want the output directory to only contain files from the current run of esbuild.</p>
       <p>If your build contains multiple entry points in separate directories, the directory structure will be replicated into the output directory starting from the <a href="https://en.wikipedia.org/wiki/Lowest_common_ancestor">lowest common ancestor</a> directory among all input entry point paths. For example, if there are two entry points <code>src/<wbr>home/<wbr>index.ts</code> and <code>src/<wbr>about/<wbr>index.ts</code>, the output directory will contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code>. If you want to customize this behavior, you chould change the <a href="#outbase">outbase directory</a>.</p>
       <h3 id="outfile" data-h2="simple-options">
-        <a aria-hidden="true" href="#outfile">#</a>
+        <a href="#outfile">#</a>
         Outfile
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1146,7 +1160,7 @@ image.src = url
   }
 }</pre>
       <h3 id="platform" data-h2="simple-options">
-        <a aria-hidden="true" href="#platform">#</a>
+        <a href="#platform">#</a>
         Platform
       </h3>
       <p>By default, esbuild's bundler is configured to generate code intended for the browser. If your bundled code is intended to run in node instead, you should set the platform to node:</p>
@@ -1185,7 +1199,7 @@ image.src = url
       <ul><li><p> The default output <a href="#format">format</a> is set to <code>cjs</code>, which stands for CommonJS (the module format used by node). ES6-style exports using <code>export</code> statements will be converted into getters on the CommonJS <code>exports</code> object. </p></li><li><p> All <a href="https://nodejs.org/docs/latest/api/">built-in node modules</a> such as <code>fs</code> are automatically marked as <a href="#external">external</a> so they don't cause errors when the bundler tries to bundle them. </p></li><li><p> The <a href="#main-fields">main fields</a> setting is set to <code>main,<wbr>module</code>. This means tree shaking will likely not happen for packages that provide both <code>module</code> and <code>main</code> since tree shaking works with ECMAScript modules but not with CommonJS modules. </p> <p> Unfortunately some packages incorrectly treat <code>module</code> as meaning &quot;browser code&quot; instead of &quot;ECMAScript module code&quot; so this default behavior is required for compatibility. You can manually configure the <a href="#main-fields">main fields</a> setting to <code>module,<wbr>main</code> if you want to enable tree shaking and know it is safe to do so. </p></li></ul>
       <p>See also <a href="/getting-started/#bundling-for-the-browser">bundling for the browser</a> and <a href="/getting-started/#bundling-for-node">bundling for node</a>.</p>
       <h3 id="sourcemap" data-h2="simple-options">
-        <a aria-hidden="true" href="#sourcemap">#</a>
+        <a href="#sourcemap">#</a>
         Sourcemap
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1280,7 +1294,7 @@ image.src = url
 }</pre>
       <p>Keep in mind that source maps are usually very big because they contain all of your original source code, so you usually do not want to ship code containing <code>inline</code> source maps.</p>
       <h3 id="splitting" data-h2="simple-options">
-        <a aria-hidden="true" href="#splitting">#</a>
+        <a href="#splitting">#</a>
         Splitting
       </h3>
       <div class="warning">Code splitting is still a work in progress. It currently only works with the <code>esm</code> output <a href="#format">format</a>. There is also a known <a href="https://github.com/evanw/esbuild/issues/399">ordering issue</a> with <code>import</code> statements across code splitting chunks. You can follow <a href="https://github.com/evanw/esbuild/issues/16">the tracking issue</a> for updates about this feature.</div>
@@ -1320,7 +1334,7 @@ image.src = url
   }
 }</pre>
       <h3 id="target" data-h2="simple-options">
-        <a aria-hidden="true" href="#target">#</a>
+        <a href="#target">#</a>
         Target
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1370,7 +1384,7 @@ image.src = url
       <p>You can refer to the <a href="/content-types/#javascript">JavaScript loader</a> for the details about which syntax features were introduced with which language versions. Keep in mind that while JavaScript language versions such as <code>es2020</code> are identified by year, that is the year the specification is approved. It has nothing to do with the year all major browsers implement that specification which often happens earlier or later than that year.</p>
       <p>Note that if you use a syntax feature that esbuild doesn't yet have support for transforming to your current language target, esbuild will generate an error where the unsupported syntax is used. This is often the case when targeting the <code>es5</code> language version, for example, since esbuild only supports transforming most newer JavaScript syntax features to <code>es6</code>.</p>
       <h3 id="write" data-h2="simple-options">
-        <a aria-hidden="true" href="#write">#</a>
+        <a href="#write">#</a>
         Write
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1412,11 +1426,11 @@ image.src = url
   }
 }</pre>
       <h2 id="advanced-options">
-        <a aria-hidden="true" href="#advanced-options">#</a>
+        <a href="#advanced-options">#</a>
         Advanced options
       </h2>
       <h3 id="avoid-tdz" data-h2="advanced-options">
-        <a aria-hidden="true" href="#avoid-tdz">#</a>
+        <a href="#avoid-tdz">#</a>
         Avoid TDZ
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1452,7 +1466,7 @@ image.src = url
   }
 }</pre>
       <h3 id="charset" data-h2="advanced-options">
-        <a aria-hidden="true" href="#charset">#</a>
+        <a href="#charset">#</a>
         Charset
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1500,7 +1514,7 @@ image.src = url
       <p>Some caveats:</p>
       <ul><li><p> This does not yet escape non-ASCII characters embedded in regular expressions. This is because esbuild does not currently parse the contents of regular expressions at all. The flag was added despite this limitation because it's still useful for code that doesn't contain cases like this. </p></li><li><p> This flag does not apply to comments. I believe preserving non-ASCII data in comments should be fine because even if the encoding is wrong, the run time environment should completely ignore the contents of all comments. For example, the <a href="https://v8.dev/blog/scanner">V8 blog post</a> mentions an optimization that avoids decoding comment contents completely. And all comments other than license-related comments are stripped out by esbuild anyway. </p></li><li><p> This option simultaneously applies to all output file types (JavaScript, CSS, and JSON). So if you configure your server to send the correct <code>Content-<wbr>Type</code> header and want to use the UTF-8 charset, make sure your server is configured to treat both <code>.js</code> and <code>.css</code> files as UTF-8. </p></li></ul>
       <h3 id="color" data-h2="advanced-options">
-        <a aria-hidden="true" href="#color">#</a>
+        <a href="#color">#</a>
         Color
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1541,7 +1555,7 @@ log(typeof x == <span class="color-green">"null"</span>)
 }</pre>
       <p>Colored output can also be set to <code>false</code> to disable colors.</p>
       <h3 id="error-limit" data-h2="advanced-options">
-        <a aria-hidden="true" href="#error-limit">#</a>
+        <a href="#error-limit">#</a>
         Error limit
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1574,7 +1588,7 @@ log(typeof x == <span class="color-green">"null"</span>)
   }
 }</pre>
       <h3 id="keep-names" data-h2="advanced-options">
-        <a aria-hidden="true" href="#keep-names">#</a>
+        <a href="#keep-names">#</a>
         Keep names
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1619,7 +1633,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="log-level" data-h2="advanced-options">
-        <a aria-hidden="true" href="#log-level">#</a>
+        <a href="#log-level">#</a>
         Log level
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1652,7 +1666,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="main-fields" data-h2="advanced-options">
-        <a aria-hidden="true" href="#main-fields">#</a>
+        <a href="#main-fields">#</a>
         Main fields
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1698,7 +1712,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="metafile" data-h2="advanced-options">
-        <a aria-hidden="true" href="#metafile">#</a>
+        <a href="#metafile">#</a>
         Metafile
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1754,7 +1768,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 }</pre>
       <p>This data can then be analyzed by other tools. For example, <a href="https://www.bundle-buddy.com/esbuild">bundle buddy</a> can consume esbuild's metadata format and generates a treemap visualization of the modules in your bundle and how much space each one takes up.</p>
       <h3 id="out-extension" data-h2="advanced-options">
-        <a aria-hidden="true" href="#out-extension">#</a>
+        <a href="#out-extension">#</a>
         Out extension
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1792,7 +1806,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="outbase" data-h2="advanced-options">
-        <a aria-hidden="true" href="#outbase">#</a>
+        <a href="#outbase">#</a>
         Outbase
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1834,7 +1848,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 }</pre>
       <p>If the outbase directory isn't specified, it defaults to the <a href="https://en.wikipedia.org/wiki/Lowest_common_ancestor">lowest common ancestor</a> directory among all input entry point paths. This is <code>src/<wbr>pages</code> in the example above, which means by default the output directory will contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code> instead.</p>
       <h3 id="public-path" data-h2="advanced-options">
-        <a aria-hidden="true" href="#public-path">#</a>
+        <a href="#public-path">#</a>
         Public path
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1874,7 +1888,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="pure" data-h2="advanced-options">
-        <a aria-hidden="true" href="#pure">#</a>
+        <a href="#pure">#</a>
         Pure
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1930,7 +1944,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="resolve-extensions" data-h2="advanced-options">
-        <a aria-hidden="true" href="#resolve-extensions">#</a>
+        <a href="#resolve-extensions">#</a>
         Resolve extensions
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1965,7 +1979,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="sourcefile" data-h2="advanced-options">
-        <a aria-hidden="true" href="#sourcefile">#</a>
+        <a href="#sourcefile">#</a>
         Sourcefile
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -2006,7 +2020,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="stdin" data-h2="advanced-options">
-        <a aria-hidden="true" href="#stdin">#</a>
+        <a href="#stdin">#</a>
         Stdin
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2054,7 +2068,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="tsconfig" data-h2="advanced-options">
-        <a aria-hidden="true" href="#tsconfig">#</a>
+        <a href="#tsconfig">#</a>
         Tsconfig
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2089,7 +2103,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="tsconfig-raw" data-h2="advanced-options">
-        <a aria-hidden="true" href="#tsconfig-raw">#</a>
+        <a href="#tsconfig-raw">#</a>
         Tsconfig raw
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a></i></p>
@@ -2131,7 +2145,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h2 id="js-specific-details">
-        <a aria-hidden="true" href="#js-specific-details">#</a>
+        <a href="#js-specific-details">#</a>
         JS-specific details
       </h2>
       <p>Because JavaScript is single-threaded, there are several different ways to invoke the API with different performance and convenience tradeoffs. It's important to be aware of the differences to pick.</p>
@@ -2163,7 +2177,7 @@ esbuild.build(options).then(<span class="hljs-function"><span class="hljs-params
   }
 }</pre>
       <h3 id="running-in-the-browser" data-h2="js-specific-details">
-        <a aria-hidden="true" href="#running-in-the-browser">#</a>
+        <a href="#running-in-the-browser">#</a>
         Running in the browser
       </h3>
       <p>The esbuild transform API can also run in the browser using WebAssembly in a Web Worker (the build API is currently not supported in the browser). To take advantage of this you will need to install the <code>esbuild-wasm</code> package instead of the <code>esbuild</code> package:</p>

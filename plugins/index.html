@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf8">
     <title>esbuild - Plugins</title>
@@ -27,7 +27,7 @@
     </script>
     <script src="/script.js" defer></script>
     <div id="menubar">
-      <a id="menutoggle" href="javascript:void 0">
+      <a id="menutoggle" href="javascript:void 0" aria-label="Toggle the menu">
         <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
           <rect x="15" y="18" width="20" height="2" stroke-width="0"/>
           <rect x="15" y="24" width="20" height="2" stroke-width="0"/>
@@ -40,77 +40,93 @@
       <div id="menu">
         <a href="/" class="logo">esbuild</a>
         <ul>
-          <li><a href="/getting-started/">Getting Started</a></li>
-          <ul class="h2">
-            <li><a href="/getting-started/#install-esbuild">Install esbuild</a></li>
-            <li><a href="/getting-started/#your-first-bundle">Your first bundle</a></li>
-            <li><a href="/getting-started/#build-scripts">Build scripts</a></li>
-            <li><a href="/getting-started/#bundling-for-the-browser">Bundling for the browser</a></li>
-            <li><a href="/getting-started/#bundling-for-node">Bundling for node</a></li>
-          </ul>
-          <li><a href="/api/">API</a></li>
-          <ul class="h2">
-            <li><a href="/api/#transform-api">Transform API</a></li>
-            <li><a href="/api/#build-api">Build API</a></li>
-            <li><a href="/api/#simple-options">Simple options</a></li>
-            <li><a href="/api/#advanced-options">Advanced options</a></li>
-            <li><a href="/api/#js-specific-details">JS-specific details</a></li>
-          </ul>
-          <li><a href="/content-types/">Content Types</a></li>
-          <ul class="h2">
-            <li><a href="/content-types/#javascript">JavaScript</a></li>
-            <li><a href="/content-types/#typescript">TypeScript</a></li>
-            <li><a href="/content-types/#jsx">JSX</a></li>
-            <li><a href="/content-types/#json">JSON</a></li>
-            <li><a href="/content-types/#css">CSS</a></li>
-            <li><a href="/content-types/#text">Text</a></li>
-            <li><a href="/content-types/#binary">Binary</a></li>
-            <li><a href="/content-types/#base64">Base64</a></li>
-            <li><a href="/content-types/#data-url">Data URL</a></li>
-            <li><a href="/content-types/#external-file">External file</a></li>
-          </ul>
-          <li><a href="/plugins/">Plugins</a></li>
-          <ul class="h2">
-            <li id="nav-using-plugins"><a href="#using-plugins">Using plugins</a></li>
-            <li id="nav-concepts"><a href="#concepts">Concepts</a></li>
-            <ul class="h3">
-              <li id="nav-namespaces"><a href="#namespaces">Namespaces</a></li>
-              <li id="nav-filters"><a href="#filters">Filters</a></li>
+          <li>
+            <a href="/getting-started/">Getting Started</a>
+            <ul class="h2">
+              <li><a href="/getting-started/#install-esbuild">Install esbuild</a></li>
+              <li><a href="/getting-started/#your-first-bundle">Your first bundle</a></li>
+              <li><a href="/getting-started/#build-scripts">Build scripts</a></li>
+              <li><a href="/getting-started/#bundling-for-the-browser">Bundling for the browser</a></li>
+              <li><a href="/getting-started/#bundling-for-node">Bundling for node</a></li>
             </ul>
-            <li id="nav-resolve-callbacks"><a href="#resolve-callbacks">Resolve callbacks</a></li>
-            <ul class="h3">
-              <li id="nav-resolve-options"><a href="#resolve-options">Resolve options</a></li>
-              <li id="nav-resolve-arguments"><a href="#resolve-arguments">Resolve arguments</a></li>
-              <li id="nav-resolve-results"><a href="#resolve-results">Resolve results</a></li>
+          </li>
+          <li>
+            <a href="/api/">API</a>
+            <ul class="h2">
+              <li><a href="/api/#transform-api">Transform API</a></li>
+              <li><a href="/api/#build-api">Build API</a></li>
+              <li><a href="/api/#simple-options">Simple options</a></li>
+              <li><a href="/api/#advanced-options">Advanced options</a></li>
+              <li><a href="/api/#js-specific-details">JS-specific details</a></li>
             </ul>
-            <li id="nav-load-callbacks"><a href="#load-callbacks">Load callbacks</a></li>
-            <ul class="h3">
-              <li id="nav-load-options"><a href="#load-options">Load options</a></li>
-              <li id="nav-load-arguments"><a href="#load-arguments">Load arguments</a></li>
-              <li id="nav-load-results"><a href="#load-results">Load results</a></li>
+          </li>
+          <li>
+            <a href="/content-types/">Content Types</a>
+            <ul class="h2">
+              <li><a href="/content-types/#javascript">JavaScript</a></li>
+              <li><a href="/content-types/#typescript">TypeScript</a></li>
+              <li><a href="/content-types/#jsx">JSX</a></li>
+              <li><a href="/content-types/#json">JSON</a></li>
+              <li><a href="/content-types/#css">CSS</a></li>
+              <li><a href="/content-types/#text">Text</a></li>
+              <li><a href="/content-types/#binary">Binary</a></li>
+              <li><a href="/content-types/#base64">Base64</a></li>
+              <li><a href="/content-types/#data-url">Data URL</a></li>
+              <li><a href="/content-types/#external-file">External file</a></li>
             </ul>
-            <li id="nav-example-plugins"><a href="#example-plugins">Example plugins</a></li>
-            <ul class="h3">
-              <li id="nav-http-plugin"><a href="#http-plugin">HTTP plugin</a></li>
-              <li id="nav-webassembly-plugin"><a href="#webassembly-plugin">WebAssembly plugin</a></li>
-              <li id="nav-svelte-plugin"><a href="#svelte-plugin">Svelte plugin</a></li>
+          </li>
+          <li>
+            <a href="/plugins/">Plugins</a>
+            <ul class="h2">
+              <li id="nav-using-plugins"><a href="#using-plugins">Using plugins</a></li>
+              <li id="nav-concepts">
+                <a href="#concepts">Concepts</a>
+                <ul class="h3">
+                  <li id="nav-namespaces"><a href="#namespaces">Namespaces</a></li>
+                  <li id="nav-filters"><a href="#filters">Filters</a></li>
+                </ul>
+              </li>
+              <li id="nav-resolve-callbacks">
+                <a href="#resolve-callbacks">Resolve callbacks</a>
+                <ul class="h3">
+                  <li id="nav-resolve-options"><a href="#resolve-options">Resolve options</a></li>
+                  <li id="nav-resolve-arguments"><a href="#resolve-arguments">Resolve arguments</a></li>
+                  <li id="nav-resolve-results"><a href="#resolve-results">Resolve results</a></li>
+                </ul>
+              </li>
+              <li id="nav-load-callbacks">
+                <a href="#load-callbacks">Load callbacks</a>
+                <ul class="h3">
+                  <li id="nav-load-options"><a href="#load-options">Load options</a></li>
+                  <li id="nav-load-arguments"><a href="#load-arguments">Load arguments</a></li>
+                  <li id="nav-load-results"><a href="#load-results">Load results</a></li>
+                </ul>
+              </li>
+              <li id="nav-example-plugins">
+                <a href="#example-plugins">Example plugins</a>
+                <ul class="h3">
+                  <li id="nav-http-plugin"><a href="#http-plugin">HTTP plugin</a></li>
+                  <li id="nav-webassembly-plugin"><a href="#webassembly-plugin">WebAssembly plugin</a></li>
+                  <li id="nav-svelte-plugin"><a href="#svelte-plugin">Svelte plugin</a></li>
+                </ul>
+              </li>
+              <li id="nav-plugin-api-limitations"><a href="#plugin-api-limitations">Plugin API limitations</a></li>
             </ul>
-            <li id="nav-plugin-api-limitations"><a href="#plugin-api-limitations">Plugin API limitations</a></li>
-          </ul>
+          </li>
           <li><a href="/faq/">FAQ</a></li>
         </ul>
         <div id="icons">
-          <a href="https://github.com/evanw/esbuild">
-          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
-            <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
-              -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
-              -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
-              -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
-              .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
-              .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
-              8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
-          </svg>
-          </a><a href="javascript:void 0" id="theme">
+          <a href="https://github.com/evanw/esbuild" aria-label="View this project on GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
+              <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
+                -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+                -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
+                .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
+                .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
+                8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
+            </svg>
+          </a><a href="javascript:void 0" id="theme" aria-label="Toggle dark mode">
             <svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
               <path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"/>
               <circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"/>
@@ -128,7 +144,7 @@
       <div class="warning">The plugin API is new and still experimental. It may change in the future before version 1.0.0 of esbuild as new use cases are uncovered. Consider this particular plugin API as being specific to the 0.8.x version of esbuild. You can follow <a href="https://github.com/evanw/esbuild/issues/111">the tracking issue</a> for updates about this feature.</div>
       <p>The plugin API allows you to inject code into various parts of the build process. Unlike the rest of the API, it's not available from the command line. You must write either JavaScript or Go code to use the plugin API. Plugins can also only be used with the <a href="/api/#build-api">build API</a>, not with the <a href="/api/#transform-api">transform API</a>.</p>
       <h2 id="using-plugins">
-        <a aria-hidden="true" href="#using-plugins">#</a>
+        <a href="#using-plugins">#</a>
         Using plugins
       </h2>
       <p>An esbuild plugin is an object with a <code>name</code> and a <code>setup</code> function. They are passed in an array to the <a href="/api/#build">build API</a> call. The <code>setup</code> function is run once for each build API call.</p>
@@ -224,18 +240,18 @@
       <pre><span class="hljs-keyword">import</span> { PATH } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;env&#x27;</span>
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`PATH is <span class="hljs-subst">${PATH}</span>`</span>)</pre>
       <h2 id="concepts">
-        <a aria-hidden="true" href="#concepts">#</a>
+        <a href="#concepts">#</a>
         Concepts
       </h2>
       <p>Writing a plugin for esbuild works a little differently than writing a plugin for other bundlers. The concepts below are important to understand before developing your plugin:</p>
       <h3 id="namespaces" data-h2="concepts">
-        <a aria-hidden="true" href="#namespaces">#</a>
+        <a href="#namespaces">#</a>
         Namespaces
       </h3>
       <p>Every module as an associated namespace. By default esbuild operates in the <code>file</code> namespace, which corresponds to files on the file system. But esbuild can also handle &quot;virtual&quot; modules that don't have a corresponding location on the file system. One case when this happens is when a module is provided using <a href="/api/#stdin">stdin</a>.</p>
       <p>Plugins can be used to create virtual modules. Virtual modules usually use a namespace other than <code>file</code> to distinguish them from file system modules. Usually the namespace is specific to the plugin that created them. For example, the sample <a href="#http-plugin">HTTP plugin</a> below uses the <code>http-url</code> namespace for downloaded files.</p>
       <h3 id="filters" data-h2="concepts">
-        <a aria-hidden="true" href="#filters">#</a>
+        <a href="#filters">#</a>
         Filters
       </h3>
       <p>Every callback must provide a regular expression as a filter. This is used by esbuild to skip calling the callback when the path doesn't match its filter, which is done for performance. Calling from esbuild's highly-parallel internals into single-threaded JavaScript code is expensive and should be avoided whenever possible for maximum speed.</p>
@@ -243,7 +259,7 @@
       <p>The allowed regular expression syntax is the syntax supported by Go's <a href="https://golang.org/pkg/regexp/">regular expression engine</a>. This is slightly different than JavaScript. Specifically, look-ahead, look-behind, and backreferences are not supported. Go's regular expression engine is designed to avoid the catastrophic exponential-time worst case performance issues that can affect JavaScript regular expressions.</p>
       <p>Note that namespaces can also be used for filtering. Callbacks must provide a filter regular expression but can optionally also provide a namespace to further restrict what paths are matched. This can be useful for &quot;remembering&quot; where a virtual module came from. Keep in mind that namespaces are matched using an exact string equality test instead of a regular expression, so unlike module paths they are not intended for storing arbitrary data.</p>
       <h2 id="resolve-callbacks">
-        <a aria-hidden="true" href="#resolve-callbacks">#</a>
+        <a href="#resolve-callbacks">#</a>
         Resolve callbacks
       </h2>
       <p>A callback added using <code>onResolve</code> will be run on each import path in each module that esbuild builds. The callback can customize how esbuild does path resolution. For example, it can intercept import paths and redirect them somewhere else. It can also mark paths as external. Here is an example:</p>
@@ -322,7 +338,7 @@
       <p>The callback can return without providing a path to pass on responsibility for path resolution to the next callback. For a given import path, all <code>onResolve</code> callbacks from all plugins will be run in the order they were registered until one takes responsibility for path resolution. If no callback returns a path, esbuild will run its default path resolution logic.</p>
       <p>Keep in mind that many callbacks may be running concurrently. In JavaScript, if your callback does expensive work that can run on another thread such as <code>fs.<wbr>existsSync()</code>, you should make the callback <code>async</code> and use <code>await</code> (in this case with <code>fs.<wbr>promises.<wbr>exists()</code>) to allow other code to run in the meantime. In Go, each callback may be run on a separate goroutine. Make sure you have appropriate synchronization in place if your plugin uses any shared data structures.</p>
       <h3 id="resolve-options" data-h2="resolve-callbacks">
-        <a aria-hidden="true" href="#resolve-options">#</a>
+        <a href="#resolve-options">#</a>
         Resolve options
       </h3>
       <p>The <code>onResolve</code> API is meant to be called within the <code>setup</code> function and registers a callback to be triggered in certain situations. It takes a few options:</p>
@@ -340,7 +356,7 @@
 }</pre>
       <ul><li><code>filter</code> <p> Every callback must provide a filter, which is a regular expression. The registered callback will be skipped when the path doesn't match this filter. You can read more about filters <a href="#filters">here</a>. </p></li><li><code>namespace</code> <p> This is optional. If provided, the callback is only run on paths within modules in the provided namespace. You can read more about namespaces <a href="#namespaces">here</a>. </p></li></ul>
       <h3 id="resolve-arguments" data-h2="resolve-callbacks">
-        <a aria-hidden="true" href="#resolve-arguments">#</a>
+        <a href="#resolve-arguments">#</a>
         Resolve arguments
       </h3>
       <p>When esbuild calls the callback registered by <code>onResolve</code>, it will provide these arguments with information about the imported path:</p>
@@ -362,7 +378,7 @@
 }</pre>
       <ul><li><code>path</code> <p> This is the verbatim unresolved path from the underlying module's source code. It can take any form. While esbuild's default behavior is to interpret import paths as either a relative path or a package name, plugins can be used to introduce new path forms. For example, the sample <a href="#http-plugin">HTTP plugin</a> below gives special meaning to paths starting with <code>http://</code>. </p></li><li><code>importer</code> <p> This is the path of the module containing this import to be resolved. Note that this path is only guaranteed to be a file system path if the namespace is <code>file</code>. If you want to resolve a path relative to the directory containing the importer module, you should use <code>resolveDir</code> instead since that also works for virtual modules. </p></li><li><code>namespace</code> <p> This is the namespace of the module containing this import to be resolved, as set by the <a href="#load-callbacks">load callback</a> that loaded this file. This defaults to the <code>file</code> namespace for modules loaded with esbuild's default behavior. You can read more about namespaces <a href="#namespaces">here</a>. </p></li><li><code>resolveDir</code> <p> This is the file system directory to use when resolving an import path to a real path on the file system. For modules in the <code>file</code> namespace, this value defaults to the directory part of the module path. For virtual modules this value defaults to empty but <a href="#load-callbacks">load callbacks</a> can optionally give virtual modules a resolve directory too. If that happens, it will be provided to resolve callbacks for unresolved paths in that file. </p></li></ul>
       <h3 id="resolve-results" data-h2="resolve-callbacks">
-        <a aria-hidden="true" href="#resolve-results">#</a>
+        <a href="#resolve-results">#</a>
         Resolve results
       </h3>
       <p>This is the object that can be returned by a callback added using <code>onResolve</code> to provide a custom path resolution. If you would like to return from the callback without providing a path, just return the default value (so <code>undefined</code> in JavaScript and <code>OnResolveResult{}</code> in Go). Here are the optional properties that can be returned:</p>
@@ -416,7 +432,7 @@ interface Location {
 }</pre>
       <ul><li><code>path</code> <p> Set this to a non-empty string to resolve the import to a specific path. If this is set, no more on-resolve callbacks will be run for this import path in this module. If this is not set, esbuild will continue to run on-resolve callbacks that were registered after the current one. Then, if the path still isn't resolved, esbuild will default to resolving the path relative to the resolve directory of the current module. </p></li><li><code>external</code> <p> Set this to <code>true</code> to mark the module as <a href="/api/#external">external</a>, which means it will not be included in the bundle and will instead be imported at run-time. </p></li><li><code>namespace</code> <p> This is the namespace associated with the resolved path. If left empty, it will default to the <code>file</code> namespace for non-external paths. Paths in the file namespace must be an absolute path for the current file system (so starting with a forward slash on Unix and with a drive letter on Windows). </p> <p> If you want to resolve to a path that isn't a file system path, you should set the namespace to something other than <code>file</code> or an empty string. This tells esbuild to not treat the path as pointing to something on the file system. </p></li><li><code>errors</code> and <code>warnings</code> <p> These properties let you pass any log messages generated during path resolution to esbuild where they will be displayed in the terminal according to the current <a href="/api/#log-level">log level</a> and end up in the final build result. For example, if you are calling a library and that library can return errors and/or warnings, you will want to forward them using these properties. </p> <p> If you only have a single error to return, you don't have to pass it via <code>errors</code>. You can simply throw the error in JavaScript or return the <code>error</code> object as the second return value in Go. </p></li><li><code>pluginName</code> <p> This property lets you replace this plugin's name with another name for this path resolution operation. It's useful for proxying another plugin through this plugin. For example, it lets you have a single plugin that forwards to a child process containing multiple plugins. You probably won't need to use this. </p></li></ul>
       <h2 id="load-callbacks">
-        <a aria-hidden="true" href="#load-callbacks">#</a>
+        <a href="#load-callbacks">#</a>
         Load callbacks
       </h2>
       <p>A callback added using <code>onLoad</code> will be run for each unique path/<wbr>namespace pair that has not been marked as external. Its job is to return the contents of the module and to tell esbuild how to interpret it. Here's an example plugin that converts <code>.txt</code> files into an array of words:</p>
@@ -493,7 +509,7 @@ interface Location {
       <p>The callback can return without providing the contents of the module. In that case the responsibility for loading the module is passed to the next registered callback. For a given module, all <code>onLoad</code> callbacks from all plugins will be run in the order they were registered until one takes responsibility for loading the module. If no callback returns contents for the module, esbuild will run its default module loading logic.</p>
       <p>Keep in mind that many callbacks may be running concurrently. In JavaScript, if your callback does expensive work that can run on another thread such as <code>fs.<wbr>readFileSync()</code>, you should make the callback <code>async</code> and use <code>await</code> (in this case with <code>fs.<wbr>promises.<wbr>readFile()</code>) to allow other code to run in the meantime. In Go, each callback may be run on a separate goroutine. Make sure you have appropriate synchronization in place if your plugin uses any shared data structures.</p>
       <h3 id="load-options" data-h2="load-callbacks">
-        <a aria-hidden="true" href="#load-options">#</a>
+        <a href="#load-options">#</a>
         Load options
       </h3>
       <p>The <code>onLoad</code> API is meant to be called within the <code>setup</code> function and registers a callback to be triggered in certain situations. It takes a few options:</p>
@@ -511,7 +527,7 @@ interface Location {
 }</pre>
       <ul><li><code>filter</code> <p> Every callback must provide a filter, which is a regular expression. The registered callback will be skipped when the path doesn't match this filter. You can read more about filters <a href="#filters">here</a>. </p></li><li><code>namespace</code> <p> This is optional. If provided, the callback is only run on paths within modules in the provided namespace. You can read more about namespaces <a href="#namespaces">here</a>. </p></li></ul>
       <h3 id="load-arguments" data-h2="load-callbacks">
-        <a aria-hidden="true" href="#load-arguments">#</a>
+        <a href="#load-arguments">#</a>
         Load arguments
       </h3>
       <p>When esbuild calls the callback registered by <code>onLoad</code>, it will provide these arguments with information about the module to load:</p>
@@ -529,7 +545,7 @@ interface Location {
 }</pre>
       <ul><li><code>path</code> <p> This is the fully-resolved path to the module. It should be considered a file system path if the namespace is <code>file</code>, but otherwise the path can take any form. For example, the sample <a href="#http-plugin">HTTP plugin</a> below gives special meaning to paths starting with <code>http://</code>. </p></li><li><code>namespace</code> <p> This is the namespace that the module path is in, as set by the <a href="#resolve-callbacks">resolve callback</a> that resolved this file. It defaults to the <code>file</code> namespace for modules loaded with esbuild's default behavior. You can read more about namespaces <a href="#namespaces">here</a>. </p></li></ul>
       <h3 id="load-results" data-h2="load-callbacks">
-        <a aria-hidden="true" href="#load-results">#</a>
+        <a href="#load-results">#</a>
         Load results
       </h3>
       <p>This is the object that can be returned by a callback added using <code>onLoad</code> to provide the contents of a module. If you would like to return from the callback without providing any contents, just return the default value (so <code>undefined</code> in JavaScript and <code>OnLoadResult{}</code> in Go). Here are the optional properties that can be returned:</p>
@@ -583,12 +599,12 @@ interface Location {
 }</pre>
       <ul><li><code>contents</code> <p> Set this to a string to specify the contents of the module. If this is set, no more on-load callbacks will be run for this resolved path. If this is not set, esbuild will continue to run on-load callbacks that were registered after the current one. Then, if the contents are still not set, esbuild will default to loading the contents from the file system if the resolved path is in the <code>file</code> namespace. </p></li><li><code>loader</code> <p> This tells esbuild how to interpret the contents. For example, the <a href="/content-types/#javascript"><code>js</code></a> loader interprets the contents as JavaScript and the <a href="/content-types/#css"><code>css</code></a> loader interprets the contents as CSS. The loader defaults to <code>js</code> if it's not specified. See the <a href="/content-types/">content types</a> page for a complete list of all built-in loaders. </p></li><li><code>resolveDir</code> <p> This is the file system directory to use when resolving an import path in this module to a real path on the file system. For modules in the <code>file</code> namespace, this value defaults to the directory part of the module path. Otherwise this value defaults to empty unless the plugin provides one. If the plugin doesn't provide one, esbuild's default behavior won't resolve any imports in this module. This directory will be passed to any <a href="#resolve-callbacks">resolve callbacks</a> that run on unresolved import paths in this module. </p></li><li><code>errors</code> and <code>warnings</code> <p> These properties let you pass any log messages generated during path resolution to esbuild where they will be displayed in the terminal according to the current <a href="/api/#log-level">log level</a> and end up in the final build result. For example, if you are calling a library and that library can return errors and/or warnings, you will want to forward them using these properties. </p> <p> If you only have a single error to return, you don't have to pass it via <code>errors</code>. You can simply throw the error in JavaScript or return the <code>error</code> object as the second return value in Go. </p></li><li><code>pluginName</code> <p> This property lets you replace this plugin's name with another name for this module load operation. It's useful for proxying another plugin through this plugin. For example, it lets you have a single plugin that forwards to a child process containing multiple plugins. You probably won't need to use this. </p></li></ul>
       <h2 id="example-plugins">
-        <a aria-hidden="true" href="#example-plugins">#</a>
+        <a href="#example-plugins">#</a>
         Example plugins
       </h2>
       <p>The example plugins below are meant to give you an idea of the different types of things you can do with the plugin API.</p>
       <h3 id="http-plugin" data-h2="example-plugins">
-        <a aria-hidden="true" href="#http-plugin">#</a>
+        <a href="#http-plugin">#</a>
         HTTP plugin
       </h3>
       <p><em>This example demonstrates: using a path format other than file system paths, namespace-specific path resolution, using resolve and load callbacks together.</em></p>
@@ -738,7 +754,7 @@ interface Location {
 }</pre>
       <p>The plugin first uses a resolver to move <code>http://</code> and <code>https://</code> URLs to the <code>http-url</code> namespace. Setting the namespace tells esbuild to not treat these paths as file system paths. Then, a loader for the <code>http-url</code> namespace downloads the module and returns the contents to esbuild. From there, another resolver for import paths inside modules in the <code>http-url</code> namespace picks up relative paths and translates them into full URLs by resolving them against the importing module's URL. That then feeds back into the loader allowing downloaded modules to download additional modules recursively.</p>
       <h3 id="webassembly-plugin" data-h2="example-plugins">
-        <a aria-hidden="true" href="#webassembly-plugin">#</a>
+        <a href="#webassembly-plugin">#</a>
         WebAssembly plugin
       </h3>
       <p><em>This example demonstrates: working with binary data, creating virtual; modules using import statements, re-using the same path with different namespaces.</em></p>
@@ -909,7 +925,7 @@ load(imports).then(<span class="hljs-function"><span class="hljs-params">exports
 }</pre>
       <p>The plugin works in multiple steps. First, a resolve callback captures <code>.wasm</code> paths in normal modules and moves them to the <code>wasm-stub</code> namespace. Then load callback for the <code>wasm-stub</code> namespace generates a JavaScript stub module that exports the loader function and imports the <code>.wasm</code> path. This invokes the resolve callback again which this time moves the path to the <code>wasm-binary</code> namespace. Then the second load callback for the <code>wasm-binary</code> namespace causes the WebAssembly file to be loaded using the <code>binary</code> loader, which tells esbuild to embed the file itself in the bundle.</p>
       <h3 id="svelte-plugin" data-h2="example-plugins">
-        <a aria-hidden="true" href="#svelte-plugin">#</a>
+        <a href="#svelte-plugin">#</a>
         Svelte plugin
       </h3>
       <p><em>This example demonstrates: supporting a compile-to-JavaScript language, reporting warnings and errors, integrating source maps.</em></p>
@@ -974,7 +990,7 @@ load(imports).then(<span class="hljs-function"><span class="hljs-params">exports
       <p>This plugin only needs a load callback, not a resolve callback, because it's simple enough that it just needs to transform the loaded code into JavaScript without worrying about where the code comes from.</p>
       <p>It appends a <code>//# sourceMappingURL=</code> comment to the generated JavaScript to tell esbuild how to map the generated JavaScript back to the original source code. If source maps are enabled during the build, esbuild will use this to ensure that the generated positions in the final source map are mapped all the way back to the original Svelte file instead of to the intermediate JavaScript code.</p>
       <h2 id="plugin-api-limitations">
-        <a aria-hidden="true" href="#plugin-api-limitations">#</a>
+        <a href="#plugin-api-limitations">#</a>
         Plugin API limitations
       </h2>
       <p>This API does not intend to cover all use cases. It's not possible to hook into every part of the bundling process. For example, it's not currently possible to modify the AST directly. This restriction exists to preserve the excellent performance characteristics of esbuild as well as to avoid exposing too much API surface which would be a maintenance burden and would prevent improvements that involve changing the AST.</p>

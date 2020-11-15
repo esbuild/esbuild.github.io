@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf8">
     <title>esbuild - Content Types</title>
@@ -27,7 +27,7 @@
     </script>
     <script src="/script.js" defer></script>
     <div id="menubar">
-      <a id="menutoggle" href="javascript:void 0">
+      <a id="menutoggle" href="javascript:void 0" aria-label="Toggle the menu">
         <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
           <rect x="15" y="18" width="20" height="2" stroke-width="0"/>
           <rect x="15" y="24" width="20" height="2" stroke-width="0"/>
@@ -40,61 +40,71 @@
       <div id="menu">
         <a href="/" class="logo">esbuild</a>
         <ul>
-          <li><a href="/getting-started/">Getting Started</a></li>
-          <ul class="h2">
-            <li><a href="/getting-started/#install-esbuild">Install esbuild</a></li>
-            <li><a href="/getting-started/#your-first-bundle">Your first bundle</a></li>
-            <li><a href="/getting-started/#build-scripts">Build scripts</a></li>
-            <li><a href="/getting-started/#bundling-for-the-browser">Bundling for the browser</a></li>
-            <li><a href="/getting-started/#bundling-for-node">Bundling for node</a></li>
-          </ul>
-          <li><a href="/api/">API</a></li>
-          <ul class="h2">
-            <li><a href="/api/#transform-api">Transform API</a></li>
-            <li><a href="/api/#build-api">Build API</a></li>
-            <li><a href="/api/#simple-options">Simple options</a></li>
-            <li><a href="/api/#advanced-options">Advanced options</a></li>
-            <li><a href="/api/#js-specific-details">JS-specific details</a></li>
-          </ul>
-          <li><a href="/content-types/">Content Types</a></li>
-          <ul class="h2">
-            <li id="nav-javascript"><a href="#javascript">JavaScript</a></li>
-            <li id="nav-typescript"><a href="#typescript">TypeScript</a></li>
-            <li id="nav-jsx"><a href="#jsx">JSX</a></li>
-            <ul class="h3">
-              <li id="nav-using-jsx-without-react"><a href="#using-jsx-without-react">Using JSX without React</a></li>
+          <li>
+            <a href="/getting-started/">Getting Started</a>
+            <ul class="h2">
+              <li><a href="/getting-started/#install-esbuild">Install esbuild</a></li>
+              <li><a href="/getting-started/#your-first-bundle">Your first bundle</a></li>
+              <li><a href="/getting-started/#build-scripts">Build scripts</a></li>
+              <li><a href="/getting-started/#bundling-for-the-browser">Bundling for the browser</a></li>
+              <li><a href="/getting-started/#bundling-for-node">Bundling for node</a></li>
             </ul>
-            <li id="nav-json"><a href="#json">JSON</a></li>
-            <li id="nav-css"><a href="#css">CSS</a></li>
-            <li id="nav-text"><a href="#text">Text</a></li>
-            <li id="nav-binary"><a href="#binary">Binary</a></li>
-            <li id="nav-base64"><a href="#base64">Base64</a></li>
-            <li id="nav-data-url"><a href="#data-url">Data URL</a></li>
-            <li id="nav-external-file"><a href="#external-file">External file</a></li>
-          </ul>
-          <li><a href="/plugins/">Plugins</a></li>
-          <ul class="h2">
-            <li><a href="/plugins/#using-plugins">Using plugins</a></li>
-            <li><a href="/plugins/#concepts">Concepts</a></li>
-            <li><a href="/plugins/#resolve-callbacks">Resolve callbacks</a></li>
-            <li><a href="/plugins/#load-callbacks">Load callbacks</a></li>
-            <li><a href="/plugins/#example-plugins">Example plugins</a></li>
-            <li><a href="/plugins/#plugin-api-limitations">Plugin API limitations</a></li>
-          </ul>
+          </li>
+          <li>
+            <a href="/api/">API</a>
+            <ul class="h2">
+              <li><a href="/api/#transform-api">Transform API</a></li>
+              <li><a href="/api/#build-api">Build API</a></li>
+              <li><a href="/api/#simple-options">Simple options</a></li>
+              <li><a href="/api/#advanced-options">Advanced options</a></li>
+              <li><a href="/api/#js-specific-details">JS-specific details</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="/content-types/">Content Types</a>
+            <ul class="h2">
+              <li id="nav-javascript"><a href="#javascript">JavaScript</a></li>
+              <li id="nav-typescript"><a href="#typescript">TypeScript</a></li>
+              <li id="nav-jsx">
+                <a href="#jsx">JSX</a>
+                <ul class="h3">
+                  <li id="nav-using-jsx-without-react"><a href="#using-jsx-without-react">Using JSX without React</a></li>
+                </ul>
+              </li>
+              <li id="nav-json"><a href="#json">JSON</a></li>
+              <li id="nav-css"><a href="#css">CSS</a></li>
+              <li id="nav-text"><a href="#text">Text</a></li>
+              <li id="nav-binary"><a href="#binary">Binary</a></li>
+              <li id="nav-base64"><a href="#base64">Base64</a></li>
+              <li id="nav-data-url"><a href="#data-url">Data URL</a></li>
+              <li id="nav-external-file"><a href="#external-file">External file</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="/plugins/">Plugins</a>
+            <ul class="h2">
+              <li><a href="/plugins/#using-plugins">Using plugins</a></li>
+              <li><a href="/plugins/#concepts">Concepts</a></li>
+              <li><a href="/plugins/#resolve-callbacks">Resolve callbacks</a></li>
+              <li><a href="/plugins/#load-callbacks">Load callbacks</a></li>
+              <li><a href="/plugins/#example-plugins">Example plugins</a></li>
+              <li><a href="/plugins/#plugin-api-limitations">Plugin API limitations</a></li>
+            </ul>
+          </li>
           <li><a href="/faq/">FAQ</a></li>
         </ul>
         <div id="icons">
-          <a href="https://github.com/evanw/esbuild">
-          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
-            <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
-              -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
-              -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
-              -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
-              .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
-              .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
-              8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
-          </svg>
-          </a><a href="javascript:void 0" id="theme">
+          <a href="https://github.com/evanw/esbuild" aria-label="View this project on GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
+              <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
+                -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+                -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
+                .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
+                .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
+                8.01 8.01 0 0021 13a8 8 0 00-8-8z"/>
+            </svg>
+          </a><a href="javascript:void 0" id="theme" aria-label="Toggle dark mode">
             <svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
               <path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"/>
               <circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"/>
@@ -111,7 +121,7 @@
       <h1>Content Types</h1>
       <p>All of the built-in content types are listed below. Each content type has an associated &quot;loader&quot; which tells esbuild how to interpret the file contents. Some file extensions already have a loader configured for them by default, although the defaults can be overridden.</p>
       <h2 id="javascript">
-        <a aria-hidden="true" href="#javascript">#</a>
+        <a href="#javascript">#</a>
         JavaScript
       </h2>
       <p>Loader: <code>js</code></p>
@@ -267,7 +277,7 @@
       <p>Some additional details:</p>
       <ul><li><strong>ES5 support</strong> <p> Transforming ES6+ syntax to ES5 is not supported yet. However, if you're using esbuild to transform ES5 code, you should still set the <a href="/api/#target">target</a> to <code>es5</code>. This prevents esbuild from introducing ES6 syntax into your ES5 code. For example, without this flag the object literal <code>{x: x}</code> will become <code>{x}</code> and the string <code>&quot;a\nb&quot;</code> will become a multi-line template literal when minifying. Both of these substitutions are done because the resulting code is shorter, but the substitutions will not be performed if the <a href="/api/#target">target</a> is <code>es5</code>. </p></li><li><strong>Private member performance</strong> <p> The private member transform (for the <code>#name</code> syntax) uses <code>WeakMap</code> and <code>WeakSet</code> to preserve the privacy properties of this feature. This is similar to the corresponding transforms in the Babel and TypeScript compilers. Most modern JavaScript engines (V8, JavaScriptCore, and SpiderMonkey but not ChakraCore) may not have good performance characteristics for large <code>WeakMap</code> and <code>WeakSet</code> objects. </p> <p> Creating many instances of classes with private fields or private methods with this syntax transform active may cause a lot of overhead for the garbage collector. This is because modern engines (other than ChakraCore) store weak values in an actual map object instead of as hidden properties on the keys themselves, and large map objects can cause performance issues with garbage collection. See <a href="https://github.com/tc39/ecma262/issues/1657#issuecomment-518916579">this reference</a> for more information. </p></li></ul>
       <h2 id="typescript">
-        <a aria-hidden="true" href="#typescript">#</a>
+        <a href="#typescript">#</a>
         TypeScript
       </h2>
       <p>Loader: <code>ts</code> or <code>tsx</code></p>
@@ -367,7 +377,7 @@
       <p>Some additional caveats:</p>
       <ul><li><p> You should probably enable the <a href="https://www.typescriptlang.org/tsconfig#isolatedModules"><code>isolatedModules</code></a> TypeScript configuration option if you use TypeScript with esbuild. This prevents you from using features which could cause mis-compilation in environments like esbuild where each file is compiled independently without tracing type references across files. For example, it prevents you from re-exporting types from another module using <code>export <wbr>{T} <wbr>from <wbr>'./types'</code> (you need to use <code>export <wbr>type <wbr>{T} <wbr>from <wbr>'./types'</code> instead). </p></li><li><p> The <a href="https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata"><code>emitDecoratorMetadata</code></a> TypeScript configuration option is not supported. It passes type annotations to decorators and is an exception to the &quot;TypeScript is just JavaScript&quot; philosophy that TypeScript started with where type annotations are not supposed to change the output of the compiler. Since esbuild does not replicate TypeScript's type system, it does not have enough information to implement this feature. </p></li><li><p> The <code>tsx</code> loader is <em>not</em> a superset of the <code>ts</code> loader. They are two different partially-incompatible syntaxes. For example, the character sequence <code>&lt;a&gt;1&lt;/a&gt;/g</code> parses as <code>&lt;a&gt;(1 &lt; (/a&gt;/g))</code> with the <code>ts</code> loader and <code>(&lt;a&gt;1&lt;/a&gt;) / g</code> with the <code>tsx</code> loader. </p> <p>The most common issue this causes is not being able to use generic type parameters on arrow function expressions such as <code>&lt;T&gt;() =&gt; {}</code> with the <code>tsx</code> loader. This is intentional, and matches the behavior of the official TypeScript compiler. That space in the <code>tsx</code> grammar is reserved for JSX elements. </p></li></ul>
       <h2 id="jsx">
-        <a aria-hidden="true" href="#jsx">#</a>
+        <a href="#jsx">#</a>
         JSX
       </h2>
       <p>Loader: <code>jsx</code> or <code>tsx</code></p>
@@ -412,7 +422,7 @@ render(button);</pre>
   }
 }</pre>
       <h3 id="using-jsx-without-react" data-h2="jsx">
-        <a aria-hidden="true" href="#using-jsx-without-react">#</a>
+        <a href="#using-jsx-without-react">#</a>
         Using JSX without React
       </h3>
       <p>If you're using JSX with a library other than React (such as <a href="https://preactjs.com/">Preact</a>), you'll likely need to configure the JSX factory and fragment settings since they default to <code>React<wbr>.createElement</code> and <code>React<wbr>.Fragment</code> respectively:</p>
@@ -454,7 +464,7 @@ render(button);</pre>
 }</pre>
       <p>You will also have to add <code>import <wbr>{h, <wbr>Fragment} <wbr>from <wbr>'preact'</code> in files containing JSX syntax.</p>
       <h2 id="json">
-        <a aria-hidden="true" href="#json">#</a>
+        <a href="#json">#</a>
         JSON
       </h2>
       <div>Loader: <code>json</code></div>
@@ -465,7 +475,7 @@ render(button);</pre>
       <pre><span class="hljs-keyword">import</span> { version } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./package.json&#x27;</span>
 <span class="hljs-built_in">console</span>.log(version)</pre>
       <h2 id="css">
-        <a aria-hidden="true" href="#css">#</a>
+        <a href="#css">#</a>
         CSS
       </h2>
       <p>Loader: <code>css</code></p>
@@ -507,7 +517,7 @@ render(button);</pre>
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;button&quot;</span>&gt;</span>{text}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span></pre>
       <p>Note that esbuild doesn't yet support CSS modules, so the set of export names from a CSS file is currently always empty. Supporting a basic form of CSS modules is on the roadmap.</p>
       <h2 id="text">
-        <a aria-hidden="true" href="#text">#</a>
+        <a href="#text">#</a>
         Text
       </h2>
       <p>Loader: <code>text</code></p>
@@ -515,7 +525,7 @@ render(button);</pre>
       <pre><span class="hljs-keyword">import</span> string <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.txt&#x27;</span>
 <span class="hljs-built_in">console</span>.log(string)</pre>
       <h2 id="binary">
-        <a aria-hidden="true" href="#binary">#</a>
+        <a href="#binary">#</a>
         Binary
       </h2>
       <p>Loader: <code>binary</code></p>
@@ -555,7 +565,7 @@ render(button);</pre>
   }
 }</pre>
       <h2 id="base64">
-        <a aria-hidden="true" href="#base64">#</a>
+        <a href="#base64">#</a>
         Base64
       </h2>
       <p>Loader: <code>base64</code></p>
@@ -596,7 +606,7 @@ render(button);</pre>
 }</pre>
       <p>If you intend to turn this into a <code>Uint8Array</code> or an <code>ArrayBuffer</code>, you should use the <code>binary</code> loader instead. It uses an optimized Base64-to-binary converter that is faster than the usual <code>atob</code> conversion process.</p>
       <h2 id="data-url">
-        <a aria-hidden="true" href="#data-url">#</a>
+        <a href="#data-url">#</a>
         Data URL
       </h2>
       <p>Loader: <code>dataurl</code></p>
@@ -640,7 +650,7 @@ image.src = url
   }
 }</pre>
       <h2 id="external-file">
-        <a aria-hidden="true" href="#external-file">#</a>
+        <a href="#external-file">#</a>
         External file
       </h2>
       <p>Loader: <code>file</code></p>
