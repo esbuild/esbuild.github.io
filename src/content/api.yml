@@ -70,10 +70,12 @@ body:
 
   - available-options:
     - Avoid TDZ
+    - Banner
     - Charset
     - Color
     - Define
     - Error limit
+    - Footer
     - Format
     - Global name
     - JSX factory
@@ -152,12 +154,14 @@ body:
 
   - available-options:
     - Avoid TDZ
+    - Banner
     - Bundle
     - Charset
     - Color
     - Define
     - Error limit
     - External
+    - Footer
     - Format
     - Global name
     - Inject
@@ -2003,6 +2007,47 @@ body:
           }
         }
 
+  - h3: Banner
+
+  - p: >
+      Use this to insert an arbitrary string at the beginning of generated
+      JavaScript files. This is commonly used to insert comments:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --banner='/* comment */'
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          banner: '/* comment */',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Banner:      "/* comment */",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      This is similar to [footer](#footer) which inserts at the end instead
+      of the beginning.
+
   - h3: Charset
 
   - p: >
@@ -2117,12 +2162,14 @@ body:
       automatically disabled otherwise. Colored output in esbuild looks like this:
 
   - pre.raw: |
-      <b>&lt;stdin&gt;:1:16: <span class="color-red">error:</span> Could not resolve "logger" (mark it as external to exclude it from the bundle)</b>
-      import log from <span class="color-green">"logger"</span>
-                      <span class="color-green">~~~~~~~~</span>
-      <b>&lt;stdin&gt;:2:16: <span class="color-purple">warning:</span> The "typeof" operator will never evaluate to "null"</b>
-      log(typeof x == <span class="color-green">"null"</span>)
-                      <span class="color-green">~~~~~~</span>
+      <b> &gt; example.js: <span class="color-red">error:</span> Could not resolve "logger" (mark it as external to exclude it from the bundle)</b>
+      <span class="color-dim">    1 │ import log from </span><span class="color-green">"logger"</span>
+      <span class="color-dim">      ╵                 </span><span class="color-green">~~~~~~~~</span>
+
+      <b> &gt; example.js: <span class="color-purple">warning:</span> The "typeof" operator will never evaluate to "null"</b>
+      <span class="color-dim">    2 │ log(typeof x == </span><span class="color-green">"null"</span><span class="color-dim">)</span>
+      <span class="color-dim">      ╵                 </span><span class="color-green">~~~~~~</span>
+
       1 warning and 1 error
 
   - p: >
@@ -2203,6 +2250,47 @@ body:
             os.Exit(1)
           }
         }
+
+  - h3: Footer
+
+  - p: >
+      Use this to insert an arbitrary string at the end of generated JavaScript
+      files. This is commonly used to insert comments:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --footer='/* comment */'
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          footer: '/* comment */',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Footer:      "/* comment */",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      This is similar to [banner](#banner) which inserts at the beginning
+      instead of the end.
 
   - h3: Keep names
 

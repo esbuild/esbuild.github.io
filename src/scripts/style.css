@@ -264,6 +264,10 @@ body[data-mode3=go] pre.go3, body[data-mode2=go] pre.go2 {
   color: #8E69C9;
 }
 
+.color-dim {
+  color: #777;
+}
+
 .repl-in {
   margin-left: 15px;
   display: block;
