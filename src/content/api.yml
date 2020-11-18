@@ -232,7 +232,7 @@ body:
         }
 
   - p: >
-      Refer to the [getting started guide](http://localhost:8004/getting-started/#your-first-bundle)
+      Refer to the [getting started guide](https://esbuild.github.io/getting-started/#your-first-bundle)
       for an example of bundling with real-world code.
 
   - p: >
