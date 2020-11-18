@@ -97,6 +97,7 @@
                   <li id="nav-resolve-extensions"><a href="#resolve-extensions">Resolve extensions</a></li>
                   <li id="nav-sourcefile"><a href="#sourcefile">Sourcefile</a></li>
                   <li id="nav-stdin"><a href="#stdin">Stdin</a></li>
+                  <li id="nav-tree-shaking"><a href="#tree-shaking">Tree shaking</a></li>
                   <li id="nav-tsconfig"><a href="#tsconfig">Tsconfig</a></li>
                   <li id="nav-tsconfig-raw"><a href="#tsconfig-raw">Tsconfig raw</a></li>
                 </ul>
@@ -223,6 +224,7 @@
         <li><a href="#log-level">Log level</a></li>
         <li><a href="#pure">Pure</a></li>
         <li><a href="#sourcefile">Sourcefile</a></li>
+        <li><a href="#tree-shaking">Tree shaking</a></li>
         <li><a href="#tsconfig-raw">Tsconfig raw</a></li>
       </ul>
       <h2 id="build-api">
@@ -297,6 +299,7 @@
         <li><a href="#resolve-extensions">Resolve extensions</a></li>
         <li><a href="#sourcefile">Sourcefile</a></li>
         <li><a href="#stdin">Stdin</a></li>
+        <li><a href="#tree-shaking">Tree shaking</a></li>
         <li><a href="#tsconfig">Tsconfig</a></li>
       </ul>
       <h2 id="simple-options">
@@ -1745,7 +1748,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
       <p>When you import a package in node, the <code>main</code> field in that package's <code>package.json</code> file determines which file is imported (along with <a href="https://nodejs.org/api/modules.html#modules_all_together">a lot of other rules</a>). Major JavaScript bundlers including esbuild let you specify additional <code>package.json</code> fields to try when resolving a package. There are at least three such fields commonly in use:</p>
-      <ul><li><code>main</code> <p> This is <a href="https://docs.npmjs.com/files/package.json#main">the standard field</a> for all packages that are meant to be used with node. The name <code>main</code> is hard-coded in to node's module resolution logic itself. Because it's intended for use with node, it's reasonable to expect that the file path in this field is a CommonJS-style module. </p></li><li><code>module</code> <p> This field came from <a href="https://github.com/dherman/defense-of-dot-js/blob/f31319be735b21739756b87d551f6711bd7aa283/proposal.md">a proposal</a> for how to integrate ECMAScript modules into node. Because of this, it's reasonable to expect that the file path in this field is an ECMAScript-style module. This proposal wasn't adopted by node (node uses <code>&quot;type&quot;: <wbr>&quot;module&quot;</code> instead) but it was adopted by major bundlers because ECMAScript-style modules lead to better tree shaking, or dead code removal. </p> <p> For package authors: Some packages incorrectly use the <code>module</code> field for browser-specific code, leaving node-specific code for the <code>main</code> field. This is probably because node ignores the <code>module</code> field and people typically only use bundlers for browser-specific code. However, bundling node-specific code is valuable too (e.g. it decreases download and boot time) and packages that put browser-specific code in <code>module</code> prevent bundlers from being able to do tree shaking effectively. If you are trying to publish browser-specific code in a package, use the <code>browser</code> field instead. </p></li><li><code>browser</code> <p> This field came from <a href="https://gist.github.com/defunctzombie/4339901/49493836fb873ddaa4b8a7aa0ef2352119f69211">a proposal</a> that allows bundlers to replace node-specific files or modules with their browser-friendly versions. It lets you specify an alternate browser-specific entry point. Note that it is possible for a package to use both the <code>browser</code> and <code>module</code> field together (see the note below). </p></li></ul>
+      <ul><li><code>main</code> <p> This is <a href="https://docs.npmjs.com/files/package.json#main">the standard field</a> for all packages that are meant to be used with node. The name <code>main</code> is hard-coded in to node's module resolution logic itself. Because it's intended for use with node, it's reasonable to expect that the file path in this field is a CommonJS-style module. </p></li><li><code>module</code> <p> This field came from <a href="https://github.com/dherman/defense-of-dot-js/blob/f31319be735b21739756b87d551f6711bd7aa283/proposal.md">a proposal</a> for how to integrate ECMAScript modules into node. Because of this, it's reasonable to expect that the file path in this field is an ECMAScript-style module. This proposal wasn't adopted by node (node uses <code>&quot;type&quot;: <wbr>&quot;module&quot;</code> instead) but it was adopted by major bundlers because ECMAScript-style modules lead to better <a href="#tree-shaking">tree shaking</a>, or dead code removal. </p> <p> For package authors: Some packages incorrectly use the <code>module</code> field for browser-specific code, leaving node-specific code for the <code>main</code> field. This is probably because node ignores the <code>module</code> field and people typically only use bundlers for browser-specific code. However, bundling node-specific code is valuable too (e.g. it decreases download and boot time) and packages that put browser-specific code in <code>module</code> prevent bundlers from being able to do tree shaking effectively. If you are trying to publish browser-specific code in a package, use the <code>browser</code> field instead. </p></li><li><code>browser</code> <p> This field came from <a href="https://gist.github.com/defunctzombie/4339901/49493836fb873ddaa4b8a7aa0ef2352119f69211">a proposal</a> that allows bundlers to replace node-specific files or modules with their browser-friendly versions. It lets you specify an alternate browser-specific entry point. Note that it is possible for a package to use both the <code>browser</code> and <code>module</code> field together (see the note below). </p></li></ul>
       <p>The default main fields depend on the current <a href="#platform">platform</a> setting and are essentially <code>browser,<wbr>module,<wbr>main</code> for the browser and <code>main,<wbr>module</code> for node. These defaults should be the most widely compatible with the existing package ecosystem. But you can customize them like this if you want to:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
@@ -2141,6 +2144,81 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
+      <h3 id="tree-shaking" data-h2="advanced-options">
+        <a href="#tree-shaking">#</a>
+        Tree shaking
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>Tree shaking is the term the JavaScript community uses for dead code elimination, a common compiler optimization that automatically removes unreachable code. Note that tree shaking in esbuild is always enabled during bundling and can't be turned off, since trimming unused code makes the resulting file smaller without changing observable behavior.</p>
+      <p>Tree shaking is easiest to explain with an example. Consider the following file. There is one used function and one unused function:</p>
+      <pre><span class="hljs-comment">// input.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">one</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;one&#x27;</span>)
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">two</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;two&#x27;</span>)
+}
+one()</pre>
+      <p>If you bundle this file with <code>esbuild <wbr>--bundle <wbr>input.js <wbr>--outfile=<wbr>output.js</code>, the unused function will automatically be discarded leaving you with the following output:</p>
+      <pre><span class="hljs-comment">// input.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">one</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;one&quot;</span>);
+}
+one();</pre>
+      <p>This even works if we split our functions off into a separate library file and import them using an <code>import</code> statement:</p>
+      <pre><span class="hljs-comment">// lib.js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">one</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;one&#x27;</span>)
+}
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">two</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;two&#x27;</span>)
+}</pre>
+      <pre><span class="hljs-comment">// input.js</span>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> lib <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./lib.js&#x27;</span>
+lib.one()</pre>
+      <p>If you bundle this file with <code>esbuild <wbr>--bundle <wbr>input.js <wbr>--outfile=<wbr>output.js</code>, the unused function and unused import will still be automatically discarded leaving you with the following output:</p>
+      <pre><span class="hljs-comment">// lib.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">one</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;one&quot;</span>);
+}
+
+<span class="hljs-comment">// input.js</span>
+one();</pre>
+      <p>This way esbuild will only bundle the parts of your libraries that you actually use, which can sometimes be a substantial size savings. Note that esbuild's tree shaking implementation relies on the use of ECMAScript module <code>import</code> and <code>export</code> statements. It does not work with CommonJS modules. Many libraries on npm include both formats and esbuild tries to pick the format that works with tree shaking by default. You can customize which format esbuild picks using the <a href="#main-fields">main fields</a> option.</p>
+      <h4>Manual annotations</h4>
+      <p>Since JavaScript is a dynamic language, identifying unused code is sometimes very difficult for a compiler, so the community has developed certain annotations to help tell compilers what code should be considered unused. Currently there are two forms of tree-shaking annotations that esbuild supports:</p>
+      <ul><li><p> Inline <code>/* @__PURE__ */</code> comments before function calls tell esbuild that the function call can be removed if the resulting value isn't used. See the <a href="#pure">pure</a> API option for more information. </p></li><li><p> The <code>sideEffects</code> field in <code>package.json</code> can be used to tell esbuild which files in your package can be removed if all imports from that file end up being unused. This is a convention from Webpack and many libraries published to npm already have this field in their package definition. You can learn more about this field in <a href="https://webpack.js.org/guides/tree-shaking/">Webpack's documentation</a> for this field. </p></li></ul>
+      <p>These annotations can be problematic because the compiler depends completely on developers for accuracy, and developers occasionally publish packages with incorrect annotations. The <code>sideEffects</code> field is particularly error-prone for developers because by default it causes all files in your package to be considered dead code if no imports are used. If you add a new file containing side effects and forget to update that field, your package will likely break when people try to bundle it.</p>
+      <p>This is why esbuild includes a way to ignore tree-shaking annotations. You should only enable this if you encounter a problem where the bundle is broken because necessary code was unexpectedly removed from the bundle:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --bundle --tree-shaking=ignore-annotations</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">treeShaking</span>: <span class="hljs-string">&#x27;ignore-annotations&#x27;</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    TreeShaking: api.TreeShakingIgnoreAnnotations,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>Enabling this means esbuild will no longer respect <code>/* @__PURE__ */</code> comments or the <code>sideEffects</code> field. It will still do automatic tree shaking of unused imports, however, since that doesn't rely on annotations from developers. Ideally this flag is only a temporary workaround. You should report these issues to the maintainer of the package to get them fixed since they indicate a problem with the package and they will likely trip up other people too.</p>
       <h3 id="tsconfig" data-h2="advanced-options">
         <a href="#tsconfig">#</a>
         Tsconfig
