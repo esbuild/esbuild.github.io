@@ -88,6 +88,7 @@ body:
     - Sourcefile
     - Sourcemap
     - Target
+    - Tree shaking
     - Tsconfig raw
 
   - h2: Build API
@@ -184,6 +185,7 @@ body:
     - Sourcemap
     - Stdin
     - Target
+    - Tree shaking
     - Tsconfig
     - Write
 
@@ -2422,8 +2424,8 @@ body:
       reasonable to expect that the file path in this field is an
       ECMAScript-style module. This proposal wasn't adopted by node (node uses
       <code>"type": <wbr>"module"</code> instead) but it was adopted by major
-      bundlers because ECMAScript-style modules lead to better tree shaking, or
-      dead code removal.
+      bundlers because ECMAScript-style modules lead to better [tree shaking](#tree-shaking),
+      or dead code removal.
       </p>
       <p>
       For package authors: Some packages incorrectly use the `module` field for
@@ -2997,6 +2999,167 @@ body:
             os.Exit(1)
           }
         }
+
+  - h3: Tree shaking
+
+  - p: >
+      Tree shaking is the term the JavaScript community uses for dead code
+      elimination, a common compiler optimization that automatically removes
+      unreachable code. Note that tree shaking in esbuild is always enabled
+      during bundling and can't be turned off, since trimming unused code
+      makes the resulting file smaller without changing observable behavior.
+
+  - p: >
+      Tree shaking is easiest to explain with an example. Consider the following
+      file. There is one used function and one unused function:
+
+  - pre.js: |
+      // input.js
+      function one() {
+        console.log('one')
+      }
+      function two() {
+        console.log('two')
+      }
+      one()
+
+  - p: >
+      If you bundle this file with <code>esbuild <wbr>--bundle <wbr>input.js <wbr>--outfile=<wbr>output.js</code>,
+      the unused function will automatically be discarded leaving you with the
+      following output:
+
+  - pre.js: |
+      // input.js
+      function one() {
+        console.log("one");
+      }
+      one();
+
+  - p: >
+      This even works if we split our functions off into a separate library
+      file and import them using an `import` statement:
+
+  - pre.js: |
+      // lib.js
+      export function one() {
+        console.log('one')
+      }
+      export function two() {
+        console.log('two')
+      }
+
+  - pre.js: |
+      // input.js
+      import * as lib from './lib.js'
+      lib.one()
+
+  - p: >
+      If you bundle this file with <code>esbuild <wbr>--bundle <wbr>input.js <wbr>--outfile=<wbr>output.js</code>,
+      the unused function and unused import will still be automatically
+      discarded leaving you with the following output:
+
+  - pre.js: |
+      // lib.js
+      function one() {
+        console.log("one");
+      }
+
+      // input.js
+      one();
+
+  - p: >
+      This way esbuild will only bundle the parts of your libraries that you
+      actually use, which can sometimes be a substantial size savings. Note
+      that esbuild's tree shaking implementation relies on the use of ECMAScript
+      module `import` and `export` statements. It does not work with CommonJS
+      modules. Many libraries on npm include both formats and esbuild tries to
+      pick the format that works with tree shaking by default. You can
+      customize which format esbuild picks using the [main fields](#main-fields)
+      option.
+
+  - h4: Manual annotations
+
+  - p: >
+      Since JavaScript is a dynamic language, identifying
+      unused code is sometimes very difficult for a compiler, so the community
+      has developed certain annotations to help tell compilers what code should
+      be considered unused. Currently there are two forms of tree-shaking
+      annotations that esbuild supports:
+
+  - ul:
+    - >
+      <p>
+      Inline `/* @__PURE__ */` comments before function calls tell esbuild that
+      the function call can be removed if the resulting value isn't used. See
+      the [pure](#pure) API option for more information.
+      </p>
+
+    - >
+      <p>
+      The `sideEffects` field in `package.json` can be used to tell esbuild
+      which files in your package can be removed if all imports from that
+      file end up being unused. This is a convention from Webpack and many
+      libraries published to npm already have this field in their package
+      definition. You can learn more about this field in
+      [Webpack's documentation](https://webpack.js.org/guides/tree-shaking/)
+      for this field.
+      </p>
+
+  - p: >
+      These annotations can be problematic because the compiler depends
+      completely on developers for accuracy, and developers occasionally
+      publish packages with incorrect annotations. The `sideEffects` field is
+      particularly error-prone for developers because by default it causes all
+      files in your package to be considered dead code if no imports are used.
+      If you add a new file containing side effects and forget to update that
+      field, your package will likely break when people try to bundle it.
+
+  - p: >
+      This is why esbuild includes a way to ignore tree-shaking annotations.
+      You should only enable this if you encounter a problem where the bundle
+      is broken because necessary code was unexpectedly removed from the bundle:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+          esbuild app.js --bundle --tree-shaking=ignore-annotations
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          treeShaking: 'ignore-annotations',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            TreeShaking: api.TreeShakingIgnoreAnnotations,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Enabling this means esbuild will no longer respect `/* @__PURE__ */`
+      comments or the `sideEffects` field. It will still do automatic tree
+      shaking of unused imports, however, since that doesn't rely on
+      annotations from developers. Ideally this flag is only a temporary
+      workaround. You should report these issues to the maintainer of the
+      package to get them fixed since they indicate a problem with the package
+      and they will likely trip up other people too.
 
   - h3: Tsconfig
 
