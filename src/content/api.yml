@@ -434,6 +434,16 @@ body:
           }
         }
 
+  - p: >
+      You can also use the `*` wildcard character in an external path to mark
+      all files matching that pattern as external. For example, you can use
+      `*.png` to remove all `.png` files or `/images/*` to remove all paths
+      starting with `/images/`. When a `*` wildcard character is present in an
+      external path, that pattern will be applied to the original path in the
+      source code instead of to the path after it has been resolved to a real
+      file system path. This lets you match on paths that aren't real file
+      system paths.
+
   - h3: Format
 
   - p: >
