@@ -464,6 +464,7 @@
     os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
+      <p>You can also use the <code>*</code> wildcard character in an external path to mark all files matching that pattern as external. For example, you can use <code>*.png</code> to remove all <code>.png</code> files or <code>/images/*</code> to remove all paths starting with <code>/images/</code>. When a <code>*</code> wildcard character is present in an external path, that pattern will be applied to the original path in the source code instead of to the path after it has been resolved to a real file system path. This lets you match on paths that aren't real file system paths.</p>
       <h3 id="format" data-h2="simple-options">
         <a href="#format">#</a>
         Format
