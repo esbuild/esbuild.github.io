@@ -165,6 +165,7 @@ body:
     - Footer
     - Format
     - Global name
+    - Incremental
     - Inject
     - JSX factory
     - JSX fragment
@@ -1660,14 +1661,14 @@ body:
         esbuild app.js --outfile=out.js --bundle --serve
 
       js: |
-        let server = await require('esbuild').serve({}, {
+        require('esbuild').serve({}, {
           entryPoints: ['app.js'],
           bundle: true,
           outfile: 'out.js',
+        }).then(server => {
+          // Call "stop" on the server when you're done
+          server.stop()
         })
-
-        // Call "stop" on the server when you're done
-        server.stop()
 
       go: |
         server, err := api.Serve(api.ServeOptions{}, api.BuildOptions{
@@ -2499,6 +2500,88 @@ body:
   - p: >
       This is similar to [banner](#banner) which inserts at the beginning
       instead of the end.
+
+  - h3: Incremental
+
+  - p: >
+      You may want to use this API if your use case involves calling esbuild's
+      [build API](#build-api) repeatedly with the same options. For example,
+      this is useful if you are implementing a file watcher service. Incremental
+      builds are more efficient than regular builds because some of the data is
+      cached and can be reused if the original files haven't changed since the
+      last build. There are currently two forms of caching used by the
+      incremental build API:
+
+  - ul:
+    - >
+      <p>
+      Files are stored in memory and are not re-read from the file system if
+      the file metadata hasn't changed since the last build. This optimization
+      only applies to file system paths. It does not apply to virtual modules
+      created by [plugins](/plugins/).
+      </p>
+
+    - >
+      <p>
+      Parsed [ASTs](https://en.wikipedia.org/wiki/Abstract_syntax_tree) are
+      stored in memory and re-parsing the AST is avoided if the file contents
+      haven't changed since the last build. This optimization applies to
+      virtual modules created by plugins in addition to file system modules,
+      as long as the virtual module path remains the same.
+      </p>
+
+  - p: >
+      Here's how to do an incremental build:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      js: |
+        async function example() {
+          let result = await require('esbuild').build({
+            entryPoints: ['app.js'],
+            bundle: true,
+            outfile: 'out.js',
+            incremental: true,
+          })
+
+          // Call "rebuild" as many times as you want
+          for (let i = 0; i < 5; i++) {
+            let result2 = await result.rebuild()
+          }
+
+          // Call "dispose" when you're done to free up resources.
+          result.rebuild.dispose()
+        }
+
+        example()
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Outfile:     "out.js",
+            Incremental: true,
+          })
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+
+          // Call "Rebuild" as many times as you want
+          for i := 0; i < 5; i++ {
+            result2 := result.Rebuild()
+            if len(result2.Errors) > 0 {
+              os.Exit(1)
+            }
+          }
+        }
 
   - h3: Keep names
 
