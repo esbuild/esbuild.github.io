@@ -182,7 +182,7 @@ body:
         app.jsx: '<div/>'
 
       cli: |
-        esbuild app.jsx --bundle --define:process.env.NODE_ENV='"production"'
+        esbuild app.jsx --bundle --define:process.env.NODE_ENV=\"production\"
 
       js: |
         require('esbuild').buildSync({
