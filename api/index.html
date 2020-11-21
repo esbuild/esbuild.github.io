@@ -1250,12 +1250,12 @@ server.Stop()</pre>
         <a href="javascript:void 0" class="js2">JS</a>
         <a href="javascript:void 0" class="go2">Go</a>
       </div>
-      <pre class="switchable js2"><span class="hljs-keyword">export</span> interface ServeOptions {
+      <pre class="switchable js2">interface ServeOptions {
   port?: number;
   onRequest?: <span class="hljs-function">(<span class="hljs-params">args: ServeOnRequestArgs</span>) =&gt;</span> <span class="hljs-keyword">void</span>;
 }
 
-<span class="hljs-keyword">export</span> interface ServeOnRequestArgs {
+interface ServeOnRequestArgs {
   <span class="hljs-attr">remoteAddress</span>: string;
   method: string;
   path: string;
@@ -1281,7 +1281,7 @@ server.Stop()</pre>
         <a href="javascript:void 0" class="js2">JS</a>
         <a href="javascript:void 0" class="go2">Go</a>
       </div>
-      <pre class="switchable js2"><span class="hljs-keyword">export</span> interface ServeResult {
+      <pre class="switchable js2">interface ServeResult {
   <span class="hljs-attr">port</span>: number;
   wait: <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-keyword">void</span>&gt;;
   stop: <span class="hljs-function">() =&gt;</span> <span class="hljs-keyword">void</span>;
