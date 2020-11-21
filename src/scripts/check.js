@@ -199,7 +199,7 @@ async function main() {
       const value = obj[tag]
       if (tag === 'h2') h2 = value, h3 = null
       if (tag === 'h3') h3 = value
-      if (tag !== 'example' || value.typedef) continue;
+      if (tag !== 'example' || value.noCheck) continue;
       let text = `${page.title}` + (h2 ? ` :: ${h2}` + (h3 ? ` :: ${h3}` : '') : '')
       if (times[text]) text += ` :: ${++times[text]}`
       times[text] = 1

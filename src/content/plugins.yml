@@ -301,7 +301,7 @@ body:
       few options:
 
   - example:
-      typedef: true
+      noCheck: true
 
       js: |
         interface OnResolveOptions {
@@ -338,7 +338,7 @@ body:
       provide these arguments with information about the imported path:
 
   - example:
-      typedef: true
+      noCheck: true
 
       js: |
         interface OnResolveArgs {
@@ -409,7 +409,7 @@ body:
       are the optional properties that can be returned:
 
   - example:
-      typedef: true
+      noCheck: true
 
       js: |
         interface OnResolveResult {
@@ -633,7 +633,7 @@ body:
       few options:
 
   - example:
-      typedef: true
+      noCheck: true
 
       js: |
         interface OnLoadOptions {
@@ -670,7 +670,7 @@ body:
       provide these arguments with information about the module to load:
 
   - example:
-      typedef: true
+      noCheck: true
 
       js: |
         interface OnLoadArgs {
@@ -713,7 +713,7 @@ body:
       are the optional properties that can be returned:
 
   - example:
-      typedef: true
+      noCheck: true
 
       js: |
         interface OnLoadResult {
