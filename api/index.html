@@ -397,7 +397,7 @@
         <a href="javascript:void 0" class="js3">JS</a>
         <a href="javascript:void 0" class="go3">Go</a>
       </div>
-      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;id, str&#x27;</span> | esbuild --define:id=text <span class="hljs-string">&#x27;--define:str=&quot;text&quot;&#x27;</span></span><span class="repl-out">text, "text";</span></pre>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;id, str&#x27;</span> | esbuild --define:id=text --define:str=\&quot;text\&quot;</span><span class="repl-out">text, "text";</span></pre>
       <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(<span class="hljs-string">&#x27;id, str&#x27;</span>, {
   <span class="hljs-attr">define</span>: { <span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;text&#x27;</span>, <span class="hljs-attr">str</span>: <span class="hljs-string">&#x27;&quot;text&quot;&#x27;</span> },
 })</span><span class="repl-out">{
@@ -422,7 +422,13 @@
     fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
   }
 }</pre>
-      <p>If you're using the CLI, keep in mind that different shells have different rules for how to escape quote characters (which are necessary when the replacement value is a string). For example, bash will remove the outer quote characters while the Windows command prompt won't. If you need to replace something with a string literal and have it work on both Unix and Windows, you may not be able to use the CLI for this. You may have to use the JavaScript or Go API instead.</p>
+      <p>If you're using the CLI, keep in mind that different shells have different rules for how to escape double-quote characters (which are necessary when the replacement value is a string). Use a <code>\&quot;</code> backslash escape because it works in both bash and Windows command prompt. Other methods of escaping double quotes that work in bash such as surrounding them with single quotes will not work on Windows, since Windows command prompt does not remove the single quotes. This is relevant when using the CLI from a npm script in your <code>package.json</code> file, which people will expect to work on all platforms:</p>
+      <pre>{
+  <span class="hljs-attr">&quot;scripts&quot;</span>: {
+    <span class="hljs-attr">&quot;build&quot;</span>: <span class="hljs-string">&quot;esbuild --define:process.env.NODE_ENV=\\\&quot;production\\\&quot; app.js&quot;</span>
+  }
+}</pre>
+      <p>If you still run into cross-platform quote escaping issues with different shells, you will probably want to switch to using the <a href="/api/">JavaScript API</a> instead. There you can use regular JavaScript syntax to eliminate cross-platform differences.</p>
       <h3 id="external" data-h2="simple-options">
         <a href="#external">#</a>
         External
