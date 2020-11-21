@@ -71,6 +71,7 @@
                   <li id="nav-outdir"><a href="#outdir">Outdir</a></li>
                   <li id="nav-outfile"><a href="#outfile">Outfile</a></li>
                   <li id="nav-platform"><a href="#platform">Platform</a></li>
+                  <li id="nav-serve"><a href="#serve">Serve</a></li>
                   <li id="nav-sourcemap"><a href="#sourcemap">Sourcemap</a></li>
                   <li id="nav-splitting"><a href="#splitting">Splitting</a></li>
                   <li id="nav-target"><a href="#target">Target</a></li>
@@ -276,6 +277,7 @@
         <li><a href="#minify">Minify</a></li>
         <li><a href="#outdir">Outdir</a></li>
         <li><a href="#outfile">Outfile</a></li>
+        <li><a href="#serve">Serve</a></li>
         <li><a href="#sourcemap">Sourcemap</a></li>
         <li><a href="#target">Target</a></li>
         <li><a href="#write">Write</a></li>
@@ -1208,6 +1210,88 @@ image.src = url
       <p>When the platform is set to <code>node</code>:</p>
       <ul><li><p> The default output <a href="#format">format</a> is set to <code>cjs</code>, which stands for CommonJS (the module format used by node). ES6-style exports using <code>export</code> statements will be converted into getters on the CommonJS <code>exports</code> object. </p></li><li><p> All <a href="https://nodejs.org/docs/latest/api/">built-in node modules</a> such as <code>fs</code> are automatically marked as <a href="#external">external</a> so they don't cause errors when the bundler tries to bundle them. </p></li><li><p> The <a href="#main-fields">main fields</a> setting is set to <code>main,<wbr>module</code>. This means tree shaking will likely not happen for packages that provide both <code>module</code> and <code>main</code> since tree shaking works with ECMAScript modules but not with CommonJS modules. </p> <p> Unfortunately some packages incorrectly treat <code>module</code> as meaning &quot;browser code&quot; instead of &quot;ECMAScript module code&quot; so this default behavior is required for compatibility. You can manually configure the <a href="#main-fields">main fields</a> setting to <code>module,<wbr>main</code> if you want to enable tree shaking and know it is safe to do so. </p></li></ul>
       <p>See also <a href="/getting-started/#bundling-for-the-browser">bundling for the browser</a> and <a href="/getting-started/#bundling-for-node">bundling for node</a>.</p>
+      <h3 id="serve" data-h2="simple-options">
+        <a href="#serve">#</a>
+        Serve
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>During development, it's common to switch back and forth between a text editor and a browser while making changes. It's inconvenient to manually re-run esbuild before reloading your code in the browser. There are several methods to automate this:</p>
+      <ul><li>Configure your text editor to run esbuild every time you save</li><li>Use a file watcher to re-run esbuild when a file is changed</li><li>Serve your code with a server that rebuilds on every request</li></ul>
+      <p>This API call implements the last method. The serve API is similar to the <a href="#build-api">build API</a> call but instead of writing the generated files to the file system, it starts a long-lived local HTTP server that serves the generated files from the latest build. Each new batch of requests causes esbuild to re-run the build command before responding to the requests so your files are always up to date.</p>
+      <p>The advantage of this method over the other methods is that the server can delay the browser's request until the build has finished. That way reloading your code in the browser before the latest build has finished will never run code from a previous build. Here's how to use the serve API:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --outfile=out.js --bundle --serve</pre>
+      <pre class="switchable js3"><span class="hljs-keyword">let</span> server = <span class="hljs-keyword">await</span> <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).serve({}, {
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})
+
+<span class="hljs-comment">// Call &quot;stop&quot; on the server when you&#x27;re done</span>
+server.stop()</pre>
+      <pre class="switchable go3">server, err := api.Serve(api.ServeOptions{}, api.BuildOptions{
+  EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+  Bundle:      <span class="hljs-literal">true</span>,
+  Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+})
+
+<span class="hljs-comment">// Call &quot;stop&quot; on the server when you&#x27;re done</span>
+server.Stop()</pre>
+      <p>This will start a local HTTP server on an open port (8000 by default). You can then add something like this to your HTML to reference the generated output files. Every time you reload the page, <code>app.js</code> will automatically be rebuilt so it will always be up to date:</p>
+      <pre><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;http://localhost:8000/app.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></pre>
+      <p>This is intended to only be used in development. <em>Do not use this in production.</em> In production you should be serving static files without using esbuild as a server.</p>
+      <h4>Arguments</h4>
+      <p>Notice that the serve API is a different API call than the <a href="#build-api">build API</a>. This is because starting a long-running server is different enough to warrant different arguments and return values. The first argument to the serve API call is an options object with serve-specific options:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-keyword">export</span> interface ServeOptions {
+  port?: number;
+  onRequest?: <span class="hljs-function">(<span class="hljs-params">args: ServeOnRequestArgs</span>) =&gt;</span> <span class="hljs-keyword">void</span>;
+}
+
+<span class="hljs-keyword">export</span> interface ServeOnRequestArgs {
+  <span class="hljs-attr">remoteAddress</span>: string;
+  method: string;
+  path: string;
+  status: number;
+  timeInMS: number;
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">type</span> ServeOptions <span class="hljs-keyword">struct</span> {
+  Port      <span class="hljs-keyword">uint16</span>
+  OnRequest <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(ServeOnRequestArgs)</span></span>
+}
+
+<span class="hljs-keyword">type</span> ServeOnRequestArgs <span class="hljs-keyword">struct</span> {
+  RemoteAddress <span class="hljs-keyword">string</span>
+  Method        <span class="hljs-keyword">string</span>
+  Path          <span class="hljs-keyword">string</span>
+  Status        <span class="hljs-keyword">int</span>
+  TimeInMS      <span class="hljs-keyword">int</span>
+}</pre>
+      <ul><li><code>port</code> <p> The HTTP port can optionally be configured here. If omitted, it will default to an open port with a preference for port 8000. You can set the port on the command line by using <code>--serve=8000</code> instead of just <code>--serve</code>. </p></li><li><code>onRequest</code> <p> This is called once for each incoming request with some information about the request. This callback is used by the CLI to print out a log message for each request. The time field is the time to generate the data for the request, but it does not include the time to stream the request to the client. </p></li></ul>
+      <p>The second argument to the serve API call is the normal set of options for the underlying build API that is called on every request. See the documentation for the <a href="#build-api">build API</a> for more information about these options.</p>
+      <h4>Return values</h4>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-keyword">export</span> interface ServeResult {
+  <span class="hljs-attr">port</span>: number;
+  wait: <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-keyword">void</span>&gt;;
+  stop: <span class="hljs-function">() =&gt;</span> <span class="hljs-keyword">void</span>;
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">type</span> ServeResult <span class="hljs-keyword">struct</span> {
+  Port <span class="hljs-keyword">uint16</span>
+  Wait <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span> <span class="hljs-title">error</span></span>
+  Stop <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span>
+}</pre>
+      <ul><li><code>port</code> <p> This is the port that ended up being used by the server. You'll want to use this if you don't specify a port since esbuild will end up picking an arbitrary open port, and you need to know which port it picked to be able to connect to it. If you're using the CLI, this port number will be printed to stderr in the terminal. </p></li><li><code>wait</code> <p> The serve API call returns immediately as long as the socket was able to be opened. The <code>wait</code> return value provides a way to be informed when the server is terminated, either due to a network error or due to <code>stop</code> being called at some point in the future. </p></li><li><code>stop</code> <p> Call this callback to stop the server, which you should do when you no longer need it to clean up resources. This will immediately terminate all open connections and wake up any code waiting on the <code>wait</code> return value. </p></li></ul>
       <h3 id="sourcemap" data-h2="simple-options">
         <a href="#sourcemap">#</a>
         Sourcemap
