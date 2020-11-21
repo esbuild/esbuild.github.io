@@ -1690,12 +1690,12 @@ body:
       noCheck: true
 
       js: |
-        export interface ServeOptions {
+        interface ServeOptions {
           port?: number;
           onRequest?: (args: ServeOnRequestArgs) => void;
         }
 
-        export interface ServeOnRequestArgs {
+        interface ServeOnRequestArgs {
           remoteAddress: string;
           method: string;
           path: string;
@@ -1748,7 +1748,7 @@ body:
       noCheck: true
 
       js: |
-        export interface ServeResult {
+        interface ServeResult {
           port: number;
           wait: Promise<void>;
           stop: () => void;
