@@ -260,8 +260,8 @@ body:
   - p: >
       If you're using JSX with a library other than React (such as
       [Preact](https://preactjs.com/)), you'll likely need to configure the
-      JSX factory and fragment settings since they default to
-      <code>React<wbr>.createElement</code> and
+      [JSX factory](/api/#jsx-factory) and [JSX fragment](/api/#jsx-fragment)
+      settings since they default to <code>React<wbr>.createElement</code> and
       <code>React<wbr>.Fragment</code> respectively:
 
   - example:

@@ -912,7 +912,7 @@ body:
       This sets the function that is called for each JSX element. Normally a
       JSX expression such as this:
 
-  - pre.js: |
+  - pre.xml: |
       <div>Example text</div>
 
   - p: >
@@ -981,7 +981,7 @@ body:
       This sets the function that is called for each JSX fragment. Normally a
       JSX fragment expression such as this:
 
-  - pre.js: |
+  - pre.xml: |
       <>Stuff</>
 
   - p: >

@@ -174,8 +174,8 @@ body:
       For example, the `react` library contains code that checks the value of
       <code>process<wbr>.env<wbr>.NODE_ENV</code>. This will crash in the
       browser because the variable called `process` only exists in node, not
-      in the browser. To work around this you can define a custom value for
-      this variable at build time:
+      in the browser. To work around this you can [define](/api/#define) a
+      custom value for this variable at build time:
 
   - example:
       in:
