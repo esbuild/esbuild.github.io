@@ -80,16 +80,24 @@ addEventListener('DOMContentLoaded', function () {
     document.body.dataset.theme = theme
   }
 
-  var darkMedia = matchMedia('(prefers-color-scheme: dark)')
-
-  darkMedia.addEventListener('change', function () {
-    if (document.body.dataset.theme !== inverseSystemTheme()) {
-      updateTheme(null)
-    }
-  })
-
   document.getElementById('theme').addEventListener('click', function () {
     var theme = inverseSystemTheme()
     updateTheme(document.body.dataset.theme === theme ? null : theme)
   })
+
+  var darkMedia = matchMedia('(prefers-color-scheme: dark)')
+
+  function onDarkModeChange() {
+    if (document.body.dataset.theme !== inverseSystemTheme()) {
+      updateTheme(null)
+    }
+  }
+
+  try {
+    // Newer browsers
+    darkMedia.addEventListener('change', onDarkModeChange)
+  } catch (e) {
+    // Older browsers
+    darkMedia.addListener(onDarkModeChange)
+  }
 })
