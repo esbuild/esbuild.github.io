@@ -777,7 +777,7 @@ example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span clas
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
       <p>This sets the function that is called for each JSX element. Normally a JSX expression such as this:</p>
-      <pre>&lt;div&gt;Example text&lt;/div&gt;</pre>
+      <pre><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Example text<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></pre>
       <p>is compiled into a function call to <code>React.createElement</code> like this:</p>
       <pre>React.createElement(<span class="hljs-string">&quot;div&quot;</span>, <span class="hljs-literal">null</span>, <span class="hljs-string">&quot;Example text&quot;</span>);</pre>
       <p>You can call something other than <code>React.createElement</code> by changing the JSX factory. For example, to call the function <code>h</code> instead (which is used by other libraries such as <a href="https://preactjs.com/">Preact</a>):</p>
@@ -822,7 +822,7 @@ example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span clas
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
       <p>This sets the function that is called for each JSX fragment. Normally a JSX fragment expression such as this:</p>
-      <pre>&lt;&gt;Stuff&lt;/&gt;</pre>
+      <pre><span class="hljs-tag">&lt;&gt;</span>Stuff<span class="hljs-tag">&lt;/&gt;</span></pre>
       <p>is compiled into a use of the <code>React.Fragment</code> component like this:</p>
       <pre>React.createElement(React.Fragment, <span class="hljs-literal">null</span>, <span class="hljs-string">&quot;Stuff&quot;</span>);</pre>
       <p>You can use a component other than <code>React.Fragment</code> by changing the JSX fragment. For example, to use the component <code>Fragment</code> instead (which is used by other libraries such as <a href="https://preactjs.com/">Preact</a>):</p>

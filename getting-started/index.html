@@ -203,7 +203,7 @@
     os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
-      <p>Some npm packages you want to use may not be designed to be run in the browser. Sometimes you can use esbuild's configuration options to work around certain issues and successfully bundle the package anyway. For example, the <code>react</code> library contains code that checks the value of <code>process<wbr>.env<wbr>.NODE_ENV</code>. This will crash in the browser because the variable called <code>process</code> only exists in node, not in the browser. To work around this you can define a custom value for this variable at build time:</p>
+      <p>Some npm packages you want to use may not be designed to be run in the browser. Sometimes you can use esbuild's configuration options to work around certain issues and successfully bundle the package anyway. For example, the <code>react</code> library contains code that checks the value of <code>process<wbr>.env<wbr>.NODE_ENV</code>. This will crash in the browser because the variable called <code>process</code> only exists in node, not in the browser. To work around this you can <a href="/api/#define">define</a> a custom value for this variable at build time:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
         <a href="javascript:void 0" class="js3">JS</a>
