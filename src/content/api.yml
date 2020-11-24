@@ -1637,18 +1637,18 @@ body:
   - ul:
     - Configure your text editor to run esbuild every time you save
     - Use a file watcher to re-run esbuild when a file is changed
-    - Serve your code with a server that rebuilds on every request
+    - Serve your code with a web server that rebuilds on every request
 
   - p: >
       This API call implements the last method. The serve API is similar to the
       [build API](#build-api) call but instead of writing the generated files
-      to the file system, it starts a long-lived local HTTP server that serves
-      the generated files from the latest build. Each new batch of requests
-      causes esbuild to re-run the build command before responding to the
-      requests so your files are always up to date.
+      to the file system, it starts a long-lived local HTTP web server that
+      serves the generated files from the latest build. Each new batch of
+      requests causes esbuild to re-run the build command before responding to
+      the requests so your files are always up to date.
 
   - p: >
-      The advantage of this method over the other methods is that the server
+      The advantage of this method over the other methods is that the web server
       can delay the browser's request until the build has finished. That way
       reloading your code in the browser before the latest build has finished
       will never run code from a previous build. Here's how to use the serve
@@ -1666,7 +1666,7 @@ body:
           bundle: true,
           outfile: 'out.js',
         }).then(server => {
-          // Call "stop" on the server when you're done
+          // Call "stop" on the web server when you're done
           server.stop()
         })
 
@@ -1677,11 +1677,11 @@ body:
           Outfile:     "out.js",
         })
 
-        // Call "stop" on the server when you're done
+        // Call "stop" on the web server when you're done
         server.Stop()
 
   - p: >
-      This will start a local HTTP server on an open port (8000 by default).
+      This will start a local web server on an open port (8000 by default).
       You can then add something like this to your HTML to reference the
       generated output files. Every time you reload the page, `app.js` will
       automatically be rebuilt so it will always be up to date:
@@ -1690,15 +1690,32 @@ body:
       <script src="http://localhost:8000/app.js"></script>
 
   - p: >
+      The URL structure of the web server exactly mirrors the URL structure of
+      the [output directory](#outdir) when using the normal build command
+      without the web server enabled. For example, if the output directory
+      normally contains a file called <code>./pages/<wbr>about.js</code>, the
+      web server will have a corresponding <code>/pages/<wbr>about.js</code>
+      path.
+
+  - p: >
+      If you would like to browse the web server to see what URLs are available,
+      you can use the built-in directory listing by visiting a directory name
+      instead of a file name. For example, if you're running esbuild's web
+      server on port 8000 you can visit [http://<wbr>localhost:<wbr>8000/](http://localhost:8000/)
+      in your browser to view the web server's root directory. From there you
+      can click on links to browse to different files and directories on the
+      web server.
+
+  - p: >
       This is intended to only be used in development. _Do not use this in
       production._ In production you should be serving static files without
-      using esbuild as a server.
+      using esbuild as a web server.
 
   - h4: Arguments
 
   - p: >
       Notice that the serve API is a different API call than the [build API](#build-api).
-      This is because starting a long-running server is different enough to
+      This is because starting a long-running web server is different enough to
       warrant different arguments and return values. The first argument to the
       serve API call is an options object with serve-specific options:
 
@@ -1781,7 +1798,7 @@ body:
     - >
       `port`
       <p>
-      This is the port that ended up being used by the server. You'll want to
+      This is the port that ended up being used by the web server. You'll want to
       use this if you don't specify a port since esbuild will end up picking
       an arbitrary open port, and you need to know which port it picked to be
       able to connect to it. If you're using the CLI, this port number will be
@@ -1793,14 +1810,14 @@ body:
       <p>
       The serve API call returns immediately as long as the socket was able to
       be opened. The `wait` return value provides a way to be informed when the
-      server is terminated, either due to a network error or due to `stop`
+      web server is terminated, either due to a network error or due to `stop`
       being called at some point in the future.
       </p>
 
     - >
       `stop`
       <p>
-      Call this callback to stop the server, which you should do when you no
+      Call this callback to stop the web server, which you should do when you no
       longer need it to clean up resources. This will immediately terminate
       all open connections and wake up any code waiting on the `wait` return
       value.
@@ -2357,9 +2374,10 @@ body:
     - >
       <p>
       This option simultaneously applies to all output file types (JavaScript,
-      CSS, and JSON). So if you configure your server to send the correct
-      <code>Content-<wbr>Type</code> header and want to use the UTF-8 charset, make sure your
-      server is configured to treat both `.js` and `.css` files as UTF-8.
+      CSS, and JSON). So if you configure your web server to send the correct
+      <code>Content-<wbr>Type</code> header and want to use the UTF-8 charset,
+      make sure your web server is configured to treat both `.js` and `.css`
+      files as UTF-8.
       </p>
 
   - h3: Color
