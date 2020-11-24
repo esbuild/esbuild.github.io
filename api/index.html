@@ -81,7 +81,6 @@
               <li id="nav-advanced-options">
                 <a href="#advanced-options">Advanced options</a>
                 <ul class="h3">
-                  <li id="nav-avoid-tdz"><a href="#avoid-tdz">Avoid TDZ</a></li>
                   <li id="nav-banner"><a href="#banner">Banner</a></li>
                   <li id="nav-charset"><a href="#charset">Charset</a></li>
                   <li id="nav-color"><a href="#color">Color</a></li>
@@ -216,7 +215,6 @@
       </ul>
       <p>Advanced options:</p>
       <ul>
-        <li><a href="#avoid-tdz">Avoid TDZ</a></li>
         <li><a href="#banner">Banner</a></li>
         <li><a href="#charset">Charset</a></li>
         <li><a href="#color">Color</a></li>
@@ -285,7 +283,6 @@
       </ul>
       <p>Advanced options:</p>
       <ul>
-        <li><a href="#avoid-tdz">Avoid TDZ</a></li>
         <li><a href="#banner">Banner</a></li>
         <li><a href="#charset">Charset</a></li>
         <li><a href="#color">Color</a></li>
@@ -1224,9 +1221,9 @@ image.src = url
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
       <p>During development, it's common to switch back and forth between a text editor and a browser while making changes. It's inconvenient to manually re-run esbuild before reloading your code in the browser. There are several methods to automate this:</p>
-      <ul><li>Configure your text editor to run esbuild every time you save</li><li>Use a file watcher to re-run esbuild when a file is changed</li><li>Serve your code with a server that rebuilds on every request</li></ul>
-      <p>This API call implements the last method. The serve API is similar to the <a href="#build-api">build API</a> call but instead of writing the generated files to the file system, it starts a long-lived local HTTP server that serves the generated files from the latest build. Each new batch of requests causes esbuild to re-run the build command before responding to the requests so your files are always up to date.</p>
-      <p>The advantage of this method over the other methods is that the server can delay the browser's request until the build has finished. That way reloading your code in the browser before the latest build has finished will never run code from a previous build. Here's how to use the serve API:</p>
+      <ul><li>Configure your text editor to run esbuild every time you save</li><li>Use a file watcher to re-run esbuild when a file is changed</li><li>Serve your code with a web server that rebuilds on every request</li></ul>
+      <p>This API call implements the last method. The serve API is similar to the <a href="#build-api">build API</a> call but instead of writing the generated files to the file system, it starts a long-lived local HTTP web server that serves the generated files from the latest build. Each new batch of requests causes esbuild to re-run the build command before responding to the requests so your files are always up to date.</p>
+      <p>The advantage of this method over the other methods is that the web server can delay the browser's request until the build has finished. That way reloading your code in the browser before the latest build has finished will never run code from a previous build. Here's how to use the serve API:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
         <a href="javascript:void 0" class="js3">JS</a>
@@ -1238,7 +1235,7 @@ image.src = url
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
 }).then(<span class="hljs-function"><span class="hljs-params">server</span> =&gt;</span> {
-  <span class="hljs-comment">// Call &quot;stop&quot; on the server when you&#x27;re done</span>
+  <span class="hljs-comment">// Call &quot;stop&quot; on the web server when you&#x27;re done</span>
   server.stop()
 })</pre>
       <pre class="switchable go3">server, err := api.Serve(api.ServeOptions{}, api.BuildOptions{
@@ -1247,13 +1244,15 @@ image.src = url
   Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
 })
 
-<span class="hljs-comment">// Call &quot;stop&quot; on the server when you&#x27;re done</span>
+<span class="hljs-comment">// Call &quot;stop&quot; on the web server when you&#x27;re done</span>
 server.Stop()</pre>
-      <p>This will start a local HTTP server on an open port (8000 by default). You can then add something like this to your HTML to reference the generated output files. Every time you reload the page, <code>app.js</code> will automatically be rebuilt so it will always be up to date:</p>
+      <p>This will start a local web server on an open port (8000 by default). You can then add something like this to your HTML to reference the generated output files. Every time you reload the page, <code>app.js</code> will automatically be rebuilt so it will always be up to date:</p>
       <pre><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;http://localhost:8000/app.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></pre>
-      <p>This is intended to only be used in development. <em>Do not use this in production.</em> In production you should be serving static files without using esbuild as a server.</p>
+      <p>The URL structure of the web server exactly mirrors the URL structure of the <a href="#outdir">output directory</a> when using the normal build command without the web server enabled. For example, if the output directory normally contains a file called <code>./pages/<wbr>about.js</code>, the web server will have a corresponding <code>/pages/<wbr>about.js</code> path.</p>
+      <p>If you would like to browse the web server to see what URLs are available, you can use the built-in directory listing by visiting a directory name instead of a file name. For example, if you're running esbuild's web server on port 8000 you can visit <a href="http://localhost:8000/">http://<wbr>localhost:<wbr>8000/</a> in your browser to view the web server's root directory. From there you can click on links to browse to different files and directories on the web server.</p>
+      <p>This is intended to only be used in development. <em>Do not use this in production.</em> In production you should be serving static files without using esbuild as a web server.</p>
       <h4>Arguments</h4>
-      <p>Notice that the serve API is a different API call than the <a href="#build-api">build API</a>. This is because starting a long-running server is different enough to warrant different arguments and return values. The first argument to the serve API call is an options object with serve-specific options:</p>
+      <p>Notice that the serve API is a different API call than the <a href="#build-api">build API</a>. This is because starting a long-running web server is different enough to warrant different arguments and return values. The first argument to the serve API call is an options object with serve-specific options:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="js2">JS</a>
         <a href="javascript:void 0" class="go2">Go</a>
@@ -1299,7 +1298,7 @@ interface ServeOnRequestArgs {
   Wait <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span> <span class="hljs-title">error</span></span>
   Stop <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span>
 }</pre>
-      <ul><li><code>port</code> <p> This is the port that ended up being used by the server. You'll want to use this if you don't specify a port since esbuild will end up picking an arbitrary open port, and you need to know which port it picked to be able to connect to it. If you're using the CLI, this port number will be printed to stderr in the terminal. </p></li><li><code>wait</code> <p> The serve API call returns immediately as long as the socket was able to be opened. The <code>wait</code> return value provides a way to be informed when the server is terminated, either due to a network error or due to <code>stop</code> being called at some point in the future. </p></li><li><code>stop</code> <p> Call this callback to stop the server, which you should do when you no longer need it to clean up resources. This will immediately terminate all open connections and wake up any code waiting on the <code>wait</code> return value. </p></li></ul>
+      <ul><li><code>port</code> <p> This is the port that ended up being used by the web server. You'll want to use this if you don't specify a port since esbuild will end up picking an arbitrary open port, and you need to know which port it picked to be able to connect to it. If you're using the CLI, this port number will be printed to stderr in the terminal. </p></li><li><code>wait</code> <p> The serve API call returns immediately as long as the socket was able to be opened. The <code>wait</code> return value provides a way to be informed when the web server is terminated, either due to a network error or due to <code>stop</code> being called at some point in the future. </p></li><li><code>stop</code> <p> Call this callback to stop the web server, which you should do when you no longer need it to clean up resources. This will immediately terminate all open connections and wake up any code waiting on the <code>wait</code> return value. </p></li></ul>
       <h3 id="sourcemap" data-h2="simple-options">
         <a href="#sourcemap">#</a>
         Sourcemap
@@ -1531,42 +1530,6 @@ interface ServeOnRequestArgs {
         <a href="#advanced-options">#</a>
         Advanced options
       </h2>
-      <h3 id="avoid-tdz" data-h2="advanced-options">
-        <a href="#avoid-tdz">#</a>
-        Avoid TDZ
-      </h3>
-      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
-      <p>This is a workaround for a performance issue with certain large JavaScript files in Safari. Enabling this setting means the bundle generated by esbuild may initialize up to 10x faster than with this setting disabled. However, it subtly changes the meaning of your code so it's not enabled by default and you should only enable it if you know what you're doing.</p>
-      <p>First, some background. In JavaScript the <code>var</code> statement is &quot;hoisted&quot; meaning the variable is declared immediately in the closest surrounding function, module, or global scope. Accessing one of these variables before its declaration has been evaluated results in the value <code>undefined</code>. In ES6 the <code>const</code>, <code>let</code>, and <code>class</code> statements introduce what's called a &quot;temporal dead zone&quot; or TDZ. This means that, unlike <code>var</code> statements, accessing one of these variable before its declaration has been evaluated results in a <code>ReferenceError</code> being thrown. It's called a &quot;temporal dead zone&quot; because it's a zone of time in which the variable is inaccessible.</p>
-      <p>According to <a href="https://bugs.webkit.org/show_bug.cgi?id=199866">this WebKit bug</a>, there's a severe performance issue with the tracking of TDZ checks in JavaScriptCore, the JavaScript JIT compiler used by WebKit. For example, in one extreme case replacing top-level <code>const</code>, <code>let</code>, and <code>class</code> statements with <code>var</code> statements improved the bundle initialization time from 2000ms to 200ms. This transformation is not enabled by default because it changes the semantics of the code (it removes the TDZ and <code>const</code> assignment checks). However, this change in semantics may be acceptable for you given the performance trade-off.</p>
-      <p>Here's how to enable it:</p>
-      <div class="switcher">
-        <a href="javascript:void 0" class="cli3">CLI</a>
-        <a href="javascript:void 0" class="js3">JS</a>
-        <a href="javascript:void 0" class="go3">Go</a>
-      </div>
-      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;const x = 1&#x27;</span> | esbuild --avoid-tdz</span><span class="repl-out">var x = 1;</span></pre>
-      <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(<span class="hljs-string">&#x27;const x = 1&#x27;</span>, {
-  <span class="hljs-attr">avoidTDZ</span>: <span class="hljs-literal">true</span>,
-})</span><span class="repl-out">{
-  code: 'var x = 1;\n',
-  map: '',
-  warnings: []
-}</span></pre>
-      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
-
-<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
-<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-  result := api.Transform(<span class="hljs-string">&quot;const x = 1&quot;</span>, api.TransformOptions{
-    AvoidTDZ: <span class="hljs-literal">true</span>,
-  })
-
-  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
-    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
-  }
-}</pre>
       <h3 id="banner" data-h2="advanced-options">
         <a href="#banner">#</a>
         Banner
@@ -1647,7 +1610,7 @@ interface ServeOnRequestArgs {
   }
 }</pre>
       <p>Some caveats:</p>
-      <ul><li><p> This does not yet escape non-ASCII characters embedded in regular expressions. This is because esbuild does not currently parse the contents of regular expressions at all. The flag was added despite this limitation because it's still useful for code that doesn't contain cases like this. </p></li><li><p> This flag does not apply to comments. I believe preserving non-ASCII data in comments should be fine because even if the encoding is wrong, the run time environment should completely ignore the contents of all comments. For example, the <a href="https://v8.dev/blog/scanner">V8 blog post</a> mentions an optimization that avoids decoding comment contents completely. And all comments other than license-related comments are stripped out by esbuild anyway. </p></li><li><p> This option simultaneously applies to all output file types (JavaScript, CSS, and JSON). So if you configure your server to send the correct <code>Content-<wbr>Type</code> header and want to use the UTF-8 charset, make sure your server is configured to treat both <code>.js</code> and <code>.css</code> files as UTF-8. </p></li></ul>
+      <ul><li><p> This does not yet escape non-ASCII characters embedded in regular expressions. This is because esbuild does not currently parse the contents of regular expressions at all. The flag was added despite this limitation because it's still useful for code that doesn't contain cases like this. </p></li><li><p> This flag does not apply to comments. I believe preserving non-ASCII data in comments should be fine because even if the encoding is wrong, the run time environment should completely ignore the contents of all comments. For example, the <a href="https://v8.dev/blog/scanner">V8 blog post</a> mentions an optimization that avoids decoding comment contents completely. And all comments other than license-related comments are stripped out by esbuild anyway. </p></li><li><p> This option simultaneously applies to all output file types (JavaScript, CSS, and JSON). So if you configure your web server to send the correct <code>Content-<wbr>Type</code> header and want to use the UTF-8 charset, make sure your web server is configured to treat both <code>.js</code> and <code>.css</code> files as UTF-8. </p></li></ul>
       <h3 id="color" data-h2="advanced-options">
         <a href="#color">#</a>
         Color
