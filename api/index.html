@@ -1259,6 +1259,7 @@ server.Stop()</pre>
       </div>
       <pre class="switchable js2">interface ServeOptions {
   port?: number;
+  host?: string;
   onRequest?: <span class="hljs-function">(<span class="hljs-params">args: ServeOnRequestArgs</span>) =&gt;</span> <span class="hljs-keyword">void</span>;
 }
 
@@ -1271,6 +1272,7 @@ interface ServeOnRequestArgs {
 }</pre>
       <pre class="switchable go2"><span class="hljs-keyword">type</span> ServeOptions <span class="hljs-keyword">struct</span> {
   Port      <span class="hljs-keyword">uint16</span>
+  Host      <span class="hljs-keyword">string</span>
   OnRequest <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(ServeOnRequestArgs)</span></span>
 }
 
@@ -1281,7 +1283,7 @@ interface ServeOnRequestArgs {
   Status        <span class="hljs-keyword">int</span>
   TimeInMS      <span class="hljs-keyword">int</span>
 }</pre>
-      <ul><li><code>port</code> <p> The HTTP port can optionally be configured here. If omitted, it will default to an open port with a preference for port 8000. You can set the port on the command line by using <code>--serve=8000</code> instead of just <code>--serve</code>. </p></li><li><code>onRequest</code> <p> This is called once for each incoming request with some information about the request. This callback is used by the CLI to print out a log message for each request. The time field is the time to generate the data for the request, but it does not include the time to stream the request to the client. </p></li></ul>
+      <ul><li><code>port</code> <p> The HTTP port can optionally be configured here. If omitted, it will default to an open port with a preference for port 8000. You can set the port on the command line by using <code>--serve=8000</code> instead of just <code>--serve</code>. </p></li><li><code>host</code> <p> The web server is only available on the internal loopback address by default. This is deliberate behavior for security reasons, since the local network environment may not be trusted. However, it can be useful to run the web server on a different address when developing with esbuild inside of a virtual machine/docker container, or to request development assets from a remote testing device on the same network at a different IP address. To do that you need to specify the host here. You can set the host on the command line by using <code>--serve=<wbr>192.168.0.1:<wbr>8000</code> instead of just <code>--serve</code>. </p></li><li><code>onRequest</code> <p> This is called once for each incoming request with some information about the request. This callback is used by the CLI to print out a log message for each request. The time field is the time to generate the data for the request, but it does not include the time to stream the request to the client. </p></li></ul>
       <p>The second argument to the serve API call is the normal set of options for the underlying build API that is called on every request. See the documentation for the <a href="#build-api">build API</a> for more information about these options.</p>
       <h4>Return values</h4>
       <div class="switcher">
@@ -1290,15 +1292,17 @@ interface ServeOnRequestArgs {
       </div>
       <pre class="switchable js2">interface ServeResult {
   <span class="hljs-attr">port</span>: number;
+  host: string;
   wait: <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-keyword">void</span>&gt;;
   stop: <span class="hljs-function">() =&gt;</span> <span class="hljs-keyword">void</span>;
 }</pre>
       <pre class="switchable go2"><span class="hljs-keyword">type</span> ServeResult <span class="hljs-keyword">struct</span> {
   Port <span class="hljs-keyword">uint16</span>
+  Host <span class="hljs-keyword">string</span>
   Wait <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span> <span class="hljs-title">error</span></span>
   Stop <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span>
 }</pre>
-      <ul><li><code>port</code> <p> This is the port that ended up being used by the web server. You'll want to use this if you don't specify a port since esbuild will end up picking an arbitrary open port, and you need to know which port it picked to be able to connect to it. If you're using the CLI, this port number will be printed to stderr in the terminal. </p></li><li><code>wait</code> <p> The serve API call returns immediately as long as the socket was able to be opened. The <code>wait</code> return value provides a way to be informed when the web server is terminated, either due to a network error or due to <code>stop</code> being called at some point in the future. </p></li><li><code>stop</code> <p> Call this callback to stop the web server, which you should do when you no longer need it to clean up resources. This will immediately terminate all open connections and wake up any code waiting on the <code>wait</code> return value. </p></li></ul>
+      <ul><li><code>port</code> <p> This is the port that ended up being used by the web server. You'll want to use this if you don't specify a port since esbuild will end up picking an arbitrary open port, and you need to know which port it picked to be able to connect to it. If you're using the CLI, this port number will be printed to stderr in the terminal. </p></li><li><code>host</code> <p> This is the port that ended up being used by the web server. It will be <code>127.0.0.1</code> unless a custom host was configured. </p></li><li><code>wait</code> <p> The serve API call returns immediately as long as the socket was able to be opened. The <code>wait</code> return value provides a way to be informed when the web server is terminated, either due to a network error or due to <code>stop</code> being called at some point in the future. </p></li><li><code>stop</code> <p> Call this callback to stop the web server, which you should do when you no longer need it to clean up resources. This will immediately terminate all open connections and wake up any code waiting on the <code>wait</code> return value. </p></li></ul>
       <h3 id="sourcemap" data-h2="simple-options">
         <a href="#sourcemap">#</a>
         Sourcemap
