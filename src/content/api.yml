@@ -1723,6 +1723,7 @@ body:
       js: |
         interface ServeOptions {
           port?: number;
+          host?: string;
           onRequest?: (args: ServeOnRequestArgs) => void;
         }
 
@@ -1737,6 +1738,7 @@ body:
       go: |
         type ServeOptions struct {
           Port      uint16
+          Host      string
           OnRequest func(ServeOnRequestArgs)
         }
 
@@ -1755,6 +1757,20 @@ body:
       The HTTP port can optionally be configured here. If omitted, it will
       default to an open port with a preference for port 8000. You can set the
       port on the command line by using `--serve=8000` instead of just `--serve`.
+      </p>
+
+    - >
+      `host`
+      <p>
+      The web server is only available on the internal loopback address by
+      default. This is deliberate behavior for security reasons, since the
+      local network environment may not be trusted. However, it can be useful
+      to run the web server on a different address when developing with esbuild
+      inside of a virtual machine/docker container, or to request development
+      assets from a remote testing device on the same network at a different IP
+      address. To do that you need to specify the host here. You can set the
+      host on the command line by using <code>--serve=<wbr>192.168.0.1:<wbr>8000</code>
+      instead of just `--serve`.
       </p>
 
     - >
@@ -1781,6 +1797,7 @@ body:
       js: |
         interface ServeResult {
           port: number;
+          host: string;
           wait: Promise<void>;
           stop: () => void;
         }
@@ -1788,6 +1805,7 @@ body:
       go: |
         type ServeResult struct {
           Port uint16
+          Host string
           Wait func() error
           Stop func()
         }
@@ -1801,6 +1819,13 @@ body:
       an arbitrary open port, and you need to know which port it picked to be
       able to connect to it. If you're using the CLI, this port number will be
       printed to stderr in the terminal.
+      </p>
+
+    - >
+      `host`
+      <p>
+      This is the port that ended up being used by the web server. It will be
+      `127.0.0.1` unless a custom host was configured.
       </p>
 
     - >
