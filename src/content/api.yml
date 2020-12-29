@@ -315,11 +315,19 @@ body:
         }
 
   - p: >
-      Supported replacement values are JSON primitives (null, booleans,
-      numbers, and strings) and identifiers. If you want to replace something
-      with a string literal, the replacement value passed to esbuild must
-      itself contain quotes. Omitting the quotes means the replacement value is
-      an identifier instead:
+      Replacement expressions must either be a JSON object (null, boolean,
+      number, string, array, or object) or a single identifier. Replacement
+      expressions other than arrays and objects are substituted inline, which
+      means that they can participate in constant folding. Array and object
+      replacement expressions are stored in a variable and then referenced
+      using an identifier instead of being substituted inline, which avoids
+      substituting repeated copies of the value but means that the values don't
+      participate in constant folding.
+
+  - p: >
+      If you want to replace something with a string literal, keep in mind that
+      the replacement value passed to esbuild must itself contain quotes.
+      Omitting the quotes means the replacement value is an identifier instead:
 
   - example:
       cli:
