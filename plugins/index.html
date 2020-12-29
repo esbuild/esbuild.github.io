@@ -654,10 +654,12 @@ interface Location {
             <span class="hljs-keyword">if</span> ([<span class="hljs-number">301</span>, <span class="hljs-number">302</span>, <span class="hljs-number">307</span>].includes(res.statusCode)) {
               fetch(<span class="hljs-keyword">new</span> URL(res.headers.location, url).toString())
               req.abort()
-            } <span class="hljs-keyword">else</span> {
+            } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (res.statusCode === <span class="hljs-number">200</span>) {
               <span class="hljs-keyword">let</span> chunks = []
               res.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function"><span class="hljs-params">chunk</span> =&gt;</span> chunks.push(chunk))
               res.on(<span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-function">() =&gt;</span> resolve(Buffer.concat(chunks)))
+            } <span class="hljs-keyword">else</span> {
+              reject(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`GET <span class="hljs-subst">${url}</span> failed: status <span class="hljs-subst">${res.statusCode}</span>`</span>))
             }
           }).on(<span class="hljs-string">&#x27;error&#x27;</span>, reject)
         }

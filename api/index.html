@@ -97,6 +97,7 @@
                   <li id="nav-pure"><a href="#pure">Pure</a></li>
                   <li id="nav-resolve-extensions"><a href="#resolve-extensions">Resolve extensions</a></li>
                   <li id="nav-sourcefile"><a href="#sourcefile">Sourcefile</a></li>
+                  <li id="nav-sources-content"><a href="#sources-content">Sources Content</a></li>
                   <li id="nav-stdin"><a href="#stdin">Stdin</a></li>
                   <li id="nav-tree-shaking"><a href="#tree-shaking">Tree shaking</a></li>
                   <li id="nav-tsconfig"><a href="#tsconfig">Tsconfig</a></li>
@@ -224,6 +225,7 @@
         <li><a href="#log-level">Log level</a></li>
         <li><a href="#pure">Pure</a></li>
         <li><a href="#sourcefile">Sourcefile</a></li>
+        <li><a href="#sources-content">Sources Content</a></li>
         <li><a href="#tree-shaking">Tree shaking</a></li>
         <li><a href="#tsconfig-raw">Tsconfig raw</a></li>
       </ul>
@@ -299,6 +301,7 @@
         <li><a href="#pure">Pure</a></li>
         <li><a href="#resolve-extensions">Resolve extensions</a></li>
         <li><a href="#sourcefile">Sourcefile</a></li>
+        <li><a href="#sources-content">Sources Content</a></li>
         <li><a href="#stdin">Stdin</a></li>
         <li><a href="#tree-shaking">Tree shaking</a></li>
         <li><a href="#tsconfig">Tsconfig</a></li>
@@ -390,7 +393,8 @@
     fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result2.Code)
   }
 }</pre>
-      <p>Supported replacement values are JSON primitives (null, booleans, numbers, and strings) and identifiers. If you want to replace something with a string literal, the replacement value passed to esbuild must itself contain quotes. Omitting the quotes means the replacement value is an identifier instead:</p>
+      <p>Replacement expressions must either be a JSON object (null, boolean, number, string, array, or object) or a single identifier. Replacement expressions other than arrays and objects are substituted inline, which means that they can participate in constant folding. Array and object replacement expressions are stored in a variable and then referenced using an identifier instead of being substituted inline, which avoids substituting repeated copies of the value but means that the values don't participate in constant folding.</p>
+      <p>If you want to replace something with a string literal, keep in mind that the replacement value passed to esbuild must itself contain quotes. Omitting the quotes means the replacement value is an identifier instead:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
         <a href="javascript:void 0" class="js3">JS</a>
@@ -2208,6 +2212,51 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
     fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <h3 id="sources-content" data-h2="advanced-options">
+        <a href="#sources-content">#</a>
+        Sources Content
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p><a href="#sourcemap">Source maps</a> are generated using <a href="https://sourcemaps.info/spec.html">version 3</a> of the source map format, which is by far the most widely-supported variant. Each source map will look something like this:</p>
+      <pre>{
+  <span class="hljs-attr">&quot;version&quot;</span>: <span class="hljs-number">3</span>,
+  <span class="hljs-attr">&quot;sources&quot;</span>: [<span class="hljs-string">&quot;bar.js&quot;</span>, <span class="hljs-string">&quot;foo.js&quot;</span>],
+  <span class="hljs-attr">&quot;sourcesContent&quot;</span>: [<span class="hljs-string">&quot;bar()&quot;</span>, <span class="hljs-string">&quot;foo()\nimport &#x27;./bar&#x27;&quot;</span>],
+  <span class="hljs-attr">&quot;mappings&quot;</span>: <span class="hljs-string">&quot;;AAAA;;;ACAA;&quot;</span>,
+  <span class="hljs-attr">&quot;names&quot;</span>: []
+}</pre>
+      <p>The <code>sourcesContent</code> field is an optional field that contains all of the original source code. This is helpful for debugging because it means the original source code will be available in the debugger.</p>
+      <p>However, it's not needed in some scenarios. For example, if you are just using source maps in production to generate stack traces that contain the original file name, you don't need the original source code because there is no debugger involved. In that case it can be desirable to omit the <code>sourcesContent</code> field to make the source map smaller:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild --bundle app.js --sourcemap --sources-content=<span class="hljs-literal">false</span></pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">sourcemap</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">sourcesContent</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    Bundle:         <span class="hljs-literal">true</span>,
+    EntryPoints:    []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Sourcemap:      api.SourceMapInline,
+    SourcesContent: api.SourcesContentExclude,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
       <h3 id="stdin" data-h2="advanced-options">
