@@ -901,10 +901,12 @@ body:
                     if ([301, 302, 307].includes(res.statusCode)) {
                       fetch(new URL(res.headers.location, url).toString())
                       req.abort()
-                    } else {
+                    } else if (res.statusCode === 200) {
                       let chunks = []
                       res.on('data', chunk => chunks.push(chunk))
                       res.on('end', () => resolve(Buffer.concat(chunks)))
+                    } else {
+                      reject(new Error(`GET ${url} failed: status ${res.statusCode}`))
                     }
                   }).on('error', reject)
                 }
