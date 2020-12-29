@@ -86,6 +86,7 @@ body:
     - Pure
     - Sourcefile
     - Sourcemap
+    - Sources Content
     - Target
     - Tree shaking
     - Tsconfig raw
@@ -183,6 +184,7 @@ body:
     - Serve
     - Sourcefile
     - Sourcemap
+    - Sources Content
     - Stdin
     - Target
     - Tree shaking
@@ -3204,6 +3206,69 @@ body:
           }
         }
 
+  - h3: Sources Content
+
+  - p: >
+      [Source maps](#sourcemap) are generated using [version 3](https://sourcemaps.info/spec.html)
+      of the source map format, which is by far the most widely-supported
+      variant. Each source map will look something like this:
+
+  - pre.json: |
+      {
+        "version": 3,
+        "sources": ["bar.js", "foo.js"],
+        "sourcesContent": ["bar()", "foo()\nimport './bar'"],
+        "mappings": ";AAAA;;;ACAA;",
+        "names": []
+      }
+
+  - p: >
+      The `sourcesContent` field is an optional field that contains all of the
+      original source code. This is helpful for debugging because it means the
+      original source code will be available in the debugger.
+
+  - p: >
+      However, it's not needed in some scenarios. For example, if you are just
+      using source maps in production to generate stack traces that contain the
+      original file name, you don't need the original source code because there
+      is no debugger involved. In that case it can be desirable to omit the
+      `sourcesContent` field to make the source map smaller:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild --bundle app.js --sourcemap --sources-content=false
+
+      js: |
+        require('esbuild').buildSync({
+          bundle: true,
+          entryPoints: ['app.js'],
+          sourcemap: true,
+          sourcesContent: false,
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            Bundle:         true,
+            EntryPoints:    []string{"app.js"},
+            Sourcemap:      api.SourceMapInline,
+            SourcesContent: api.SourcesContentExclude,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
   - h3: Stdin
 
   - p: >
@@ -3226,7 +3291,6 @@ body:
 
   - example:
       in:
-        app.js: '1 + 2'
         another-file.js: 'export let foo = 123'
 
       cli: |
