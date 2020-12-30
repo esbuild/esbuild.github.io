@@ -68,6 +68,7 @@
               <li id="nav-jsx">
                 <a href="#jsx">JSX</a>
                 <ul class="h3">
+                  <li id="nav-auto-import-for-jsx"><a href="#auto-import-for-jsx">Auto-import for JSX</a></li>
                   <li id="nav-using-jsx-without-react"><a href="#using-jsx-without-react">Using JSX without React</a></li>
                 </ul>
               </li>
@@ -421,6 +422,50 @@ render(button);</pre>
     os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
+      <h3 id="auto-import-for-jsx" data-h2="jsx">
+        <a href="#auto-import-for-jsx">#</a>
+        Auto-import for JSX
+      </h3>
+      <p>Using JSX syntax usually requires you to manually import the JSX library you are using. For example, if you are using React, by default you will need to import React into each JSX file like this:</p>
+      <pre><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>
+render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>/&gt;</span></span>)</pre>
+      <p>This is because the JSX transform turns JSX syntax into a call to <code>React.<wbr>createElement</code> but it does not itself import anything, so the <code>React</code> variable is not automatically present.</p>
+      <p>If you would like to avoid having to manually <code>import</code> your JSX library into each file, you can use esbuild's <a href="/api/#inject">inject</a> feature to automatically import it into every file. This feature is a general-purpose polyfill mechanism that replaces references to global variables with an export from the injected file. In this case we can use it to replace references to the <code>React</code> variable with exports from the <code>react</code> package.</p>
+      <p>First, create a file called <code>react-<wbr>shim.js</code> that re-exports everything from the <code>react</code> package in an export called <code>React</code>:</p>
+      <pre><span class="hljs-comment">// react-shim.js</span>
+<span class="hljs-keyword">export</span> * <span class="hljs-keyword">as</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span></pre>
+      <p>Then use esbuild's inject feature to inject this into each file:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.jsx --bundle --inject:./react-shim.js --outfile=out.js</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.jsx&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">inject</span>: [<span class="hljs-string">&#x27;./react-shim.js&#x27;</span>],
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.jsx&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Inject:      []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;./react-shim.js&quot;</span>},
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>Since the inject feature is a general-purpose code injection mechanism, it can be used with any JSX transform library, not just with React.</p>
       <h3 id="using-jsx-without-react" data-h2="jsx">
         <a href="#using-jsx-without-react">#</a>
         Using JSX without React
@@ -462,7 +507,7 @@ render(button);</pre>
     <span class="hljs-attr">&quot;jsxFragmentFactory&quot;</span>: <span class="hljs-string">&quot;Fragment&quot;</span>
   }
 }</pre>
-      <p>You will also have to add <code>import <wbr>{h, <wbr>Fragment} <wbr>from <wbr>'preact'</code> in files containing JSX syntax.</p>
+      <p>You will also have to add <code>import <wbr>{h, <wbr>Fragment} <wbr>from <wbr>'preact'</code> in files containing JSX syntax unless you use auto-importing as described above.</p>
       <h2 id="json">
         <a href="#json">#</a>
         JSON

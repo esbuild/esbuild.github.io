@@ -759,15 +759,7 @@ example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span clas
 }
 <span class="hljs-built_in">console</span>.log(dummy_process_cwd());</pre>
       <h4>Auto-import for <a href="/content-types/#jsx">JSX</a></h4>
-      <p>You can use the inject feature to automatically provide the implementation for JSX expressions. For example, you can auto-import the <code>react</code> package with a small shim file and inject:</p>
-      <pre><span class="hljs-comment">// react-shim.js</span>
-<span class="hljs-keyword">export</span> * <span class="hljs-keyword">as</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span></pre>
-      <pre><span class="hljs-comment">// entry.jsx</span>
-<span class="hljs-built_in">console</span>.log(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>/&gt;</span></span>)</pre>
-      <p>Building <code>entry.jsx</code> and injecting <code>react-shim.js</code> results in the following output:</p>
-      <pre><span class="hljs-comment">// out.js</span>
-<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
-<span class="hljs-built_in">console</span>.log(React.createElement(<span class="hljs-string">&quot;div&quot;</span>, <span class="hljs-literal">null</span>));</pre>
+      <p>You can use the inject feature to automatically provide the implementation for JSX expressions. For example, you can auto-import the <code>react</code> package to provide functions such as <code>React.createElement</code>. See the <a href="/content-types/#auto-import-for-jsx">JSX documentation</a> for details.</p>
       <h4>Files without imports</h4>
       <p>You can also use this feature with files that have no exports. In that case the injected file just comes first before the rest of the output as if every input file contained <code>import <wbr>&quot;./file.js&quot;</code>. Because of the way ECMAScript modules work, this injection is still &quot;hygienic&quot; in that symbols with the same name in different files are renamed so they don't collide with each other.</p>
       <h4>Conditionally injecting a file</h4>
@@ -1401,7 +1393,7 @@ interface ServeOnRequestArgs {
     os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
-      <p>Keep in mind that source maps are usually very big because they contain all of your original source code, so you usually do not want to ship code containing <code>inline</code> source maps.</p>
+      <p>Keep in mind that source maps are usually very big because they contain all of your original source code, so you usually do not want to ship code containing <code>inline</code> source maps. To remove the source code from the source map (keeping only the file names and the line/column mappings), use the <a href="#sources-content">sources content</a> option.</p>
       <h3 id="splitting" data-h2="simple-options">
         <a href="#splitting">#</a>
         Splitting
