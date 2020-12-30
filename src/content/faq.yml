@@ -75,11 +75,12 @@ body:
 
   - figcaption: TypeScript benchmark
   - benchmark:
-      '[esbuild](https://github.com/evanw/esbuild)': 0.11
-      '[esbuild](https://github.com/evanw/esbuild) (1 thread)': 0.38
-      '[parcel](https://github.com/parcel-bundler/parcel) 1': 15.43
-      '[webpack](https://github.com/webpack/webpack) 4': 18.03
-      '[webpack](https://github.com/webpack/webpack) 5': 23.85
+      '[esbuild](https://github.com/evanw/esbuild)': 0.09
+      '[esbuild](https://github.com/evanw/esbuild) (1 thread)': 0.37
+      '[webpack](https://github.com/webpack/webpack) 4': 18.38
+      '[parcel](https://github.com/parcel-bundler/parcel) 1': 18.76
+      '[webpack](https://github.com/webpack/webpack) 5': 25.12
+      '[parcel](https://github.com/parcel-bundler/parcel) 2': 53.13
 
   - p: >
       This benchmark uses the [Rome](https://github.com/facebookexperimental/rome)
@@ -91,11 +92,12 @@ body:
   - table: |
       | Bundler            |    Time | Relative slowdown | Absolute speed | Output size |
       | :----------------- | ------: | ----------------: | -------------: | ----------: |
-      | esbuild            |   0.11s |                1x |  1198.5 kloc/s |      0.98mb |
-      | esbuild (1 thread) |   0.38s |                3x |   346.9 kloc/s |      0.98mb |
-      | parcel 1           |  15.43s |              140x |     8.5 kloc/s |      1.55mb |
-      | webpack 4          |  18.03s |              164x |     7.3 kloc/s |      1.26mb |
-      | webpack 5          |  23.85s |              217x |     5.5 kloc/s |      1.26mb |
+      | esbuild            |   0.09s |                1x |  1464.8 kloc/s |      0.98mb |
+      | esbuild (1 thread) |   0.37s |                4x |   356.3 kloc/s |      0.98mb |
+      | webpack 4          |  18.38s |              204x |     7.2 kloc/s |      1.26mb |
+      | parcel 1           |  18.76s |              208x |     7.0 kloc/s |      1.56mb |
+      | webpack 5          |  25.12s |              279x |     5.2 kloc/s |      1.26mb |
+      | parcel 2           |  53.13s |              590x |     2.5 kloc/s |      1.68mb |
 
   - p: >
       Each time reported is the best of three runs. I'm running esbuild with
@@ -104,18 +106,20 @@ body:
       `GOMAXPROCS=1`). Webpack uses `ts-loader` with <code>transpileOnly:
       <wbr>true</code> and <code>--mode=<wbr>production
       <wbr>--devtool=<wbr>sourcemap</code>. Parcel 1 uses <code>--target
-      <wbr>node --bundle-<wbr>node-<wbr>modules</code>. Absolute speed is
-      based on the total line count including comments and blank lines, which
-      is currently 131,836. The tests were done on a 6-core 2019 MacBook Pro
-      with 16gb of RAM.
+      <wbr>node --bundle-<wbr>node-<wbr>modules</code>. Parcel 2 uses
+      <code>"engines": <wbr>"node"</code> in <code>package.json</code> and
+      needs the <code>@parcel/<wbr>transformer-<wbr>typescript-<wbr>tsc</code>
+      transformer to be able to handle the TypeScript code used in the
+      benchmark. Absolute speed is based on the total line count including
+      comments and blank lines, which is currently 131,836. The tests were done
+      on a 6-core 2019 MacBook Pro with 16gb of RAM.
 
   - p: >
       The results don't include Rollup because I couldn't get it to work. I
       tried <code>rollup-<wbr>plugin-<wbr>typescript</code>,
       <code>@rollup/<wbr>plugin-<wbr>typescript</code>, and
       <code>@rollup/<wbr>plugin-<wbr>sucrase</code> and they all didn't work
-      for different reasons relating to TypeScript compilation. Parcel 2 is
-      excluded because it cannot currently build the benchmark.
+      for different reasons relating to TypeScript compilation.
 
   - h2: Upcoming roadmap
 
