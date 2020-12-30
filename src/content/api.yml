@@ -875,24 +875,8 @@ body:
   - p: >
       You can use the inject feature to automatically provide the implementation
       for JSX expressions. For example, you can auto-import the `react` package
-      with a small shim file and inject:
-
-  - pre.js: |
-      // react-shim.js
-      export * as React from 'react'
-
-  - pre.jsx: |
-      // entry.jsx
-      console.log(<div/>)
-
-  - p: >
-      Building `entry.jsx` and injecting `react-shim.js` results in the
-      following output:
-
-  - pre.js: |
-      // out.js
-      import * as React from "react";
-      console.log(React.createElement("div", null));
+      to provide functions such as `React.createElement`. See the
+      [JSX documentation](/content-types/#auto-import-for-jsx) for details.
 
   - h4: Files without imports
 
@@ -1989,7 +1973,9 @@ body:
   - p: >
       Keep in mind that source maps are usually very big because they contain
       all of your original source code, so you usually do not want to ship code
-      containing `inline` source maps.
+      containing `inline` source maps. To remove the source code from the source
+      map (keeping only the file names and the line/column mappings), use the
+      [sources content](#sources-content) option.
 
   - h3: Splitting
 

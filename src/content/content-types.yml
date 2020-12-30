@@ -255,6 +255,82 @@ body:
           }
         }
 
+  - h3: Auto-import for JSX
+
+  - p: >
+      Using JSX syntax usually requires you to manually import the JSX library
+      you are using. For example, if you are using React, by default you will
+      need to import React into each JSX file like this:
+
+  - pre.jsx: |
+      import * as React from 'react'
+      render(<div/>)
+
+  - p: >
+      This is because the JSX transform turns JSX syntax into a call to
+      <code>React.<wbr>createElement</code> but it does not itself import
+      anything, so the `React` variable is not automatically present.
+
+  - p: >
+      If you would like to avoid having to manually `import` your JSX library
+      into each file, you can use esbuild's [inject](/api/#inject) feature to
+      automatically import it into every file. This feature is a general-purpose
+      polyfill mechanism that replaces references to global variables with an
+      export from the injected file. In this case we can use it to replace
+      references to the `React` variable with exports from the `react` package.
+
+  - p: >
+      First, create a file called <code>react-<wbr>shim.js</code> that
+      re-exports everything from the `react` package in an export called
+      `React`:
+
+  - pre.js: |
+      // react-shim.js
+      export * as React from 'react'
+
+  - p: >
+      Then use esbuild's inject feature to inject this into each file:
+
+  - example:
+      in:
+        react-shim.js: 'export let React = {createElement() {}}'
+        app.jsx: 'console.log(<div/>)'
+
+      cli: |
+        esbuild app.jsx --bundle --inject:./react-shim.js --outfile=out.js
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.jsx'],
+          bundle: true,
+          inject: ['./react-shim.js'],
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.jsx"},
+            Bundle:      true,
+            Inject:      []string{"./react-shim.js"},
+            Outfile:     "out.js",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Since the inject feature is a general-purpose code injection mechanism,
+      it can be used with any JSX transform library, not just with React.
+
   - h3: Using JSX without React
 
   - p: >
@@ -313,7 +389,7 @@ body:
 
   - p: >
       You will also have to add <code>import <wbr>{h, <wbr>Fragment} <wbr>from <wbr>'preact'</code>
-      in files containing JSX syntax.
+      in files containing JSX syntax unless you use auto-importing as described above.
 
   - h2: JSON
   - div: 'Loader: `json`'
