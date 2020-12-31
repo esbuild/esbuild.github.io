@@ -78,6 +78,7 @@
           <li>
             <a href="/plugins/">Plugins</a>
             <ul class="h2">
+              <li id="nav-finding-plugins"><a href="#finding-plugins">Finding plugins</a></li>
               <li id="nav-using-plugins"><a href="#using-plugins">Using plugins</a></li>
               <li id="nav-concepts">
                 <a href="#concepts">Concepts</a>
@@ -143,6 +144,13 @@
       <h1>Plugins</h1>
       <div class="warning">The plugin API is new and still experimental. It may change in the future before version 1.0.0 of esbuild as new use cases are uncovered. Consider this particular plugin API as being specific to the 0.8.x version of esbuild. You can follow <a href="https://github.com/evanw/esbuild/issues/111">the tracking issue</a> for updates about this feature.</div>
       <p>The plugin API allows you to inject code into various parts of the build process. Unlike the rest of the API, it's not available from the command line. You must write either JavaScript or Go code to use the plugin API. Plugins can also only be used with the <a href="/api/#build-api">build API</a>, not with the <a href="/api/#transform-api">transform API</a>.</p>
+      <h2 id="finding-plugins">
+        <a href="#finding-plugins">#</a>
+        Finding plugins
+      </h2>
+      <p>If you're looking for an existing esbuild plugin, you should check out the <a href="https://github.com/esbuild/community-plugins">list of existing esbuild plugins</a>. Plugins on this list have been deliberately added by the author and are intended to be used by others in the esbuild community.</p>
+      <p>If you want to share your esbuild plugin, you should:</p>
+      <ol><li><a href="https://docs.npmjs.com/creating-and-publishing-unscoped-public-packages">Publish it to npm</a> so others can install it.</li><li>Add it to the <a href="https://github.com/esbuild/community-plugins">list of existing esbuild plugins</a> so others can find it.</li></ol>
       <h2 id="using-plugins">
         <a href="#using-plugins">#</a>
         Using plugins
