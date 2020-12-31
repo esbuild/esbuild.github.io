@@ -16,6 +16,25 @@ body:
       Plugins can also only be used with the [build API](/api/#build-api), not
       with the [transform API](/api/#transform-api).
 
+  - h2: Finding plugins
+  - p: >
+      If you're looking for an existing esbuild plugin, you should check out the
+      [list of existing esbuild plugins](https://github.com/esbuild/community-plugins).
+      Plugins on this list have been deliberately added by the author and are
+      intended to be used by others in the esbuild community.
+
+  - p: >
+      If you want to share your esbuild plugin, you should:
+
+  - ol:
+    - >
+      [Publish it to npm](https://docs.npmjs.com/creating-and-publishing-unscoped-public-packages)
+      so others can install it.
+
+    - >
+      Add it to the [list of existing esbuild plugins](https://github.com/esbuild/community-plugins)
+      so others can find it.
+
   - h2: Using plugins
   - p: >
       An esbuild plugin is an object with a `name` and a `setup` function. They

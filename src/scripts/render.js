@@ -323,8 +323,8 @@ function generateMain(key, main) {
       return lines.join('\n')
     }
 
-    if (tag === 'ul') {
-      return `      <ul>${value.map(x => `<li>${md.renderInline(x.trim())}</li>`).join('')}</ul>`
+    if (tag === 'ul' || tag === 'ol') {
+      return `      <${tag}>${value.map(x => `<li>${md.renderInline(x.trim())}</li>`).join('')}</${tag}>`
     }
 
     if (tag === 'table') {
