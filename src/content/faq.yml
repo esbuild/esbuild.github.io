@@ -44,8 +44,8 @@ body:
   - table: |
       | Bundler            |    Time | Relative slowdown | Absolute speed | Output size |
       | :----------------- | ------: | ----------------: | -------------: | ----------: |
-      | esbuild            |   0.37s |                1x |  1479.6 kloc/s |      5.81mb |
-      | esbuild (1 thread) |   1.54s |                4x |   355.5 kloc/s |      5.81mb |
+      | esbuild            |   0.37s |                1x |  1479.6 kloc/s |      5.80mb |
+      | esbuild (1 thread) |   1.54s |                4x |   355.5 kloc/s |      5.80mb |
       | rollup + terser    |  36.00s |               97x |    15.2 kloc/s |      5.81mb |
       | webpack 4          |  41.91s |              113x |    13.1 kloc/s |      5.97mb |
       | webpack 5          |  63.83s |              173x |     8.6 kloc/s |      5.84mb |
@@ -92,8 +92,8 @@ body:
   - table: |
       | Bundler            |    Time | Relative slowdown | Absolute speed | Output size |
       | :----------------- | ------: | ----------------: | -------------: | ----------: |
-      | esbuild            |   0.09s |                1x |  1464.8 kloc/s |      0.98mb |
-      | esbuild (1 thread) |   0.37s |                4x |   356.3 kloc/s |      0.98mb |
+      | esbuild            |   0.09s |                1x |  1464.8 kloc/s |      0.97mb |
+      | esbuild (1 thread) |   0.37s |                4x |   356.3 kloc/s |      0.97mb |
       | webpack 4          |  18.38s |              204x |     7.2 kloc/s |      1.26mb |
       | parcel 1           |  18.76s |              208x |     7.0 kloc/s |      1.56mb |
       | webpack 5          |  25.12s |              279x |     5.2 kloc/s |      1.26mb |
