@@ -619,7 +619,7 @@ process.stdout.write(out.code)</pre>
       <p>Specifying the global name with the <code>iife</code> format will generate code that looks something like this:</p>
       <pre><span class="hljs-keyword">var</span> xyz = (<span class="hljs-function">() =&gt;</span> {
   ...
-  var require_stdin = __commonJS(<span class="hljs-function">(<span class="hljs-params"><span class="hljs-built_in">exports</span>, <span class="hljs-built_in">module</span></span>) =&gt;</span> {
+  <span class="hljs-keyword">var</span> require_stdin = __commonJS(<span class="hljs-function">(<span class="hljs-params"><span class="hljs-built_in">exports</span>, <span class="hljs-built_in">module</span></span>) =&gt;</span> {
     <span class="hljs-built_in">module</span>.exports = <span class="hljs-string">&quot;test&quot;</span>;
   });
   <span class="hljs-keyword">return</span> require_stdin();
@@ -658,7 +658,7 @@ process.stdout.write(out.code)</pre>
 example.versions = example.versions || {};
 example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span class="hljs-function">() =&gt;</span> {
   ...
-  var require_stdin = __commonJS(<span class="hljs-function">(<span class="hljs-params"><span class="hljs-built_in">exports</span>, <span class="hljs-built_in">module</span></span>) =&gt;</span> {
+  <span class="hljs-keyword">var</span> require_stdin = __commonJS(<span class="hljs-function">(<span class="hljs-params"><span class="hljs-built_in">exports</span>, <span class="hljs-built_in">module</span></span>) =&gt;</span> {
     <span class="hljs-built_in">module</span>.exports = <span class="hljs-string">&quot;test&quot;</span>;
   });
   <span class="hljs-keyword">return</span> require_stdin();
@@ -1937,20 +1937,20 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 }</pre>
       <p>The metadata in this JSON file follows this schema (specified using TypeScript syntax):</p>
       <pre>{
-  inputs: {
+  <span class="hljs-attr">inputs</span>: {
     [path: <span class="hljs-built_in">string</span>]: {
-      bytes: <span class="hljs-built_in">number</span>
-      imports: { path: <span class="hljs-built_in">string</span> }[]
+      <span class="hljs-attr">bytes</span>: <span class="hljs-built_in">number</span>
+      <span class="hljs-attr">imports</span>: { <span class="hljs-attr">path</span>: <span class="hljs-built_in">string</span> }[]
     }
   }
-  outputs: {
+  <span class="hljs-attr">outputs</span>: {
     [path: <span class="hljs-built_in">string</span>]: {
-      bytes: <span class="hljs-built_in">number</span>
-      inputs: {
-        [path: <span class="hljs-built_in">string</span>]: { bytesInOutput: <span class="hljs-built_in">number</span> }
+      <span class="hljs-attr">bytes</span>: <span class="hljs-built_in">number</span>
+      <span class="hljs-attr">inputs</span>: {
+        [path: <span class="hljs-built_in">string</span>]: { <span class="hljs-attr">bytesInOutput</span>: <span class="hljs-built_in">number</span> }
       }
-      imports: { path: <span class="hljs-built_in">string</span> }[]
-      <span class="hljs-built_in">exports</span>: <span class="hljs-built_in">string</span>[]
+      <span class="hljs-attr">imports</span>: { <span class="hljs-attr">path</span>: <span class="hljs-built_in">string</span> }[]
+      <span class="hljs-attr">exports</span>: <span class="hljs-built_in">string</span>[]
     }
   }
 }</pre>

@@ -163,7 +163,7 @@
       </div>
       <pre class="switchable js2"><span class="hljs-keyword">let</span> envPlugin = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;env&#x27;</span>,
-  setup(build) {
+  <span class="hljs-function"><span class="hljs-title">setup</span>(<span class="hljs-params">build</span>)</span> {
     <span class="hljs-comment">// Intercept import paths called &quot;env&quot; so esbuild doesn&#x27;t attempt</span>
     <span class="hljs-comment">// to map them to a file system location. Tag them with the &quot;env-ns&quot;</span>
     <span class="hljs-comment">// namespace to reserve them for this plugin.</span>
@@ -277,7 +277,7 @@
       </div>
       <pre class="switchable js2"><span class="hljs-keyword">let</span> exampleOnResolvePlugin = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;example&#x27;</span>,
-  setup(build) {
+  <span class="hljs-function"><span class="hljs-title">setup</span>(<span class="hljs-params">build</span>)</span> {
     <span class="hljs-keyword">let</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;path&#x27;</span>)
 
     <span class="hljs-comment">// Redirect all paths starting with &quot;images/&quot; to &quot;./public/images/&quot;</span>
@@ -450,7 +450,7 @@ interface Location {
       </div>
       <pre class="switchable js2"><span class="hljs-keyword">let</span> exampleOnLoadPlugin = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;example&#x27;</span>,
-  setup(build) {
+  <span class="hljs-function"><span class="hljs-title">setup</span>(<span class="hljs-params">build</span>)</span> {
     <span class="hljs-keyword">let</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>)
 
     <span class="hljs-comment">// Load &quot;.txt&quot; files and return an array of words</span>
@@ -626,7 +626,7 @@ interface Location {
       </div>
       <pre class="switchable js2"><span class="hljs-keyword">let</span> httpPlugin = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;http&#x27;</span>,
-  setup(build) {
+  <span class="hljs-function"><span class="hljs-title">setup</span>(<span class="hljs-params">build</span>)</span> {
     <span class="hljs-keyword">let</span> https = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;https&#x27;</span>)
     <span class="hljs-keyword">let</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;http&#x27;</span>)
 
@@ -783,7 +783,7 @@ load(imports).then(<span class="hljs-function"><span class="hljs-params">exports
       </div>
       <pre class="switchable js2"><span class="hljs-keyword">let</span> wasmPlugin = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;wasm&#x27;</span>,
-  setup(build) {
+  <span class="hljs-function"><span class="hljs-title">setup</span>(<span class="hljs-params">build</span>)</span> {
     <span class="hljs-keyword">let</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;path&#x27;</span>)
     <span class="hljs-keyword">let</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>)
 
@@ -952,7 +952,7 @@ load(imports).then(<span class="hljs-function"><span class="hljs-params">exports
       <p>Here's the code for the plugin (there is no Go version of this plugin because the Svelte compiler is written in JavaScript):</p>
       <pre><span class="hljs-keyword">let</span> sveltePlugin = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;svelte&#x27;</span>,
-  setup(build) {
+  <span class="hljs-function"><span class="hljs-title">setup</span>(<span class="hljs-params">build</span>)</span> {
     <span class="hljs-keyword">let</span> svelte = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;svelte/compiler&#x27;</span>)
     <span class="hljs-keyword">let</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;path&#x27;</span>)
     <span class="hljs-keyword">let</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>)
