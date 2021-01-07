@@ -1395,6 +1395,35 @@ interface ServeOnRequestArgs {
   }
 }</pre>
       <p>Keep in mind that source maps are usually very big because they contain all of your original source code, so you usually do not want to ship code containing <code>inline</code> source maps. To remove the source code from the source map (keeping only the file names and the line/column mappings), use the <a href="#sources-content">sources content</a> option.</p>
+      <p>If you want to have the effect of both <code>inline</code> and <code>external</code> simultaneously, you should set the source map mode to <code>both</code>:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.ts --sourcemap=both --outfile=out.js</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.ts&#x27;</span>],
+  <span class="hljs-attr">sourcemap</span>: <span class="hljs-string">&#x27;both&#x27;</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.ts&quot;</span>},
+    Sourcemap:   api.SourceMapInlineAndExternal,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
       <h3 id="splitting" data-h2="simple-options">
         <a href="#splitting">#</a>
         Splitting
