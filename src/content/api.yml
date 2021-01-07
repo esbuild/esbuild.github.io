@@ -1977,6 +1977,43 @@ body:
       map (keeping only the file names and the line/column mappings), use the
       [sources content](#sources-content) option.
 
+  - p: >
+      If you want to have the effect of both `inline` and `external`
+      simultaneously, you should set the source map mode to `both`:
+
+  - example:
+      in:
+        app.ts: 'let x: number = 1'
+
+      cli: |
+        esbuild app.ts --sourcemap=both --outfile=out.js
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.ts'],
+          sourcemap: 'both',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.ts"},
+            Sourcemap:   api.SourceMapInlineAndExternal,
+            Outfile:     "out.js",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
   - h3: Splitting
 
   - warning: >
