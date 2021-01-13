@@ -30,8 +30,8 @@ body:
       '[esbuild](https://github.com/evanw/esbuild) (1 thread)': 1.54
       '[rollup](https://github.com/rollup/rollup) + [terser](https://github.com/terser/terser)': 36.00
       '[webpack](https://github.com/webpack/webpack) 4': 41.91
+      '[parcel](https://github.com/parcel-bundler/parcel) 2': 56.71
       '[webpack](https://github.com/webpack/webpack) 5': 63.83
-      '[parcel](https://github.com/parcel-bundler/parcel) 2': 108.66
       '[parcel](https://github.com/parcel-bundler/parcel) 1': 118.51
 
   - p: >
@@ -48,8 +48,8 @@ body:
       | esbuild (1 thread) |   1.54s |                4x |   355.5 kloc/s |      5.80mb |
       | rollup + terser    |  36.00s |               97x |    15.2 kloc/s |      5.81mb |
       | webpack 4          |  41.91s |              113x |    13.1 kloc/s |      5.97mb |
+      | parcel 2           |  56.71s |              154x |     9.7 kloc/s |      5.92mb |
       | webpack 5          |  63.83s |              173x |     8.6 kloc/s |      5.84mb |
-      | parcel 2           | 108.66s |              294x |     5.0 kloc/s |      5.81mb |
       | parcel 1           | 118.51s |              320x |     4.6 kloc/s |      5.89mb |
 
   - p: >
@@ -69,9 +69,6 @@ body:
   - ul:
       - 'Parcel 1: The bundle crashes at run time with <code>TypeError:
         <wbr>Cannot <wbr>redefine <wbr>property: <wbr>dynamic</code>'
-      - 'Parcel 2: Must be given extra memory with <code>node
-        <wbr>--max-<wbr>old-<wbr>space-<wbr>size</code> or it runs out of
-        memory'
 
   - figcaption: TypeScript benchmark
   - benchmark:
@@ -80,7 +77,7 @@ body:
       '[webpack](https://github.com/webpack/webpack) 4': 18.38
       '[parcel](https://github.com/parcel-bundler/parcel) 1': 18.76
       '[webpack](https://github.com/webpack/webpack) 5': 25.12
-      '[parcel](https://github.com/parcel-bundler/parcel) 2': 53.13
+      '[parcel](https://github.com/parcel-bundler/parcel) 2': 42.32
 
   - p: >
       This benchmark uses the [Rome](https://github.com/facebookexperimental/rome)
@@ -97,7 +94,7 @@ body:
       | webpack 4          |  18.38s |              204x |     7.2 kloc/s |      1.26mb |
       | parcel 1           |  18.76s |              208x |     7.0 kloc/s |      1.56mb |
       | webpack 5          |  25.12s |              279x |     5.2 kloc/s |      1.26mb |
-      | parcel 2           |  53.13s |              590x |     2.5 kloc/s |      1.68mb |
+      | parcel 2           |  42.32s |              470x |     3.1 kloc/s |      1.68mb |
 
   - p: >
       Each time reported is the best of three runs. I'm running esbuild with
