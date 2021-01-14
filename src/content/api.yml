@@ -178,6 +178,7 @@ body:
     - Outbase
     - Outdir
     - Outfile
+    - Platform
     - Public path
     - Pure
     - Resolve extensions
