@@ -443,6 +443,7 @@ body:
         interface Message {
           text: string;
           location: Location | null;
+          detail: any; // The original error from a JavaScript plugin, if applicable
         }
 
         interface Location {
@@ -467,6 +468,7 @@ body:
         type Message struct {
           Text     string
           Location *Location
+          Detail   interface{} // The original error from a Go plugin, if applicable
         }
 
         type Location struct {
