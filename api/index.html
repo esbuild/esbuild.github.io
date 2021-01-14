@@ -1933,7 +1933,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
         Metafile
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
-      <p>This option tells esbuild to write out a JSON file with metadata about the build.</p>
+      <p>This option tells esbuild to write out a JSON file with metadata about the build. The following example puts the metadata in a file called <code>meta.json</code>:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
         <a href="javascript:void 0" class="js3">JS</a>
@@ -1964,21 +1964,34 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
-      <p>The metadata in this JSON file follows this schema (specified using TypeScript syntax):</p>
-      <pre>{
+      <p>If you are using TypeScript, the type declaration with the schema for the JSON metadata can be imported from the <code>esbuild</code> package:</p>
+      <pre><span class="hljs-keyword">import</span> { Metadata } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;esbuild&#x27;</span>
+
+<span class="hljs-keyword">const</span> metafile: Metadata =
+  <span class="hljs-built_in">JSON</span>.parse(fs.readFileSync(<span class="hljs-string">&#x27;meta.json&#x27;</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>))</pre>
+      <p>This is what the type declaration looks like:</p>
+      <pre><span class="hljs-keyword">interface</span> Metadata {
   <span class="hljs-attr">inputs</span>: {
     [path: <span class="hljs-built_in">string</span>]: {
       <span class="hljs-attr">bytes</span>: <span class="hljs-built_in">number</span>
-      <span class="hljs-attr">imports</span>: { <span class="hljs-attr">path</span>: <span class="hljs-built_in">string</span> }[]
+      <span class="hljs-attr">imports</span>: {
+        <span class="hljs-attr">path</span>: <span class="hljs-built_in">string</span>
+        <span class="hljs-attr">kind</span>: <span class="hljs-built_in">string</span>
+      }[]
     }
   }
   <span class="hljs-attr">outputs</span>: {
     [path: <span class="hljs-built_in">string</span>]: {
       <span class="hljs-attr">bytes</span>: <span class="hljs-built_in">number</span>
       <span class="hljs-attr">inputs</span>: {
-        [path: <span class="hljs-built_in">string</span>]: { <span class="hljs-attr">bytesInOutput</span>: <span class="hljs-built_in">number</span> }
+        [path: <span class="hljs-built_in">string</span>]: {
+          <span class="hljs-attr">bytesInOutput</span>: <span class="hljs-built_in">number</span>
+        }
       }
-      <span class="hljs-attr">imports</span>: { <span class="hljs-attr">path</span>: <span class="hljs-built_in">string</span> }[]
+      <span class="hljs-attr">imports</span>: {
+        <span class="hljs-attr">path</span>: <span class="hljs-built_in">string</span>
+        <span class="hljs-attr">kind</span>: <span class="hljs-built_in">string</span>
+      }[]
       <span class="hljs-attr">exports</span>: <span class="hljs-built_in">string</span>[]
     }
   }
