@@ -2806,7 +2806,8 @@ body:
 
   - p: >
       This option tells esbuild to write out a JSON file with metadata about
-      the build.
+      the build. The following example puts the metadata in a file called
+      `meta.json`:
 
   - example:
       in:
@@ -2844,24 +2845,41 @@ body:
         }
 
   - p: >
-      The metadata in this JSON file follows this schema (specified using
-      TypeScript syntax):
+      If you are using TypeScript, the type declaration with the schema for the
+      JSON metadata can be imported from the `esbuild` package:
 
   - pre.ts: |
-      {
+      import { Metadata } from 'esbuild'
+
+      const metafile: Metadata =
+        JSON.parse(fs.readFileSync('meta.json', 'utf8'))
+
+  - p: >
+      This is what the type declaration looks like:
+
+  - pre.ts: |
+      interface Metadata {
         inputs: {
           [path: string]: {
             bytes: number
-            imports: { path: string }[]
+            imports: {
+              path: string
+              kind: string
+            }[]
           }
         }
         outputs: {
           [path: string]: {
             bytes: number
             inputs: {
-              [path: string]: { bytesInOutput: number }
+              [path: string]: {
+                bytesInOutput: number
+              }
             }
-            imports: { path: string }[]
+            imports: {
+              path: string
+              kind: string
+            }[]
             exports: string[]
           }
         }
