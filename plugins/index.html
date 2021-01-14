@@ -406,6 +406,7 @@
 interface Message {
   <span class="hljs-attr">text</span>: string;
   location: Location | <span class="hljs-literal">null</span>;
+  detail: any; <span class="hljs-comment">// The original error from a JavaScript plugin, if applicable</span>
 }
 
 interface Location {
@@ -428,6 +429,7 @@ interface Location {
 <span class="hljs-keyword">type</span> Message <span class="hljs-keyword">struct</span> {
   Text     <span class="hljs-keyword">string</span>
   Location *Location
+  Detail   <span class="hljs-keyword">interface</span>{} <span class="hljs-comment">// The original error from a Go plugin, if applicable</span>
 }
 
 <span class="hljs-keyword">type</span> Location <span class="hljs-keyword">struct</span> {
