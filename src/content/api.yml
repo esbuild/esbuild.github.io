@@ -3754,12 +3754,12 @@ body:
 
   - p: >
       You can also use esbuild's API as a script tag in a HTML file without
-      needing to use a bundler by injecting the `lib/browser.js` file. In
+      needing to use a bundler by injecting the `lib/browser.min.js` file. In
       this case the API creates a global called `esbuild` with a
       `startService` property:
 
   - pre.html: |
-      <script src="node_modules/esbuild-wasm/lib/browser.js"></script>
+      <script src="node_modules/esbuild-wasm/lib/browser.min.js"></script>
       <script>
         esbuild.startService({
           wasmURL: 'node_modules/esbuild-wasm/esbuild.wasm',
@@ -3768,11 +3768,11 @@ body:
 
   - p: >
       If you need to use this API with ECMAScript modules, you should import
-      the `esm/browser.js` file instead:
+      the `esm/browser.min.js` file instead:
 
   - pre.html: |
       <script type="module">
-        import { startService } from 'node_modules/esbuild-wasm/esm/browser.js'
+        import { startService } from 'node_modules/esbuild-wasm/esm/browser.min.js'
         startService({
           wasmURL: 'node_modules/esbuild-wasm/esbuild.wasm',
         }).then(service => { ... })
