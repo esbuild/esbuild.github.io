@@ -749,6 +749,7 @@ body:
         interface Message {
           text: string;
           location: Location | null;
+          detail: any; // The original error from a JavaScript plugin, if applicable
         }
 
         interface Location {
@@ -773,6 +774,7 @@ body:
         type Message struct {
           Text     string
           Location *Location
+          Detail   interface{} // The original error from a Go plugin, if applicable
         }
 
         type Location struct {
@@ -844,6 +846,178 @@ body:
       through this plugin. For example, it lets you have a single plugin that
       forwards to a child process containing multiple plugins. You probably
       won't need to use this.
+      </p>
+
+  - h3: Caching your plugin
+
+  - p: >
+      Since esbuild is so fast, it's often the case that plugin evaluation is
+      the main bottleneck when building with esbuild. Caching of plugin
+      evaluation is left up to each plugin instead of being a part of esbuild
+      itself because cache invalidation is plugin-specific. If you are writing
+      a slow plugin that needs a cache to be fast, you will have to write the
+      cache logic yourself.
+
+  - p: >
+      A cache is essentially a map that memoizes the transform function that
+      represents your plugin. The keys of the map usually contain the inputs
+      to your transform function and the values of the map usually contain the
+      outputs of your transform function. In addition, the map usually has some
+      form of least-recently-used cache eviction policy to avoid continually
+      growing larger in size over time.
+
+  - p: >
+      The cache can either be stored in memory (beneficial for use with
+      esbuild's [incremental build API](http://localhost:8001/api/index.html#incremental)),
+      on disk (beneficial for caching across separate build script invocations),
+      or even on a server (beneficial for really slow transforms that can be
+      shared between different developer machines). Where to store the cache is
+      case-specific and depends on your plugin.
+
+  - p: >
+      Here is a simple caching example. Say we want to cache the function
+      `slowTransform()` that takes as input the contents of a file in the
+      `*.example` format and transforms it to JavaScript. An in-memory cache
+      that avoids redundant calls to this function when used with esbuild's
+      [incremental build API](http://localhost:8001/api/index.html#incremental))
+      might look something like this:
+
+  - pre.js: |
+      let examplePlugin = {
+        name: 'example',
+        setup(build) {
+          let fs = require('fs')
+          let cache = new Map
+
+          build.onLoad({ filter: /\.example$/ }, async (args) => {
+            let input = await fs.promises.readFile(args.path, 'utf8')
+            let key = args.path
+            let value = cache.get(key)
+
+            if (!value || value.input !== input) {
+              let contents = slowTransform(input)
+              value = { input, output: { contents } }
+              cache.set(key, value)
+            }
+
+            return value.output
+          })
+        }
+      }
+
+  - p: >
+      Some important caveats about the caching code above:
+
+  - ul:
+    - >
+      <p>
+      There is no cache eviction policy present in the code above. Memory usage
+      will continue to grow if more and more keys are added to the cache map.
+      <p>
+      </p>
+      To combat this limitation somewhat, the `input` value is stored in the
+      cache `value` instead of in the cache `key`. This means that changing the
+      contents of a file will not leak memory because the key only includes the
+      file path, not the file contents. Changing the file contents only overwrites
+      the previous cache entry. This is probably fine for common usage where
+      someone repeatedly edits the same file in between incremental rebuilds
+      and only occasionally adds or renames files.
+      <p>
+      </p>
+      But the cache will continue to grow in size if each build
+      contains new unique path names (e.g. perhaps an auto-generated temporary
+      file path containing the current time). A more advanced version might use
+      a least-recently-used eviction policy.
+      </p>
+
+    - |
+      <p>
+      Cache invalidation only works if `slowTransform()` is a [pure function](https://en.wikipedia.org/wiki/Pure_function)
+      (meaning that the output of the function *only* depends on the inputs to
+      the function) and if all of the inputs to the function are somehow
+      captured in the lookup to the cache map. For example if the transform
+      function automatically reads the contents of some other files and the
+      output depends on the contents of those files too, then the cache would
+      fail to be invalidated when those files are changed because they are not
+      included in the cache key.
+      </p>
+      <p>
+      This part is easy to mess up so it's worth going through a specific
+      example. Consider a plugin that implements a compile-to-CSS language.
+      If that plugin implements `@import` rules itself by parsing imported
+      files and either bundles them or makes any exported variable declarations
+      available to the importing code, your plugin will not be correct if it
+      only checks that the importing file's contents haven't changed because a
+      change to the imported file could also invalidate the cache.
+      </p>
+      <p>
+      You may be thinking that you could just add the contents of the imported
+      file to the cache key to fix this problem. However, even that may be
+      incorrect. Say for example this plugin uses [`require.resolve()`](https://nodejs.org/api/modules.html#modules_require_resolve_request_options)
+      to resolve the import path to an absolute file path. This is a common
+      approach because it uses node's built-in path resolution that can resolve
+      to a path inside a package. This function usually does many checks for
+      files in different locations before returning the resolved path. For
+      example, importing the path `pkg/file` from the file `src/entry.css` might
+      check the following locations (yes, node's package resolution algorithm is
+      very inefficient):
+      </p>
+      <pre>
+      src/node_modules/pkg/file
+      src/node_modules/pkg/file.css
+      src/node_modules/pkg/file/package.json
+      src/node_modules/pkg/file/main
+      src/node_modules/pkg/file/main.css
+      src/node_modules/pkg/file/main/index.css
+      src/node_modules/pkg/file/index.css
+      node_modules/pkg/file
+      node_modules/pkg/file.css
+      node_modules/pkg/file/package.json
+      node_modules/pkg/file/main
+      node_modules/pkg/file/main.css
+      node_modules/pkg/file/main/index.css
+      node_modules/pkg/file/index.css
+      </pre>
+      <p>
+      Say the import `pkg/file` was ultimately resolved to the absolute path
+      <code>node_modules/<wbr>pkg/<wbr>file/<wbr>index.css</code>. Even if you
+      cache the contents of both the importing file and the imported file and
+      verify that the contents of both files are still the same before reusing
+      the cache entry, the cache entry could still be stale if one of the other
+      files that `require.resolve()` checks for has either been created or deleted
+      since the cache entry was added. Caching this correctly essentially involves
+      always re-running all such path resolutions even when none of the input files
+      have been changed and verifying that none of the path resolutions have
+      changed either.
+      </p>
+
+    - >
+      <p>
+      These cache keys are only correct for an in-memory cache. It would be
+      incorrect to implement a file system cache using the same cache keys.
+      While an in-memory cache is guaranteed to always run the same code for
+      every build because the code is also stored in memory, a file system
+      cache could potentially be accessed by two separate builds that each
+      contain different code. Specifically the code for the `slowTransform()`
+      function may have been changed in between builds.
+      </p>
+      <p>
+      This can happen in various cases. The package containing the function
+      `slowTransform()` may have been updated, or one of its transitive
+      dependencies may have been updated even if you have pinned the package's
+      version due to how npm handles semver, or someone may have [mutated
+      the package contents](https://www.npmjs.com/package/patch-package) on the
+      file system in the meantime, or the transform function may be calling a
+      node API and different builds could be running on different node versions.
+      </p>
+      <p>
+      If you want to store your cache on the file system, you should guard
+      against changes to the code for the transform function by storing some
+      representation of the code for the transform function in the cache key.
+      This is usually some form of [hash](https://nodejs.org/api/crypto.html#crypto_class_hash)
+      that contains the contents of all relevant files in all relevant packages
+      as well as potentially other details such as which node version you are
+      currently running on. Getting all of this to be correct is non-trivial.
       </p>
 
   - h2: Example plugins
