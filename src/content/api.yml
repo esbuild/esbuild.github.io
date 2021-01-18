@@ -1511,7 +1511,7 @@ body:
   - p: >
       By default, esbuild's bundler is configured to generate code intended for
       the browser. If your bundled code is intended to run in node instead, you
-      should set the platform to node:
+      should set the platform to `node`:
 
   - example:
       in:
@@ -1613,6 +1613,23 @@ body:
       required for compatibility. You can manually configure the [main fields](#main-fields)
       setting to <code>module,<wbr>main</code> if you want to enable tree shaking and know it
       is safe to do so.
+      </p>
+
+  - p: >
+      When the platform is set to `neutral`:
+
+  - ul:
+    - >
+      <p>
+      The default output [format](#format) is set to `esm`, which uses the
+      `export` syntax introduced with ECMAScript 2015 (i.e. ES6). You can change
+      the output format if this default is not appropriate.
+      </p>
+    - >
+      <p>
+      The [main fields](#main-fields) setting is empty by default. If you want
+      to use npm-style packages, you will likely have to configure this to be
+      something else such as `main` for the standard main field used by node.
       </p>
 
   - p: >
