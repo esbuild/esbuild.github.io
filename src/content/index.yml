@@ -8,8 +8,8 @@ index:
         '[esbuild](https://github.com/evanw/esbuild)': 0.37
         '[rollup](https://github.com/rollup/rollup) + [terser](https://github.com/terser/terser)': 36.00
         '[webpack](https://github.com/webpack/webpack) 4': 41.91
+        '[webpack](https://github.com/webpack/webpack) 5': 54.50
         '[parcel](https://github.com/parcel-bundler/parcel) 2': 56.71
-        '[webpack](https://github.com/webpack/webpack) 5': 63.83
         '[parcel](https://github.com/parcel-bundler/parcel) 1': 118.51
 
     - figcaption: >
