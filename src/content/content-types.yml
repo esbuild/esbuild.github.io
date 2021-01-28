@@ -168,6 +168,21 @@ body:
 
     - >
         <p>
+        You should probably also enable the [`esModuleInterop`](https://www.typescriptlang.org/tsconfig#esModuleInterop)
+        TypeScript configuration option if you use TypeScript with esbuild.
+        Enabling it disables some TypeScript-specific behavior that goes against
+        the ECMAScript language specification and causes compatibility problems
+        with many tools including esbuild. Specifically it means that if a
+        CommonJS module exports a function via <code>module.<wbr>exports =<wbr> fn</code>,
+        you need to use <code>import <wbr>fn <wbr>from <wbr>'path'</code>
+        instead of <code>import *<wbr> as<wbr> <wbr>fn <wbr>from <wbr>'path'</code>.
+        This option is not enabled by default because it would be a breaking change
+        for existing TypeScript projects, but Microsoft
+        [highly recommends applying it both to new and existing projects](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#support-for-import-d-from-cjs-from-commonjs-modules-with---esmoduleinterop)
+        (and then updating your code) for better compatibility with the rest of the ecosystem.
+
+    - >
+        <p>
         The [`emitDecoratorMetadata`](https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata)
         TypeScript configuration option is not supported. It passes type
         annotations to decorators and is an exception to the "TypeScript
