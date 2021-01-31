@@ -133,7 +133,6 @@ body:
       to a more limited extent:
 
   - ul:
-    - 'Watch/serve mode ([#21](https://github.com/evanw/esbuild/issues/21))'
     - 'HTML content type ([#31](https://github.com/evanw/esbuild/issues/31))'
     - 'Lowering to ES5 ([#297](https://github.com/evanw/esbuild/issues/297))'
     - 'Bundling top-level await ([#253](https://github.com/evanw/esbuild/issues/253))'
