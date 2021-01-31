@@ -2252,7 +2252,7 @@ body:
           Outfile:     "out.js",
           Bundle:      true,
           Watch: &api.WatchMode{
-            OnRebuild: func(result BuildResult) {
+            OnRebuild: func(result api.BuildResult) {
               if len(result.Errors) > 0 {
                 fmt.Printf("watch build failed: %d errors\n", len(result.Errors))
               } else {
