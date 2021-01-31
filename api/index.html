@@ -1571,7 +1571,7 @@ result.Stop()</pre>
   Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
   Bundle:      <span class="hljs-literal">true</span>,
   Watch: &amp;api.WatchMode{
-    OnRebuild: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(result BuildResult)</span></span> {
+    OnRebuild: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(result api.BuildResult)</span></span> {
       <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
         fmt.Printf(<span class="hljs-string">&quot;watch build failed: %d errors\n&quot;</span>, <span class="hljs-built_in">len</span>(result.Errors))
       } <span class="hljs-keyword">else</span> {
