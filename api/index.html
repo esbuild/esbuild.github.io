@@ -75,6 +75,7 @@
                   <li id="nav-sourcemap"><a href="#sourcemap">Sourcemap</a></li>
                   <li id="nav-splitting"><a href="#splitting">Splitting</a></li>
                   <li id="nav-target"><a href="#target">Target</a></li>
+                  <li id="nav-watch"><a href="#watch">Watch</a></li>
                   <li id="nav-write"><a href="#write">Write</a></li>
                 </ul>
               </li>
@@ -283,6 +284,7 @@
         <li><a href="#serve">Serve</a></li>
         <li><a href="#sourcemap">Sourcemap</a></li>
         <li><a href="#target">Target</a></li>
+        <li><a href="#watch">Watch</a></li>
         <li><a href="#write">Write</a></li>
       </ul>
       <p>Advanced options:</p>
@@ -1518,6 +1520,69 @@ interface ServeOnRequestArgs {
 }</pre>
       <p>You can refer to the <a href="/content-types/#javascript">JavaScript loader</a> for the details about which syntax features were introduced with which language versions. Keep in mind that while JavaScript language versions such as <code>es2020</code> are identified by year, that is the year the specification is approved. It has nothing to do with the year all major browsers implement that specification which often happens earlier or later than that year.</p>
       <p>Note that if you use a syntax feature that esbuild doesn't yet have support for transforming to your current language target, esbuild will generate an error where the unsupported syntax is used. This is often the case when targeting the <code>es5</code> language version, for example, since esbuild only supports transforming most newer JavaScript syntax features to <code>es6</code>.</p>
+      <h3 id="watch" data-h2="simple-options">
+        <a href="#watch">#</a>
+        Watch
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>Enabling watch mode on the build API tells esbuild to listen for changes on the file system and to rebuild whenever a file changes that could invalidate the build. Using it looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --outfile=out.js --bundle --watch</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">watch</span>: <span class="hljs-literal">true</span>,
+}).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
+  <span class="hljs-comment">// Call &quot;stop&quot; on the result when you&#x27;re done</span>
+  result.stop()
+})</pre>
+      <pre class="switchable go3">result := api.Build(api.BuildOptions{
+  EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+  Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+  Bundle:      <span class="hljs-literal">true</span>,
+  Watch:       &amp;api.WatchMode{},
+})
+
+<span class="hljs-comment">// Call &quot;stop&quot; on the result when you&#x27;re done</span>
+result.Stop()</pre>
+      <p>If you are using the JavaScript or Go API, you can optionally provide a callback that will be called whenever an incremental build has completed. This can be used to do something once the build is complete (e.g. to reload your app in the browser):</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">watch</span>: {
+    <span class="hljs-function"><span class="hljs-title">onRebuild</span>(<span class="hljs-params">error, result</span>)</span> {
+      <span class="hljs-keyword">if</span> (error) <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;watch build failed:&#x27;</span>, error)
+      <span class="hljs-keyword">else</span> <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;watch build succeeded:&#x27;</span>, result)
+    },
+  },
+})</pre>
+      <pre class="switchable go2">result := api.Build(api.BuildOptions{
+  EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+  Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+  Bundle:      <span class="hljs-literal">true</span>,
+  Watch: &amp;api.WatchMode{
+    OnRebuild: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(result BuildResult)</span></span> {
+      <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+        fmt.Printf(<span class="hljs-string">&quot;watch build failed: %d errors\n&quot;</span>, <span class="hljs-built_in">len</span>(result.Errors))
+      } <span class="hljs-keyword">else</span> {
+        fmt.Printf(<span class="hljs-string">&quot;watch build succeeded: %d warnings\n&quot;</span>, <span class="hljs-built_in">len</span>(result.Warnings))
+      }
+    },
+  },
+})</pre>
+      <p>Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling system is designed to use relatively little CPU vs. a more traditional polling system that scans the whole directory tree at once. The file system is still scanned regularly but each scan only checks a random subset of your files, which means a change to a file will be picked up soon after the change is made but not necessarily instantly.</p>
+      <p>With the current heuristics, large projects should be completely scanned around every 2 seconds so in the worst case it could take up to 2 seconds for a change to be noticed. However, after a change has been noticed the change's path goes on a short list of recently changed paths which are checked on every scan, so further changes to recently changed files should be noticed almost instantly.</p>
+      <p>Note that it is still possible to implement watch mode yourself using esbuild's incremental build API and a file watcher library of your choice if you don't want to use a polling-based approach.</p>
       <h3 id="write" data-h2="simple-options">
         <a href="#write">#</a>
         Write
