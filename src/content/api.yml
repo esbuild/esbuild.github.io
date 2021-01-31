@@ -2281,8 +2281,8 @@ body:
 
   - p: >
       Note that it is still possible to implement watch mode yourself using
-      esbuild's incremental build API and a file watcher library of your choice
-      if you don't want to use a polling-based approach.
+      esbuild's [incremental build API](#incremental) and a file watcher library
+      of your choice if you don't want to use a polling-based approach.
 
   - h3: Write
 
