@@ -103,6 +103,7 @@
                   <li id="nav-tree-shaking"><a href="#tree-shaking">Tree shaking</a></li>
                   <li id="nav-tsconfig"><a href="#tsconfig">Tsconfig</a></li>
                   <li id="nav-tsconfig-raw"><a href="#tsconfig-raw">Tsconfig raw</a></li>
+                  <li id="nav-working-directory"><a href="#working-directory">Working Directory</a></li>
                 </ul>
               </li>
               <li id="nav-js-specific-details">
@@ -309,6 +310,7 @@
         <li><a href="#stdin">Stdin</a></li>
         <li><a href="#tree-shaking">Tree shaking</a></li>
         <li><a href="#tsconfig">Tsconfig</a></li>
+        <li><a href="#working-directory">Working Directory</a></li>
       </ul>
       <h2 id="simple-options">
         <a href="#simple-options">#</a>
@@ -2561,6 +2563,43 @@ one();</pre>
 
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
     fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <h3 id="working-directory" data-h2="advanced-options">
+        <a href="#working-directory">#</a>
+        Working Directory
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>This API option lets you specify the working directory to use for the build. It normally defaults to the <a href="https://en.wikipedia.org/wiki/Working_directory">current working directory</a> of the process you are using to call esbuild's API. The working directory is used by esbuild for a few different things including resolving relative paths given as API options to absolute paths and pretty-printing absolute paths as relative paths in log messages. Here is how to override it:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;file.js&#x27;</span>],
+  <span class="hljs-attr">absWorkingDir</span>: process.cwd(),
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;log&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  cwd, err := os.Getwd()
+  <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+    log.Fatal(err)
+  }
+
+  result := api.Build(api.BuildOptions{
+    EntryPoints:   []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;file.js&quot;</span>},
+    AbsWorkingDir: cwd,
+    Outfile:       <span class="hljs-string">&quot;out.js&quot;</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
       <h2 id="js-specific-details">
