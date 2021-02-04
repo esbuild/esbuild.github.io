@@ -191,6 +191,7 @@ body:
     - Tree shaking
     - Tsconfig
     - Watch
+    - Working Directory
     - Write
 
   - h2: Simple options
@@ -2334,7 +2335,6 @@ body:
 
   - h2: Advanced options
 
-
   - h3: Banner
 
   - p: >
@@ -3736,6 +3736,51 @@ body:
 
           if len(result.Errors) == 0 {
             fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - h3: Working Directory
+
+  - p: >
+      This API option lets you specify the working directory to use for the
+      build. It normally defaults to the [current working directory](https://en.wikipedia.org/wiki/Working_directory)
+      of the process you are using to call esbuild's API. The working directory
+      is used by esbuild for a few different things including resolving relative
+      paths given as API options to absolute paths and pretty-printing absolute
+      paths as relative paths in log messages. Here is how to override it:
+
+  - example:
+      in:
+        file.js: 'export let foo = 123'
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['file.js'],
+          absWorkingDir: process.cwd(),
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "log"
+        import "os"
+
+        func main() {
+          cwd, err := os.Getwd()
+          if err != nil {
+            log.Fatal(err)
+          }
+
+          result := api.Build(api.BuildOptions{
+            EntryPoints:   []string{"file.js"},
+            AbsWorkingDir: cwd,
+            Outfile:       "out.js",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
           }
         }
 

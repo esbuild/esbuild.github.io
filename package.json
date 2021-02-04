@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "esbuild": "0.8.32",
+    "esbuild": "0.8.40",
     "fast-watch": "1.0.0",
     "highlight.js": "10.4.1",
     "js-yaml": "3.14.0",
