@@ -80,6 +80,11 @@ addEventListener('DOMContentLoaded', function () {
     document.body.dataset.theme = theme
   }
 
+  // Handle updates from other tabs
+  addEventListener('storage', () => {
+    document.body.dataset.theme = localStorage.getItem('theme')
+  })
+
   document.getElementById('theme').addEventListener('click', function () {
     var theme = inverseSystemTheme()
     updateTheme(document.body.dataset.theme === theme ? null : theme)

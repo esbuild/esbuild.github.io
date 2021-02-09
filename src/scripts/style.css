@@ -22,11 +22,6 @@ code {
   100% { transform: scale(1, 1); }
 }
 
-@keyframes label-bold {
-  0%, 99.99999% { font-weight: normal; }
-  100% { font-weight: bold; }
-}
-
 /* ---------- Nav ---------- */
 
 .logo {
@@ -35,6 +30,11 @@ code {
   font-weight: bold;
   margin-top: 10px;
   margin-bottom: 10px;
+  line-height: 40px;
+  padding-left: 50px;
+  background-image: url(/favicon.svg);
+  background-repeat: no-repeat;
+  background-size: 40px 40px;
 }
 
 nav a {
@@ -133,12 +133,12 @@ figure + figcaption {
 h1 {
   margin: 10px 0 20px 0;
   font-size: 200%;
+  line-height: 40px;
 }
 
 h2 {
   font-size: 160%;
-  padding-bottom: 10px;
-  border-bottom: 2px solid rgba(223, 191, 0, 0.75);
+  border-bottom: 2px solid #FFCF00;
 }
 
 h3 {
@@ -153,7 +153,8 @@ h4 {
 h2, h3 {
   position: relative;
   margin: -10px 0 20px 0;
-  padding-top: 60px;
+  padding-top: 63px;
+  line-height: 40px;
 }
 
 h1 a,
@@ -442,7 +443,7 @@ body.has-js {
   }
 
   .index blockquote {
-    font-size: 20px;
+    font-size: 21px;
   }
 
   main {

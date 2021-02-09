@@ -20,6 +20,7 @@ function copyAndMinify(from, to) {
 
 fs.mkdirSync(outDir, { recursive: true })
 fs.copyFileSync(path.join(scriptsDir, 'index.png'), path.join(outDir, 'index.png'))
+fs.copyFileSync(path.join(scriptsDir, 'favicon.svg'), path.join(outDir, 'favicon.svg'))
 
 copyAndMinify(path.join(scriptsDir, 'style.css'), path.join(outDir, 'style.css'))
 copyAndMinify(path.join(scriptsDir, 'script.js'), path.join(outDir, 'script.js'))
@@ -119,6 +120,72 @@ function generateNav(key) {
   return nav.join('\n')
 }
 
+function renderBenchmarkSVG(entries) {
+  let times = Object.entries(entries)
+  let max = 0
+  for (let [_, time] of times) {
+    max = Math.max(max, time)
+  }
+
+  let topMargin = 20
+  let leftWidth = 120
+  let barHeight = 20
+  let barMargin = 3
+  let labelMargin = 8
+  let bottomHeight = 30
+  let rightWidth = 800 - leftWidth
+  let topHeight = times.length * barHeight
+  let width = leftWidth + rightWidth
+  let height = topMargin + topHeight + bottomHeight
+  let horizontalScale = (rightWidth - 100) / max
+  let horizontalStep = max > 90 ? 30 : max > 30 ? 10 : 5
+  let svg = []
+
+  // Begin chart
+  svg.push(`<svg width="${width}" height="${height}" fill="black" font-family="sans-serif" font-size="13px" xmlns="http://www.w3.org/2000/svg">`)
+
+  // Github colors in dark mode for the readme
+  svg.push(`  <style>`)
+  svg.push(`    @media (prefers-color-scheme: dark) {`)
+  svg.push(`      #bg { fill: #0D1116; }`)
+  svg.push(`      text { fill: #C9D1D9; }`)
+  svg.push(`    }`)
+  svg.push(`  </style>`)
+  svg.push(`  <rect id="bg" width="${width}" height="${height}" fill="#FFFFFF"/>`)
+
+  // Horizontal axis bars
+  for (let i = 0; i * horizontalScale < rightWidth; i += horizontalStep) {
+    let x = leftWidth + i * horizontalScale
+    svg.push(`  <rect x="${x}" y="${topMargin}" width="1" height="${topHeight}" fill="#7F7F7F" fill-opacity="0.25"/>`)
+  }
+
+  // Bars
+  for (let i = 0; i < times.length; i++) {
+    let [name, time] = times[i]
+    let y = topMargin + i * barHeight
+    let w = time * horizontalScale
+    let h = barHeight
+    let barY = y + barMargin
+    let barH = h - 2 * barMargin
+    let bold = i === 0 ? ' font-weight="bold"' : ''
+    let label = md.renderInline(name.trim()).replace(/<[^>]*>/g, '')
+    svg.push(`  <rect x="${leftWidth}" y="${barY}" width="${w}" height="${barH}" fill="#FFCF00"/>`)
+    svg.push(`  <text x="${leftWidth - labelMargin}" y="${y + h / 2}" text-anchor="end" dominant-baseline="middle"${bold}>${label}</text>`)
+    svg.push(`  <text x="${leftWidth + labelMargin + w}" y="${y + h / 2}" dominant-baseline="middle"${bold}>${escapeHTML(time.toFixed(2))}s</text>`)
+  }
+
+  // Horizontal labels
+  for (let i = 0; i * horizontalScale < rightWidth; i += horizontalStep) {
+    let x = leftWidth + i * horizontalScale
+    let y = topMargin + topHeight + labelMargin / 2
+    svg.push(`  <text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="hanging">${escapeHTML(i + 's')}</text>`)
+  }
+
+  // End chart
+  svg.push(`</svg>`, '')
+  return svg.join('\n')
+}
+
 function renderBenchmark(entries, { leftWidth, bench, animated }) {
   let times = Object.entries(entries)
   let max = 0
@@ -146,7 +213,6 @@ function renderBenchmark(entries, { leftWidth, bench, animated }) {
     for (let i = 0; i < times.length; i++) {
       let [_, time] = times[i]
       tags.push(`        .${bench}-bar${i} { animation: scale-bar ${time}s linear; transform-origin: left }`)
-      tags.push(`        .${bench}-label${i} { animation: label-bold ${time}s linear; font-weight: bold }`)
     }
     tags.push(`      </style>`)
   }
@@ -165,18 +231,18 @@ function renderBenchmark(entries, { leftWidth, bench, animated }) {
   for (let i = 0; i < times.length; i++) {
     let [name, time] = times[i]
     let barID = `${bench}-bar${i}`
-    let labelID = `${bench}-label${i}`
     let y = i * barHeight
     let w = (100 * time * horizontalScale / rightWidth).toFixed(2) + '%'
     let h = barHeight
     let barY = y + barMargin
     let barH = h - 2 * barMargin
-    tags.push(`          <div style="position:absolute;left:0;top:${barY}px;width:${w};height:${barH}px;background:rgba(127,127,127,0.2);"></div>`)
-    tags.push(`          <div style="position:absolute;left:0;top:${barY}px;width:${w};height:${barH}px;background:rgba(231,173,0,0.9);" class="${barID}"></div>`)
+    let bold = i === 0 ? 'font-weight:bold;' : ''
+    tags.push(`          <div style="position:absolute;left:0;top:${barY}px;width:${w};height:${barH}px;background:rgba(191,191,191,0.2);"></div>`)
+    tags.push(`          <div style="position:absolute;left:0;top:${barY}px;width:${w};height:${barH}px;background:#FFCF00;" class="${barID}"></div>`)
     tags.push(`          <div style="position:absolute;right:100%;top:${y}px;width:${leftWidth}px;height:${h}px;` +
-      `text-align:right;white-space:nowrap;margin-right:${labelMargin}px;" class="${labelID}">${md.renderInline(name.trim())}</div>`)
+      `text-align:right;white-space:nowrap;margin-right:${labelMargin}px;${bold}">${md.renderInline(name.trim())}</div>`)
     tags.push(`          <div style="position:absolute;left:${w};top:${y}px;height:${h}px;` +
-      `margin-left:${labelMargin}px;" class="${labelID}">${escapeHTML(time.toFixed(2))}s</div>`)
+      `margin-left:${labelMargin}px;${bold}">${escapeHTML(time.toFixed(2))}s</div>`)
   }
 
   // Horizontal labels
@@ -277,6 +343,11 @@ function generateMain(key, main) {
     }
 
     if (tag === 'benchmark' || tag === 'benchmark.animated') {
+      if (key === 'index') {
+        const svg = renderBenchmarkSVG(value);
+        fs.writeFileSync(path.join(repoDir, 'benchmark.svg'), svg);
+      }
+
       return renderBenchmark(value, {
         bench: `bench${benchmarkCount++}`,
         animated: tag === 'benchmark.animated',
@@ -351,6 +422,7 @@ for (let [key, page] of pages) {
   <head>
     <meta charset="utf8">
     <title>esbuild - ${escapeHTML(page.title)}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta property="og:title" content="esbuild - ${escapeAttribute(page.title)}"/>
     <meta property="og:type" content="website"/>
     <meta property="og:image" content="https://esbuild.github.io/index.png"/>
