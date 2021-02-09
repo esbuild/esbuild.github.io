@@ -174,6 +174,7 @@ body:
     - Main fields
     - Metafile
     - Minify
+    - Node paths
     - Out extension
     - Outbase
     - Outdir
@@ -3076,6 +3077,58 @@ body:
       [bundle buddy](https://www.bundle-buddy.com/esbuild) can consume esbuild's
       metadata format and generates a treemap visualization of the modules in
       your bundle and how much space each one takes up.
+
+  - h3: Node paths
+
+  - p: >
+      Node's module resolution algorithm supports an environment variable called
+      [`NODE_PATH`](https://nodejs.org/api/modules.html#modules_loading_from_the_global_folders)
+      that contains a list of global directories to use when resolving import
+      paths. These paths are searched for packages in addition to the
+      `node_modules` directories in all parent directories. You can pass this
+      list of directories to esbuild using an environment variable with the CLI
+      and using an array with the JS and Go APIs:
+
+  - example:
+      in:
+        app.js: 'import {x} from "test"'
+        someDir/test.js: 'export let x'
+
+      cli: |
+        NODE_PATH=someDir esbuild app.js --bundle --outfile=out.js
+
+      js: |
+        require('esbuild').buildSync({
+          nodePaths: ['someDir'],
+          entryPoints: ['app.js'],
+          bundle: true,
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            NodePaths:   []string{"someDir"},
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Outfile:     "out.js",
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      If you are using the CLI and want to pass multiple directories using
+      `NODE_PATH`, you will have to separate them with `:` on Unix and `;` on
+      Windows. This is the same format that Node itself uses.
 
   - h3: Out extension
 
