@@ -92,6 +92,7 @@
                   <li id="nav-log-level"><a href="#log-level">Log level</a></li>
                   <li id="nav-main-fields"><a href="#main-fields">Main fields</a></li>
                   <li id="nav-metafile"><a href="#metafile">Metafile</a></li>
+                  <li id="nav-node-paths"><a href="#node-paths">Node paths</a></li>
                   <li id="nav-out-extension"><a href="#out-extension">Out extension</a></li>
                   <li id="nav-outbase"><a href="#outbase">Outbase</a></li>
                   <li id="nav-public-path"><a href="#public-path">Public path</a></li>
@@ -300,6 +301,7 @@
         <li><a href="#log-level">Log level</a></li>
         <li><a href="#main-fields">Main fields</a></li>
         <li><a href="#metafile">Metafile</a></li>
+        <li><a href="#node-paths">Node paths</a></li>
         <li><a href="#out-extension">Out extension</a></li>
         <li><a href="#outbase">Outbase</a></li>
         <li><a href="#public-path">Public path</a></li>
@@ -2078,6 +2080,43 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <p>This data can then be analyzed by other tools. For example, <a href="https://www.bundle-buddy.com/esbuild">bundle buddy</a> can consume esbuild's metadata format and generates a treemap visualization of the modules in your bundle and how much space each one takes up.</p>
+      <h3 id="node-paths" data-h2="advanced-options">
+        <a href="#node-paths">#</a>
+        Node paths
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>Node's module resolution algorithm supports an environment variable called <a href="https://nodejs.org/api/modules.html#modules_loading_from_the_global_folders"><code>NODE_PATH</code></a> that contains a list of global directories to use when resolving import paths. These paths are searched for packages in addition to the <code>node_modules</code> directories in all parent directories. You can pass this list of directories to esbuild using an environment variable with the CLI and using an array with the JS and Go APIs:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">NODE_PATH=someDir esbuild app.js --bundle --outfile=out.js</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">nodePaths</span>: [<span class="hljs-string">&#x27;someDir&#x27;</span>],
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    NodePaths:   []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;someDir&quot;</span>},
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>If you are using the CLI and want to pass multiple directories using <code>NODE_PATH</code>, you will have to separate them with <code>:</code> on Unix and <code>;</code> on Windows. This is the same format that Node itself uses.</p>
       <h3 id="out-extension" data-h2="advanced-options">
         <a href="#out-extension">#</a>
         Out extension
