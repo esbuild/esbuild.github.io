@@ -180,6 +180,7 @@ body:
     - Outdir
     - Outfile
     - Platform
+    - Preserve symlinks
     - Public path
     - Pure
     - Resolve extensions
@@ -3237,6 +3238,62 @@ body:
       in the example above, which means by default the output directory will
       contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code>
       instead.
+
+  - h3: Preserve symlinks
+
+  - p: >
+      This setting mirrors the [`--preserve-symlinks`](https://nodejs.org/api/cli.html#cli_preserve_symlinks)
+      setting in node. If you use that setting (or the similar [`resolve.symlinks`](https://webpack.js.org/configuration/resolve/#resolvesymlinks)
+      setting in Webpack), you will likely need to enable this setting in
+      esbuild too. It can be enabled like this:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --bundle --preserve-symlinks --outfile=out.js
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          preserveSymlinks: true,
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints:      []string{"app.js"},
+            Bundle:           true,
+            PreserveSymlinks: true,
+            Outfile:          "out.js",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Enabling this setting causes esbuild to determine file identity by the
+      original file path (i.e. the path without following symlinks) instead of
+      the real file path (i.e. the path after following symlinks). This can be
+      beneficial with certain directory structures. Keep in mind that this means
+      a file may be given multiple identities if there are multiple symlinks
+      pointing to it, which can result in it appearing multiple times in
+      generated output files.
+
+  - p: >
+      _Note: The term "symlink" means [symbolic link](https://en.wikipedia.org/wiki/Symbolic_link)
+      and refers to a file system feature where a path can redirect to another
+      path._
 
   - h3: Public path
 
