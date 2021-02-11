@@ -634,108 +634,6 @@ body:
       customize the output extension for the files esbuild generates. You can
       read more about using ECMAScript modules in node [here](https://nodejs.org/api/esm.html).
 
-  - h3: Global name
-
-  - p: >
-      This option only matters when the [format](#format) setting is `iife`
-      (which stands for immediately-invoked function expression). It sets the
-      name of the global variable which is used to store the exports from the
-      entry point:
-
-  - example:
-      cli: |
-        echo 'module.exports = "test"' | esbuild --format=iife --global-name=xyz
-
-      js: |
-        let js = 'module.exports = "test"'
-        require('esbuild').transformSync(js, {
-          format: 'iife',
-          globalName: 'xyz',
-        })
-
-      go: |
-        package main
-
-        import "fmt"
-        import "github.com/evanw/esbuild/pkg/api"
-
-        func main() {
-          js := "module.exports = 'test'"
-
-          result := api.Transform(js, api.TransformOptions{
-            Format:     api.FormatIIFE,
-            GlobalName: "xyz",
-          })
-
-          if len(result.Errors) == 0 {
-            fmt.Printf("%s", result.Code)
-          }
-        }
-
-  - p: >
-      Specifying the global name with the `iife` format will generate code that
-      looks something like this:
-
-  - pre.js: |
-      var xyz = (() => {
-        ...
-        var require_stdin = __commonJS((exports, module) => {
-          module.exports = "test";
-        });
-        return require_stdin();
-      })();
-
-  - p: >
-      The global name can also be a compound property expression, in which case
-      esbuild will generate a global variable with that property. Existing
-      global variables that conflict will not be overwritten. This can be used
-      to implement "namespacing" where multiple independent scripts add their
-      exports onto the same global object. For example:
-
-  - example:
-      cli: |
-        echo 'module.exports = "test"' | esbuild --format=iife --global-name='example.versions["1.0"]'
-
-      js: |
-        let js = 'module.exports = "test"'
-        require('esbuild').transformSync(js, {
-          format: 'iife',
-          globalName: 'example.versions["1.0"]',
-        })
-
-      go: |
-        package main
-
-        import "fmt"
-        import "github.com/evanw/esbuild/pkg/api"
-
-        func main() {
-          js := "module.exports = 'test'"
-
-          result := api.Transform(js, api.TransformOptions{
-            Format:     api.FormatIIFE,
-            GlobalName: `example.versions["1.0"]`,
-          })
-
-          if len(result.Errors) == 0 {
-            fmt.Printf("%s", result.Code)
-          }
-        }
-
-  - p: >
-      The compound global name used above generates code that looks like this:
-
-  - pre.js: |
-      var example = example || {};
-      example.versions = example.versions || {};
-      example.versions["1.0"] = (() => {
-        ...
-        var require_stdin = __commonJS((exports, module) => {
-          module.exports = "test";
-        });
-        return require_stdin();
-      })();
-
   - h3: Inject
 
   - p: >
@@ -902,144 +800,6 @@ body:
       in that package's `package.json` file. This setting is a
       [convention from Webpack](https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free)
       that esbuild respects for any imported file, not just files used with inject.
-
-  - h3: JSX factory
-
-  - p: >
-      This sets the function that is called for each JSX element. Normally a
-      JSX expression such as this:
-
-  - pre.xml: |
-      <div>Example text</div>
-
-  - p: >
-      is compiled into a function call to `React.createElement` like this:
-
-  - pre.js: |
-      React.createElement("div", null, "Example text");
-
-  - p: >
-      You can call something other than `React.createElement` by changing the
-      JSX factory. For example, to call the function `h` instead (which is
-      used by other libraries such as [Preact](https://preactjs.com/)):
-
-  - example:
-      cli:
-        - $: |
-            echo '<div/>' | esbuild --jsx-factory=h --loader=jsx
-        - expect: |
-            /* @__PURE__ */ h("div", null);
-
-      js:
-        - $: |
-            require('esbuild').transformSync('<div/>', {
-              jsxFactory: 'h',
-              loader: 'jsx',
-            })
-        - expect: |
-            {
-              code: '/* @__PURE__ */ h("div", null);\n',
-              map: '',
-              warnings: []
-            }
-
-      go: |
-        package main
-
-        import "fmt"
-        import "github.com/evanw/esbuild/pkg/api"
-
-        func main() {
-          result := api.Transform("<div/>", api.TransformOptions{
-            JSXFactory: "h",
-            Loader:     api.LoaderJSX,
-          })
-
-          if len(result.Errors) == 0 {
-            fmt.Printf("%s", result.Code)
-          }
-        }
-
-  - p: >
-      Alternatively, if you are using TypeScript, you can just configure JSX
-      for TypeScript by adding this to your `tsconfig.json` file and esbuild
-      should pick it up automatically without needing to be configured:
-
-  - pre.json: |
-      {
-        "compilerOptions": {
-          "jsxFactory": "h"
-        }
-      }
-
-  - h3: JSX fragment
-
-  - p: >
-      This sets the function that is called for each JSX fragment. Normally a
-      JSX fragment expression such as this:
-
-  - pre.xml: |
-      <>Stuff</>
-
-  - p: >
-      is compiled into a use of the `React.Fragment` component like this:
-
-  - pre.js: |
-      React.createElement(React.Fragment, null, "Stuff");
-
-  - p: >
-      You can use a component other than `React.Fragment` by changing the
-      JSX fragment. For example, to use the component `Fragment` instead
-      (which is used by other libraries such as [Preact](https://preactjs.com/)):
-
-  - example:
-      cli:
-        - $: |
-            echo '<>x</>' | esbuild --jsx-fragment=Fragment --loader=jsx
-        - expect: |
-            /* @__PURE__ */ React.createElement(Fragment, null, "x");
-
-      js:
-        - $: |
-            require('esbuild').transformSync('<>x</>', {
-              jsxFragment: 'Fragment',
-              loader: 'jsx',
-            })
-        - expect: |
-            {
-              code: '/* @__PURE__ */ React.createElement(Fragment, null, "x");\n',
-              map: '',
-              warnings: []
-            }
-
-      go: |
-        package main
-
-        import "fmt"
-        import "github.com/evanw/esbuild/pkg/api"
-
-        func main() {
-          result := api.Transform("<>x</>", api.TransformOptions{
-            JSXFragment: "Fragment",
-            Loader:      api.LoaderJSX,
-          })
-
-          if len(result.Errors) == 0 {
-            fmt.Printf("%s", result.Code)
-          }
-        }
-
-  - p: >
-      Alternatively, if you are using TypeScript, you can just configure JSX
-      for TypeScript by adding this to your `tsconfig.json` file and esbuild
-      should pick it up automatically without needing to be configured:
-
-  - pre.json: |
-      {
-        "compilerOptions": {
-          "jsxFragmentFactory": "Fragment"
-        }
-      }
 
   - h3: Loader
 
@@ -2695,6 +2455,108 @@ body:
       This is similar to [banner](#banner) which inserts at the beginning
       instead of the end.
 
+  - h3: Global name
+
+  - p: >
+      This option only matters when the [format](#format) setting is `iife`
+      (which stands for immediately-invoked function expression). It sets the
+      name of the global variable which is used to store the exports from the
+      entry point:
+
+  - example:
+      cli: |
+        echo 'module.exports = "test"' | esbuild --format=iife --global-name=xyz
+
+      js: |
+        let js = 'module.exports = "test"'
+        require('esbuild').transformSync(js, {
+          format: 'iife',
+          globalName: 'xyz',
+        })
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "module.exports = 'test'"
+
+          result := api.Transform(js, api.TransformOptions{
+            Format:     api.FormatIIFE,
+            GlobalName: "xyz",
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      Specifying the global name with the `iife` format will generate code that
+      looks something like this:
+
+  - pre.js: |
+      var xyz = (() => {
+        ...
+        var require_stdin = __commonJS((exports, module) => {
+          module.exports = "test";
+        });
+        return require_stdin();
+      })();
+
+  - p: >
+      The global name can also be a compound property expression, in which case
+      esbuild will generate a global variable with that property. Existing
+      global variables that conflict will not be overwritten. This can be used
+      to implement "namespacing" where multiple independent scripts add their
+      exports onto the same global object. For example:
+
+  - example:
+      cli: |
+        echo 'module.exports = "test"' | esbuild --format=iife --global-name='example.versions["1.0"]'
+
+      js: |
+        let js = 'module.exports = "test"'
+        require('esbuild').transformSync(js, {
+          format: 'iife',
+          globalName: 'example.versions["1.0"]',
+        })
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          js := "module.exports = 'test'"
+
+          result := api.Transform(js, api.TransformOptions{
+            Format:     api.FormatIIFE,
+            GlobalName: `example.versions["1.0"]`,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      The compound global name used above generates code that looks like this:
+
+  - pre.js: |
+      var example = example || {};
+      example.versions = example.versions || {};
+      example.versions["1.0"] = (() => {
+        ...
+        var require_stdin = __commonJS((exports, module) => {
+          module.exports = "test";
+        });
+        return require_stdin();
+      })();
+
   - h3: Incremental
 
   - p: >
@@ -2776,6 +2638,144 @@ body:
             }
           }
         }
+
+  - h3: JSX factory
+
+  - p: >
+      This sets the function that is called for each JSX element. Normally a
+      JSX expression such as this:
+
+  - pre.xml: |
+      <div>Example text</div>
+
+  - p: >
+      is compiled into a function call to `React.createElement` like this:
+
+  - pre.js: |
+      React.createElement("div", null, "Example text");
+
+  - p: >
+      You can call something other than `React.createElement` by changing the
+      JSX factory. For example, to call the function `h` instead (which is
+      used by other libraries such as [Preact](https://preactjs.com/)):
+
+  - example:
+      cli:
+        - $: |
+            echo '<div/>' | esbuild --jsx-factory=h --loader=jsx
+        - expect: |
+            /* @__PURE__ */ h("div", null);
+
+      js:
+        - $: |
+            require('esbuild').transformSync('<div/>', {
+              jsxFactory: 'h',
+              loader: 'jsx',
+            })
+        - expect: |
+            {
+              code: '/* @__PURE__ */ h("div", null);\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          result := api.Transform("<div/>", api.TransformOptions{
+            JSXFactory: "h",
+            Loader:     api.LoaderJSX,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      Alternatively, if you are using TypeScript, you can just configure JSX
+      for TypeScript by adding this to your `tsconfig.json` file and esbuild
+      should pick it up automatically without needing to be configured:
+
+  - pre.json: |
+      {
+        "compilerOptions": {
+          "jsxFactory": "h"
+        }
+      }
+
+  - h3: JSX fragment
+
+  - p: >
+      This sets the function that is called for each JSX fragment. Normally a
+      JSX fragment expression such as this:
+
+  - pre.xml: |
+      <>Stuff</>
+
+  - p: >
+      is compiled into a use of the `React.Fragment` component like this:
+
+  - pre.js: |
+      React.createElement(React.Fragment, null, "Stuff");
+
+  - p: >
+      You can use a component other than `React.Fragment` by changing the
+      JSX fragment. For example, to use the component `Fragment` instead
+      (which is used by other libraries such as [Preact](https://preactjs.com/)):
+
+  - example:
+      cli:
+        - $: |
+            echo '<>x</>' | esbuild --jsx-fragment=Fragment --loader=jsx
+        - expect: |
+            /* @__PURE__ */ React.createElement(Fragment, null, "x");
+
+      js:
+        - $: |
+            require('esbuild').transformSync('<>x</>', {
+              jsxFragment: 'Fragment',
+              loader: 'jsx',
+            })
+        - expect: |
+            {
+              code: '/* @__PURE__ */ React.createElement(Fragment, null, "x");\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          result := api.Transform("<>x</>", api.TransformOptions{
+            JSXFragment: "Fragment",
+            Loader:      api.LoaderJSX,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      Alternatively, if you are using TypeScript, you can just configure JSX
+      for TypeScript by adding this to your `tsconfig.json` file and esbuild
+      should pick it up automatically without needing to be configured:
+
+  - pre.json: |
+      {
+        "compilerOptions": {
+          "jsxFragmentFactory": "Fragment"
+        }
+      }
 
   - h3: Keep names
 
