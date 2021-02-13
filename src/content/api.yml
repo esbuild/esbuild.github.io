@@ -4079,7 +4079,8 @@ body:
   - p: >
       Because JavaScript is single-threaded, there are several different ways
       to invoke the API with different performance and convenience tradeoffs.
-      It's important to be aware of the differences to pick.
+      It's important to be aware of the differences to pick the correct one for
+      your situation.
 
   - p: >
       First there is the synchronous API. This is the most convenient option
@@ -4097,63 +4098,35 @@ body:
 
   - p: >
       Then there is the asynchronous API. Each call returns a promise instead
-      of completing immediately. Under the hood, each call spawns a new
-      child process using the esbuild binary and communicates with it over
-      the stdin, stdout, and stderr pipes using a custom binary protocol.
-      This is ideal if you only need to run esbuild once but you need to do
-      other work in the background. Using it looks something like this:
+      of completing immediately. Under the hood, the esbuild binary is spawned
+      as a single child process shared between all calls in the host process.
+      The host communicates with the child over the stdin, stdout, and stderr
+      pipes using a custom binary protocol. This is ideal if you only need to
+      run esbuild once but you need to do other work in the background. It also
+      allows you to run many simultaneous esbuild API calls concurrently which
+      are then spread across all available cores for maximum performance. Using
+      it looks something like this:
 
   - pre.js: |
       let esbuild = require('esbuild')
       esbuild.transform(code, options).then(result => { ... })
       esbuild.build(options).then(result => { ... })
 
-  - p: >
-      However, if you need to run esbuild many times (for example, you want
-      to transform lots of files) then you should use the service API for
-      maximum performance. This keeps a long-running esbuild child process in
-      the background and streams API calls to it, which are then processed in
-      parallel. While API calls still have relatively high latency, together
-      they have very high throughput. This is the least convenient option
-      because you need to keep the service object around and remember to call
-      `service.stop()` when you are done with it. Using it might look something
-      like this:
-
-  - pre.js: |
-      let esbuild = require('esbuild')
-
-      async function example() {
-        let service = await esbuild.startService()
-
-        try {
-          let promises = []
-          for (let i = 0; i < 10; i++) {
-            promises.push(service.transform(code, options))
-            promises.push(service.build(options))
-          }
-          console.log(await Promise.all(promises))
-        }
-
-        finally {
-          service.stop()
-        }
-      }
-
   - h3: Running in the browser
   - p: >
-      The esbuild transform API can also run in the browser using WebAssembly
-      in a Web Worker (the build API is currently not supported in the
-      browser). To take advantage of this you will need to install the
+      The esbuild API can also run in the browser using WebAssembly in a Web
+      Worker. To take advantage of this you will need to install the
       `esbuild-wasm` package instead of the `esbuild` package:
 
   - pre: |
       npm install esbuild-wasm
 
   - p: >
-      The API for the browser is similar to the API for node except that only
-      the `createService()` function works and you need to pass the URL of
-      the WebAssembly binary when creating the service. Assuming you are
-      using a bundler, that would look something like this:
+      The API for the browser is similar to the API for node except that you
+      need to call `createService()` first, and you need to pass the URL of
+      the WebAssembly binary. The synchronous versions of the API are also
+      not available. Assuming you are using a bundler, that would look
+      something like this:
 
   - pre.js: |
       let esbuild = require('esbuild-wasm')
@@ -4163,18 +4136,8 @@ body:
           wasmURL: 'node_modules/esbuild-wasm/esbuild.wasm',
         })
 
-        try {
-          let promises = []
-          for (let i = 0; i < 10; i++) {
-            promises.push(service.transform(code, options))
-            promises.push(service.build(options))
-          }
-          console.log(await Promise.all(promises))
-        }
-
-        finally {
-          service.stop()
-        }
+        service.transform(code, options).then(result => { ... })
+        service.build(options).then(result => { ... })
       })()
 
   - p: >
