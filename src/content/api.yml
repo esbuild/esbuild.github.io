@@ -2187,6 +2187,9 @@ body:
               else console.error('watch build succeeded:', result)
             },
           },
+        }).then(result => {
+          // Call "stop" on the result when you're done
+          result.stop()
         })
 
       go: |
@@ -2204,6 +2207,9 @@ body:
             },
           },
         })
+
+        // Call "stop" on the result when you're done
+        result.Stop()
 
   - p: >
       Watch mode in esbuild is implemented using polling instead of OS-specific
