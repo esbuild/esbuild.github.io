@@ -1481,8 +1481,8 @@ body:
       several methods to automate this:
 
   - ul:
+    - Use [watch mode](#watch) to re-run esbuild when a file is changed
     - Configure your text editor to run esbuild every time you save
-    - Use a file watcher to re-run esbuild when a file is changed
     - Serve your code with a web server that rebuilds on every request
 
   - p: >
@@ -1497,18 +1497,113 @@ body:
       The advantage of this method over the other methods is that the web server
       can delay the browser's request until the build has finished. That way
       reloading your code in the browser before the latest build has finished
-      will never run code from a previous build. Here's how to use the serve
-      API:
+      will never run code from a previous build. The files are served from memory
+      and are not written to the file system to ensure that the outdated files
+      cannot be observed.
+
+  - p: >
+      Note that this is intended to only be used in development. _Do not use
+      this in production._ In production you should be serving static files
+      without using esbuild as a web server.
+
+  - p: >
+      There are two different approaches for using the serve API:
+
+  - h4: 'Approach 1: Serve everything with esbuild'
+
+  - p: >
+      With this approach, you give esbuild a directory called `servedir` with
+      extra content to serve in addition to the files that esbuild generates.
+      This works well for simple situations where you are creating some static
+      HTML pages and want to use esbuild to bundle the JavaScript and/or CSS.
+      You can put your HTML files in the `servedir` and your other source code
+      outside of the `servedir`, then set the [`outdir`](#outdir) somewhere
+      inside the `servedir`:
 
   - example:
       noCheck: true
 
       cli: |
-        esbuild app.js --outfile=out.js --bundle --serve
+        esbuild src/app.js --servedir=www --outdir=www/js --bundle
 
       js: |
-        require('esbuild').serve({}, {
-          entryPoints: ['app.js'],
+        require('esbuild').serve({
+          servedir: 'www',
+        }, {
+          entryPoints: ['src/app.js'],
+          outdir: 'www/js',
+          bundle: true,
+        }).then(server => {
+          // Call "stop" on the web server when you're done
+          server.stop()
+        })
+
+      go: |
+        server, err := api.Serve(api.ServeOptions{
+          Servedir: "www",
+        }, api.BuildOptions{
+          EntryPoints: []string{"src/app.js"},
+          Outdir:      "www/js",
+          Bundle:      true,
+        })
+
+        // Call "stop" on the web server when you're done
+        server.Stop()
+
+  - p: >
+      In the above example, your `www/index.html` page could reference the
+      compiled code in `src/app.js` like this:
+
+  - pre.html: |
+      <script src="js/app.js"></script>
+
+  - p: >
+      When you do this, every HTTP request will cause esbuild to rebuild your
+      code and serve you the latest version. So `js/app.js` will always be up
+      to date every time you reload the page. Note that although the generated
+      code appears to be inside the `outdir` directory, it's never actually
+      written to the file system with the serve API. Instead the paths for
+      generated code shadow (i.e. takes precedence over) other paths inside the
+      `servedir` and generated files are served directly from memory.
+
+  - p: >
+      The benefit of doing things this way is that you can use the exact same
+      HTML pages in development and production. In development you can run
+      esbuild with `--servedir=` and esbuild will serve the generated output
+      files directly. For production you can omit that flag and esbuild will
+      write the generated files to the file system. In both cases you should
+      be getting the exact same result in the browser with the exact same code
+      in both development and production.
+
+  - p: >
+      The port is automatically chosen by default as the first open port
+      equal to or greater than 8000. The port number is returned from the API
+      call (or printed to the terminal for the CLI) so you can know which URL
+      to visit. The port can be set to something specific if necessary
+      (described further down below).
+
+  - h4: 'Approach 2: Only serve generated files with esbuild'
+
+  - p: >
+      With this approach, you just tell esbuild to serve the contents of the
+      [`outdir`](#outdir) without giving it any additional content to serve.
+      This works well for more complex development setups. For example, you
+      might want to use NGINX as a reverse proxy to route different paths to
+      separate backend services during development (e.g. `/static/` to NGINX,
+      `/api/` to node, `/js/` to esbuild, etc.). Using esbuild with this
+      approach looks like this:
+
+  - example:
+      noCheck: true
+
+      cli: |
+        esbuild src/app.js --outfile=out.js --bundle --serve=8000
+
+      js: |
+        require('esbuild').serve({
+          port: 8000,
+        }, {
+          entryPoints: ['src/app.js'],
           bundle: true,
           outfile: 'out.js',
         }).then(server => {
@@ -1517,8 +1612,10 @@ body:
         })
 
       go: |
-        server, err := api.Serve(api.ServeOptions{}, api.BuildOptions{
-          EntryPoints: []string{"app.js"},
+        server, err := api.Serve(api.ServeOptions{
+          Port: 8000,
+        }, api.BuildOptions{
+          EntryPoints: []string{"src/app.js"},
           Bundle:      true,
           Outfile:     "out.js",
         })
@@ -1527,13 +1624,16 @@ body:
         server.Stop()
 
   - p: >
-      This will start a local web server on an open port (8000 by default).
-      You can then add something like this to your HTML to reference the
-      generated output files. Every time you reload the page, `app.js` will
-      automatically be rebuilt so it will always be up to date:
+      The API call in the above example would serve the compiled contents of
+      `src/app.js` at [http://localhost:8000/out.js](http://localhost:8000/out.js).
+      Just like with the first approach, every HTTP request will cause esbuild
+      to rebuild your code and serve you the latest version so `out.js` will
+      always be up to date. Your HTML file (served by another web server on
+      another port) could then reference the compiled file from your HTML like
+      this:
 
   - pre.html: |
-      <script src="http://localhost:8000/app.js"></script>
+      <script src="http://localhost:8000/out.js"></script>
 
   - p: >
       The URL structure of the web server exactly mirrors the URL structure of
@@ -1552,11 +1652,6 @@ body:
       can click on links to browse to different files and directories on the
       web server.
 
-  - p: >
-      This is intended to only be used in development. _Do not use this in
-      production._ In production you should be serving static files without
-      using esbuild as a web server.
-
   - h4: Arguments
 
   - p: >
@@ -1572,6 +1667,7 @@ body:
         interface ServeOptions {
           port?: number;
           host?: string;
+          servedir?: string;
           onRequest?: (args: ServeOnRequestArgs) => void;
         }
 
@@ -1587,6 +1683,7 @@ body:
         type ServeOptions struct {
           Port      uint16
           Host      string
+          Servedir  string
           OnRequest func(ServeOnRequestArgs)
         }
 
@@ -1619,6 +1716,17 @@ body:
       address. To do that you need to specify the host here. You can set the
       host on the command line by using <code>--serve=<wbr>192.168.0.1:<wbr>8000</code>
       instead of just `--serve`.
+      </p>
+
+    - >
+      `servedir`
+      <p>
+      This is a directory of extra content for esbuild's HTTP server to serve
+      instead of a 404 when incoming requests don't match any of the generated
+      output file paths. This lets you use esbuild as a general-purpose local
+      web server. For example, using <code>esbuild <wbr>--servedir=.</code>
+      serves the current directory on `localhost`. Using `servedir` is described
+      in more detail above in the previous section about different approaches.
       </p>
 
     - >
