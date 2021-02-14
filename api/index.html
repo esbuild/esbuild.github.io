@@ -604,7 +604,7 @@ process.stdout.write(out.code)</pre>
 }</pre>
       <pre><span class="hljs-comment">// entry.js</span>
 <span class="hljs-built_in">console</span>.log(process.cwd())</pre>
-      <p>This is intended to replace uses of node's <code>process.cwd()</code> function to prevent packages that call it from crashing when run in the browser. You can use the inject feature to replace all uses of the global identifier <code>process</code> with an import to that file:.</p>
+      <p>This is intended to replace uses of node's <code>process.cwd()</code> function to prevent packages that call it from crashing when run in the browser. You can use the inject feature to replace all uses of the global identifier <code>process</code> with an import to that file:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
         <a href="javascript:void 0" class="js3">JS</a>
