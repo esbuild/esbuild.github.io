@@ -656,7 +656,7 @@ body:
       This is intended to replace uses of node's `process.cwd()` function to
       prevent packages that call it from crashing when run in the browser.
       You can use the inject feature to replace all uses of the global identifier
-      `process` with an import to that file:.
+      `process` with an import to that file:
 
   - example:
       in:
