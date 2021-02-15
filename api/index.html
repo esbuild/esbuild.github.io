@@ -704,18 +704,26 @@ process.stdout.write(out.code)</pre>
       <pre><span class="hljs-keyword">import</span> url <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.png&#x27;</span>
 <span class="hljs-keyword">let</span> image = <span class="hljs-keyword">new</span> Image
 image.src = url
-<span class="hljs-built_in">document</span>.body.appendChild(image)</pre>
+<span class="hljs-built_in">document</span>.body.appendChild(image)
+
+<span class="hljs-keyword">import</span> svg <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.svg&#x27;</span>
+<span class="hljs-keyword">let</span> doc = <span class="hljs-keyword">new</span> DOMParser().parseFromString(svg, <span class="hljs-string">&#x27;application/xml&#x27;</span>)
+<span class="hljs-keyword">let</span> node = <span class="hljs-built_in">document</span>.importNode(doc.documentElement, <span class="hljs-literal">true</span>)
+<span class="hljs-built_in">document</span>.body.appendChild(node)</pre>
       <p>The above code can be bundled using the <a href="#build-api">build API</a> call like this:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
         <a href="javascript:void 0" class="js3">JS</a>
         <a href="javascript:void 0" class="go3">Go</a>
       </div>
-      <pre class="switchable cli3">esbuild app.js --bundle --loader:.png=dataurl</pre>
+      <pre class="switchable cli3">esbuild app.js --bundle --loader:.png=dataurl --loader:.svg=text</pre>
       <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
   <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
-  <span class="hljs-attr">loader</span>: { <span class="hljs-string">&#x27;.png&#x27;</span>: <span class="hljs-string">&#x27;dataurl&#x27;</span> },
+  <span class="hljs-attr">loader</span>: {
+    <span class="hljs-string">&#x27;.png&#x27;</span>: <span class="hljs-string">&#x27;dataurl&#x27;</span>,
+    <span class="hljs-string">&#x27;.svg&#x27;</span>: <span class="hljs-string">&#x27;text&#x27;</span>,
+  },
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
 })</pre>
       <pre class="switchable go3"><span class="hljs-keyword">package</span> main
@@ -729,6 +737,7 @@ image.src = url
     Bundle:      <span class="hljs-literal">true</span>,
     Loader: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]api.Loader{
       <span class="hljs-string">&quot;.png&quot;</span>: api.LoaderDataURL,
+      <span class="hljs-string">&quot;.svg&quot;</span>: api.LoaderText,
     },
     Write: <span class="hljs-literal">true</span>,
   })
