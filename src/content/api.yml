@@ -823,6 +823,11 @@ body:
       image.src = url
       document.body.appendChild(image)
 
+      import svg from './example.svg'
+      let doc = new DOMParser().parseFromString(svg, 'application/xml')
+      let node = document.importNode(doc.documentElement, true)
+      document.body.appendChild(node)
+
   - p: >
       The above code can be bundled using the [build API](#build-api) call like
       this:
@@ -834,17 +839,29 @@ body:
           let image = new Image
           image.src = url
           document.body.appendChild(image)
+
+          import svg from './example.svg'
+          let doc = new DOMParser().parseFromString(svg, 'application/xml')
+          let node = document.importNode(doc.documentElement, true)
+          document.body.appendChild(node)
+
         example.png: |
           this is some data
 
+        example.svg: |
+          this is some data
+
       cli: |
-        esbuild app.js --bundle --loader:.png=dataurl
+        esbuild app.js --bundle --loader:.png=dataurl --loader:.svg=text
 
       js: |
         require('esbuild').buildSync({
           entryPoints: ['app.js'],
           bundle: true,
-          loader: { '.png': 'dataurl' },
+          loader: {
+            '.png': 'dataurl',
+            '.svg': 'text',
+          },
           outfile: 'out.js',
         })
 
@@ -860,6 +877,7 @@ body:
             Bundle:      true,
             Loader: map[string]api.Loader{
               ".png": api.LoaderDataURL,
+              ".svg": api.LoaderText,
             },
             Write: true,
           })
