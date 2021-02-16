@@ -1994,6 +1994,34 @@ body:
           }
         }
 
+  - h4: Using source maps
+
+  - p: >
+      In the browser, source maps should be automatically picked up by the
+      browser's developer tools as long as the source map setting is enabled.
+      Note that the browser only uses the source maps to alter the display of
+      stack traces when they are logged to the console. The stack traces
+      themselves are not modified so inspecting <code>error.<wbr>stack</code>
+      in your code will still give the unmapped stack trace containing compiled
+      code. Here's how to enable this setting in your browser's developer tools:
+
+  - ul:
+      - 'Chrome: ⚙ → Enable JavaScript source maps'
+      - 'Safari: ⚙ → Sources → Enable source maps'
+      - 'Firefox: ··· → Enable Source Maps'
+
+  - p: >
+      In node, source maps are supported natively starting with [version v12.12.0](https://nodejs.org/en/blog/release/v12.12.0/).
+      This feature is disabled by default but can be enabled with a flag. Unlike
+      in the browser, the actual stack traces are also modified in node so
+      inspecting <code>error.<wbr>stack</code> in your code will give the mapped
+      stack trace containing your original source code. Here's how to enable this
+      setting in node (the <code>--enable-<wbr>source-<wbr>maps</code> flag must
+      come before the script file name):
+
+  - pre.sh: |
+      node --enable-source-maps app.js
+
   - h3: Splitting
 
   - warning: >
