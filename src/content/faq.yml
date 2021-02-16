@@ -31,12 +31,13 @@ body:
       <p>
       In addition, Go is designed from the core for parallelism while JavaScript
       is not. Go has shared memory between threads while JavaScript has to
-      serialize data between threads. While both Go and JavaScript have parallel
-      garbage collectors, Go's heap is shared between all threads while JavaScript
-      has a separate heap per thread JavaScript thread. This seems to cut the
-      amount of parallelism that's possible with JavaScript worker threads in
-      half according to my testing, presumably since half of your CPU cores
-      are busy collecting garbage for the other half.
+      serialize data between threads. Both Go and JavaScript have parallel
+      garbage collectors, but Go's heap is shared between all threads while
+      JavaScript has a separate heap per JavaScript thread. This seems to cut
+      the amount of parallelism that's possible with JavaScript worker threads
+      in half [according to my testing](https://github.com/evanw/esbuild/issues/111#issuecomment-719910381),
+      presumably since half of your CPU cores are busy collecting garbage for
+      the other half.
       </p>
 
     - >
@@ -44,14 +45,14 @@ body:
       Parallelism is used heavily.
       </p>
       <p>
-      The data structures and algorithms inside esbuild are carefully designed
-      to fully saturate all available cores when possible. There are roughly
-      three phases: parsing, linking, and code generation. Parsing and code
-      generation are most of the work and are fully parallelizable (linking is
-      an inherently serial task for the most part). Since all threads share
-      memory, different entry points that import the same libraries can share
-      work in many ways without any data copying. Most modern computers have
-      many cores so this is a big win.
+      The algorithms inside esbuild are carefully designed to fully saturate
+      all available CPU cores when possible. There are roughly three phases:
+      parsing, linking, and code generation. Parsing and code generation are
+      most of the work and are fully parallelizable (linking is an inherently
+      serial task for the most part). Since all threads share memory, work
+      can easily be shared when bundling different entry points that import
+      the same JavaScript libraries. Most modern computers have many cores
+      so parallelism is a big win.
       </p>
 
     - >
