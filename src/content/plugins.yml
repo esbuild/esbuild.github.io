@@ -868,7 +868,7 @@ body:
 
   - p: >
       The cache can either be stored in memory (beneficial for use with
-      esbuild's [incremental build API](http://localhost:8001/api/index.html#incremental)),
+      esbuild's [incremental build API](https://esbuild.github.io/api/#incremental)),
       on disk (beneficial for caching across separate build script invocations),
       or even on a server (beneficial for really slow transforms that can be
       shared between different developer machines). Where to store the cache is
@@ -879,7 +879,7 @@ body:
       `slowTransform()` that takes as input the contents of a file in the
       `*.example` format and transforms it to JavaScript. An in-memory cache
       that avoids redundant calls to this function when used with esbuild's
-      [incremental build API](http://localhost:8001/api/index.html#incremental))
+      [incremental build API](https://esbuild.github.io/api/#incremental))
       might look something like this:
 
   - pre.js: |
