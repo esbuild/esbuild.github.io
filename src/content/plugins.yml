@@ -365,6 +365,7 @@ body:
           importer: string;
           namespace: string;
           resolveDir: string;
+          pluginData: any;
         }
 
       go: |
@@ -373,6 +374,7 @@ body:
           Importer   string
           Namespace  string
           ResolveDir string
+          PluginData interface{}
         }
 
   - ul:
@@ -418,6 +420,13 @@ body:
       in that file.
       </p>
 
+    - >
+      `pluginData`
+      <p>
+      This property is passed from the previous plugin, as set by the 
+      [load callback](#load-callbacks) that loaded this file.
+      </p>
+
   - h3: Resolve results
 
   - p: >
@@ -434,6 +443,7 @@ body:
         interface OnResolveResult {
           path?: string;
           external?: boolean;
+          pluginData?: any;
           namespace?: string;
           errors?: Message[];
           warnings?: Message[];
@@ -459,6 +469,7 @@ body:
         type OnResolveResult struct {
           Path       string
           External   bool
+          PluginData interface{}
           Namespace  string
           Errors     []Message
           Warnings   []Message
@@ -540,6 +551,18 @@ body:
       through this plugin. For example, it lets you have a single plugin that
       forwards to a child process containing multiple plugins. You probably
       won't need to use this.
+      </p>
+
+    - >
+      `pluginData`
+      <p>
+      This property will be passed to the next plugin that runs in the plugin 
+      chain. If you return it from an `onLoad` plugin, it will be passed to 
+      the `onResolve` plugins for any imports in that file, and if you return 
+      it from an `onResolve` plugin, an arbitrary one will be passed to the 
+      `onLoad` plugin when it loads the file (it's arbitrary since the 
+      relationship is many-to-one). This is useful to pass data between 
+      different plugins without them having to coordinate directly.
       </p>
 
   - h2: Load callbacks
@@ -697,12 +720,14 @@ body:
         interface OnLoadArgs {
           path: string;
           namespace: string;
+          pluginData: any;
         }
 
       go: |
         type OnLoadArgs struct {
-          Path      string
-          Namespace string
+          Path       string
+          Namespace  string
+          PluginData interface{}
         }
 
   - ul:
@@ -724,6 +749,14 @@ body:
       default behavior. You can read more about namespaces [here](#namespaces).
       </p>
 
+    - >
+      `pluginData`
+      <p>
+      This property is passed from the previous plugin, as set by the 
+      [resolve callback](#resolve-callbacks) that runs in the plugin 
+      chain.
+      </p>
+
   - h3: Load results
 
   - p: >
@@ -740,6 +773,7 @@ body:
         interface OnLoadResult {
           contents?: string | Uint8Array;
           loader?: Loader;
+          pluginData?: any;
           resolveDir?: string;
           errors?: Message[];
           warnings?: Message[];
@@ -765,6 +799,7 @@ body:
         type OnLoadResult struct {
           Contents   *string
           Loader     Loader
+          PluginData interface{}
           ResolveDir string
           Errors     []Message
           Warnings   []Message
@@ -846,6 +881,18 @@ body:
       through this plugin. For example, it lets you have a single plugin that
       forwards to a child process containing multiple plugins. You probably
       won't need to use this.
+      </p>
+
+    - >
+      `pluginData`
+      <p>
+      This property will be passed to the next plugin that runs in the plugin 
+      chain. If you return it from an `onLoad` plugin, it will be passed to 
+      the `onResolve` plugins for any imports in that file, and if you return 
+      it from an `onResolve` plugin, an arbitrary one will be passed to the 
+      `onLoad` plugin when it loads the file (it's arbitrary since the 
+      relationship is many-to-one). This is useful to pass data between 
+      different plugins without them having to coordinate directly.
       </p>
 
   - h3: Caching your plugin
