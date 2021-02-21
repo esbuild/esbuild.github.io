@@ -480,7 +480,7 @@ body:
       This sets the output format for the generated JavaScript files. There are
       currently three possible values: `iife`, `cjs`, and `esm`.
 
-  - h4: IIFE
+  - h4#format-iife: IIFE
 
   - p: >
       The `iife` format stands for "immediately-invoked function expression" and
@@ -526,7 +526,7 @@ body:
           }
         }
 
-  - h4: CommonJS
+  - h4#format-commonjs: CommonJS
 
   - p: >
       The `cjs` format stands for "CommonJS" and is intended to be run in node.
@@ -572,7 +572,7 @@ body:
           }
         }
 
-  - h4: ESM
+  - h4#format-esm: ESM
 
   - p: >
       The `esm` format stands for "ECMAScript module". It assumes the environment
@@ -702,7 +702,7 @@ body:
       let process = {cwd: () => ""};
       console.log(process.cwd());
 
-  - h4: Use with [define](#define)
+  - h4: Using inject with [define](#define)
 
   - p: >
       You can also combine this with the [define](#define) feature to be more
@@ -781,7 +781,7 @@ body:
       to provide functions such as `React.createElement`. See the
       [JSX documentation](/content-types/#auto-import-for-jsx) for details.
 
-  - h4: Files without imports
+  - h4: Injecting files without imports
 
   - p: >
       You can also use this feature with files that have no exports. In that
@@ -1191,7 +1191,7 @@ body:
       it strives to generate minified output within a few percent of the size
       of dedicated minification tools, and of course to do so much faster.
 
-  - h4: Considerations
+  - h4#minify-considerations: Considerations
 
   - p: >
       Here are some things to keep in mind when using esbuild as a minifier:
@@ -1527,7 +1527,7 @@ body:
   - p: >
       There are two different approaches for using the serve API:
 
-  - h4: 'Serve approach 1: Serve everything with esbuild'
+  - h4#serve-everything: 'Approach 1: Serve everything with esbuild'
 
   - p: >
       With this approach, you give esbuild a directory called `servedir` with
@@ -1600,7 +1600,7 @@ body:
       to visit. The port can be set to something specific if necessary
       (described further down below).
 
-  - h4: 'Serve approach 2: Only serve generated files with esbuild'
+  - h4#serve-generated: 'Approach 2: Only serve generated files with esbuild'
 
   - p: >
       With this approach, you just tell esbuild to serve the contents of the
@@ -1670,7 +1670,7 @@ body:
       can click on links to browse to different files and directories on the
       web server.
 
-  - h4: Serve arguments
+  - h4#serve-arguments: Arguments
 
   - p: >
       Notice that the serve API is a different API call than the [build API](#build-api).
@@ -1768,7 +1768,7 @@ body:
       documentation for the [build API](#build-api) for more information about
       these options.
 
-  - h4: Serve return values
+  - h4#serve-return-values: Return values
 
   - example:
       noCheck: true
@@ -3986,7 +3986,7 @@ body:
       customize which format esbuild picks using the [main fields](#main-fields)
       option.
 
-  - h4: Manual annotations
+  - h4: Manual tree shaking annotations
 
   - p: >
       Since JavaScript is a dynamic language, identifying

@@ -46,7 +46,7 @@ function stripTagsFromMarkdown(markdown) {
 }
 
 function toID(text) {
-  text = stripTagsFromMarkdown(text).replace(/:.*$/, '')
+  text = stripTagsFromMarkdown(text)
   return text.toLowerCase().replace(/[^\w \-]/g, '').replace(/[ ]/g, '-')
 }
 
@@ -311,6 +311,15 @@ function generateMain(key, main) {
   let h3 = null
 
   return main.body.map(({ tag, value }) => {
+    let cssID = ''
+
+    // Strip off a trailing CSS id
+    if (tag.includes('#')) {
+      let i = tag.indexOf('#')
+      cssID = tag.slice(i + 1)
+      tag = tag.slice(0, i)
+    }
+
     if (tag === 'example') {
       let elements = []
       if (value.cli) elements.push(['cli', 'CLI'])
@@ -331,8 +340,8 @@ function generateMain(key, main) {
       let dataset = ''
       if (tag !== 'h2' && h2) dataset += ` data-h2="${escapeAttribute(h2)}"`
       if (tag === 'h4' && h3) dataset += ` data-h3="${escapeAttribute(h3)}"`
-      let html = `      <${tag} id="${escapeAttribute(toID(value))}"${dataset}>
-        <a class="permalink" href="#${escapeAttribute(toID(value))}">#</a>
+      let html = `      <${tag} id="${escapeAttribute(toID(cssID || value))}"${dataset}>
+        <a class="permalink" href="#${escapeAttribute(toID(cssID || value))}">#</a>
         ${md.renderInline(value)}
       </${tag}>`
       let calls = apiCallsForOption[value]
