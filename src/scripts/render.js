@@ -41,7 +41,12 @@ for (let i = 0; i < pages.length; i++) {
   })
 }
 
+function stripTagsFromMarkdown(markdown) {
+  return md.renderInline(markdown.trim()).replace(/<[^>]*>/g, '')
+}
+
 function toID(text) {
+  text = stripTagsFromMarkdown(text).replace(/:.*$/, '')
   return text.toLowerCase().replace(/[^\w \-]/g, '').replace(/[ ]/g, '-')
 }
 
@@ -168,7 +173,7 @@ function renderBenchmarkSVG(entries) {
     let barY = y + barMargin
     let barH = h - 2 * barMargin
     let bold = i === 0 ? ' font-weight="bold"' : ''
-    let label = md.renderInline(name.trim()).replace(/<[^>]*>/g, '')
+    let label = stripTagsFromMarkdown(name)
     svg.push(`  <rect x="${leftWidth}" y="${barY}" width="${w}" height="${barH}" fill="#FFCF00"/>`)
     svg.push(`  <text x="${leftWidth - labelMargin}" y="${y + h / 2}" text-anchor="end" dominant-baseline="middle"${bold}>${label}</text>`)
     svg.push(`  <text x="${leftWidth + labelMargin + w}" y="${y + h / 2}" dominant-baseline="middle"${bold}>${escapeHTML(time.toFixed(2))}s</text>`)
@@ -303,6 +308,7 @@ function generateMain(key, main) {
   let apiCallsForOption = {}
   let benchmarkCount = 0
   let h2 = null
+  let h3 = null
 
   return main.body.map(({ tag, value }) => {
     if (tag === 'example') {
@@ -319,11 +325,15 @@ function generateMain(key, main) {
       return `      <div class="switcher">\n${switcherContent.join('\n')}\n      </div>\n${exampleContent.join('\n')}`
     }
 
-    if (/^h[23]$/.test(tag)) {
+    if (/^h[234]$/.test(tag)) {
       if (tag === 'h2') h2 = toID(value)
-      let html = `      <${tag} id="${escapeAttribute(toID(value))}"${tag === 'h3' && h2 ? ` data-h2="${escapeAttribute(h2)}"` : ''}>
-        <a href="#${escapeAttribute(toID(value))}">#</a>
-        ${escapeHTML(value)}
+      if (tag === 'h3') h3 = toID(value)
+      let dataset = ''
+      if (tag !== 'h2' && h2) dataset += ` data-h2="${escapeAttribute(h2)}"`
+      if (tag === 'h4' && h3) dataset += ` data-h3="${escapeAttribute(h3)}"`
+      let html = `      <${tag} id="${escapeAttribute(toID(value))}"${dataset}>
+        <a class="permalink" href="#${escapeAttribute(toID(value))}">#</a>
+        ${md.renderInline(value)}
       </${tag}>`
       let calls = apiCallsForOption[value]
       if (calls) {

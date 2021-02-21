@@ -150,16 +150,16 @@ h4 {
   margin-top: 60px;
 }
 
-h2, h3 {
+h2, h3, h4 {
   position: relative;
   margin: -10px 0 20px 0;
   padding-top: 63px;
   line-height: 40px;
 }
 
-h1 a,
-h2 a,
-h3 a {
+h2 .permalink,
+h3 .permalink,
+h4 .permalink {
   position: absolute;
   width: 25px;
   left: -25px;
@@ -170,9 +170,9 @@ h3 a {
   -webkit-user-select: none;
 }
 
-h1:not(:hover) a:not(:focus),
-h2:not(:hover) a:not(:focus),
-h3:not(:hover) a:not(:focus) {
+h2:not(:hover) .permalink:not(:focus),
+h3:not(:hover) .permalink:not(:focus),
+h4:not(:hover) .permalink:not(:focus) {
   color: transparent;
 }
 

@@ -18,27 +18,34 @@ addEventListener('click', function (e) {
 
 addEventListener('DOMContentLoaded', function () {
   function updateNav() {
-    var h2, h3
+    var h2, h3, h4
 
     for (var i = 0; i < headers.length; i++) {
       var h = headers[i]
       if (h.getBoundingClientRect().top > 10) break
-      if (h.dataset.h2) {
+      if (h.dataset.h3) {
+        h2 = document.getElementById(h.dataset.h2)
+        h3 = document.getElementById(h.dataset.h3)
+        h4 = h
+      } else if (h.dataset.h2) {
         h2 = document.getElementById(h.dataset.h2)
         h3 = h
+        h4 = null
       } else {
         h2 = h
         h3 = null
+        h4 = null
       }
     }
 
     for (var i = 0; i < headers.length; i++) {
       var h = headers[i]
+      if (h.tagName === 'H4') continue
       document.getElementById('nav-' + h.id).classList.toggle('current', h === h2 || h === h3)
     }
 
     // Throttle to avoid crashes in Safari
-    var h = h3 || h2
+    var h = h4 || h3 || h2
     pathhash = location.pathname + (h ? '#' + h.id : '')
     if (throttle === null) throttle = setTimeout(updatePathname, 300)
   }
@@ -66,7 +73,7 @@ addEventListener('DOMContentLoaded', function () {
 
   var pathhash
   var throttle = null
-  var headers = document.querySelectorAll('h2, h3')
+  var headers = document.querySelectorAll('h2, h3, h4')
 
   addEventListener('scroll', updateNav, { passive: true })
   addEventListener('load', updateNav)
