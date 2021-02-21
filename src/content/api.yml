@@ -1759,7 +1759,7 @@ body:
       <p>
       Note that this is called after the request has completed. It's not possible
       to use this callback to modify the request in any way. If you want to do
-      this, you should set up a proxy in front of esbuild instead.
+      this, you should [put a proxy in front of esbuild](#customizing-server-behavior) instead.
       </p>
 
   - p: >
@@ -1895,7 +1895,7 @@ body:
     - Adding support for HTTPS using your own self-signed certificates
 
   - p: >
-      You can also use a real proxy such as [NGINX](https://en.wikipedia.org/wiki/Nginx)
+      You can also use a real proxy such as [NGINX](https://nginx.org/en/docs/beginners_guide.html#proxy)
       if you have more advanced needs.
 
   - h3: Sourcemap
