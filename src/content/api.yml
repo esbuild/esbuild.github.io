@@ -1527,7 +1527,7 @@ body:
   - p: >
       There are two different approaches for using the serve API:
 
-  - h4: 'Approach 1: Serve everything with esbuild'
+  - h4: 'Serve approach 1: Serve everything with esbuild'
 
   - p: >
       With this approach, you give esbuild a directory called `servedir` with
@@ -1600,7 +1600,7 @@ body:
       to visit. The port can be set to something specific if necessary
       (described further down below).
 
-  - h4: 'Approach 2: Only serve generated files with esbuild'
+  - h4: 'Serve approach 2: Only serve generated files with esbuild'
 
   - p: >
       With this approach, you just tell esbuild to serve the contents of the
@@ -1670,7 +1670,7 @@ body:
       can click on links to browse to different files and directories on the
       web server.
 
-  - h4: Arguments
+  - h4: Serve arguments
 
   - p: >
       Notice that the serve API is a different API call than the [build API](#build-api).
@@ -1756,6 +1756,11 @@ body:
       request, but it does not include the time to stream the request to the
       client.
       </p>
+      <p>
+      Note that this is called after the request has completed. It's not possible
+      to use this callback to modify the request in any way. If you want to do
+      this, you should set up a proxy in front of esbuild instead.
+      </p>
 
   - p: >
       The second argument to the serve API call is the normal set of options
@@ -1763,7 +1768,7 @@ body:
       documentation for the [build API](#build-api) for more information about
       these options.
 
-  - h4: Return values
+  - h4: Serve return values
 
   - example:
       noCheck: true
@@ -1819,6 +1824,79 @@ body:
       all open connections and wake up any code waiting on the `wait` return
       value.
       </p>
+
+  - h4: Customizing server behavior
+
+  - p: >
+      It's not possible to hook into esbuild's local server to customize the
+      behavior of the server itself. Instead, behavior should be customized
+      by putting a proxy in front of esbuild.
+
+  - p: >
+      Here's a simple example of a proxy server to get you started. It adds a
+      custom 404 page instead of esbuild's default 404 page:
+
+  - pre.js: |
+      const esbuild = require('esbuild');
+      const http = require('http');
+
+      // Start esbuild's server on a random local port
+      esbuild.serve({
+        servedir: __dirname,
+      }, {
+        // ... your build options go here ...
+      }).then(result => {
+        // The result tells us where esbuild's local server is
+        const {host, port} = result
+
+        // Then start a proxy server on port 3000
+        http.createServer((req, res) => {
+          const options = {
+            hostname: host,
+            port: port,
+            path: req.url,
+            method: req.method,
+            headers: req.headers,
+          }
+
+          // Forward each incoming request to esbuild
+          const proxyReq = http.request(options, proxyRes => {
+            // If esbuild returns "not found", send a custom 404 page
+            if (proxyRes.statusCode === 404) {
+              res.writeHead(404, { 'Content-Type': 'text/html' });
+              res.end('<h1>A custom 404 page</h1>');
+              return;
+            }
+
+            // Otherwise, forward the response from esbuild to the client
+            res.writeHead(proxyRes.statusCode, proxyRes.headers);
+            proxyRes.pipe(res, { end: true });
+          });
+
+          // Forward the body of the request to esbuild
+          req.pipe(proxyReq, { end: true });
+        }).listen(3000);
+      });
+
+  - p: >
+      This code starts esbuild's server on random local port and then starts a
+      proxy server on port 3000. During development you would load [http://localhost:3000](http://localhost:3000)
+      in your browser, which talks to the proxy. This example demonstrates
+      modifying a response after esbuild has handled the request, but you can
+      also modify or replace the request before esbuild has handled it.
+
+  - p: >
+      You can do many things with a proxy like this including:
+
+  - ul:
+    - Injecting your own 404 page (the example above)
+    - Customizing the mapping of routes to files on the file system
+    - Redirecting some routes to an API server instead of to esbuild
+    - Adding support for HTTPS using your own self-signed certificates
+
+  - p: >
+      You can also use a real proxy such as [NGINX](https://en.wikipedia.org/wiki/Nginx)
+      if you have more advanced needs.
 
   - h3: Sourcemap
 
