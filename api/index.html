@@ -176,7 +176,7 @@
       <p>There are two main API calls in esbuild's API: <a href="#transform-api">transform</a> and <a href="#build-api">build</a>. It's important to understand which one you should be using because they work differently.</p>
       <p>If you are using JavaScript be sure to check out the <a href="#js-specific-details">JS-specific details</a> section below. You may also find the <a href="https://github.com/evanw/esbuild/blob/master/lib/types.ts">TypeScript type definitions</a> for esbuild helpful as a reference. If you are using Go be sure to check out the automatically generated <a href="https://pkg.go.dev/github.com/evanw/esbuild/pkg/api">Go documentation</a>.</p>
       <h2 id="transform-api">
-        <a href="#transform-api">#</a>
+        <a class="permalink" href="#transform-api">#</a>
         Transform API
       </h2>
       <p>The transform API call operates on a single string without access to a file system. This makes it ideal for use in environments without a file system (such as a browser) or as part of another tool chain. Here is what a simple transform looks like:</p>
@@ -236,7 +236,7 @@
         <li><a href="#tsconfig-raw">Tsconfig raw</a></li>
       </ul>
       <h2 id="build-api">
-        <a href="#build-api">#</a>
+        <a class="permalink" href="#build-api">#</a>
         Build API
       </h2>
       <p>The build API call operates on one or more files in the file system. This allows the files to reference each other and be bundled together. Here is what a simple build looks like:</p>
@@ -318,11 +318,11 @@
         <li><a href="#working-directory">Working Directory</a></li>
       </ul>
       <h2 id="simple-options">
-        <a href="#simple-options">#</a>
+        <a class="permalink" href="#simple-options">#</a>
         Simple options
       </h2>
       <h3 id="bundle" data-h2="simple-options">
-        <a href="#bundle">#</a>
+        <a class="permalink" href="#bundle">#</a>
         Bundle
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -356,7 +356,7 @@
       <p>Refer to the <a href="/getting-started/#your-first-bundle">getting started guide</a> for an example of bundling with real-world code.</p>
       <p>Note that bundling is different than file concatentation. Passing esbuild multiple input files with bundling enabled will create two separate bundles instead of joining the input files together. To join a set of files together with esbuild, import them all into a single entry point file and bundle just that one file with esbuild.</p>
       <h3 id="define" data-h2="simple-options">
-        <a href="#define">#</a>
+        <a class="permalink" href="#define">#</a>
         Define
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -444,7 +444,7 @@
 }</pre>
       <p>If you still run into cross-platform quote escaping issues with different shells, you will probably want to switch to using the <a href="/api/">JavaScript API</a> instead. There you can use regular JavaScript syntax to eliminate cross-platform differences.</p>
       <h3 id="external" data-h2="simple-options">
-        <a href="#external">#</a>
+        <a class="permalink" href="#external">#</a>
         External
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -488,12 +488,15 @@
 }</pre>
       <p>You can also use the <code>*</code> wildcard character in an external path to mark all files matching that pattern as external. For example, you can use <code>*.png</code> to remove all <code>.png</code> files or <code>/images/*</code> to remove all paths starting with <code>/images/</code>. When a <code>*</code> wildcard character is present in an external path, that pattern will be applied to the original path in the source code instead of to the path after it has been resolved to a real file system path. This lets you match on paths that aren't real file system paths.</p>
       <h3 id="format" data-h2="simple-options">
-        <a href="#format">#</a>
+        <a class="permalink" href="#format">#</a>
         Format
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
       <p>This sets the output format for the generated JavaScript files. There are currently three possible values: <code>iife</code>, <code>cjs</code>, and <code>esm</code>.</p>
-      <h4>IIFE</h4>
+      <h4 id="format-iife" data-h2="simple-options" data-h3="format">
+        <a class="permalink" href="#format-iife">#</a>
+        IIFE
+      </h4>
       <p>The <code>iife</code> format stands for &quot;immediately-invoked function expression&quot; and is intended to be run in the browser. Wrapping your code in a function expression ensures that any variables in your code don't accidentally conflict with variables in the global scope. If your entry point has exports that you want to expose as a global in the browser, you can configure that global's name using the <a href="#global-name">global name</a> setting. The <code>iife</code> format is the default format unless you set <a href="#platform">platform</a> to <code>node</code>. Using it looks like this:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
@@ -524,7 +527,10 @@ process.stdout.write(out.code)</pre>
     fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
   }
 }</pre>
-      <h4>CommonJS</h4>
+      <h4 id="format-commonjs" data-h2="simple-options" data-h3="format">
+        <a class="permalink" href="#format-commonjs">#</a>
+        CommonJS
+      </h4>
       <p>The <code>cjs</code> format stands for &quot;CommonJS&quot; and is intended to be run in node. It assumes the environment contains <code>exports</code>, <code>require</code>, and <code>module</code>. Entry points with exports in ECMAScript module syntax will be converted to a module with a getter on <code>exports</code> for each export name. The <code>cjs</code> format is the default format when you set <a href="#platform">platform</a> to <code>node</code>. Using it looks like this:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
@@ -557,7 +563,10 @@ process.stdout.write(out.code)</pre>
     fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
   }
 }</pre>
-      <h4>ESM</h4>
+      <h4 id="format-esm" data-h2="simple-options" data-h3="format">
+        <a class="permalink" href="#format-esm">#</a>
+        ESM
+      </h4>
       <p>The <code>esm</code> format stands for &quot;ECMAScript module&quot;. It assumes the environment supports <code>import</code> and <code>export</code> syntax. Entry points with exports in CommonJS module syntax will be converted to a single <code>default</code> export of the value of <code>module.exports</code>. Using it looks like this:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
@@ -593,7 +602,7 @@ process.stdout.write(out.code)</pre>
       <p>The <code>esm</code> format can be used either in the browser or in node, but you have to explicitly load it as a module. This happens automatically if you <code>import</code> it from another module. Otherwise:</p>
       <ul><li>In the browser, you can load a module using <code>&lt;script <wbr>src=&quot;<wbr>file.js&quot; <wbr>type=&quot;<wbr>module&quot;&gt;<wbr>&lt;/script&gt;</code>. <br> </li><li>In node, you can load a module using <code>node <wbr>--experimental-<wbr>modules <wbr>file.mjs</code>. Note that node requires the <code>.mjs</code> extension unless you have configured <code>&quot;type&quot;: <wbr>&quot;module&quot;</code> in your <code>package.json</code> file. You can use the <a href="#out-extension">out extension</a> setting in esbuild to customize the output extension for the files esbuild generates. You can read more about using ECMAScript modules in node <a href="https://nodejs.org/api/esm.html">here</a>.</li></ul>
       <h3 id="inject" data-h2="simple-options">
-        <a href="#inject">#</a>
+        <a class="permalink" href="#inject">#</a>
         Inject
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -639,7 +648,10 @@ process.stdout.write(out.code)</pre>
       <pre><span class="hljs-comment">// out.js</span>
 <span class="hljs-keyword">let</span> process = {<span class="hljs-attr">cwd</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-string">&quot;&quot;</span>};
 <span class="hljs-built_in">console</span>.log(process.cwd());</pre>
-      <h4>Use with <a href="#define">define</a></h4>
+      <h4 id="using-inject-with-define" data-h2="simple-options" data-h3="inject">
+        <a class="permalink" href="#using-inject-with-define">#</a>
+        Using inject with <a href="#define">define</a>
+      </h4>
       <p>You can also combine this with the <a href="#define">define</a> feature to be more selective about what you import. For example:</p>
       <pre><span class="hljs-comment">// process-shim.js</span>
 <span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dummy_process_cwd</span>(<span class="hljs-params"></span>) </span>{
@@ -688,14 +700,23 @@ process.stdout.write(out.code)</pre>
   <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span>;
 }
 <span class="hljs-built_in">console</span>.log(dummy_process_cwd());</pre>
-      <h4>Auto-import for <a href="/content-types/#jsx">JSX</a></h4>
+      <h4 id="auto-import-for-jsx" data-h2="simple-options" data-h3="inject">
+        <a class="permalink" href="#auto-import-for-jsx">#</a>
+        Auto-import for <a href="/content-types/#jsx">JSX</a>
+      </h4>
       <p>You can use the inject feature to automatically provide the implementation for JSX expressions. For example, you can auto-import the <code>react</code> package to provide functions such as <code>React.createElement</code>. See the <a href="/content-types/#auto-import-for-jsx">JSX documentation</a> for details.</p>
-      <h4>Files without imports</h4>
+      <h4 id="injecting-files-without-imports" data-h2="simple-options" data-h3="inject">
+        <a class="permalink" href="#injecting-files-without-imports">#</a>
+        Injecting files without imports
+      </h4>
       <p>You can also use this feature with files that have no exports. In that case the injected file just comes first before the rest of the output as if every input file contained <code>import <wbr>&quot;./file.js&quot;</code>. Because of the way ECMAScript modules work, this injection is still &quot;hygienic&quot; in that symbols with the same name in different files are renamed so they don't collide with each other.</p>
-      <h4>Conditionally injecting a file</h4>
+      <h4 id="conditionally-injecting-a-file" data-h2="simple-options" data-h3="inject">
+        <a class="permalink" href="#conditionally-injecting-a-file">#</a>
+        Conditionally injecting a file
+      </h4>
       <p>If you want to <em>conditionally</em> import a file only if the export is actually used, you should mark the injected file as not having side effects by putting it in a package and adding <code>&quot;sideEffects&quot;: <wbr>false</code> in that package's <code>package.json</code> file. This setting is a <a href="https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free">convention from Webpack</a> that esbuild respects for any imported file, not just files used with inject.</p>
       <h3 id="loader" data-h2="simple-options">
-        <a href="#loader">#</a>
+        <a class="permalink" href="#loader">#</a>
         Loader
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -818,7 +839,7 @@ image.src = url
   }
 }</pre>
       <h3 id="minify" data-h2="simple-options">
-        <a href="#minify">#</a>
+        <a class="permalink" href="#minify">#</a>
         Minify
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -953,7 +974,10 @@ image.src = url
   }
 }</pre>
       <p>The JavaScript minification algorithm in esbuild usually generates output that is very close in size to the minified output of industry-standard JavaScript minification tools. You can check out <a href="https://github.com/privatenumber/minification-benchmarks/blob/cc9205d26756a0c32fe47cc22046d850b5c1fbbe/readme.md">this benchmark</a> for an example comparison of output sizes between tools. While esbuild is not the optimal JavaScript minifier in all cases (and doesn't try to be), it strives to generate minified output within a few percent of the size of dedicated minification tools, and of course to do so much faster.</p>
-      <h4>Considerations</h4>
+      <h4 id="minify-considerations" data-h2="simple-options" data-h3="minify">
+        <a class="permalink" href="#minify-considerations">#</a>
+        Considerations
+      </h4>
       <p>Here are some things to keep in mind when using esbuild as a minifier:</p>
       <ul><li><p> You should probably also set the <a href="#target">target</a> option when minification is enabled. By default esbuild takes advantage of modern JavaScript features to make your code smaller. For example, <code>a ===<wbr> undefined<wbr> || a ===<wbr> null<wbr> ? 1 : a</code> could be minified to <code>a ?? 1</code>. If you do not want esbuild to take advantage of modern JavaScript features when minifying, you should use an older language target such as <code>--target=es6</code>. </p></li><li><p> Minification is not safe for 100% of all JavaScript code. This is true for esbuild as well as for other popular JavaScript minifiers such as <a href="https://github.com/terser/terser">terser</a>. In particular, esbuild is not designed to preserve the value of calling <code>.toString()</code> on a function. The reason for this is because if all code inside all functions had to be preserved verbatim, minification would hardly do anything at all and would be virtually useless. However, this means that JavaScript code relying on the return value of <code>.toString()</code> will likely break when minified. For example, some patterns in the <a href="https://angular.io/">Angular</a> framework break when code is minified because Angular uses <code>.toString()</code> to read the argument names of functions. A workaround is to not use those patterns. </p></li><li><p> By default esbuild does not preserve the value of <code>.name</code> on function and class objects. This is because most code doesn't rely on this property and using shorter names is an important size optimization. However, some code does rely on the <code>.name</code> property for registration and binding purposes. If you need to rely on this you should enable the <a href="#keep-names">keep names</a> option. </p></li><li><p> Use of certain JavaScript features can disable many of esbuild's optimizations including minification. Specifically, using direct <code>eval</code> and/or the <code>with</code> statement prevent esbuild from renaming identifiers to smaller names since these features cause identifier binding to happen at run time instead of compile time. This is almost always unintentional, and only happens because people are unaware of what direct <code>eval</code> is and why it's bad. </p></li></ul>
       <p>If you are thinking about writing some code like this:</p>
@@ -964,7 +988,7 @@ image.src = url
 <span class="hljs-keyword">let</span> result = (<span class="hljs-number">0</span>, <span class="hljs-built_in">eval</span>)(something)</pre>
       <p>You can read more about the differences between direct and indirect eval <a href="http://perfectionkills.com/global-eval-what-are-the-options/">here</a>.</p>
       <h3 id="outdir" data-h2="simple-options">
-        <a href="#outdir">#</a>
+        <a class="permalink" href="#outdir">#</a>
         Outdir
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -999,7 +1023,7 @@ image.src = url
       <p>The output directory will be generated if it does not already exist, but it will not be cleared if it already contains some files. Any generated files will silently overwrite existing files with the same name. You should clear the output directory yourself before running esbuild if you want the output directory to only contain files from the current run of esbuild.</p>
       <p>If your build contains multiple entry points in separate directories, the directory structure will be replicated into the output directory starting from the <a href="https://en.wikipedia.org/wiki/Lowest_common_ancestor">lowest common ancestor</a> directory among all input entry point paths. For example, if there are two entry points <code>src/<wbr>home/<wbr>index.ts</code> and <code>src/<wbr>about/<wbr>index.ts</code>, the output directory will contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code>. If you want to customize this behavior, you chould change the <a href="#outbase">outbase directory</a>.</p>
       <h3 id="outfile" data-h2="simple-options">
-        <a href="#outfile">#</a>
+        <a class="permalink" href="#outfile">#</a>
         Outfile
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1032,7 +1056,7 @@ image.src = url
   }
 }</pre>
       <h3 id="platform" data-h2="simple-options">
-        <a href="#platform">#</a>
+        <a class="permalink" href="#platform">#</a>
         Platform
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1074,7 +1098,7 @@ image.src = url
       <ul><li><p> The default output <a href="#format">format</a> is set to <code>esm</code>, which uses the <code>export</code> syntax introduced with ECMAScript 2015 (i.e. ES6). You can change the output format if this default is not appropriate. </p></li><li><p> The <a href="#main-fields">main fields</a> setting is empty by default. If you want to use npm-style packages, you will likely have to configure this to be something else such as <code>main</code> for the standard main field used by node. </p></li></ul>
       <p>See also <a href="/getting-started/#bundling-for-the-browser">bundling for the browser</a> and <a href="/getting-started/#bundling-for-node">bundling for node</a>.</p>
       <h3 id="serve" data-h2="simple-options">
-        <a href="#serve">#</a>
+        <a class="permalink" href="#serve">#</a>
         Serve
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1084,7 +1108,10 @@ image.src = url
       <p>The advantage of this method over the other methods is that the web server can delay the browser's request until the build has finished. That way reloading your code in the browser before the latest build has finished will never run code from a previous build. The files are served from memory and are not written to the file system to ensure that the outdated files cannot be observed.</p>
       <p>Note that this is intended to only be used in development. <em>Do not use this in production.</em> In production you should be serving static files without using esbuild as a web server.</p>
       <p>There are two different approaches for using the serve API:</p>
-      <h4>Approach 1: Serve everything with esbuild</h4>
+      <h4 id="serve-everything" data-h2="simple-options" data-h3="serve">
+        <a class="permalink" href="#serve-everything">#</a>
+        Approach 1: Serve everything with esbuild
+      </h4>
       <p>With this approach, you give esbuild a directory called <code>servedir</code> with extra content to serve in addition to the files that esbuild generates. This works well for simple situations where you are creating some static HTML pages and want to use esbuild to bundle the JavaScript and/or CSS. You can put your HTML files in the <code>servedir</code> and your other source code outside of the <code>servedir</code>, then set the <a href="#outdir"><code>outdir</code></a> somewhere inside the <code>servedir</code>:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
@@ -1117,7 +1144,10 @@ server.Stop()</pre>
       <p>When you do this, every HTTP request will cause esbuild to rebuild your code and serve you the latest version. So <code>js/app.js</code> will always be up to date every time you reload the page. Note that although the generated code appears to be inside the <code>outdir</code> directory, it's never actually written to the file system with the serve API. Instead the paths for generated code shadow (i.e. takes precedence over) other paths inside the <code>servedir</code> and generated files are served directly from memory.</p>
       <p>The benefit of doing things this way is that you can use the exact same HTML pages in development and production. In development you can run esbuild with <code>--servedir=</code> and esbuild will serve the generated output files directly. For production you can omit that flag and esbuild will write the generated files to the file system. In both cases you should be getting the exact same result in the browser with the exact same code in both development and production.</p>
       <p>The port is automatically chosen by default as the first open port equal to or greater than 8000. The port number is returned from the API call (or printed to the terminal for the CLI) so you can know which URL to visit. The port can be set to something specific if necessary (described further down below).</p>
-      <h4>Approach 2: Only serve generated files with esbuild</h4>
+      <h4 id="serve-generated" data-h2="simple-options" data-h3="serve">
+        <a class="permalink" href="#serve-generated">#</a>
+        Approach 2: Only serve generated files with esbuild
+      </h4>
       <p>With this approach, you just tell esbuild to serve the contents of the <a href="#outdir"><code>outdir</code></a> without giving it any additional content to serve. This works well for more complex development setups. For example, you might want to use NGINX as a reverse proxy to route different paths to separate backend services during development (e.g. <code>/static/</code> to NGINX, <code>/api/</code> to node, <code>/js/</code> to esbuild, etc.). Using esbuild with this approach looks like this:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
@@ -1149,7 +1179,10 @@ server.Stop()</pre>
       <pre><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;http://localhost:8000/out.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></pre>
       <p>The URL structure of the web server exactly mirrors the URL structure of the <a href="#outdir">output directory</a> when using the normal build command without the web server enabled. For example, if the output directory normally contains a file called <code>./pages/<wbr>about.js</code>, the web server will have a corresponding <code>/pages/<wbr>about.js</code> path.</p>
       <p>If you would like to browse the web server to see what URLs are available, you can use the built-in directory listing by visiting a directory name instead of a file name. For example, if you're running esbuild's web server on port 8000 you can visit <a href="http://localhost:8000/">http://<wbr>localhost:<wbr>8000/</a> in your browser to view the web server's root directory. From there you can click on links to browse to different files and directories on the web server.</p>
-      <h4>Arguments</h4>
+      <h4 id="serve-arguments" data-h2="simple-options" data-h3="serve">
+        <a class="permalink" href="#serve-arguments">#</a>
+        Arguments
+      </h4>
       <p>Notice that the serve API is a different API call than the <a href="#build-api">build API</a>. This is because starting a long-running web server is different enough to warrant different arguments and return values. The first argument to the serve API call is an options object with serve-specific options:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="js2">JS</a>
@@ -1183,9 +1216,12 @@ interface ServeOnRequestArgs {
   Status        <span class="hljs-keyword">int</span>
   TimeInMS      <span class="hljs-keyword">int</span>
 }</pre>
-      <ul><li><code>port</code> <p> The HTTP port can optionally be configured here. If omitted, it will default to an open port with a preference for port 8000. You can set the port on the command line by using <code>--serve=8000</code> instead of just <code>--serve</code>. </p></li><li><code>host</code> <p> The web server is only available on the internal loopback address by default. This is deliberate behavior for security reasons, since the local network environment may not be trusted. However, it can be useful to run the web server on a different address when developing with esbuild inside of a virtual machine/docker container, or to request development assets from a remote testing device on the same network at a different IP address. To do that you need to specify the host here. You can set the host on the command line by using <code>--serve=<wbr>192.168.0.1:<wbr>8000</code> instead of just <code>--serve</code>. </p></li><li><code>servedir</code> <p> This is a directory of extra content for esbuild's HTTP server to serve instead of a 404 when incoming requests don't match any of the generated output file paths. This lets you use esbuild as a general-purpose local web server. For example, using <code>esbuild <wbr>--servedir=.</code> serves the current directory on <code>localhost</code>. Using <code>servedir</code> is described in more detail above in the previous section about different approaches. </p></li><li><code>onRequest</code> <p> This is called once for each incoming request with some information about the request. This callback is used by the CLI to print out a log message for each request. The time field is the time to generate the data for the request, but it does not include the time to stream the request to the client. </p></li></ul>
+      <ul><li><code>port</code> <p> The HTTP port can optionally be configured here. If omitted, it will default to an open port with a preference for port 8000. You can set the port on the command line by using <code>--serve=8000</code> instead of just <code>--serve</code>. </p></li><li><code>host</code> <p> The web server is only available on the internal loopback address by default. This is deliberate behavior for security reasons, since the local network environment may not be trusted. However, it can be useful to run the web server on a different address when developing with esbuild inside of a virtual machine/docker container, or to request development assets from a remote testing device on the same network at a different IP address. To do that you need to specify the host here. You can set the host on the command line by using <code>--serve=<wbr>192.168.0.1:<wbr>8000</code> instead of just <code>--serve</code>. </p></li><li><code>servedir</code> <p> This is a directory of extra content for esbuild's HTTP server to serve instead of a 404 when incoming requests don't match any of the generated output file paths. This lets you use esbuild as a general-purpose local web server. For example, using <code>esbuild <wbr>--servedir=.</code> serves the current directory on <code>localhost</code>. Using <code>servedir</code> is described in more detail above in the previous section about different approaches. </p></li><li><code>onRequest</code> <p> This is called once for each incoming request with some information about the request. This callback is used by the CLI to print out a log message for each request. The time field is the time to generate the data for the request, but it does not include the time to stream the request to the client. </p> <p> Note that this is called after the request has completed. It's not possible to use this callback to modify the request in any way. If you want to do this, you should <a href="#customizing-server-behavior">put a proxy in front of esbuild</a> instead. </p></li></ul>
       <p>The second argument to the serve API call is the normal set of options for the underlying build API that is called on every request. See the documentation for the <a href="#build-api">build API</a> for more information about these options.</p>
-      <h4>Return values</h4>
+      <h4 id="serve-return-values" data-h2="simple-options" data-h3="serve">
+        <a class="permalink" href="#serve-return-values">#</a>
+        Return values
+      </h4>
       <div class="switcher">
         <a href="javascript:void 0" class="js2">JS</a>
         <a href="javascript:void 0" class="go2">Go</a>
@@ -1203,8 +1239,58 @@ interface ServeOnRequestArgs {
   Stop <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span>
 }</pre>
       <ul><li><code>port</code> <p> This is the port that ended up being used by the web server. You'll want to use this if you don't specify a port since esbuild will end up picking an arbitrary open port, and you need to know which port it picked to be able to connect to it. If you're using the CLI, this port number will be printed to stderr in the terminal. </p></li><li><code>host</code> <p> This is the port that ended up being used by the web server. It will be <code>127.0.0.1</code> unless a custom host was configured. </p></li><li><code>wait</code> <p> The serve API call returns immediately as long as the socket was able to be opened. The <code>wait</code> return value provides a way to be informed when the web server is terminated, either due to a network error or due to <code>stop</code> being called at some point in the future. </p></li><li><code>stop</code> <p> Call this callback to stop the web server, which you should do when you no longer need it to clean up resources. This will immediately terminate all open connections and wake up any code waiting on the <code>wait</code> return value. </p></li></ul>
+      <h4 id="customizing-server-behavior" data-h2="simple-options" data-h3="serve">
+        <a class="permalink" href="#customizing-server-behavior">#</a>
+        Customizing server behavior
+      </h4>
+      <p>It's not possible to hook into esbuild's local server to customize the behavior of the server itself. Instead, behavior should be customized by putting a proxy in front of esbuild.</p>
+      <p>Here's a simple example of a proxy server to get you started. It adds a custom 404 page instead of esbuild's default 404 page:</p>
+      <pre><span class="hljs-keyword">const</span> esbuild = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>);
+<span class="hljs-keyword">const</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;http&#x27;</span>);
+
+<span class="hljs-comment">// Start esbuild&#x27;s server on a random local port</span>
+esbuild.serve({
+  <span class="hljs-attr">servedir</span>: __dirname,
+}, {
+  <span class="hljs-comment">// ... your build options go here ...</span>
+}).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
+  <span class="hljs-comment">// The result tells us where esbuild&#x27;s local server is</span>
+  <span class="hljs-keyword">const</span> {host, port} = result
+
+  <span class="hljs-comment">// Then start a proxy server on port 3000</span>
+  http.createServer(<span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> options = {
+      <span class="hljs-attr">hostname</span>: host,
+      <span class="hljs-attr">port</span>: port,
+      <span class="hljs-attr">path</span>: req.url,
+      <span class="hljs-attr">method</span>: req.method,
+      <span class="hljs-attr">headers</span>: req.headers,
+    }
+
+    <span class="hljs-comment">// Forward each incoming request to esbuild</span>
+    <span class="hljs-keyword">const</span> proxyReq = http.request(options, <span class="hljs-function"><span class="hljs-params">proxyRes</span> =&gt;</span> {
+      <span class="hljs-comment">// If esbuild returns &quot;not found&quot;, send a custom 404 page</span>
+      <span class="hljs-keyword">if</span> (proxyRes.statusCode === <span class="hljs-number">404</span>) {
+        res.writeHead(<span class="hljs-number">404</span>, { <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;text/html&#x27;</span> });
+        res.end(<span class="hljs-string">&#x27;&lt;h1&gt;A custom 404 page&lt;/h1&gt;&#x27;</span>);
+        <span class="hljs-keyword">return</span>;
+      }
+
+      <span class="hljs-comment">// Otherwise, forward the response from esbuild to the client</span>
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res, { <span class="hljs-attr">end</span>: <span class="hljs-literal">true</span> });
+    });
+
+    <span class="hljs-comment">// Forward the body of the request to esbuild</span>
+    req.pipe(proxyReq, { <span class="hljs-attr">end</span>: <span class="hljs-literal">true</span> });
+  }).listen(<span class="hljs-number">3000</span>);
+});</pre>
+      <p>This code starts esbuild's server on random local port and then starts a proxy server on port 3000. During development you would load <a href="http://localhost:3000">http://localhost:3000</a> in your browser, which talks to the proxy. This example demonstrates modifying a response after esbuild has handled the request, but you can also modify or replace the request before esbuild has handled it.</p>
+      <p>You can do many things with a proxy like this including:</p>
+      <ul><li>Injecting your own 404 page (the example above)</li><li>Customizing the mapping of routes to files on the file system</li><li>Redirecting some routes to an API server instead of to esbuild</li><li>Adding support for HTTPS using your own self-signed certificates</li></ul>
+      <p>You can also use a real proxy such as <a href="https://nginx.org/en/docs/beginners_guide.html#proxy">NGINX</a> if you have more advanced needs.</p>
       <h3 id="sourcemap" data-h2="simple-options">
-        <a href="#sourcemap">#</a>
+        <a class="permalink" href="#sourcemap">#</a>
         Sourcemap
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1327,13 +1413,16 @@ interface ServeOnRequestArgs {
     os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
-      <h4>Using source maps</h4>
+      <h4 id="using-source-maps" data-h2="simple-options" data-h3="sourcemap">
+        <a class="permalink" href="#using-source-maps">#</a>
+        Using source maps
+      </h4>
       <p>In the browser, source maps should be automatically picked up by the browser's developer tools as long as the source map setting is enabled. Note that the browser only uses the source maps to alter the display of stack traces when they are logged to the console. The stack traces themselves are not modified so inspecting <code>error.<wbr>stack</code> in your code will still give the unmapped stack trace containing compiled code. Here's how to enable this setting in your browser's developer tools:</p>
       <ul><li>Chrome: ⚙ → Enable JavaScript source maps</li><li>Safari: ⚙ → Sources → Enable source maps</li><li>Firefox: ··· → Enable Source Maps</li></ul>
       <p>In node, source maps are supported natively starting with <a href="https://nodejs.org/en/blog/release/v12.12.0/">version v12.12.0</a>. This feature is disabled by default but can be enabled with a flag. Unlike in the browser, the actual stack traces are also modified in node so inspecting <code>error.<wbr>stack</code> in your code will give the mapped stack trace containing your original source code. Here's how to enable this setting in node (the <code>--enable-<wbr>source-<wbr>maps</code> flag must come before the script file name):</p>
       <pre>node --enable-source-maps app.js</pre>
       <h3 id="splitting" data-h2="simple-options">
-        <a href="#splitting">#</a>
+        <a class="permalink" href="#splitting">#</a>
         Splitting
       </h3>
       <div class="warning">Code splitting is still a work in progress. It currently only works with the <code>esm</code> output <a href="#format">format</a>. There is also a known <a href="https://github.com/evanw/esbuild/issues/399">ordering issue</a> with <code>import</code> statements across code splitting chunks. You can follow <a href="https://github.com/evanw/esbuild/issues/16">the tracking issue</a> for updates about this feature.</div>
@@ -1373,7 +1462,7 @@ interface ServeOnRequestArgs {
   }
 }</pre>
       <h3 id="target" data-h2="simple-options">
-        <a href="#target">#</a>
+        <a class="permalink" href="#target">#</a>
         Target
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1423,7 +1512,7 @@ interface ServeOnRequestArgs {
       <p>You can refer to the <a href="/content-types/#javascript">JavaScript loader</a> for the details about which syntax features were introduced with which language versions. Keep in mind that while JavaScript language versions such as <code>es2020</code> are identified by year, that is the year the specification is approved. It has nothing to do with the year all major browsers implement that specification which often happens earlier or later than that year.</p>
       <p>Note that if you use a syntax feature that esbuild doesn't yet have support for transforming to your current language target, esbuild will generate an error where the unsupported syntax is used. This is often the case when targeting the <code>es5</code> language version, for example, since esbuild only supports transforming most newer JavaScript syntax features to <code>es6</code>.</p>
       <h3 id="watch" data-h2="simple-options">
-        <a href="#watch">#</a>
+        <a class="permalink" href="#watch">#</a>
         Watch
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1492,7 +1581,7 @@ result.Stop()</pre>
       <p>With the current heuristics, large projects should be completely scanned around every 2 seconds so in the worst case it could take up to 2 seconds for a change to be noticed. However, after a change has been noticed the change's path goes on a short list of recently changed paths which are checked on every scan, so further changes to recently changed files should be noticed almost instantly.</p>
       <p>Note that it is still possible to implement watch mode yourself using esbuild's <a href="#incremental">incremental build API</a> and a file watcher library of your choice if you don't want to use a polling-based approach.</p>
       <h3 id="write" data-h2="simple-options">
-        <a href="#write">#</a>
+        <a class="permalink" href="#write">#</a>
         Write
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1534,11 +1623,11 @@ result.Stop()</pre>
   }
 }</pre>
       <h2 id="advanced-options">
-        <a href="#advanced-options">#</a>
+        <a class="permalink" href="#advanced-options">#</a>
         Advanced options
       </h2>
       <h3 id="banner" data-h2="advanced-options">
-        <a href="#banner">#</a>
+        <a class="permalink" href="#banner">#</a>
         Banner
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1571,7 +1660,7 @@ result.Stop()</pre>
 }</pre>
       <p>This is similar to <a href="#footer">footer</a> which inserts at the end instead of the beginning.</p>
       <h3 id="charset" data-h2="advanced-options">
-        <a href="#charset">#</a>
+        <a class="permalink" href="#charset">#</a>
         Charset
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1619,7 +1708,7 @@ result.Stop()</pre>
       <p>Some caveats:</p>
       <ul><li><p> This does not yet escape non-ASCII characters embedded in regular expressions. This is because esbuild does not currently parse the contents of regular expressions at all. The flag was added despite this limitation because it's still useful for code that doesn't contain cases like this. </p></li><li><p> This flag does not apply to comments. I believe preserving non-ASCII data in comments should be fine because even if the encoding is wrong, the run time environment should completely ignore the contents of all comments. For example, the <a href="https://v8.dev/blog/scanner">V8 blog post</a> mentions an optimization that avoids decoding comment contents completely. And all comments other than license-related comments are stripped out by esbuild anyway. </p></li><li><p> This option simultaneously applies to all output file types (JavaScript, CSS, and JSON). So if you configure your web server to send the correct <code>Content-<wbr>Type</code> header and want to use the UTF-8 charset, make sure your web server is configured to treat both <code>.js</code> and <code>.css</code> files as UTF-8. </p></li></ul>
       <h3 id="color" data-h2="advanced-options">
-        <a href="#color">#</a>
+        <a class="permalink" href="#color">#</a>
         Color
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1662,7 +1751,7 @@ result.Stop()</pre>
 }</pre>
       <p>Colored output can also be set to <code>false</code> to disable colors.</p>
       <h3 id="error-limit" data-h2="advanced-options">
-        <a href="#error-limit">#</a>
+        <a class="permalink" href="#error-limit">#</a>
         Error limit
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1695,7 +1784,7 @@ result.Stop()</pre>
   }
 }</pre>
       <h3 id="footer" data-h2="advanced-options">
-        <a href="#footer">#</a>
+        <a class="permalink" href="#footer">#</a>
         Footer
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1728,7 +1817,7 @@ result.Stop()</pre>
 }</pre>
       <p>This is similar to <a href="#banner">banner</a> which inserts at the beginning instead of the end.</p>
       <h3 id="global-name" data-h2="advanced-options">
-        <a href="#global-name">#</a>
+        <a class="permalink" href="#global-name">#</a>
         Global name
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1809,7 +1898,7 @@ example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span clas
   <span class="hljs-keyword">return</span> require_stdin();
 })();</pre>
       <h3 id="incremental" data-h2="advanced-options">
-        <a href="#incremental">#</a>
+        <a class="permalink" href="#incremental">#</a>
         Incremental
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -1863,7 +1952,7 @@ example()</pre>
   }
 }</pre>
       <h3 id="jsx-factory" data-h2="advanced-options">
-        <a href="#jsx-factory">#</a>
+        <a class="permalink" href="#jsx-factory">#</a>
         JSX factory
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1908,7 +1997,7 @@ example()</pre>
   }
 }</pre>
       <h3 id="jsx-fragment" data-h2="advanced-options">
-        <a href="#jsx-fragment">#</a>
+        <a class="permalink" href="#jsx-fragment">#</a>
         JSX fragment
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1953,7 +2042,7 @@ example()</pre>
   }
 }</pre>
       <h3 id="keep-names" data-h2="advanced-options">
-        <a href="#keep-names">#</a>
+        <a class="permalink" href="#keep-names">#</a>
         Keep names
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -1998,7 +2087,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="log-level" data-h2="advanced-options">
-        <a href="#log-level">#</a>
+        <a class="permalink" href="#log-level">#</a>
         Log level
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -2031,7 +2120,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="main-fields" data-h2="advanced-options">
-        <a href="#main-fields">#</a>
+        <a class="permalink" href="#main-fields">#</a>
         Main fields
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2077,7 +2166,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="metafile" data-h2="advanced-options">
-        <a href="#metafile">#</a>
+        <a class="permalink" href="#metafile">#</a>
         Metafile
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2146,7 +2235,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 }</pre>
       <p>This data can then be analyzed by other tools. For example, <a href="https://www.bundle-buddy.com/esbuild">bundle buddy</a> can consume esbuild's metadata format and generates a treemap visualization of the modules in your bundle and how much space each one takes up.</p>
       <h3 id="node-paths" data-h2="advanced-options">
-        <a href="#node-paths">#</a>
+        <a class="permalink" href="#node-paths">#</a>
         Node paths
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2183,7 +2272,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 }</pre>
       <p>If you are using the CLI and want to pass multiple directories using <code>NODE_PATH</code>, you will have to separate them with <code>:</code> on Unix and <code>;</code> on Windows. This is the same format that Node itself uses.</p>
       <h3 id="out-extension" data-h2="advanced-options">
-        <a href="#out-extension">#</a>
+        <a class="permalink" href="#out-extension">#</a>
         Out extension
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2221,7 +2310,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="outbase" data-h2="advanced-options">
-        <a href="#outbase">#</a>
+        <a class="permalink" href="#outbase">#</a>
         Outbase
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2263,7 +2352,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 }</pre>
       <p>If the outbase directory isn't specified, it defaults to the <a href="https://en.wikipedia.org/wiki/Lowest_common_ancestor">lowest common ancestor</a> directory among all input entry point paths. This is <code>src/<wbr>pages</code> in the example above, which means by default the output directory will contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code> instead.</p>
       <h3 id="preserve-symlinks" data-h2="advanced-options">
-        <a href="#preserve-symlinks">#</a>
+        <a class="permalink" href="#preserve-symlinks">#</a>
         Preserve symlinks
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2300,7 +2389,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
       <p>Enabling this setting causes esbuild to determine file identity by the original file path (i.e. the path without following symlinks) instead of the real file path (i.e. the path after following symlinks). This can be beneficial with certain directory structures. Keep in mind that this means a file may be given multiple identities if there are multiple symlinks pointing to it, which can result in it appearing multiple times in generated output files.</p>
       <p><em>Note: The term &quot;symlink&quot; means <a href="https://en.wikipedia.org/wiki/Symbolic_link">symbolic link</a> and refers to a file system feature where a path can redirect to another path.</em></p>
       <h3 id="public-path" data-h2="advanced-options">
-        <a href="#public-path">#</a>
+        <a class="permalink" href="#public-path">#</a>
         Public path
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2340,7 +2429,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="pure" data-h2="advanced-options">
-        <a href="#pure">#</a>
+        <a class="permalink" href="#pure">#</a>
         Pure
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -2396,7 +2485,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="resolve-extensions" data-h2="advanced-options">
-        <a href="#resolve-extensions">#</a>
+        <a class="permalink" href="#resolve-extensions">#</a>
         Resolve extensions
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2431,7 +2520,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="sourcefile" data-h2="advanced-options">
-        <a href="#sourcefile">#</a>
+        <a class="permalink" href="#sourcefile">#</a>
         Sourcefile
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -2472,7 +2561,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="sources-content" data-h2="advanced-options">
-        <a href="#sources-content">#</a>
+        <a class="permalink" href="#sources-content">#</a>
         Sources Content
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -2517,7 +2606,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="stdin" data-h2="advanced-options">
-        <a href="#stdin">#</a>
+        <a class="permalink" href="#stdin">#</a>
         Stdin
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2565,7 +2654,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 }</pre>
       <h3 id="tree-shaking" data-h2="advanced-options">
-        <a href="#tree-shaking">#</a>
+        <a class="permalink" href="#tree-shaking">#</a>
         Tree shaking
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
@@ -2605,7 +2694,10 @@ lib.one()</pre>
 <span class="hljs-comment">// input.js</span>
 one();</pre>
       <p>This way esbuild will only bundle the parts of your libraries that you actually use, which can sometimes be a substantial size savings. Note that esbuild's tree shaking implementation relies on the use of ECMAScript module <code>import</code> and <code>export</code> statements. It does not work with CommonJS modules. Many libraries on npm include both formats and esbuild tries to pick the format that works with tree shaking by default. You can customize which format esbuild picks using the <a href="#main-fields">main fields</a> option.</p>
-      <h4>Manual annotations</h4>
+      <h4 id="manual-tree-shaking-annotations" data-h2="advanced-options" data-h3="tree-shaking">
+        <a class="permalink" href="#manual-tree-shaking-annotations">#</a>
+        Manual tree shaking annotations
+      </h4>
       <p>Since JavaScript is a dynamic language, identifying unused code is sometimes very difficult for a compiler, so the community has developed certain annotations to help tell compilers what code should be considered unused. Currently there are two forms of tree-shaking annotations that esbuild supports:</p>
       <ul><li><p> Inline <code>/* @__PURE__ */</code> comments before function calls tell esbuild that the function call can be removed if the resulting value isn't used. See the <a href="#pure">pure</a> API option for more information. </p></li><li><p> The <code>sideEffects</code> field in <code>package.json</code> can be used to tell esbuild which files in your package can be removed if all imports from that file end up being unused. This is a convention from Webpack and many libraries published to npm already have this field in their package definition. You can learn more about this field in <a href="https://webpack.js.org/guides/tree-shaking/">Webpack's documentation</a> for this field. </p></li></ul>
       <p>These annotations can be problematic because the compiler depends completely on developers for accuracy, and developers occasionally publish packages with incorrect annotations. The <code>sideEffects</code> field is particularly error-prone for developers because by default it causes all files in your package to be considered dead code if no imports are used. If you add a new file containing side effects and forget to update that field, your package will likely break when people try to bundle it.</p>
@@ -2640,7 +2732,7 @@ one();</pre>
 }</pre>
       <p>Enabling this means esbuild will no longer respect <code>/* @__PURE__ */</code> comments or the <code>sideEffects</code> field. It will still do automatic tree shaking of unused imports, however, since that doesn't rely on annotations from developers. Ideally this flag is only a temporary workaround. You should report these issues to the maintainer of the package to get them fixed since they indicate a problem with the package and they will likely trip up other people too.</p>
       <h3 id="tsconfig" data-h2="advanced-options">
-        <a href="#tsconfig">#</a>
+        <a class="permalink" href="#tsconfig">#</a>
         Tsconfig
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2675,7 +2767,7 @@ one();</pre>
   }
 }</pre>
       <h3 id="tsconfig-raw" data-h2="advanced-options">
-        <a href="#tsconfig-raw">#</a>
+        <a class="permalink" href="#tsconfig-raw">#</a>
         Tsconfig raw
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a></i></p>
@@ -2717,7 +2809,7 @@ one();</pre>
   }
 }</pre>
       <h3 id="working-directory" data-h2="advanced-options">
-        <a href="#working-directory">#</a>
+        <a class="permalink" href="#working-directory">#</a>
         Working Directory
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
@@ -2754,7 +2846,7 @@ one();</pre>
   }
 }</pre>
       <h2 id="js-specific-details">
-        <a href="#js-specific-details">#</a>
+        <a class="permalink" href="#js-specific-details">#</a>
         JS-specific details
       </h2>
       <p>Because JavaScript is single-threaded, there are several different ways to invoke the API with different performance and convenience tradeoffs. It's important to be aware of the differences to pick the correct one for your situation.</p>
@@ -2767,7 +2859,7 @@ one();</pre>
 esbuild.transform(code, options).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> { ... })
 esbuild.build(options).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> { ... })</pre>
       <h3 id="running-in-the-browser" data-h2="js-specific-details">
-        <a href="#running-in-the-browser">#</a>
+        <a class="permalink" href="#running-in-the-browser">#</a>
         Running in the browser
       </h3>
       <p>The esbuild API can also run in the browser using WebAssembly in a Web Worker. To take advantage of this you will need to install the <code>esbuild-wasm</code> package instead of the <code>esbuild</code> package:</p>
