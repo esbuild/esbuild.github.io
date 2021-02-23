@@ -1725,15 +1725,22 @@ body:
     - >
       `host`
       <p>
-      The web server is only available on the internal loopback address by
-      default. This is deliberate behavior for security reasons, since the
-      local network environment may not be trusted. However, it can be useful
-      to run the web server on a different address when developing with esbuild
-      inside of a virtual machine/docker container, or to request development
-      assets from a remote testing device on the same network at a different IP
-      address. To do that you need to specify the host here. You can set the
-      host on the command line by using <code>--serve=<wbr>192.168.0.1:<wbr>8000</code>
+      By default, esbuild makes the web server available on all IPv4 network
+      interfaces. This corresponds to a host address of `0.0.0.0`. If you would
+      like to configure a different host (for example, to only serve on the
+      `127.0.0.1` loopback interface without exposing anything to the network),
+      you can specify the host using this argument. You can set the host on the
+      command line by using <code>--serve=<wbr>127.0.0.1:<wbr>8000</code>
       instead of just `--serve`.
+      </p>
+      <p>
+      If you need to use IPv6 instead of IPv4, you just need to specify an IPv6
+      host address. The equivalent to the `127.0.0.1` loopback interface in IPv6
+      is `::1` and the equivalent to the `0.0.0.0` universal interface in IPv6 is
+      `::`. If you are setting the host to an IPv6 address on the command line,
+      you need to surround the IPv6 address with square brackets to distinguish
+      the colons in the address from the colon separating the host and port
+      like this: <code>--serve=<wbr>[::]:<wbr>8000</code>.
       </p>
 
     - >
@@ -1804,7 +1811,8 @@ body:
       `host`
       <p>
       This is the port that ended up being used by the web server. It will be
-      `127.0.0.1` unless a custom host was configured.
+      `0.0.0.0` (i.e. serving on all available network interfaces) unless a
+      custom host was configured.
       </p>
 
     - >
