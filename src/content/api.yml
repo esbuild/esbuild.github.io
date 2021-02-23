@@ -3315,6 +3315,7 @@ body:
               kind: string
             }[]
             exports: string[]
+            entryPoint?: string
           }
         }
       }
