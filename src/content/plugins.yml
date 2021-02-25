@@ -365,8 +365,19 @@ body:
           importer: string;
           namespace: string;
           resolveDir: string;
+          kind: ResolveKind;
           pluginData: any;
         }
+
+        type ResolveKind =
+          | 'entry-point'
+          | 'import-statement'
+          | 'require-call'
+          | 'dynamic-import'
+          | 'require-resolve'
+          | 'import-rule'
+          | 'url-token'
+
 
       go: |
         type OnResolveArgs struct {
@@ -374,8 +385,19 @@ body:
           Importer   string
           Namespace  string
           ResolveDir string
+          Kind       ResolveKind
           PluginData interface{}
         }
+
+        const (
+          ResolveEntryPoint        ResolveKind
+          ResolveJSImportStatement ResolveKind
+          ResolveJSRequireCall     ResolveKind
+          ResolveJSDynamicImport   ResolveKind
+          ResolveJSRequireResolve  ResolveKind
+          ResolveCSSImportRule     ResolveKind
+          ResolveCSSURLToken       ResolveKind
+        )
 
   - ul:
     - >
@@ -421,9 +443,20 @@ body:
       </p>
 
     - >
+      `kind`
+      <p>
+      This says how the path to be resolved is being imported. For example,
+      <code>'entry-<wbr>point'</code> means the path was provided to the API as
+      an entry point path, <code>'import-<wbr>statement'</code> means the path
+      is from a JavaScript `import` or `export` statement, and
+      <code>'import-<wbr>rule'</code> means the path is from a CSS `@import`
+      rule.
+      </p>
+
+    - >
       `pluginData`
       <p>
-      This property is passed from the previous plugin, as set by the 
+      This property is passed from the previous plugin, as set by the
       [load callback](#load-callbacks) that loaded this file.
       </p>
 
@@ -556,12 +589,12 @@ body:
     - >
       `pluginData`
       <p>
-      This property will be passed to the next plugin that runs in the plugin 
-      chain. If you return it from an `onLoad` plugin, it will be passed to 
-      the `onResolve` plugins for any imports in that file, and if you return 
-      it from an `onResolve` plugin, an arbitrary one will be passed to the 
-      `onLoad` plugin when it loads the file (it's arbitrary since the 
-      relationship is many-to-one). This is useful to pass data between 
+      This property will be passed to the next plugin that runs in the plugin
+      chain. If you return it from an `onLoad` plugin, it will be passed to
+      the `onResolve` plugins for any imports in that file, and if you return
+      it from an `onResolve` plugin, an arbitrary one will be passed to the
+      `onLoad` plugin when it loads the file (it's arbitrary since the
+      relationship is many-to-one). This is useful to pass data between
       different plugins without them having to coordinate directly.
       </p>
 
@@ -752,8 +785,8 @@ body:
     - >
       `pluginData`
       <p>
-      This property is passed from the previous plugin, as set by the 
-      [resolve callback](#resolve-callbacks) that runs in the plugin 
+      This property is passed from the previous plugin, as set by the
+      [resolve callback](#resolve-callbacks) that runs in the plugin
       chain.
       </p>
 
@@ -886,12 +919,12 @@ body:
     - >
       `pluginData`
       <p>
-      This property will be passed to the next plugin that runs in the plugin 
-      chain. If you return it from an `onLoad` plugin, it will be passed to 
-      the `onResolve` plugins for any imports in that file, and if you return 
-      it from an `onResolve` plugin, an arbitrary one will be passed to the 
-      `onLoad` plugin when it loads the file (it's arbitrary since the 
-      relationship is many-to-one). This is useful to pass data between 
+      This property will be passed to the next plugin that runs in the plugin
+      chain. If you return it from an `onLoad` plugin, it will be passed to
+      the `onResolve` plugins for any imports in that file, and if you return
+      it from an `onResolve` plugin, an arbitrary one will be passed to the
+      `onLoad` plugin when it loads the file (it's arbitrary since the
+      relationship is many-to-one). This is useful to pass data between
       different plugins without them having to coordinate directly.
       </p>
 
