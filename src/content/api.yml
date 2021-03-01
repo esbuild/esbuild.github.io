@@ -154,9 +154,11 @@ body:
       take the following options:
 
   - available-options:
+    - Asset names
     - Banner
     - Bundle
     - Charset
+    - Chunk names
     - Color
     - Define
     - Error limit
@@ -2415,6 +2417,89 @@ body:
 
   - h2: Advanced options
 
+  - h3: Asset names
+
+  - p: >
+      This option controls the file names of the additional output files generated
+      when the [loader](#loader) is set to [`file`](/content-types/#external-file).
+      It configures the output paths using a template with placeholders that will
+      be substituted with values specific to the file when the output path is
+      generated. For example, specifying an asset name template of
+      <code>assets/<wbr>[name]-<wbr>[hash]</code> puts all assets into a
+      subdirectory called `assets` inside of the output directory and includes
+      the content hash of the asset in the file name. Doing that looks like this:
+
+  - example:
+      in:
+        app.js: 'import "./file.png"'
+        file.png: 'a png file'
+
+      cli: |
+        esbuild app.js --asset-names=assets/[name]-[hash] --loader:.png=file --bundle --outdir=out
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          assetNames: 'assets/[name]-[hash]',
+          loader: { '.png': 'file' },
+          bundle: true,
+          outdir: 'out',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            AssetNames:  "assets/[name]-[hash]",
+            Loader: map[string]api.Loader{
+              ".png": api.LoaderFile,
+            },
+            Bundle: true,
+            Outdir: "out",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      There are two placeholders that can be used in asset path templates:
+
+  - ul:
+    - >
+      `[name]`
+      <p>
+      This is the original file name of the asset without the extension. For
+      example, if the asset was originally named `image.png` then `[name]` will
+      be substituted with `image` in the template. It is not necessary to use
+      this placeholder; it only exists to provide human-friendly asset names to
+      make debugging easier.
+      </p>
+
+    - >
+      `[hash]`
+      <p>
+      This is the content hash of the asset, which is useful to avoid name
+      collisions. For example, your code may import <code>components/<wbr>button/<wbr>icon.png</code>
+      and <code>components/<wbr>select/<wbr>icon.png</code> in which case
+      you'll need the hash to distinguish between the two assets that are both
+      named `icon`.
+      </p>
+
+  - p: >
+      Asset path templates do not need to include a file extension. The original
+      file extension of the asset will be automatically added to the end of the
+      output path after template substitution.
+
+  - p: >
+      This option is similar to the [chunk names](#chunk-names) option.
+
   - h3: Banner
 
   - p: >
@@ -2561,6 +2646,93 @@ body:
       make sure your web server is configured to treat both `.js` and `.css`
       files as UTF-8.
       </p>
+
+  - h3: Chunk names
+
+  - p: >
+      This option controls the file names of the chunks of shared code that are
+      automatically generated when [code splitting](#splitting) is enabled.
+      It configures the output paths using a template with placeholders that will
+      be substituted with values specific to the chunk when the output path is
+      generated. For example, specifying a chunk name template of
+      <code>chunks/<wbr>[name]-<wbr>[hash]</code> puts all generated chunks into
+      a subdirectory called `chunks` inside of the output directory and includes
+      the content hash of the chunk in the file name. Doing that looks like this:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --chunk-names=chunks/[name]-[hash] --bundle --outdir=out --splitting --format=esm
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          chunkNames: 'chunks/[name]-[hash]',
+          bundle: true,
+          outdir: 'out',
+          splitting: true,
+          format: 'esm',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            ChunkNames:  "chunks/[name]-[hash]",
+            Bundle:      true,
+            Outdir:      "out",
+            Splitting:   true,
+            Format:      api.FormatESModule,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      There are two placeholders that can be used in chunk path templates:
+
+  - ul:
+    - >
+      `[name]`
+      <p>
+      This will currently always be the text `chunk`, although this placeholder
+      may take on additional values in future releases.
+      </p>
+
+    - >
+      `[hash]`
+      <p>
+      This is the content hash of the chunk. Including this is necessary to
+      distinguish different chunks from each other in the case where multiple
+      chunks of shared code are generated.
+      </p>
+
+  - p: >
+      Chunk path templates do not need to include a file extension. The
+      configured [out extension](#out-extension) for the appropriate content
+      type will be automatically added to the end of the output path after
+      template substitution.
+
+  - p: >
+      Note that this option only controls the names for automatically-generated
+      chunks of shared code. It does _not_ control the names for output files
+      related to entry points. The names of these are currently determined from
+      the path of the original entry point file relative to the [outbase](#outbase)
+      directory, and this behavior cannot be changed. An additional API option
+      will be added in the future to let you change the file names of entry
+      point output files.
+
+  - p: >
+      This option is similar to the [asset names](#asset-names) option.
 
   - h3: Color
 
