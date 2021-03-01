@@ -80,8 +80,10 @@
               <li id="nav-advanced-options">
                 <a href="#advanced-options">Advanced options</a>
                 <ul class="h3">
+                  <li id="nav-asset-names"><a href="#asset-names">Asset names</a></li>
                   <li id="nav-banner"><a href="#banner">Banner</a></li>
                   <li id="nav-charset"><a href="#charset">Charset</a></li>
+                  <li id="nav-chunk-names"><a href="#chunk-names">Chunk names</a></li>
                   <li id="nav-color"><a href="#color">Color</a></li>
                   <li id="nav-error-limit"><a href="#error-limit">Error limit</a></li>
                   <li id="nav-footer"><a href="#footer">Footer</a></li>
@@ -290,8 +292,10 @@
       </ul>
       <p>Advanced options:</p>
       <ul>
+        <li><a href="#asset-names">Asset names</a></li>
         <li><a href="#banner">Banner</a></li>
         <li><a href="#charset">Charset</a></li>
+        <li><a href="#chunk-names">Chunk names</a></li>
         <li><a href="#color">Color</a></li>
         <li><a href="#error-limit">Error limit</a></li>
         <li><a href="#footer">Footer</a></li>
@@ -1626,6 +1630,49 @@ result.Stop()</pre>
         <a class="permalink" href="#advanced-options">#</a>
         Advanced options
       </h2>
+      <h3 id="asset-names" data-h2="advanced-options">
+        <a class="permalink" href="#asset-names">#</a>
+        Asset names
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>This option controls the file names of the additional output files generated when the <a href="#loader">loader</a> is set to <a href="/content-types/#external-file"><code>file</code></a>. It configures the output paths using a template with placeholders that will be substituted with values specific to the file when the output path is generated. For example, specifying an asset name template of <code>assets/<wbr>[name]-<wbr>[hash]</code> puts all assets into a subdirectory called <code>assets</code> inside of the output directory and includes the content hash of the asset in the file name. Doing that looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --asset-names=assets/[name]-[<span class="hljs-built_in">hash</span>] --loader:.png=file --bundle --outdir=out</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">assetNames</span>: <span class="hljs-string">&#x27;assets/[name]-[hash]&#x27;</span>,
+  <span class="hljs-attr">loader</span>: { <span class="hljs-string">&#x27;.png&#x27;</span>: <span class="hljs-string">&#x27;file&#x27;</span> },
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;out&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    AssetNames:  <span class="hljs-string">&quot;assets/[name]-[hash]&quot;</span>,
+    Loader: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]api.Loader{
+      <span class="hljs-string">&quot;.png&quot;</span>: api.LoaderFile,
+    },
+    Bundle: <span class="hljs-literal">true</span>,
+    Outdir: <span class="hljs-string">&quot;out&quot;</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>There are two placeholders that can be used in asset path templates:</p>
+      <ul><li><code>[name]</code> <p> This is the original file name of the asset without the extension. For example, if the asset was originally named <code>image.png</code> then <code>[name]</code> will be substituted with <code>image</code> in the template. It is not necessary to use this placeholder; it only exists to provide human-friendly asset names to make debugging easier. </p></li><li><code>[hash]</code> <p> This is the content hash of the asset, which is useful to avoid name collisions. For example, your code may import <code>components/<wbr>button/<wbr>icon.png</code> and <code>components/<wbr>select/<wbr>icon.png</code> in which case you'll need the hash to distinguish between the two assets that are both named <code>icon</code>. </p></li></ul>
+      <p>Asset path templates do not need to include a file extension. The original file extension of the asset will be automatically added to the end of the output path after template substitution.</p>
+      <p>This option is similar to the <a href="#chunk-names">chunk names</a> option.</p>
       <h3 id="banner" data-h2="advanced-options">
         <a class="permalink" href="#banner">#</a>
         Banner
@@ -1707,6 +1754,50 @@ result.Stop()</pre>
 }</pre>
       <p>Some caveats:</p>
       <ul><li><p> This does not yet escape non-ASCII characters embedded in regular expressions. This is because esbuild does not currently parse the contents of regular expressions at all. The flag was added despite this limitation because it's still useful for code that doesn't contain cases like this. </p></li><li><p> This flag does not apply to comments. I believe preserving non-ASCII data in comments should be fine because even if the encoding is wrong, the run time environment should completely ignore the contents of all comments. For example, the <a href="https://v8.dev/blog/scanner">V8 blog post</a> mentions an optimization that avoids decoding comment contents completely. And all comments other than license-related comments are stripped out by esbuild anyway. </p></li><li><p> This option simultaneously applies to all output file types (JavaScript, CSS, and JSON). So if you configure your web server to send the correct <code>Content-<wbr>Type</code> header and want to use the UTF-8 charset, make sure your web server is configured to treat both <code>.js</code> and <code>.css</code> files as UTF-8. </p></li></ul>
+      <h3 id="chunk-names" data-h2="advanced-options">
+        <a class="permalink" href="#chunk-names">#</a>
+        Chunk names
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>This option controls the file names of the chunks of shared code that are automatically generated when <a href="#splitting">code splitting</a> is enabled. It configures the output paths using a template with placeholders that will be substituted with values specific to the chunk when the output path is generated. For example, specifying a chunk name template of <code>chunks/<wbr>[name]-<wbr>[hash]</code> puts all generated chunks into a subdirectory called <code>chunks</code> inside of the output directory and includes the content hash of the chunk in the file name. Doing that looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --chunk-names=chunks/[name]-[<span class="hljs-built_in">hash</span>] --bundle --outdir=out --splitting --format=esm</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">chunkNames</span>: <span class="hljs-string">&#x27;chunks/[name]-[hash]&#x27;</span>,
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;out&#x27;</span>,
+  <span class="hljs-attr">splitting</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">format</span>: <span class="hljs-string">&#x27;esm&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    ChunkNames:  <span class="hljs-string">&quot;chunks/[name]-[hash]&quot;</span>,
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outdir:      <span class="hljs-string">&quot;out&quot;</span>,
+    Splitting:   <span class="hljs-literal">true</span>,
+    Format:      api.FormatESModule,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>There are two placeholders that can be used in chunk path templates:</p>
+      <ul><li><code>[name]</code> <p> This will currently always be the text <code>chunk</code>, although this placeholder may take on additional values in future releases. </p></li><li><code>[hash]</code> <p> This is the content hash of the chunk. Including this is necessary to distinguish different chunks from each other in the case where multiple chunks of shared code are generated. </p></li></ul>
+      <p>Chunk path templates do not need to include a file extension. The configured <a href="#out-extension">out extension</a> for the appropriate content type will be automatically added to the end of the output path after template substitution.</p>
+      <p>Note that this option only controls the names for automatically-generated chunks of shared code. It does <em>not</em> control the names for output files related to entry points. The names of these are currently determined from the path of the original entry point file relative to the <a href="#outbase">outbase</a> directory, and this behavior cannot be changed. An additional API option will be added in the future to let you change the file names of entry point output files.</p>
+      <p>This option is similar to the <a href="#asset-names">asset names</a> option.</p>
       <h3 id="color" data-h2="advanced-options">
         <a class="permalink" href="#color">#</a>
         Color
