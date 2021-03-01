@@ -146,11 +146,13 @@ async function checkGo(text, value) {
   return await checkCommon('go', text, value, async ({ testDir }) => {
     await fs.writeFile(path.join(testDir, 'go.mod'), `
       module main
-      go 1.13
+      go 1.16
       require (
         github.com/evanw/esbuild v${version}
       )
     `)
+    await execAsync(`go mod download github.com/evanw/esbuild@v${version}`, { cwd: testDir, stdio: 'pipe' })
+    await execAsync(`go mod download golang.org/x/sys`, { cwd: testDir, stdio: 'pipe' })
 
     const mainPath = path.join(testDir, 'main.go')
     await fs.writeFile(mainPath, value.go)
