@@ -78,10 +78,8 @@ body:
       You should keep the following things in mind when using JavaScript with
       esbuild:
 
-  - ul:
-    - >
-      **ES5 support**
-      <p>
+  - h4#es5: ES5 is not supported well
+  - p: >
       Transforming ES6+ syntax to ES5 is not supported yet. However, if you're
       using esbuild to transform ES5 code, you should still set the
       [target](/api/#target) to `es5`. This prevents esbuild from introducing
@@ -90,19 +88,16 @@ body:
       a multi-line template literal when minifying. Both of these substitutions
       are done because the resulting code is shorter, but the substitutions
       will not be performed if the [target](/api/#target) is `es5`.
-      </p>
 
-    - >
-      **Private member performance**
-      <p>
+  - h4: Private member performance
+  - p: >
       The private member transform (for the `#name` syntax) uses `WeakMap` and
       `WeakSet` to preserve the privacy properties of this feature. This is
       similar to the corresponding transforms in the Babel and TypeScript
       compilers. Most modern JavaScript engines (V8, JavaScriptCore, and
       SpiderMonkey but not ChakraCore) may not have good performance
       characteristics for large `WeakMap` and `WeakSet` objects.
-      </p>
-      <p>
+  - p: >
       Creating many instances of classes with private fields or private
       methods with this syntax transform active may cause a lot of overhead
       for the garbage collector.
@@ -111,95 +106,93 @@ body:
       keys themselves, and large map objects can cause performance issues with
       garbage collection. See [this reference](https://github.com/tc39/ecma262/issues/1657#issuecomment-518916579)
       for more information.
-      </p>
 
-    - >
-      <b id="direct-eval" style="scroll-margin-top:1em;">Avoid direct `eval` when bundling</b>
-      <p>
+  - h4#direct-eval: Avoid direct `eval` when bundling
+  - p: >
       Although the expression `eval(x)` looks like a normal function call, it
       actually takes on special behavior in JavaScript. Using `eval` in this way
       means that the evaluated code stored in `x` can reference any variable in
       any containing scope by name. For example, the code <code>let y = <wbr>123; <wbr>return <wbr>eval('y')</code>
       will return `123`.
-      <p>
+  - p: >
       This is called "direct eval" and is problematic when bundling your code
       for many reasons:
-      </p>
-      <ul>
-        <li><p>
-        Modern bundlers contain an optimization called "scope hoisting" that
-        merges all bundled files into a single file and renames variables to
-        avoid name collisions. However, this means code evaluated by direct
-        `eval` can read and write variables in any file in the bundle! This
-        is a correctness issue because the evaluated code may try to access
-        a global variable but may accidentally access a private variable
-        with the same name from another file instead. It can potentially even
-        be a security issue if a private variable in another file has sensitive
-        data.
-        </p></li>
-        <li><p>
-        The evaluated code may not work correctly when it references variables
-        imported using an `import` statement. Imported variables are live
-        bindings to variables in another file. They are not copies of those
-        variables. So when esbuild bundles your code, your imports are replaced
-        with a direct reference to the variable in the imported file. But that
-        variable may have a different name, in which case the code evaluated by
-        direct `eval` will be unable to reference it by the expected name.
-        </p></li>
-        <li><p>
-        Using direct `eval` forces esbuild to deoptimize all of the code in
-        all of the scopes containing calls to direct `eval`. For correctness,
-        it must assume that the evaluated code might need to access any of the
-        other code in the file reachable from that `eval` call. This means
-        none of that code will be elimiated as dead code and none of that code
-        will be minified.
-        </p></li>
-        <li><p>
-        Because the code evaluated by the direct `eval` could need to reference
-        any reachable variable by name, esbuild is prevented from renaming
-        all of the varaibles reachable by the evaluated code. This means it
-        can't rename variables to avoid name collisions with other variables
-        in the bundle. So the direct `eval` causes esbuild to wrap the file
-        in a CommonJS closure, which avoids name collisions by introducing
-        a new scope instead. However, this makes the generated code bigger and
-        slower because exported variables use run-time dynamic binding instead
-        of compile-time static binding.
-        </p></li>
-      </ul>
-      </p>
+  - ul:
+    - >
       <p>
+      Modern bundlers contain an optimization called "scope hoisting" that
+      merges all bundled files into a single file and renames variables to
+      avoid name collisions. However, this means code evaluated by direct
+      `eval` can read and write variables in any file in the bundle! This
+      is a correctness issue because the evaluated code may try to access
+      a global variable but may accidentally access a private variable
+      with the same name from another file instead. It can potentially even
+      be a security issue if a private variable in another file has sensitive
+      data.
+      </p>
+    - >
+      <p>
+      The evaluated code may not work correctly when it references variables
+      imported using an `import` statement. Imported variables are live
+      bindings to variables in another file. They are not copies of those
+      variables. So when esbuild bundles your code, your imports are replaced
+      with a direct reference to the variable in the imported file. But that
+      variable may have a different name, in which case the code evaluated by
+      direct `eval` will be unable to reference it by the expected name.
+      </p>
+    - >
+      <p>
+      Using direct `eval` forces esbuild to deoptimize all of the code in
+      all of the scopes containing calls to direct `eval`. For correctness,
+      it must assume that the evaluated code might need to access any of the
+      other code in the file reachable from that `eval` call. This means
+      none of that code will be eliminated as dead code and none of that code
+      will be minified.
+      </p>
+    - >
+      <p>
+      Because the code evaluated by the direct `eval` could need to reference
+      any reachable variable by name, esbuild is prevented from renaming
+      all of the variables reachable by the evaluated code. This means it
+      can't rename variables to avoid name collisions with other variables
+      in the bundle. So the direct `eval` causes esbuild to wrap the file
+      in a CommonJS closure, which avoids name collisions by introducing
+      a new scope instead. However, this makes the generated code bigger and
+      slower because exported variables use run-time dynamic binding instead
+      of compile-time static binding.
+      </p>
+  - p: >
       Luckily it is usually easy to avoid using direct `eval`. There are two
       commonly-used alternatives that avoid all of the drawbacks mentioned
       above:
+  - ul:
+    - >
+      `(0, eval)('x')`
+      <p>
+      This is known as "indirect eval" because `eval` is not being called
+      directly, and so does not trigger the grammatical special case for
+      direct eval in the JavaScript VM. You can call indirect eval using any
+      syntax at all except for an expression of the exact form `eval('x')`.
+      For example, <code>var eval2 = <wbr>eval; <wbr>eval2('x')</code> and
+      <code>[eval]\[0]('x')</code> and <code>window.<wbr>eval('x')</code> are
+      all indirect eval calls. When you use indirect eval, the code is
+      evaluated in the global scope instead of in the inline scope of the
+      caller.
       </p>
-      <ul>
-        <li><p>
-        `(0, eval)('x')`
-        </p><p>
-        This is known as "indirect eval" because `eval` is not being called
-        directly, and so does not trigger the grammatical special case for
-        direct eval in the JavaScript VM. You can call indirect eval using any
-        syntax at all except for an expression of the exact form `eval('x')`.
-        For example, <code>var eval2 = <wbr>eval; <wbr>eval2('x')</code> and
-        <code>[eval]\[0]('x')</code> and <code>window.<wbr>eval('x')</code> are
-        all indirect eval calls. When you use indirect eval, the code is
-        evaluated in the global scope instead of in the inline scope of the
-        caller.
-        </p></li>
-        <li><p>
-        `new Function('x')`
-        </p><p>
-        This constructs a new function object at run-time. It is as if you wrote
-        <code>function() <wbr>{ x }</code> in the global scope except that `x`
-        can be an arbitrary string of code. This form is sometimes convenient
-        because you can add arguments to the function, and use those arguments
-        to expose variables to the evaluated code. For example,
-        <code>(new Function('env', <wbr>'x'))(<wbr>someEnv)</code> is as if you
-        wrote <code>(function(env) <wbr>{ x })(<wbr>someEnv)</code>. This is
-        often a sufficient alternative for direct `eval` when the evaluated
-        code needs to access local variables because you can pass the local
-        variables in as arguments.
-      </ul>
+    - >
+      `new Function('x')`
+      <p>
+      This constructs a new function object at run-time. It is as if you wrote
+      <code>function() <wbr>{ x }</code> in the global scope except that `x`
+      can be an arbitrary string of code. This form is sometimes convenient
+      because you can add arguments to the function, and use those arguments
+      to expose variables to the evaluated code. For example,
+      <code>(new Function('env', <wbr>'x'))(<wbr>someEnv)</code> is as if you
+      wrote <code>(function(env) <wbr>{ x })(<wbr>someEnv)</code>. This is
+      often a sufficient alternative for direct `eval` when the evaluated
+      code needs to access local variables because you can pass the local
+      variables in as arguments.
+      </p>
 
   - h2: TypeScript
   - p: 'Loader: `ts` or `tsx`'
@@ -248,57 +241,53 @@ body:
       You should keep the following things in mind when using TypeScript with
       esbuild (in addition to the [JavaScript caveats](#javascript-caveats)):
 
-  - ul:
-    - >
-        <p>
-        You should probably enable the [`isolatedModules`](https://www.typescriptlang.org/tsconfig#isolatedModules)
-        TypeScript configuration option if you use TypeScript with esbuild.
-        This prevents you from using features which could cause mis-compilation
-        in environments like esbuild where each file is compiled independently
-        without tracing type references across files. For example, it prevents
-        you from re-exporting types from another module using <code>export <wbr>{T} <wbr>from <wbr>'./types'</code>
-        (you need to use <code>export <wbr>type <wbr>{T} <wbr>from <wbr>'./types'</code> instead).
-        </p>
+  - h4#isolated-modules: Files are compiled independently
+  - p: >
+      You should probably enable the [`isolatedModules`](https://www.typescriptlang.org/tsconfig#isolatedModules)
+      TypeScript configuration option if you use TypeScript with esbuild.
+      This prevents you from using features which could cause mis-compilation
+      in environments like esbuild where each file is compiled independently
+      without tracing type references across files. For example, it prevents
+      you from re-exporting types from another module using <code>export <wbr>{T} <wbr>from <wbr>'./types'</code>
+      (you need to use <code>export <wbr>type <wbr>{T} <wbr>from <wbr>'./types'</code> instead).
 
-    - >
-        <p>
-        You should probably also enable the [`esModuleInterop`](https://www.typescriptlang.org/tsconfig#esModuleInterop)
-        TypeScript configuration option if you use TypeScript with esbuild.
-        Enabling it disables some TypeScript-specific behavior that goes against
-        the ECMAScript language specification and causes compatibility problems
-        with many tools including esbuild. Specifically it means that if a
-        CommonJS module exports a function via <code>module.<wbr>exports =<wbr> fn</code>,
-        you need to use <code>import <wbr>fn <wbr>from <wbr>'path'</code>
-        instead of <code>import *<wbr> as<wbr> <wbr>fn <wbr>from <wbr>'path'</code>.
-        This option is not enabled by default because it would be a breaking change
-        for existing TypeScript projects, but Microsoft
-        [highly recommends applying it both to new and existing projects](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#support-for-import-d-from-cjs-from-commonjs-modules-with---esmoduleinterop)
-        (and then updating your code) for better compatibility with the rest of the ecosystem.
+  - h4#es-module-interop: Imports follow ECMAScript module behavior
+  - p: >
+      You should probably also enable the [`esModuleInterop`](https://www.typescriptlang.org/tsconfig#esModuleInterop)
+      TypeScript configuration option if you use TypeScript with esbuild.
+      Enabling it disables some TypeScript-specific behavior that goes against
+      the ECMAScript language specification and causes compatibility problems
+      with many tools including esbuild. Specifically it means that if a
+      CommonJS module exports a function via <code>module.<wbr>exports =<wbr> fn</code>,
+      you need to use <code>import <wbr>fn <wbr>from <wbr>'path'</code>
+      instead of <code>import *<wbr> as<wbr> <wbr>fn <wbr>from <wbr>'path'</code>.
+      This option is not enabled by default because it would be a breaking change
+      for existing TypeScript projects, but Microsoft
+      [highly recommends applying it both to new and existing projects](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#support-for-import-d-from-cjs-from-commonjs-modules-with---esmoduleinterop)
+      (and then updating your code) for better compatibility with the rest of the ecosystem.
 
-    - >
-        <p>
-        The [`emitDecoratorMetadata`](https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata)
-        TypeScript configuration option is not supported. It passes type
-        annotations to decorators and is an exception to the "TypeScript
-        is just JavaScript" philosophy that TypeScript started with where
-        type annotations are not supposed to change the output of the
-        compiler. Since esbuild does not replicate TypeScript's type system,
-        it does not have enough information to implement this feature.
-        </p>
+  - h4#emit-decorator-metadata: Features that need a type system are not supported
+  - p: >
+      The [`emitDecoratorMetadata`](https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata)
+      TypeScript configuration option is not supported. It passes type
+      annotations to decorators and is an exception to the "TypeScript
+      is just JavaScript" philosophy that TypeScript started with where
+      type annotations are not supposed to change the output of the
+      compiler. Since esbuild does not replicate TypeScript's type system,
+      it does not have enough information to implement this feature.
 
-    - >
-        <p>
-        The `tsx` loader is _not_ a superset of the `ts` loader. They are two
-        different partially-incompatible syntaxes. For example, the character
-        sequence `<a>1</a>/g` parses as `<a>(1 < (/a>/g))` with the `ts` loader
-        and `(<a>1</a>) / g` with the `tsx` loader.
-        </p>
-        <p>The most common issue this causes is not being able to use generic
-        type parameters on arrow function expressions such as `<T>() => {}`
-        with the `tsx` loader. This is intentional, and matches the behavior of
-        the official TypeScript compiler. That space in the `tsx` grammar is
-        reserved for JSX elements.
-        </p>
+  - h4#ts-vs-tsx: You cannot use the `tsx` loader for `*.ts` files
+  - p: >
+      The `tsx` loader is _not_ a superset of the `ts` loader. They are two
+      different partially-incompatible syntaxes. For example, the character
+      sequence `<a>1</a>/g` parses as `<a>(1 < (/a>/g))` with the `ts` loader
+      and `(<a>1</a>) / g` with the `tsx` loader.
+      </p>
+      <p>The most common issue this causes is not being able to use generic
+      type parameters on arrow function expressions such as `<T>() => {}`
+      with the `tsx` loader. This is intentional, and matches the behavior of
+      the official TypeScript compiler. That space in the `tsx` grammar is
+      reserved for JSX elements.
 
   - h2: JSX
   - p: 'Loader: `jsx` or `tsx`'
