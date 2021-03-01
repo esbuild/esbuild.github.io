@@ -8,6 +8,8 @@ const repoDir = path.dirname(path.dirname(__dirname))
 const scriptsDir = path.join(repoDir, 'src', 'scripts')
 const contentDir = path.join(repoDir, 'src', 'content')
 const outDir = path.join(repoDir, 'out')
+const linkDir = path.join(scriptsDir, 'link')
+const linkOutDir = path.join(outDir, 'link')
 
 function copyAndMinify(from, to) {
   esbuild.buildSync({
@@ -24,6 +26,13 @@ fs.copyFileSync(path.join(scriptsDir, 'favicon.svg'), path.join(outDir, 'favicon
 
 copyAndMinify(path.join(scriptsDir, 'style.css'), path.join(outDir, 'style.css'))
 copyAndMinify(path.join(scriptsDir, 'script.js'), path.join(outDir, 'script.js'))
+
+for (const link of fs.readdirSync(linkDir)) {
+  if (link.startsWith('.') || !link.endsWith('.html')) continue
+  const outPath = path.join(linkOutDir, link.slice(0, -5), 'index.html')
+  fs.mkdirSync(path.dirname(outPath), { recursive: true })
+  fs.copyFileSync(path.join(linkDir, link), outPath)
+}
 
 const data = yaml.safeLoad(fs.readFileSync(path.join(contentDir, 'index.yml'), 'utf8'))
 const pages = Object.entries(data)

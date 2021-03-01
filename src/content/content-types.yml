@@ -114,7 +114,7 @@ body:
       </p>
 
     - >
-      **Avoid direct `eval` when bundling**
+      <b id="direct-eval" style="scroll-margin-top:1em;">Avoid direct `eval` when bundling</b>
       <p>
       Although the expression `eval(x)` looks like a normal function call, it
       actually takes on special behavior in JavaScript. Using `eval` in this way
