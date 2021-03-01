@@ -72,8 +72,11 @@ body:
       supported, bundling code containing top-level await is not yet
       supported.
 
+  - h3: JavaScript caveats
+
   - p: >
-      Some additional details:
+      You should keep the following things in mind when using JavaScript with
+      esbuild:
 
   - ul:
     - >
@@ -109,6 +112,94 @@ body:
       garbage collection. See [this reference](https://github.com/tc39/ecma262/issues/1657#issuecomment-518916579)
       for more information.
       </p>
+
+    - >
+      **Avoid direct `eval` when bundling**
+      <p>
+      Although the expression `eval(x)` looks like a normal function call, it
+      actually takes on special behavior in JavaScript. Using `eval` in this way
+      means that the evaluated code stored in `x` can reference any variable in
+      any containing scope by name. For example, the code <code>let y = <wbr>123; <wbr>return <wbr>eval('y')</code>
+      will return `123`.
+      <p>
+      This is called "direct eval" and is problematic when bundling your code
+      for many reasons:
+      </p>
+      <ul>
+        <li><p>
+        Modern bundlers contain an optimization called "scope hoisting" that
+        merges all bundled files into a single file and renames variables to
+        avoid name collisions. However, this means code evaluated by direct
+        `eval` can read and write variables in any file in the bundle! This
+        is a correctness issue because the evaluated code may try to access
+        a global variable but may accidentally access a private variable
+        with the same name from another file instead. It can potentially even
+        be a security issue if a private variable in another file has sensitive
+        data.
+        </p></li>
+        <li><p>
+        The evaluated code may not work correctly when it references variables
+        imported using an `import` statement. Imported variables are live
+        bindings to variables in another file. They are not copies of those
+        variables. So when esbuild bundles your code, your imports are replaced
+        with a direct reference to the variable in the imported file. But that
+        variable may have a different name, in which case the code evaluated by
+        direct `eval` will be unable to reference it by the expected name.
+        </p></li>
+        <li><p>
+        Using direct `eval` forces esbuild to deoptimize all of the code in
+        all of the scopes containing calls to direct `eval`. For correctness,
+        it must assume that the evaluated code might need to access any of the
+        other code in the file reachable from that `eval` call. This means
+        none of that code will be elimiated as dead code and none of that code
+        will be minified.
+        </p></li>
+        <li><p>
+        Because the code evaluated by the direct `eval` could need to reference
+        any reachable variable by name, esbuild is prevented from renaming
+        all of the varaibles reachable by the evaluated code. This means it
+        can't rename variables to avoid name collisions with other variables
+        in the bundle. So the direct `eval` causes esbuild to wrap the file
+        in a CommonJS closure, which avoids name collisions by introducing
+        a new scope instead. However, this makes the generated code bigger and
+        slower because exported variables use run-time dynamic binding instead
+        of compile-time static binding.
+        </p></li>
+      </ul>
+      </p>
+      <p>
+      Luckily it is usually easy to avoid using direct `eval`. There are two
+      commonly-used alternatives that avoid all of the drawbacks mentioned
+      above:
+      </p>
+      <ul>
+        <li><p>
+        `(0, eval)('x')`
+        </p><p>
+        This is known as "indirect eval" because `eval` is not being called
+        directly, and so does not trigger the grammatical special case for
+        direct eval in the JavaScript VM. You can call indirect eval using any
+        syntax at all except for an expression of the exact form `eval('x')`.
+        For example, <code>var eval2 = <wbr>eval; <wbr>eval2('x')</code> and
+        <code>[eval]\[0]('x')</code> and <code>window.<wbr>eval('x')</code> are
+        all indirect eval calls. When you use indirect eval, the code is
+        evaluated in the global scope instead of in the inline scope of the
+        caller.
+        </p></li>
+        <li><p>
+        `new Function('x')`
+        </p><p>
+        This constructs a new function object at run-time. It is as if you wrote
+        <code>function() <wbr>{ x }</code> in the global scope except that `x`
+        can be an arbitrary string of code. This form is sometimes convenient
+        because you can add arguments to the function, and use those arguments
+        to expose variables to the evaluated code. For example,
+        <code>(new Function('env', <wbr>'x'))(<wbr>someEnv)</code> is as if you
+        wrote <code>(function(env) <wbr>{ x })(<wbr>someEnv)</code>. This is
+        often a sufficient alternative for direct `eval` when the evaluated
+        code needs to access local variables because you can pass the local
+        variables in as arguments.
+      </ul>
 
   - h2: TypeScript
   - p: 'Loader: `ts` or `tsx`'
@@ -151,8 +242,11 @@ body:
       | Type exports            | `export {Type} from 'foo'` | Handled by ignoring missing exports in TypeScript files |
       | Experimental decorators | `@sealed class Foo {}`     | The `emitDecoratorMetadata` flag is not supported |
 
+  - h3: TypeScript caveats
+
   - p: >
-      Some additional caveats:
+      You should keep the following things in mind when using TypeScript with
+      esbuild (in addition to the [JavaScript caveats](#javascript-caveats)):
 
   - ul:
     - >
