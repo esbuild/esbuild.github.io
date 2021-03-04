@@ -1319,7 +1319,7 @@ body:
       two entry points <code>src/<wbr>home/<wbr>index.ts</code> and
       <code>src/<wbr>about/<wbr>index.ts</code>, the output directory will
       contain <code>home/<wbr>index.js</code> and <code>about/<wbr>index.js</code>.
-      If you want to customize this behavior, you chould change the
+      If you want to customize this behavior, you should change the
       [outbase directory](#outbase).
 
   - h3: Outfile
@@ -3794,7 +3794,7 @@ body:
 
   - p: >
       Some expressions such as JSX and certain built-in globals are automatically
-      annoated as `/* @__PURE__ */` in esbuild. You can also configure additional
+      annotated as `/* @__PURE__ */` in esbuild. You can also configure additional
       globals to be marked `/* @__PURE__ */` as well. For example, you can mark
       the global `console.log` function as such to have it be automatically
       removed from your bundle when the bundle is minified as long as the result
