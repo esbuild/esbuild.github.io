@@ -247,7 +247,7 @@ body:
       for an example of bundling with real-world code.
 
   - p: >
-      Note that bundling is different than file concatentation. Passing
+      Note that bundling is different than file concatenation. Passing
       esbuild multiple input files with bundling enabled will create two
       separate bundles instead of joining the input files together. To join
       a set of files together with esbuild, import them all into a single
