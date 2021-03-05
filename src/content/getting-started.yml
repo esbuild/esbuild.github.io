@@ -388,15 +388,18 @@ body:
       To build esbuild from source:
 
   - ol:
-    - >
+    - |
       Install the Go compiler:
       <p>[https://golang.org/dl/](https://golang.org/dl/)</p>
 
-    - >
+    - |
       Download the source code:
-      <pre>git clone --depth 1 --branch vCURRENT_ESBUILD_VERSION https://github.com/evanw/esbuild.git</pre>
+      <pre>
+      git clone --depth 1 --branch vCURRENT_ESBUILD_VERSION https://github.com/evanw/esbuild.git
+      cd esbuild
+      </pre>
 
-    - >
+    - |
       Build the `esbuild` executable (it will be `esbuild.exe` on Windows):
       <pre>go build ./cmd/esbuild</pre>
 
