@@ -165,7 +165,7 @@
       <p>The build script can be invoked like this:</p>
       <pre>npm run build</pre>
       <p>However, using the command-line interface can become unwieldy if you need to pass many options to esbuild. For more sophisticated uses you will likely want to write a build script in JavaScript using esbuild's JavaScript API. That might look something like this:</p>
-      <pre><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
+      <pre class="js1"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
   <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.jsx&#x27;</span>],
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
@@ -356,14 +356,10 @@
       </h3>
       <p>Although the precompiled native executables are hosted using npm, you don't actually need npm installed to download them. The npm package registry is a normal HTTP server and packages are normal gzipped tar files.</p>
       <p>Here is an example of downloading a binary executable directly:</p>
-      <pre>$ curl -O https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.8.56.tgz
-$ tar xf ./esbuild-darwin-64-0.8.56.tgz
-$ ./package/bin/esbuild
-
-Usage:
+      <pre class="cli1"><span class="repl-in">curl -O https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.8.56.tgz</span><span class="repl-in">tar xf ./esbuild-darwin-64-0.8.56.tgz</span><span class="repl-in">./package/bin/esbuild</span><span class="repl-out">Usage:
   esbuild [options] [entry points]
 
-...</pre>
+...</span></pre>
       <p>The native executable in the <code>esbuild-darwin-64</code> package is for the macOS operating system and the x86-64 architecture. As of writing, this is the full list of native executable packages for the platforms esbuild supports:</p>
       <table>
       <thead>
