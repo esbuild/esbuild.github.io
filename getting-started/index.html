@@ -346,7 +346,13 @@
         Build from source
       </h3>
       <p>To build esbuild from source:</p>
-      <ol><li>Install the Go compiler: <p><a href="https://golang.org/dl/">https://golang.org/dl/</a></p></li><li>Download the source code: <pre>git clone --depth 1 --branch v0.8.56 https://github.com/evanw/esbuild.git</pre></li><li>Build the <code>esbuild</code> executable (it will be <code>esbuild.exe</code> on Windows): <pre>go build ./cmd/esbuild</pre></li></ol>
+      <ol><li>Install the Go compiler:
+<p><a href="https://golang.org/dl/">https://golang.org/dl/</a></p></li><li>Download the source code:
+<pre>
+git clone --depth 1 --branch v0.8.56 https://github.com/evanw/esbuild.git
+cd esbuild
+</pre></li><li>Build the <code>esbuild</code> executable (it will be <code>esbuild.exe</code> on Windows):
+<pre>go build ./cmd/esbuild</pre></li></ol>
       <p>If you want to build for other platforms, you can just prefix the build command with the platform information. For example, you can build the 32-bit Linux version using this command:</p>
       <pre>GOOS=linux GOARCH=386 go build ./cmd/esbuild</pre>
       <p><strong>Why this is not recommended:</strong> The native version can only be used via the command-line interface, which can be unergonomic for complex use cases and which does not support <a href="/plugins/">plugins</a>. You will need to write JavaScript or Go code and use <a href="/api/">esbuild's API</a> to use plugins.</p>
