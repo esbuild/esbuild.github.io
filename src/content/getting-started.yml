@@ -17,7 +17,13 @@ body:
       correctly:
 
   - pre: |
-      ./node_modules/.bin/esbuild --version
+      npx esbuild --version
+
+  - p: >
+      This uses the `npx` command which should have been installed when you
+      installed npm. It provides a cross-platform way to manually run package
+      executables, and is used here for simplicity. However, it adds additional
+      overhead so you shouldn't use it when writing scripts inside `package.json`.
 
   - h2: Your first bundle
 
@@ -42,7 +48,7 @@ body:
       Finally, tell esbuild to bundle the file:
 
   - pre: |
-      ./node_modules/.bin/esbuild app.jsx --bundle --outfile=out.js
+      npx esbuild app.jsx --bundle --outfile=out.js
 
   - p: >
       This should have created a file called `out.js` containing your code
@@ -76,6 +82,12 @@ body:
           "build": "esbuild app.jsx --bundle --outfile=out.js"
         }
       }
+
+  - p: >
+      Note that the `npx` command is not needed here. Everything in the
+      `scripts` section should already run with `esbuild` in the path,
+      so `npx` is unnecessary here and will only make your build script
+      slower.
 
   - p: >
       The build script can be invoked like this:
