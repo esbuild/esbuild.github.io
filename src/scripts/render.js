@@ -305,6 +305,7 @@ function renderExample(kind, value) {
     for (let item of value) {
       if (item.$) {
         let html = hljs.highlight(kind === 'cli' ? 'bash' : kind, item.$.trim()).value
+        html = html.replace(/CURRENT_ESBUILD_VERSION/g, CURRENT_ESBUILD_VERSION)
         lines.push(`<span class="repl-in">${html}</span>`)
       } else if (item.expect) {
         lines.push(`<span class="repl-out">${escapeHTML(item.expect.trim())}</span>`)
@@ -341,7 +342,7 @@ function generateMain(key, main) {
       if (value.go) elements.push(['go', 'Go'])
       if (elements.length === 1) {
         let [kind] = elements[0]
-        return `      <pre>${renderExample(kind, value[kind])}</pre>`
+        return `      <pre class="${kind + elements.length}">${renderExample(kind, value[kind])}</pre>`
       }
       let switcherContent = elements.map(([kind, name]) => `        <a href="javascript:void 0" class="${kind + elements.length}">${name}</a>`)
       let exampleContent = elements.map(([kind]) => `      <pre class="switchable ${kind + elements.length}">${renderExample(kind, value[kind])}</pre>`)

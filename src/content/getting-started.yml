@@ -425,15 +425,21 @@ body:
   - p: >
       Here is an example of downloading a binary executable directly:
 
-  - pre: |
-      $ curl -O https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-CURRENT_ESBUILD_VERSION.tgz
-      $ tar xf ./esbuild-darwin-64-CURRENT_ESBUILD_VERSION.tgz
-      $ ./package/bin/esbuild
+  - example:
+      noCheck: true
 
-      Usage:
-        esbuild [options] [entry points]
+      cli:
+        - $: |
+            curl -O https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-CURRENT_ESBUILD_VERSION.tgz
+        - $: |
+            tar xf ./esbuild-darwin-64-CURRENT_ESBUILD_VERSION.tgz
+        - $: |
+            ./package/bin/esbuild
+        - expect: |
+            Usage:
+              esbuild [options] [entry points]
 
-      ...
+            ...
 
   - p: >
       The native executable in the `esbuild-darwin-64` package is for the macOS

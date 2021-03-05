@@ -281,11 +281,13 @@ body[data-mode3=go] pre.go3, body[data-mode2=go] pre.go2 {
   color: #7f7f7f;
 }
 
+.cli1 .repl-in:before,
 .cli2 .repl-in:before,
 .cli3 .repl-in:before {
   content: '$';
 }
 
+.js1 .repl-in:before,
 .js2 .repl-in:before,
 .js3 .repl-in:before {
   content: '';
