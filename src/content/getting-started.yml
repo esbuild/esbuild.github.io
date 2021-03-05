@@ -6,14 +6,14 @@ body:
 
   - p: >
       First, download and install the esbuild command locally. A prebuilt
-      binary can be installed using npm:
+      native executable can be installed using npm:
 
   - pre: |
       npm install esbuild
 
   - p: >
       This should have installed esbuild in your local `node_modules` folder.
-      You can run the esbuild binary to verify that everything is working
+      You can run the esbuild executable to verify that everything is working
       correctly:
 
   - pre: |
@@ -24,6 +24,11 @@ body:
       installed npm. It provides a cross-platform way to manually run package
       executables, and is used here for simplicity. However, it adds additional
       overhead so you shouldn't use it when writing scripts inside `package.json`.
+
+  - p: >
+      The recommended way to install esbuild is to install the native executable
+      using npm. But if you don't want to do that, there are also some
+      [other ways to install](#other-ways-to-install).
 
   - h2: Your first bundle
 
@@ -113,7 +118,7 @@ body:
         }).catch(() => process.exit(1))
 
   - p: >
-      The `build` function runs the esbuild binary in a child process and
+      The `build` function runs the esbuild executable in a child process and
       returns a promise that resolves when the build is complete. The code above
       doesn't print out the captured exception because any error messages in
       the exception will also be printed to the console by default (although
@@ -347,3 +352,116 @@ body:
             os.Exit(1)
           }
         }
+
+  - h2: Other ways to install
+
+  - p: >
+      The recommended way to install esbuild is to [install the native executable using npm](#install-esbuild).
+      But you can also install esbuild in these ways:
+
+  - h3: Install the WASM version
+
+  - p: >
+      In addition to the `esbuild` npm package, there is also an `esbuild-wasm`
+      package that functions similarly but that uses WebAssembly instead of
+      native code. Installing it will also install an executable called `esbuild`:
+
+  - pre: |
+      npm install esbuild-wasm
+
+  - p: >
+      **Why this is not recommended:**
+      The WebAssembly version is much, much slower than the native version. In
+      many cases it is an order of magnitude (i.e. 10x) slower. This is for
+      various reasons including a) it's compiled from scratch on every run, b)
+      the WebAssembly compilation approach is single-threaded, and c) node has
+      WebAssembly bugs that can delay the exiting of the process by many seconds.
+      The WebAssembly version also excludes some features such as the local
+      file server. You should only use the WebAssembly package like this if
+      there is no other option, such as when you want to use esbuild on an
+      unsupported platform. The WebAssembly package is primarily intended
+      to only be used [in the browser](/api/#running-in-the-browser).
+
+  - h3: Build from source
+
+  - p: >
+      To build esbuild from source:
+
+  - ol:
+    - >
+      Install the Go compiler:
+      <p>[https://golang.org/dl/](https://golang.org/dl/)</p>
+
+    - >
+      Download the source code:
+      <pre>git clone --depth 1 --branch vCURRENT_ESBUILD_VERSION https://github.com/evanw/esbuild.git</pre>
+
+    - >
+      Build the `esbuild` executable (it will be `esbuild.exe` on Windows):
+      <pre>go build ./cmd/esbuild</pre>
+
+  - p: >
+      If you want to build for other platforms, you can just prefix the build
+      command with the platform information. For example, you can build the
+      32-bit Linux version using this command:
+
+  - pre: |
+      GOOS=linux GOARCH=386 go build ./cmd/esbuild
+
+  - p: >
+      **Why this is not recommended:**
+      The native version can only be used via the command-line interface, which
+      can be unergonomic for complex use cases and which does not support [plugins](/plugins/).
+      You will need to write JavaScript or Go code and use [esbuild's API](/api/)
+      to use plugins.
+
+  - h3: Download a build
+
+  - p: >
+      Although the precompiled native executables are hosted using npm, you don't
+      actually need npm installed to download them. The npm package registry is
+      a normal HTTP server and packages are normal gzipped tar files.
+
+  - p: >
+      Here is an example of downloading a binary executable directly:
+
+  - pre: |
+      $ curl -O https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-CURRENT_ESBUILD_VERSION.tgz
+      $ tar xf ./esbuild-darwin-64-CURRENT_ESBUILD_VERSION.tgz
+      $ ./package/bin/esbuild
+
+      Usage:
+        esbuild [options] [entry points]
+
+      ...
+
+  - p: >
+      The native executable in the `esbuild-darwin-64` package is for the macOS
+      operating system and the x86-64 architecture. As of writing, this is the
+      full list of native executable packages for the platforms esbuild supports:
+
+  - table: |
+      | Package name             | OS        | Architecture   |
+      |--------------------------|-----------|----------------|
+      | `esbuild-darwin-64`      | `darwin`  | `x64`          |
+      | `esbuild-darwin-arm64`   | `darwin`  | `arm64`        |
+      | `esbuild-freebsd-64`     | `freebsd` | `x64`          |
+      | `esbuild-freebsd-arm64`  | `freebsd` | `arm64`        |
+      | `esbuild-linux-32`       | `linux`   | `ia32`         |
+      | `esbuild-linux-64`       | `linux`   | `x64`          |
+      | `esbuild-linux-arm`      | `linux`   | `arm`          |
+      | `esbuild-linux-arm64`    | `linux`   | `arm64`        |
+      | `esbuild-linux-mips64le` | `linux`   | `mips64el`     |
+      | `esbuild-linux-ppc64le`  | `linux`   | `ppc64`        |
+      | `esbuild-windows-32`     | `win32`   | `ia32`         |
+      | `esbuild-windows-64`     | `win32`   | `x64`          |
+
+  - p: >
+      **Why this is not recommended:**
+      This relies on internal implementation details of esbuild's native
+      executable installer. These details may change at some point, in which
+      case this approach will no longer work for new esbuild versions. This
+      is only a minor drawback though since the approach should still work
+      forever for existing esbuild versions since packages published to npm
+      are immutable. An additional drawback is that you cannot use [plugins](/plugins/)
+      with the native version.

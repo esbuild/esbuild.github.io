@@ -486,6 +486,11 @@ body.has-js {
     margin-right: 30px;
   }
 
+  li pre {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   .switcher {
     margin-right: 30px;
   }

@@ -11,6 +11,10 @@ const outDir = path.join(repoDir, 'out')
 const linkDir = path.join(scriptsDir, 'link')
 const linkOutDir = path.join(outDir, 'link')
 
+// Replace "CURRENT_ESBUILD_VERSION" with the currently-installed version
+// of esbuild. This should be reasonably up to date.
+const CURRENT_ESBUILD_VERSION = require('../../package.json').dependencies.esbuild;
+
 function copyAndMinify(from, to) {
   esbuild.buildSync({
     entryPoints: [from],
@@ -321,6 +325,7 @@ function generateMain(key, main) {
 
   return main.body.map(({ tag, value }) => {
     let cssID = ''
+    if (typeof value === 'string') value = value.replace(/CURRENT_ESBUILD_VERSION/g, CURRENT_ESBUILD_VERSION)
 
     // Strip off a trailing CSS id
     if (tag.includes('#')) {
@@ -423,7 +428,9 @@ function generateMain(key, main) {
     }
 
     if (tag === 'ul' || tag === 'ol') {
-      return `      <${tag}>${value.map(x => `<li>${md.renderInline(x.trim())}</li>`).join('')}</${tag}>`
+      return `      <${tag}>${value.map(x =>
+        `<li>${md.renderInline(x.replace(/CURRENT_ESBUILD_VERSION/g, CURRENT_ESBUILD_VERSION).trim())}</li>`
+      ).join('')}</${tag}>`
     }
 
     if (tag === 'table') {
