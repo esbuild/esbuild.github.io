@@ -49,6 +49,14 @@
               <li id="nav-build-scripts"><a href="#build-scripts">Build scripts</a></li>
               <li id="nav-bundling-for-the-browser"><a href="#bundling-for-the-browser">Bundling for the browser</a></li>
               <li id="nav-bundling-for-node"><a href="#bundling-for-node">Bundling for node</a></li>
+              <li id="nav-other-ways-to-install">
+                <a href="#other-ways-to-install">Other ways to install</a>
+                <ul class="h3">
+                  <li id="nav-install-the-wasm-version"><a href="#install-the-wasm-version">Install the WASM version</a></li>
+                  <li id="nav-build-from-source"><a href="#build-from-source">Build from source</a></li>
+                  <li id="nav-download-a-build"><a href="#download-a-build">Download a build</a></li>
+                </ul>
+              </li>
             </ul>
           </li>
           <li>
@@ -120,10 +128,12 @@
         <a class="permalink" href="#install-esbuild">#</a>
         Install esbuild
       </h2>
-      <p>First, download and install the esbuild command locally. A prebuilt binary can be installed using npm:</p>
+      <p>First, download and install the esbuild command locally. A prebuilt native executable can be installed using npm:</p>
       <pre>npm install esbuild</pre>
-      <p>This should have installed esbuild in your local <code>node_modules</code> folder. You can run the esbuild binary to verify that everything is working correctly:</p>
-      <pre>./node_modules/.bin/esbuild --version</pre>
+      <p>This should have installed esbuild in your local <code>node_modules</code> folder. You can run the esbuild executable to verify that everything is working correctly:</p>
+      <pre>npx esbuild --version</pre>
+      <p>This uses the <code>npx</code> command which should have been installed when you installed npm. It provides a cross-platform way to manually run package executables, and is used here for simplicity. However, it adds additional overhead so you shouldn't use it when writing scripts inside <code>package.json</code>.</p>
+      <p>The recommended way to install esbuild is to install the native executable using npm. But if you don't want to do that, there are also some <a href="#other-ways-to-install">other ways to install</a>.</p>
       <h2 id="your-first-bundle">
         <a class="permalink" href="#your-first-bundle">#</a>
         Your first bundle
@@ -137,7 +147,7 @@
 <span class="hljs-keyword">let</span> Greet = <span class="hljs-function">() =&gt;</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Hello, world!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>
 <span class="hljs-built_in">console</span>.log(Server.renderToString(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Greet</span> /&gt;</span></span>))</pre>
       <p>Finally, tell esbuild to bundle the file:</p>
-      <pre>./node_modules/.bin/esbuild app.jsx --bundle --outfile=out.js</pre>
+      <pre>npx esbuild app.jsx --bundle --outfile=out.js</pre>
       <p>This should have created a file called <code>out.js</code> containing your code and the React library bundled together. The code is completely self-contained and no longer depends on your <code>node_modules</code> directory. If you run the code using <code>node out.js</code>, you should see something like this:</p>
       <pre><span class="hljs-tag">&lt;<span class="hljs-name">h1</span> <span class="hljs-attr">data-reactroot</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span>Hello, world!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></pre>
       <p>Notice that esbuild also converted JSX syntax to JavaScript without any configuration other than the <code>.jsx</code> extension. While esbuild can be configured, it attempts to have reasonable defaults so that many common situations work automatically. If you would like to use JSX syntax in <code>.js</code> files instead, you can tell esbuild to allow this using the <code>--loader:.js=jsx</code> flag. You can read more about the available configuration options in the <a href="/api/">API documentation</a>.</p>
@@ -151,6 +161,7 @@
     <span class="hljs-attr">&quot;build&quot;</span>: <span class="hljs-string">&quot;esbuild app.jsx --bundle --outfile=out.js&quot;</span>
   }
 }</pre>
+      <p>Note that the <code>npx</code> command is not needed here. Everything in the <code>scripts</code> section should already run with <code>esbuild</code> in the path, so <code>npx</code> is unnecessary here and will only make your build script slower.</p>
       <p>The build script can be invoked like this:</p>
       <pre>npm run build</pre>
       <p>However, using the command-line interface can become unwieldy if you need to pass many options to esbuild. For more sophisticated uses you will likely want to write a build script in JavaScript using esbuild's JavaScript API. That might look something like this:</p>
@@ -159,7 +170,7 @@
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
 }).catch(<span class="hljs-function">() =&gt;</span> process.exit(<span class="hljs-number">1</span>))</pre>
-      <p>The <code>build</code> function runs the esbuild binary in a child process and returns a promise that resolves when the build is complete. The code above doesn't print out the captured exception because any error messages in the exception will also be printed to the console by default (although you can change the <a href="/api/#log-level">log level</a> to turn that off if you'd like).</p>
+      <p>The <code>build</code> function runs the esbuild executable in a child process and returns a promise that resolves when the build is complete. The code above doesn't print out the captured exception because any error messages in the exception will also be printed to the console by default (although you can change the <a href="/api/#log-level">log level</a> to turn that off if you'd like).</p>
       <p>Although there is also a <code>buildSync</code> API that is not asynchronous, the asynchronous API is better for build scripts because <a href="/plugins/">plugins</a> only work with the asynchronous API. You can read more about the configuration options for the build API in the <a href="/api/#build-api">API documentation</a>.</p>
       <h2 id="bundling-for-the-browser">
         <a class="permalink" href="#bundling-for-the-browser">#</a>
@@ -318,6 +329,114 @@
     os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
+      <h2 id="other-ways-to-install">
+        <a class="permalink" href="#other-ways-to-install">#</a>
+        Other ways to install
+      </h2>
+      <p>The recommended way to install esbuild is to <a href="#install-esbuild">install the native executable using npm</a>. But you can also install esbuild in these ways:</p>
+      <h3 id="install-the-wasm-version" data-h2="other-ways-to-install">
+        <a class="permalink" href="#install-the-wasm-version">#</a>
+        Install the WASM version
+      </h3>
+      <p>In addition to the <code>esbuild</code> npm package, there is also an <code>esbuild-wasm</code> package that functions similarly but that uses WebAssembly instead of native code. Installing it will also install an executable called <code>esbuild</code>:</p>
+      <pre>npm install esbuild-wasm</pre>
+      <p><strong>Why this is not recommended:</strong> The WebAssembly version is much, much slower than the native version. In many cases it is an order of magnitude (i.e. 10x) slower. This is for various reasons including a) it's compiled from scratch on every run, b) the WebAssembly compilation approach is single-threaded, and c) node has WebAssembly bugs that can delay the exiting of the process by many seconds. The WebAssembly version also excludes some features such as the local file server. You should only use the WebAssembly package like this if there is no other option, such as when you want to use esbuild on an unsupported platform. The WebAssembly package is primarily intended to only be used <a href="/api/#running-in-the-browser">in the browser</a>.</p>
+      <h3 id="build-from-source" data-h2="other-ways-to-install">
+        <a class="permalink" href="#build-from-source">#</a>
+        Build from source
+      </h3>
+      <p>To build esbuild from source:</p>
+      <ol><li>Install the Go compiler: <p><a href="https://golang.org/dl/">https://golang.org/dl/</a></p></li><li>Download the source code: <pre>git clone --depth 1 --branch v0.8.56 https://github.com/evanw/esbuild.git</pre></li><li>Build the <code>esbuild</code> executable (it will be <code>esbuild.exe</code> on Windows): <pre>go build ./cmd/esbuild</pre></li></ol>
+      <p>If you want to build for other platforms, you can just prefix the build command with the platform information. For example, you can build the 32-bit Linux version using this command:</p>
+      <pre>GOOS=linux GOARCH=386 go build ./cmd/esbuild</pre>
+      <p><strong>Why this is not recommended:</strong> The native version can only be used via the command-line interface, which can be unergonomic for complex use cases and which does not support <a href="/plugins/">plugins</a>. You will need to write JavaScript or Go code and use <a href="/api/">esbuild's API</a> to use plugins.</p>
+      <h3 id="download-a-build" data-h2="other-ways-to-install">
+        <a class="permalink" href="#download-a-build">#</a>
+        Download a build
+      </h3>
+      <p>Although the precompiled native executables are hosted using npm, you don't actually need npm installed to download them. The npm package registry is a normal HTTP server and packages are normal gzipped tar files.</p>
+      <p>Here is an example of downloading a binary executable directly:</p>
+      <pre>$ curl -O https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.8.56.tgz
+$ tar xf ./esbuild-darwin-64-0.8.56.tgz
+$ ./package/bin/esbuild
+
+Usage:
+  esbuild [options] [entry points]
+
+...</pre>
+      <p>The native executable in the <code>esbuild-darwin-64</code> package is for the macOS operating system and the x86-64 architecture. As of writing, this is the full list of native executable packages for the platforms esbuild supports:</p>
+      <table>
+      <thead>
+      <tr>
+      <th>Package name</th>
+      <th>OS</th>
+      <th>Architecture</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td><code>esbuild-darwin-64</code></td>
+      <td><code>darwin</code></td>
+      <td><code>x64</code></td>
+      </tr>
+      <tr>
+      <td><code>esbuild-darwin-arm64</code></td>
+      <td><code>darwin</code></td>
+      <td><code>arm64</code></td>
+      </tr>
+      <tr>
+      <td><code>esbuild-freebsd-64</code></td>
+      <td><code>freebsd</code></td>
+      <td><code>x64</code></td>
+      </tr>
+      <tr>
+      <td><code>esbuild-freebsd-arm64</code></td>
+      <td><code>freebsd</code></td>
+      <td><code>arm64</code></td>
+      </tr>
+      <tr>
+      <td><code>esbuild-linux-32</code></td>
+      <td><code>linux</code></td>
+      <td><code>ia32</code></td>
+      </tr>
+      <tr>
+      <td><code>esbuild-linux-64</code></td>
+      <td><code>linux</code></td>
+      <td><code>x64</code></td>
+      </tr>
+      <tr>
+      <td><code>esbuild-linux-arm</code></td>
+      <td><code>linux</code></td>
+      <td><code>arm</code></td>
+      </tr>
+      <tr>
+      <td><code>esbuild-linux-arm64</code></td>
+      <td><code>linux</code></td>
+      <td><code>arm64</code></td>
+      </tr>
+      <tr>
+      <td><code>esbuild-linux-mips64le</code></td>
+      <td><code>linux</code></td>
+      <td><code>mips64el</code></td>
+      </tr>
+      <tr>
+      <td><code>esbuild-linux-ppc64le</code></td>
+      <td><code>linux</code></td>
+      <td><code>ppc64</code></td>
+      </tr>
+      <tr>
+      <td><code>esbuild-windows-32</code></td>
+      <td><code>win32</code></td>
+      <td><code>ia32</code></td>
+      </tr>
+      <tr>
+      <td><code>esbuild-windows-64</code></td>
+      <td><code>win32</code></td>
+      <td><code>x64</code></td>
+      </tr>
+      </tbody>
+      </table>
+      <p><strong>Why this is not recommended:</strong> This relies on internal implementation details of esbuild's native executable installer. These details may change at some point, in which case this approach will no longer work for new esbuild versions. This is only a minor drawback though since the approach should still work forever for existing esbuild versions since packages published to npm are immutable. An additional drawback is that you cannot use <a href="/plugins/">plugins</a> with the native version.</p>
     </main>
   </body>
 </html>
