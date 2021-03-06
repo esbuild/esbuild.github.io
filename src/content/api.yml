@@ -1185,13 +1185,13 @@ body:
 
   - p: >
       The JavaScript minification algorithm in esbuild usually generates output
-      that is very close in size to the minified output of industry-standard
-      JavaScript minification tools. You can check out
-      [this benchmark](https://github.com/privatenumber/minification-benchmarks/blob/cc9205d26756a0c32fe47cc22046d850b5c1fbbe/readme.md)
-      for an example comparison of output sizes between tools. While esbuild is
-      not the optimal JavaScript minifier in all cases (and doesn't try to be),
-      it strives to generate minified output within a few percent of the size
-      of dedicated minification tools, and of course to do so much faster.
+      that is very close to the minified output size of industry-standard
+      JavaScript minification tools. [This benchmark](https://github.com/privatenumber/minification-benchmarks/tree/cd3e5acb8d38da5f86426d44ac95974812559683#readme)
+      has an example comparison of output sizes between different minifiers.
+      While esbuild is not the optimal JavaScript minifier in all cases (and
+      doesn't try to be), it strives to generate minified output within a few
+      percent of the size of dedicated minification tools for most code, and
+      of course to do so much faster than other tools.
 
   - h4#minify-considerations: Considerations
 
@@ -1236,7 +1236,7 @@ body:
       [keep names](#keep-names) option.
       </p>
 
-    - >
+    - |
       <p>
       Use of certain JavaScript features can disable many of esbuild's
       optimizations including minification. Specifically, using direct `eval`
@@ -1246,24 +1246,51 @@ body:
       and only happens because people are unaware of what direct `eval` is and
       why it's bad.
       </p>
-
-  - p: >
+      <p>
       If you are thinking about writing some code like this:
-
-  - pre.js: |
+      </p>
+      <pre>
       // Direct eval (will disable minification for the whole file)
       let result = eval(something)
-
-  - p: >
+      </pre>
+      <p>
       You should probably write your code like this instead so your code can be minified:
-
-  - pre.js: |
+      </p>
+      <pre>
       // Indirect eval (has no effect on the surrounding code)
       let result = (0, eval)(something)
+      </pre>
+      <p>
+      There is more information about the consequences of direct `eval` and the
+      available alternatives [here](http://localhost:8001/content-types/#direct-eval).
+      </p>
 
-  - p: >
-      You can read more about the differences between direct and indirect
-      eval [here](http://perfectionkills.com/global-eval-what-are-the-options/).
+    - >
+      <p>
+      The minification algorithm in esbuild does not yet do advanced code
+      optimizations. In particular, the following code optimizations are
+      possible for JavaScript code but are not done by esbuild (not an
+      exhaustive list):
+      </p>
+      <ul>
+        <li>Dead-code elimination within function bodies</li>
+        <li>Function inlining</li>
+        <li>Cross-statement constant propagation</li>
+        <li>Object shape modeling</li>
+        <li>Allocation sinking</li>
+        <li>Method devirtualization</li>
+        <li>Symbolic execution</li>
+        <li>JSX expression hoisting</li>
+        <li>TypeScript enum detection and inlining</li>
+      </ul>
+      <p>
+      If your code makes use of patterns that require some of these forms of
+      code optimization to be compact, or if you are searching for the optimal
+      JavaScript minification algorithm for your use case, you should consider
+      using other tools. Some examples of tools that implement some of these
+      advanced code optimizations include [Terser](https://github.com/terser/terser#readme)
+      and [Google Closure Compiler](https://github.com/google/closure-compiler#readme).
+      </p>
 
   - h3: Outdir
 
