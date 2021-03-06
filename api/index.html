@@ -978,20 +978,49 @@ image.src = url
     fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
   }
 }</pre>
-      <p>The JavaScript minification algorithm in esbuild usually generates output that is very close in size to the minified output of industry-standard JavaScript minification tools. You can check out <a href="https://github.com/privatenumber/minification-benchmarks/blob/cc9205d26756a0c32fe47cc22046d850b5c1fbbe/readme.md">this benchmark</a> for an example comparison of output sizes between tools. While esbuild is not the optimal JavaScript minifier in all cases (and doesn't try to be), it strives to generate minified output within a few percent of the size of dedicated minification tools, and of course to do so much faster.</p>
+      <p>The JavaScript minification algorithm in esbuild usually generates output that is very close to the minified output size of industry-standard JavaScript minification tools. <a href="https://github.com/privatenumber/minification-benchmarks/tree/cd3e5acb8d38da5f86426d44ac95974812559683#readme">This benchmark</a> has an example comparison of output sizes between different minifiers. While esbuild is not the optimal JavaScript minifier in all cases (and doesn't try to be), it strives to generate minified output within a few percent of the size of dedicated minification tools for most code, and of course to do so much faster than other tools.</p>
       <h4 id="minify-considerations" data-h2="simple-options" data-h3="minify">
         <a class="permalink" href="#minify-considerations">#</a>
         Considerations
       </h4>
       <p>Here are some things to keep in mind when using esbuild as a minifier:</p>
-      <ul><li><p> You should probably also set the <a href="#target">target</a> option when minification is enabled. By default esbuild takes advantage of modern JavaScript features to make your code smaller. For example, <code>a ===<wbr> undefined<wbr> || a ===<wbr> null<wbr> ? 1 : a</code> could be minified to <code>a ?? 1</code>. If you do not want esbuild to take advantage of modern JavaScript features when minifying, you should use an older language target such as <code>--target=es6</code>. </p></li><li><p> Minification is not safe for 100% of all JavaScript code. This is true for esbuild as well as for other popular JavaScript minifiers such as <a href="https://github.com/terser/terser">terser</a>. In particular, esbuild is not designed to preserve the value of calling <code>.toString()</code> on a function. The reason for this is because if all code inside all functions had to be preserved verbatim, minification would hardly do anything at all and would be virtually useless. However, this means that JavaScript code relying on the return value of <code>.toString()</code> will likely break when minified. For example, some patterns in the <a href="https://angular.io/">Angular</a> framework break when code is minified because Angular uses <code>.toString()</code> to read the argument names of functions. A workaround is to not use those patterns. </p></li><li><p> By default esbuild does not preserve the value of <code>.name</code> on function and class objects. This is because most code doesn't rely on this property and using shorter names is an important size optimization. However, some code does rely on the <code>.name</code> property for registration and binding purposes. If you need to rely on this you should enable the <a href="#keep-names">keep names</a> option. </p></li><li><p> Use of certain JavaScript features can disable many of esbuild's optimizations including minification. Specifically, using direct <code>eval</code> and/or the <code>with</code> statement prevent esbuild from renaming identifiers to smaller names since these features cause identifier binding to happen at run time instead of compile time. This is almost always unintentional, and only happens because people are unaware of what direct <code>eval</code> is and why it's bad. </p></li></ul>
-      <p>If you are thinking about writing some code like this:</p>
-      <pre><span class="hljs-comment">// Direct eval (will disable minification for the whole file)</span>
-<span class="hljs-keyword">let</span> result = <span class="hljs-built_in">eval</span>(something)</pre>
-      <p>You should probably write your code like this instead so your code can be minified:</p>
-      <pre><span class="hljs-comment">// Indirect eval (has no effect on the surrounding code)</span>
-<span class="hljs-keyword">let</span> result = (<span class="hljs-number">0</span>, <span class="hljs-built_in">eval</span>)(something)</pre>
-      <p>You can read more about the differences between direct and indirect eval <a href="http://perfectionkills.com/global-eval-what-are-the-options/">here</a>.</p>
+      <ul><li><p> You should probably also set the <a href="#target">target</a> option when minification is enabled. By default esbuild takes advantage of modern JavaScript features to make your code smaller. For example, <code>a ===<wbr> undefined<wbr> || a ===<wbr> null<wbr> ? 1 : a</code> could be minified to <code>a ?? 1</code>. If you do not want esbuild to take advantage of modern JavaScript features when minifying, you should use an older language target such as <code>--target=es6</code>. </p></li><li><p> Minification is not safe for 100% of all JavaScript code. This is true for esbuild as well as for other popular JavaScript minifiers such as <a href="https://github.com/terser/terser">terser</a>. In particular, esbuild is not designed to preserve the value of calling <code>.toString()</code> on a function. The reason for this is because if all code inside all functions had to be preserved verbatim, minification would hardly do anything at all and would be virtually useless. However, this means that JavaScript code relying on the return value of <code>.toString()</code> will likely break when minified. For example, some patterns in the <a href="https://angular.io/">Angular</a> framework break when code is minified because Angular uses <code>.toString()</code> to read the argument names of functions. A workaround is to not use those patterns. </p></li><li><p> By default esbuild does not preserve the value of <code>.name</code> on function and class objects. This is because most code doesn't rely on this property and using shorter names is an important size optimization. However, some code does rely on the <code>.name</code> property for registration and binding purposes. If you need to rely on this you should enable the <a href="#keep-names">keep names</a> option. </p></li><li><p>
+Use of certain JavaScript features can disable many of esbuild's
+optimizations including minification. Specifically, using direct <code>eval</code>
+and/or the <code>with</code> statement prevent esbuild from renaming identifiers
+to smaller names since these features cause identifier binding to happen
+at run time instead of compile time. This is almost always unintentional,
+and only happens because people are unaware of what direct <code>eval</code> is and
+why it's bad.
+</p>
+<p>
+If you are thinking about writing some code like this:
+</p>
+<pre>
+// Direct eval (will disable minification for the whole file)
+let result = eval(something)
+</pre>
+<p>
+You should probably write your code like this instead so your code can be minified:
+</p>
+<pre>
+// Indirect eval (has no effect on the surrounding code)
+let result = (0, eval)(something)
+</pre>
+<p>
+There is more information about the consequences of direct <code>eval</code> and the
+available alternatives <a href="http://localhost:8001/content-types/#direct-eval">here</a>.
+</p></li><li><p> The minification algorithm in esbuild does not yet do advanced code optimizations. In particular, the following code optimizations are possible for JavaScript code but are not done by esbuild (not an exhaustive list): </p> <ul>
+<li>Dead-code elimination within function bodies</li>
+<li>Function inlining</li>
+<li>Cross-statement constant propagation</li>
+<li>Object shape modeling</li>
+<li>Allocation sinking</li>
+<li>Method devirtualization</li>
+<li>Symbolic execution</li>
+<li>JSX expression hoisting</li>
+<li>TypeScript enum detection and inlining</li>
+</ul> <p> If your code makes use of patterns that require some of these forms of code optimization to be compact, or if you are searching for the optimal JavaScript minification algorithm for your use case, you should consider using other tools. Some examples of tools that implement some of these advanced code optimizations include <a href="https://github.com/terser/terser#readme">Terser</a> and <a href="https://github.com/google/closure-compiler#readme">Google Closure Compiler</a>. </p></li></ul>
       <h3 id="outdir" data-h2="simple-options">
         <a class="permalink" href="#outdir">#</a>
         Outdir
