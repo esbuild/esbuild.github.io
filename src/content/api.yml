@@ -3205,7 +3205,6 @@ body:
   - pre.js: |
       function fn() {}
       let fn = function() {};
-      obj.fn = function() {};
       fn = function() {};
       let [fn = function() {}] = [];
       let {fn = function() {}} = {};
