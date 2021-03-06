@@ -2199,18 +2199,22 @@ body:
       that node version 10 can't handle. The target can either be set to a
       JavaScript language version such as `es2020` or to a list of versions of
       individual engines (currently either `chrome`, `firefox`, `safari`, `edge`,
-      or `node`).
+      or `node`). The default target is `esnext` which means that by default,
+      esbuild will assume all of the latest JavaScript features are supported.
 
   - p: >
-      Here is an example with all possible target environments specified (you
-      don't have to specify all of them):
+      Here is an example that uses all of the available target environment names
+      in esbuild. Note that you don't need to specify all of them; you can just
+      specify the subset of target environments that your project cares about.
+      You can also be more precise about version numbers if you'd like (e.g.
+      `node12.19.0` instead of just `node12`):
 
   - example:
       in:
         app.js: '1 + 2'
 
       cli: |
-        esbuild app.js --target=es2020,chrome58,firefox57,safari11,edge16,node12.19.0
+        esbuild app.js --target=es2020,chrome58,firefox57,safari11,edge16,node12
 
       js: |
         require('esbuild').buildSync({
@@ -2221,7 +2225,7 @@ body:
             'firefox57',
             'safari11',
             'edge16',
-            'node12.19.0',
+            'node12',
           ],
           outfile: 'out.js',
         })
@@ -2241,7 +2245,7 @@ body:
               {Name: api.EngineFirefox, Version: "57"},
               {Name: api.EngineSafari, Version: "11"},
               {Name: api.EngineEdge, Version: "16"},
-              {Name: api.EngineNode, Version: "12.19.0"},
+              {Name: api.EngineNode, Version: "12"},
             },
             Write: true,
           })
