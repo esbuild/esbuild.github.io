@@ -1471,14 +1471,14 @@ esbuild.serve({
         Target
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
-      <p>This sets the target environment for the generated JavaScript code. For example, you can configure esbuild to not generate any newer JavaScript that node version 10 can't handle. The target can either be set to a JavaScript language version such as <code>es2020</code> or to a list of versions of individual engines (currently either <code>chrome</code>, <code>firefox</code>, <code>safari</code>, <code>edge</code>, or <code>node</code>).</p>
-      <p>Here is an example with all possible target environments specified (you don't have to specify all of them):</p>
+      <p>This sets the target environment for the generated JavaScript code. For example, you can configure esbuild to not generate any newer JavaScript that node version 10 can't handle. The target can either be set to a JavaScript language version such as <code>es2020</code> or to a list of versions of individual engines (currently either <code>chrome</code>, <code>firefox</code>, <code>safari</code>, <code>edge</code>, or <code>node</code>). The default target is <code>esnext</code> which means that by default, esbuild will assume all of the latest JavaScript features are supported.</p>
+      <p>Here is an example that uses all of the available target environment names in esbuild. Note that you don't need to specify all of them; you can just specify the subset of target environments that your project cares about. You can also be more precise about version numbers if you'd like (e.g. <code>node12.19.0</code> instead of just <code>node12</code>):</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
         <a href="javascript:void 0" class="js3">JS</a>
         <a href="javascript:void 0" class="go3">Go</a>
       </div>
-      <pre class="switchable cli3">esbuild app.js --target=es2020,chrome58,firefox57,safari11,edge16,node12.19.0</pre>
+      <pre class="switchable cli3">esbuild app.js --target=es2020,chrome58,firefox57,safari11,edge16,node12</pre>
       <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
   <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
   <span class="hljs-attr">target</span>: [
@@ -1487,7 +1487,7 @@ esbuild.serve({
     <span class="hljs-string">&#x27;firefox57&#x27;</span>,
     <span class="hljs-string">&#x27;safari11&#x27;</span>,
     <span class="hljs-string">&#x27;edge16&#x27;</span>,
-    <span class="hljs-string">&#x27;node12.19.0&#x27;</span>,
+    <span class="hljs-string">&#x27;node12&#x27;</span>,
   ],
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
 })</pre>
@@ -1505,7 +1505,7 @@ esbuild.serve({
       {Name: api.EngineFirefox, Version: <span class="hljs-string">&quot;57&quot;</span>},
       {Name: api.EngineSafari, Version: <span class="hljs-string">&quot;11&quot;</span>},
       {Name: api.EngineEdge, Version: <span class="hljs-string">&quot;16&quot;</span>},
-      {Name: api.EngineNode, Version: <span class="hljs-string">&quot;12.19.0&quot;</span>},
+      {Name: api.EngineNode, Version: <span class="hljs-string">&quot;12&quot;</span>},
     },
     Write: <span class="hljs-literal">true</span>,
   })
@@ -2141,7 +2141,6 @@ example()</pre>
       <p>In JavaScript the <code>name</code> property on functions and classes defaults to a nearby identifier in the source code. These syntax forms all set the <code>name</code> property of the function to <code>&quot;fn&quot;</code>:</p>
       <pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fn</span>(<span class="hljs-params"></span>) </span>{}
 <span class="hljs-keyword">let</span> fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{};
-obj.fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{};
 fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{};
 <span class="hljs-keyword">let</span> [fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{}] = [];
 <span class="hljs-keyword">let</span> {fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{}} = {};
