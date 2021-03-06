@@ -3214,6 +3214,9 @@ body:
       let {fn = function() {}} = {};
       [fn = function() {}] = [];
       ({fn = function() {}} = {});
+      fn = {fn: function() {}}.fn;
+      fn = {'fn': function() {}}.fn;
+      fn = {['f' + 'n']: function() {}}.fn;
 
   - p: >
       However, [minification](#minify) renames symbols to reduce code size and
