@@ -287,6 +287,7 @@
         <li><a href="#platform">Platform</a></li>
         <li><a href="#serve">Serve</a></li>
         <li><a href="#sourcemap">Sourcemap</a></li>
+        <li><a href="#splitting">Splitting</a></li>
         <li><a href="#target">Target</a></li>
         <li><a href="#watch">Watch</a></li>
         <li><a href="#write">Write</a></li>
@@ -1459,6 +1460,7 @@ esbuild.serve({
         <a class="permalink" href="#splitting">#</a>
         Splitting
       </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
       <div class="warning">Code splitting is still a work in progress. It currently only works with the <code>esm</code> output <a href="#format">format</a>. There is also a known <a href="https://github.com/evanw/esbuild/issues/399">ordering issue</a> with <code>import</code> statements across code splitting chunks. You can follow <a href="https://github.com/evanw/esbuild/issues/16">the tracking issue</a> for updates about this feature.</div>
       <p>This enables &quot;code splitting&quot; which serves two purposes:</p>
       <ul><li><p> Code shared between multiple entry points is split off into a separate shared file that both entry points import. That way if the user first browses to one page and then to another page, they don't have to download all of the JavaScript for the second page from scratch if the shared part has already been downloaded and cached by their browser. </p></li><li><p> Code referenced through an asynchronous <code>import()</code> expression will be split off into a separate file and only loaded when that expression is evaluated. This allows you to improve the initial download time of your app by only downloading the code you need at startup, and then lazily downloading additional code if needed later. </p> <p> Without code splitting enabled, an <code>import()</code> expression becomes <code>Promise<wbr>.resolve()<wbr>.then(() =&gt; <wbr>require())</code> instead. This still preserves the asynchronous semantics of the expression but it means the imported code is included in the same bundle instead of being split off into a separate file. </p></li></ul>
