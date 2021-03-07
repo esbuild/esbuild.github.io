@@ -233,7 +233,7 @@ body:
       | Type casts              | `a as B` and `<B>a`        | |
       | Type imports            | `import {Type} from 'foo'` | Handled by removing all unused imports |
       | Type exports            | `export {Type} from 'foo'` | Handled by ignoring missing exports in TypeScript files |
-      | Experimental decorators | `@sealed class Foo {}`     | The `emitDecoratorMetadata` flag is not supported |
+      | Experimental decorators | `@sealed class Foo {}`     | The `emitDecoratorMetadata` flag is not supported natively however a workaround is available |
 
   - h3: TypeScript caveats
 
@@ -275,6 +275,9 @@ body:
       type annotations are not supposed to change the output of the
       compiler. Since esbuild does not replicate TypeScript's type system,
       it does not have enough information to implement this feature.
+      Using the plugin (esbuild-plugin-tsc)[https://github.com/thomaschaaf/esbuild-plugin-tsc]
+      the typescript transformation can be done using the official typescript compiler,
+      this workaround allows you to use this feature.
 
   - h4#ts-vs-tsx: You cannot use the `tsx` loader for `*.ts` files
   - p: >
