@@ -190,6 +190,7 @@ body:
     - Sourcefile
     - Sourcemap
     - Sources Content
+    - Splitting
     - Stdin
     - Target
     - Tree shaking
