@@ -77,7 +77,12 @@ async function checkCli(text, value) {
           stdio: 'pipe',
           env: { PATH: `${path.join(testDir, 'node_modules', '.bin')}:${process.env.PATH}` }
         })
-        assert.strictEqual(result.stderr, '')
+
+        // Ignore the build success message since it contains the build time which is non-deterministic
+        if (!result.stderr.includes('⚡')) {
+          assert.strictEqual(result.stderr, '')
+        }
+
         stdout = result.stdout
       }
 
