@@ -1264,7 +1264,7 @@ body:
       </pre>
       <p>
       There is more information about the consequences of direct `eval` and the
-      available alternatives [here](http://localhost:8001/content-types/#direct-eval).
+      available alternatives [here](/content-types/#direct-eval).
       </p>
 
     - >
