@@ -243,9 +243,15 @@ body:
 
   - h4#isolated-modules: Files are compiled independently
   - p: >
-      You should probably enable the [`isolatedModules`](https://www.typescriptlang.org/tsconfig#isolatedModules)
+      Even when transpiling a single module, the TypeScript compiler actually
+      still parses imported files so it can tell whether an imported name is
+      a type or a value. However, tools like esbuild and Babel (and the
+      TypeScript compiler's `transpileModule` API) compile each file in
+      isolation so they can't tell if an imported name is a type or a value.
+  - p: >
+      Because of this, you should enable the [`isolatedModules`](https://www.typescriptlang.org/tsconfig#isolatedModules)
       TypeScript configuration option if you use TypeScript with esbuild.
-      This prevents you from using features which could cause mis-compilation
+      This option prevents you from using features which could cause mis-compilation
       in environments like esbuild where each file is compiled independently
       without tracing type references across files. For example, it prevents
       you from re-exporting types from another module using <code>export <wbr>{T} <wbr>from <wbr>'./types'</code>
@@ -253,28 +259,61 @@ body:
 
   - h4#es-module-interop: Imports follow ECMAScript module behavior
   - p: >
-      You should probably also enable the [`esModuleInterop`](https://www.typescriptlang.org/tsconfig#esModuleInterop)
+      For historical reasons, the TypeScript compiler compiles ESM
+      (ECMAScript module) syntax to CommonJS syntax by default. For example,
+      <code>import *<wbr> as foo<wbr> from 'foo'</code> is compiled to
+      <code>const foo =<wbr> require('foo')</code>. Presumably this happened
+      because ECMAScript modules were still a proposal when TypeScript adopted
+      the syntax. However, this is legacy behavior that doesn't match how this
+      syntax behaves on real platforms such as node. For example, the `require`
+      function can return any JavaScript value including a string but the
+      `import * as` syntax always results in an object and cannot be a string.
+  - p: >
+      To avoid problems due to this legacy feature, you should enable the
+      [`esModuleInterop`](https://www.typescriptlang.org/tsconfig#esModuleInterop)
       TypeScript configuration option if you use TypeScript with esbuild.
-      Enabling it disables some TypeScript-specific behavior that goes against
-      the ECMAScript language specification and causes compatibility problems
-      with many tools including esbuild. Specifically it means that if a
-      CommonJS module exports a function via <code>module.<wbr>exports =<wbr> fn</code>,
-      you need to use <code>import <wbr>fn <wbr>from <wbr>'path'</code>
-      instead of <code>import *<wbr> as<wbr> <wbr>fn <wbr>from <wbr>'path'</code>.
-      This option is not enabled by default because it would be a breaking change
-      for existing TypeScript projects, but Microsoft
+      Enabling it disables this legacy behavior and makes TypeScript's type
+      system compatible with ESM. This option is not enabled by default because
+      it would be a breaking change for existing TypeScript projects, but Microsoft
       [highly recommends applying it both to new and existing projects](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#support-for-import-d-from-cjs-from-commonjs-modules-with---esmoduleinterop)
       (and then updating your code) for better compatibility with the rest of the ecosystem.
-
-  - h4#emit-decorator-metadata: Features that need a type system are not supported
   - p: >
+      Specifically this means that importing a non-object value from a CommonJS
+      module with ESM import syntax must be done using a default import instead
+      of using `import * as`. So if a CommonJS module exports a function via
+      <code>module.<wbr>exports =<wbr> fn</code>, you need to use
+      <code>import <wbr>fn <wbr>from <wbr>'path'</code> instead of
+      <code>import *<wbr> as<wbr> <wbr>fn <wbr>from <wbr>'path'</code>.
+
+  - h4#no-type-system: Features that need a type system are not supported
+  - p: >
+      TypeScript types are treated as comments and are ignored by esbuild, so
+      TypeScript is treated as "type-checked JavaScript." The interpretation of
+      the type annotations is up to the TypeScript type checker, which you
+      should be running in addition to esbuild if you're using TypeScript. This
+      is the same compilation strategy that Babel's TypeScript implementation
+      uses. However, it means that some TypeScript compilation features which
+      require type interpretation to work do not work with esbuild.
+  - p: >
+      Specifically:
+  - ul:
+    - >
+      <p>
       The [`emitDecoratorMetadata`](https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata)
-      TypeScript configuration option is not supported. It passes type
-      annotations to decorators and is an exception to the "TypeScript
-      is just JavaScript" philosophy that TypeScript started with where
-      type annotations are not supposed to change the output of the
-      compiler. Since esbuild does not replicate TypeScript's type system,
-      it does not have enough information to implement this feature.
+      TypeScript configuration option is not supported. This feature passes a
+      JavaScript representation of the corresponding TypeScript type to the
+      attached decorator function. Since esbuild does not replicate TypeScript's
+      type system, it does not have enough information to implement this feature.
+      </p>
+    - >
+      <p>
+      The [`const enum`](https://www.typescriptlang.org/docs/handbook/enums.html#const-enums)
+      feature in TypeScript defines a set of compile-time constants grouped
+      under a type. Each enum value of that type is replaced by the corresponding
+      constant at compile time. Since esbuild does not replicate TypeScript's
+      type system, `const enum` declarations are compiled as `enum` declarations
+      instead.
+      </p>
 
   - h4#ts-vs-tsx: You cannot use the `tsx` loader for `*.ts` files
   - p: >
