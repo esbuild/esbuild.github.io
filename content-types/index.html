@@ -497,8 +497,9 @@ render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div<
       <p>If you would like to avoid having to manually <code>import</code> your JSX library into each file, you can use esbuild's <a href="/api/#inject">inject</a> feature to automatically import it into every file. This feature is a general-purpose polyfill mechanism that replaces references to global variables with an export from the injected file. In this case we can use it to replace references to the <code>React</code> variable with exports from the <code>react</code> package.</p>
       <p>First, create a file called <code>react-<wbr>shim.js</code> that re-exports everything from the <code>react</code> package in an export called <code>React</code>:</p>
       <pre><span class="hljs-comment">// react-shim.js</span>
-<span class="hljs-keyword">export</span> * <span class="hljs-keyword">as</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span></pre>
-      <p>Then use esbuild's inject feature to inject this into each file:</p>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>
+<span class="hljs-keyword">export</span> { React }</pre>
+      <p>Then use esbuild's <a href="/api/#inject">inject feature</a> to inject this into each file:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
         <a href="javascript:void 0" class="js3">JS</a>
@@ -530,6 +531,9 @@ render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div<
   }
 }</pre>
       <p>Since the inject feature is a general-purpose code injection mechanism, it can be used with any JSX transform library, not just with React.</p>
+      <p><strong>Important:</strong> The <code>export</code> statement is required. Do not remove it. The inject feature injects an <code>import</code> statement to <code>react-shim.js</code> at the top of each file that looks like this:</p>
+      <pre><span class="hljs-keyword">import</span> { <span class="hljs-comment">/* ... */</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./react-shim.js&#x27;</span></pre>
+      <p>The set of imported names <code>/* ... */</code> is automatically generated from the set of unbound references in the file (i.e. <code>React</code>) that are equal to the name of an export of the injected file <code>react-shim.js</code>. If the injected file doesn't export anything, then the set of imported names stays empty and all unbound references all stay unbound. Code with unbound references to <code>React</code> will crash at run-time if there is no variable called <code>React</code> in the global scope. This is by design, and happens because of to how ECMAScript modules work. Imports in one module are local to that module and cannot be read from other modules unless they have been exported by that module and imported into the other module. Using <code>export</code> in <code>react-shim.js</code> with the local variable <code>React</code> allows it to be imported into and used by other modules.</p>
       <h3 id="using-jsx-without-react" data-h2="jsx">
         <a class="permalink" href="#using-jsx-without-react">#</a>
         Using JSX without React
