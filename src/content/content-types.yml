@@ -315,6 +315,41 @@ body:
       instead.
       </p>
 
+  - h4#tsconfig-json: Only certain `tsconfig.json` fields are respected
+  - p: >
+      During bundling, the path resolution algorithm in esbuild will consider
+      the contents of the `tsconfig.json` file in the closest parent directory
+      containing one and will modify its behavior accordingly. It is also
+      possible to explicitly set the `tsconfig.json` path with the build API
+      using esbuild's [`tsconfig`](/api/#tsconfig) setting and to explicitly pass in
+      the contents of a `tsconfig.json` file with the transform API using esbuild's
+      [`tsconfigRaw`](/api/#tsconfig-raw) setting. However, esbuild currently
+      only inspects the following fields in `tsconfig.json` files:
+
+  - ul:
+    - >
+      [`baseUrl`](https://www.typescriptlang.org/tsconfig#baseUrl)
+    - >
+      [`extends`](https://www.typescriptlang.org/tsconfig#extends)
+    - >
+      [`importsNotUsedAsValues`](https://www.typescriptlang.org/tsconfig#importsNotUsedAsValues)
+    - >
+      [`jsxFactory`](https://www.typescriptlang.org/tsconfig#jsxFactory)
+    - >
+      [`jsxFragmentFactory`](https://www.typescriptlang.org/tsconfig#jsxFragmentFactory)
+    - >
+      [`paths`](https://www.typescriptlang.org/tsconfig#paths)
+    - >
+      [`useDefineForClassFields`](https://www.typescriptlang.org/tsconfig#useDefineForClassFields)
+
+  - p: >
+      All other fields will be ignored. Note that this includes TypeScript's
+      [`target`](https://www.typescriptlang.org/tsconfig#target) setting.
+      You'll need to set the compilation target using esbuild's own
+      [`target`](/api/#target) setting instead. Also note that import path
+      transformation requires [`bundling`](/api/#bundle) to be enabled,
+      since path resolution only happens during bundling.
+
   - h4#ts-vs-tsx: You cannot use the `tsx` loader for `*.ts` files
   - p: >
       The `tsx` loader is _not_ a superset of the `ts` loader. They are two
