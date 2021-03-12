@@ -423,10 +423,12 @@ body:
 
   - pre.js: |
       // react-shim.js
-      export * as React from 'react'
+      import * as React from 'react'
+      export { React }
 
   - p: >
-      Then use esbuild's inject feature to inject this into each file:
+      Then use esbuild's [inject feature](/api/#inject) to inject this into
+      each file:
 
   - example:
       in:
@@ -467,6 +469,29 @@ body:
   - p: >
       Since the inject feature is a general-purpose code injection mechanism,
       it can be used with any JSX transform library, not just with React.
+
+  - p: >
+      **Important:**
+      The `export` statement is required. Do not remove it. The inject feature
+      injects an `import` statement to `react-shim.js` at the top of each file
+      that looks like this:
+
+  - pre.js: |
+      import { /* ... */ } from './react-shim.js'
+
+  - p: >
+      The set of imported names `/* ... */` is automatically generated from
+      the set of unbound references in the file (i.e. `React`) that are equal
+      to the name of an export of the injected file `react-shim.js`. If the
+      injected file doesn't export anything, then the set of imported names
+      stays empty and all unbound references all stay unbound. Code with
+      unbound references to `React` will crash at run-time if there is no
+      variable called `React` in the global scope. This is by design, and
+      happens because of to how ECMAScript modules work. Imports in one module
+      are local to that module and cannot be read from other modules unless
+      they have been exported by that module and imported into the other module.
+      Using `export` in `react-shim.js` with the local variable `React` allows
+      it to be imported into and used by other modules.
 
   - h3: Using JSX without React
 
