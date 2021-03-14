@@ -94,7 +94,7 @@ body:
       Notice that this uses the `esbuild` command directly without a relative
       path. This works because everything in the `scripts` section is run with
       the `esbuild` command already in the path (as long as you have
-      [installed the package](http://localhost:8001/getting-started/#install-esbuild)).
+      [installed the package](#install-esbuild)).
 
   - p: >
       The build script can be invoked like this:
