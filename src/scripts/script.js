@@ -13,6 +13,16 @@ addEventListener('click', function (e) {
       var after = e.target.offsetTop - document.body.scrollTop
       document.body.scrollTop += after - before
     }
+
+    if (/^(unix|windows)2$/.test(target)) {
+      var before = e.target.offsetTop - document.body.scrollTop
+
+      document.body.dataset['os2'] = target.slice(0, -1)
+      localStorage.setItem('os2', target.slice(0, -1))
+
+      var after = e.target.offsetTop - document.body.scrollTop
+      document.body.scrollTop += after - before
+    }
   }
 })
 

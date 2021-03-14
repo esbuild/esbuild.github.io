@@ -16,14 +16,12 @@ body:
       You can run the esbuild executable to verify that everything is working
       correctly:
 
-  - pre: |
-      npx esbuild --version
+  - example:
+      unix: |
+        ./node_modules/.bin/esbuild --version
 
-  - p: >
-      This uses the `npx` command which should have been installed when you
-      installed npm. It provides a cross-platform way to manually run package
-      executables, and is used here for simplicity. However, it adds additional
-      overhead so you shouldn't use it when writing scripts inside `package.json`.
+      windows: |
+        .\node_modules\.bin\esbuild --version
 
   - p: >
       The recommended way to install esbuild is to install the native executable
@@ -52,8 +50,12 @@ body:
   - p: >
       Finally, tell esbuild to bundle the file:
 
-  - pre: |
-      npx esbuild app.jsx --bundle --outfile=out.js
+  - example:
+      unix: |
+        ./node_modules/.bin/esbuild app.jsx --bundle --outfile=out.js
+
+      windows: |
+        .\node_modules\.bin\esbuild app.jsx --bundle --outfile=out.js
 
   - p: >
       This should have created a file called `out.js` containing your code
@@ -89,10 +91,10 @@ body:
       }
 
   - p: >
-      Note that the `npx` command is not needed here. Everything in the
-      `scripts` section should already run with `esbuild` in the path,
-      so `npx` is unnecessary here and will only make your build script
-      slower.
+      Notice that this uses the `esbuild` command directly without a relative
+      path. This works because everything in the `scripts` section is run with
+      the `esbuild` command already in the path (as long as you have
+      [installed the package](http://localhost:8001/getting-started/#install-esbuild)).
 
   - p: >
       The build script can be invoked like this:
@@ -373,14 +375,14 @@ body:
       **Why this is not recommended:**
       The WebAssembly version is much, much slower than the native version. In
       many cases it is an order of magnitude (i.e. 10x) slower. This is for
-      various reasons including a) it's compiled from scratch on every run, b)
-      the WebAssembly compilation approach is single-threaded, and c) node has
-      WebAssembly bugs that can delay the exiting of the process by many seconds.
-      The WebAssembly version also excludes some features such as the local
-      file server. You should only use the WebAssembly package like this if
-      there is no other option, such as when you want to use esbuild on an
-      unsupported platform. The WebAssembly package is primarily intended
-      to only be used [in the browser](/api/#running-in-the-browser).
+      various reasons including a) node re-compiles the WebAssembly code from
+      scratch on every run, b) Go's WebAssembly compilation approach is
+      single-threaded, and c) node has WebAssembly bugs that can delay the
+      exiting of the process by many seconds. The WebAssembly version also
+      excludes some features such as the local file server. You should only
+      use the WebAssembly package like this if there is no other option, such
+      as when you want to use esbuild on an unsupported platform. The WebAssembly
+      package is primarily intended to only be used [in the browser](/api/#running-in-the-browser).
 
   - h3: Build from source
 

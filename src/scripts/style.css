@@ -236,6 +236,8 @@ pre:before {
 pre.cli3:before { content: 'CLI'; }
 pre.js3:before, pre.js2:before { content: 'JS'; }
 pre.go3:before, pre.go2:before { content: 'Go'; }
+pre.unix2:before { content: 'Unix'; }
+pre.windows2:before { content: 'Windows'; }
 
 .has-js pre.switchable {
   margin-top: 0;
@@ -245,7 +247,8 @@ pre.go3:before, pre.go2:before { content: 'Go'; }
 
 body[data-mode3=cli] pre.cli3,
 body[data-mode3=js] pre.js3, body[data-mode2=js] pre.js2,
-body[data-mode3=go] pre.go3, body[data-mode2=go] pre.go2 {
+body[data-mode3=go] pre.go3, body[data-mode2=go] pre.go2,
+body[data-os2=unix] pre.unix2, body[data-os2=windows] pre.windows2 {
   display: block;
 }
 
@@ -281,10 +284,16 @@ body[data-mode3=go] pre.go3, body[data-mode2=go] pre.go2 {
   color: #7f7f7f;
 }
 
-.cli1 .repl-in:before,
-.cli2 .repl-in:before,
-.cli3 .repl-in:before {
+.cli1 .repl-in:before, .unix1 .repl-in:before,
+.cli2 .repl-in:before, .unix2 .repl-in:before,
+.cli3 .repl-in:before, .unix3 .repl-in:before {
   content: '$';
+}
+
+.windows1 .repl-in:before,
+.windows2 .repl-in:before,
+.windows3 .repl-in:before {
+  content: '>';
 }
 
 .js1 .repl-in:before,
@@ -339,7 +348,8 @@ body[data-mode3=go] pre.go3, body[data-mode2=go] pre.go2 {
 
 body[data-mode3=cli] .switcher .cli3,
 body[data-mode3=js] .switcher .js3, body[data-mode2=js] .switcher .js2,
-body[data-mode3=go] .switcher .go3, body[data-mode2=go] .switcher .go2 {
+body[data-mode3=go] .switcher .go3, body[data-mode2=go] .switcher .go2,
+body[data-os2=unix] .switcher .unix2, body[data-os2=windows] .switcher .windows2 {
   background: rgba(127, 127, 127, 0.25);
 }
 

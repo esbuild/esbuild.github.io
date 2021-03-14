@@ -300,11 +300,12 @@ function renderBenchmark(entries, { leftWidth, bench, animated }) {
 }
 
 function renderExample(kind, value) {
+  let hljsLang = kind === 'cli' || kind === 'unix' || kind === 'windows' ? 'bash' : kind;
   if (value instanceof Array) {
     let lines = []
     for (let item of value) {
       if (item.$) {
-        let html = hljs.highlight(kind === 'cli' ? 'bash' : kind, item.$.trim()).value
+        let html = hljs.highlight(hljsLang, item.$.trim()).value
         html = html.replace(/CURRENT_ESBUILD_VERSION/g, CURRENT_ESBUILD_VERSION)
         lines.push(`<span class="repl-in">${html}</span>`)
       } else if (item.expect) {
@@ -315,7 +316,7 @@ function renderExample(kind, value) {
     }
     return lines.join('')
   }
-  return hljs.highlight(kind === 'cli' ? 'bash' : kind, value.trim()).value
+  return hljs.highlight(hljsLang, value.trim()).value
 }
 
 function generateMain(key, main) {
@@ -340,6 +341,8 @@ function generateMain(key, main) {
       if (value.cli) elements.push(['cli', 'CLI'])
       if (value.js) elements.push(['js', 'JS'])
       if (value.go) elements.push(['go', 'Go'])
+      if (value.unix) elements.push(['unix', 'Unix'])
+      if (value.windows) elements.push(['windows', 'Windows'])
       if (elements.length === 1) {
         let [kind] = elements[0]
         return `      <pre class="${kind + elements.length}">${renderExample(kind, value[kind])}</pre>`
@@ -470,13 +473,18 @@ for (let [key, page] of pages) {
   </head>
   <body${key === 'index' ? ' class="index"' : ''}>
     <script>
+      function os() {
+        return navigator.platform === 'Win32' ? 'windows' : 'unix'
+      }
       try {
         document.body.dataset.mode3 = localStorage.getItem('mode3') || 'cli'
         document.body.dataset.mode2 = localStorage.getItem('mode2') || 'js'
+        document.body.dataset.os2 = localStorage.getItem('os2') || os()
         document.body.dataset.theme = localStorage.getItem('theme')
       } catch (e) {
         document.body.dataset.mode3 = 'cli'
         document.body.dataset.mode2 = 'js'
+        document.body.dataset.os2 = os()
         document.body.dataset.theme = null
       }
       document.body.classList.add('has-js')
