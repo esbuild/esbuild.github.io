@@ -175,7 +175,7 @@
     <span class="hljs-attr">&quot;build&quot;</span>: <span class="hljs-string">&quot;esbuild app.jsx --bundle --outfile=out.js&quot;</span>
   }
 }</pre>
-      <p>Notice that this uses the <code>esbuild</code> command directly without a relative path. This works because everything in the <code>scripts</code> section is run with the <code>esbuild</code> command already in the path (as long as you have <a href="http://localhost:8001/getting-started/#install-esbuild">installed the package</a>).</p>
+      <p>Notice that this uses the <code>esbuild</code> command directly without a relative path. This works because everything in the <code>scripts</code> section is run with the <code>esbuild</code> command already in the path (as long as you have <a href="#install-esbuild">installed the package</a>).</p>
       <p>The build script can be invoked like this:</p>
       <pre>npm run build</pre>
       <p>However, using the command-line interface can become unwieldy if you need to pass many options to esbuild. For more sophisticated uses you will likely want to write a build script in JavaScript using esbuild's JavaScript API. That might look something like this:</p>
