@@ -162,6 +162,7 @@ body:
     - Color
     - Conditions
     - Define
+    - Entry names
     - External
     - Footer
     - Format
@@ -2548,7 +2549,8 @@ body:
       output path after template substitution.
 
   - p: >
-      This option is similar to the [chunk names](#chunk-names) option.
+      This option is similar to the [chunk names](#chunk-names) and
+      [entry names](#entry-names) options.
 
   - h3: Banner
 
@@ -2794,7 +2796,8 @@ body:
       point output files.
 
   - p: >
-      This option is similar to the [asset names](#asset-names) option.
+      This option is similar to the [asset names](#asset-names) and
+      [entry names](#entry-names) options.
 
   - h3: Color
 
@@ -2974,6 +2977,115 @@ body:
       `require` condition and have the `import` condition just be a light
       wrapper that calls `require` on your package and re-exports the package
       using ESM syntax.
+
+  - h3: Entry names
+
+  - p: >
+      This option controls the file names of the output files corresponding to each
+      input entry point file. It configures the output paths using a template with
+      placeholders that will be substituted with values specific to the file when
+      the output path is generated. For example, specifying an entry name template
+      of <code>[dir]/<wbr>[name]-<wbr>[hash]</code> includes a hash of the output
+      file in the file name and puts the files into the output directory,
+      potentially under a subdirectory (see the details about `[dir]` below).
+      Doing that looks like this:
+
+  - example:
+      in:
+        src/main-app/app.js: '1 + 2'
+
+      cli: |
+        esbuild src/main-app/app.js --entry-names=[dir]/[name]-[hash] --outbase=src --bundle --outdir=out
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['src/main-app/app.js'],
+          entryNames: '[dir]/[name]-[hash]',
+          outbase: 'src',
+          bundle: true,
+          outdir: 'out',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"src/main-app/app.js"},
+            AssetNames:  "[dir]/[name]-[hash]",
+            Outbase:     "src",
+            Bundle:      true,
+            Outdir:      "out",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      There are three placeholders that can be used in entry path templates:
+
+  - ul:
+    - >
+      `[dir]`
+      <p>
+      This is the relative path from the directory containing the input entry
+      point file to the [outbase](#outbase) directory. Its purpose is to help
+      you avoid collisions between identically-named entry points in different
+      subdirectories.
+      </p>
+      <p>
+      For example, if there are two entry points
+      <code>src/<wbr>pages/<wbr>home/<wbr>index.ts</code> and
+      <code>src/<wbr>pages/<wbr>about/<wbr>index.ts</code>, the outbase
+      directory is `src`, and the entry names template is `[dir]/[name]`,
+      the output directory will contain <code>pages/<wbr>home/<wbr>index.js</code>
+      and <code>pages/<wbr>about/<wbr>index.js</code>. If the entry names
+      template had been just `[name]` instead, bundling would have failed
+      because there would have been two output files with the same output path
+      `index.js` inside the output directory.
+      </p>
+
+    - >
+      `[name]`
+      <p>
+      This is the original file name of the entry point without the extension.
+      For example, if the input entry point file is named `app.js` then `[name]`
+      will be substituted with `app` in the template.
+      </p>
+
+    - >
+      `[hash]`
+      <p>
+      This is the content hash of the output file, which can be used to take
+      optimal advantage of browser caching. Adding `[hash]` to your entry
+      point names means esbuild will calculate a hash that relates to all
+      content in the corresponding output file (and any output file it imports
+      if [code splitting](#splitting) is active). The hash is designed to change
+      if and only if any of the input files relevant to that output file are
+      changed.
+      </p>
+      <p>
+      After that, you can have your web server tell browsers that to cache these
+      files forever (in practice you can say they expire a very long time from
+      now such as in a year). You can then use the information in the
+      [metafile](#metafile) to determine which output file path corresponds to
+      which input entry point so you know what path to include in your `<script>`
+      tag.
+      </p>
+
+  - p: >
+      Entry path templates do not need to include a file extension. The appropriate
+      [out extension](#out-extension) based on the file type will be automatically
+      added to the end of the output path after template substitution.
+
+  - p: >
+      This option is similar to the [asset names](#asset-names) and
+      [chunk names](#chunk-names) options.
 
   - h3: Footer
 
