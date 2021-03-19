@@ -51,7 +51,7 @@ addEventListener('DOMContentLoaded', function () {
     for (var i = 0; i < headers.length; i++) {
       var h = headers[i]
       if (h.tagName === 'H4') continue
-      document.getElementById('nav-' + h.id).classList.toggle('current', h === h2 || h === h3)
+      document.getElementById('nav-' + h.id).classList.toggle('current', h === (h3 || h2))
     }
 
     // Throttle to avoid crashes in Safari

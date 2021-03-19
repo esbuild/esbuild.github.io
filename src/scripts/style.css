@@ -69,13 +69,11 @@ nav ul.h2 {
 }
 
 nav ul.h3 {
-  display: none;
   padding: 0 0 0 10px;
 }
 
 nav li.current > ul.h3 {
   font-weight: normal;
-  display: block;
 }
 
 #icons a {
