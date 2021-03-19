@@ -92,6 +92,7 @@
                   <li id="nav-chunk-names"><a href="#chunk-names">Chunk names</a></li>
                   <li id="nav-color"><a href="#color">Color</a></li>
                   <li id="nav-conditions"><a href="#conditions">Conditions</a></li>
+                  <li id="nav-entry-names"><a href="#entry-names">Entry names</a></li>
                   <li id="nav-footer"><a href="#footer">Footer</a></li>
                   <li id="nav-global-name"><a href="#global-name">Global name</a></li>
                   <li id="nav-incremental"><a href="#incremental">Incremental</a></li>
@@ -306,6 +307,7 @@
         <li><a href="#chunk-names">Chunk names</a></li>
         <li><a href="#color">Color</a></li>
         <li><a href="#conditions">Conditions</a></li>
+        <li><a href="#entry-names">Entry names</a></li>
         <li><a href="#footer">Footer</a></li>
         <li><a href="#global-name">Global name</a></li>
         <li><a href="#incremental">Incremental</a></li>
@@ -1711,7 +1713,7 @@ result.Stop()</pre>
       <p>There are two placeholders that can be used in asset path templates:</p>
       <ul><li><code>[name]</code> <p> This is the original file name of the asset without the extension. For example, if the asset was originally named <code>image.png</code> then <code>[name]</code> will be substituted with <code>image</code> in the template. It is not necessary to use this placeholder; it only exists to provide human-friendly asset names to make debugging easier. </p></li><li><code>[hash]</code> <p> This is the content hash of the asset, which is useful to avoid name collisions. For example, your code may import <code>components/<wbr>button/<wbr>icon.png</code> and <code>components/<wbr>select/<wbr>icon.png</code> in which case you'll need the hash to distinguish between the two assets that are both named <code>icon</code>. </p></li></ul>
       <p>Asset path templates do not need to include a file extension. The original file extension of the asset will be automatically added to the end of the output path after template substitution.</p>
-      <p>This option is similar to the <a href="#chunk-names">chunk names</a> option.</p>
+      <p>This option is similar to the <a href="#chunk-names">chunk names</a> and <a href="#entry-names">entry names</a> options.</p>
       <h3 id="banner" data-h2="advanced-options">
         <a class="permalink" href="#banner">#</a>
         Banner
@@ -1843,7 +1845,7 @@ result.Stop()</pre>
       <ul><li><code>[name]</code> <p> This will currently always be the text <code>chunk</code>, although this placeholder may take on additional values in future releases. </p></li><li><code>[hash]</code> <p> This is the content hash of the chunk. Including this is necessary to distinguish different chunks from each other in the case where multiple chunks of shared code are generated. </p></li></ul>
       <p>Chunk path templates do not need to include a file extension. The configured <a href="#out-extension">out extension</a> for the appropriate content type will be automatically added to the end of the output path after template substitution.</p>
       <p>Note that this option only controls the names for automatically-generated chunks of shared code. It does <em>not</em> control the names for output files related to entry points. The names of these are currently determined from the path of the original entry point file relative to the <a href="#outbase">outbase</a> directory, and this behavior cannot be changed. An additional API option will be added in the future to let you change the file names of entry point output files.</p>
-      <p>This option is similar to the <a href="#asset-names">asset names</a> option.</p>
+      <p>This option is similar to the <a href="#asset-names">asset names</a> and <a href="#entry-names">entry names</a> options.</p>
       <h3 id="color" data-h2="advanced-options">
         <a class="permalink" href="#color">#</a>
         Color
@@ -1944,6 +1946,47 @@ result.Stop()</pre>
       <p>By default there are five conditions with special behavior that are built in to esbuild, and cannot be disabled:</p>
       <ul><li><code>default</code> <p> This condition is always active. It is intended to come last and lets you provide a fallback for when no other condition applies. </p></li><li><code>import</code> <p> This condition is only active when the import path is from an ESM <code>import</code> statement or <code>import()</code> expression. It can be used to provide ESM-specific code. </p></li><li><code>require</code> <p> This condition is only active when the import path is from a CommonJS <code>require()</code> call. It can be used to provide CommonJS-specific code. </p></li><li><code>browser</code> <p> This condition is only active when esbuild's <a href="#platform">platform</a> setting is set to <code>browser</code>. It can be used to provide browser-specific code. </p></li><li><code>node</code> <p> This condition is only active when esbuild's <a href="#platform">platform</a> setting is set to <code>node</code>. It can be used to provide node-specific code. </p></li></ul>
       <p>Note that when you use the <code>require</code> and <code>import</code> conditions, <em>your package may end up in the bundle multiple times!</em> This is a subtle issue that can cause bugs due to duplicate copies of your code's state in addition to bloating the resulting bundle. This is commonly known as the <a href="https://nodejs.org/docs/latest/api/packages.html#packages_dual_package_hazard">dual package hazard</a>. The primary way of avoiding this is to put all of your code in the <code>require</code> condition and have the <code>import</code> condition just be a light wrapper that calls <code>require</code> on your package and re-exports the package using ESM syntax.</p>
+      <h3 id="entry-names" data-h2="advanced-options">
+        <a class="permalink" href="#entry-names">#</a>
+        Entry names
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>This option controls the file names of the output files corresponding to each input entry point file. It configures the output paths using a template with placeholders that will be substituted with values specific to the file when the output path is generated. For example, specifying an entry name template of <code>[dir]/<wbr>[name]-<wbr>[hash]</code> includes a hash of the output file in the file name and puts the files into the output directory, potentially under a subdirectory (see the details about <code>[dir]</code> below). Doing that looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild src/main-app/app.js --entry-names=[dir]/[name]-[<span class="hljs-built_in">hash</span>] --outbase=src --bundle --outdir=out</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;src/main-app/app.js&#x27;</span>],
+  <span class="hljs-attr">entryNames</span>: <span class="hljs-string">&#x27;[dir]/[name]-[hash]&#x27;</span>,
+  <span class="hljs-attr">outbase</span>: <span class="hljs-string">&#x27;src&#x27;</span>,
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;out&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;src/main-app/app.js&quot;</span>},
+    AssetNames:  <span class="hljs-string">&quot;[dir]/[name]-[hash]&quot;</span>,
+    Outbase:     <span class="hljs-string">&quot;src&quot;</span>,
+    Bundle:      <span class="hljs-literal">true</span>,
+    Outdir:      <span class="hljs-string">&quot;out&quot;</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>There are three placeholders that can be used in entry path templates:</p>
+      <ul><li><code>[dir]</code> <p> This is the relative path from the directory containing the input entry point file to the <a href="#outbase">outbase</a> directory. Its purpose is to help you avoid collisions between identically-named entry points in different subdirectories. </p> <p> For example, if there are two entry points <code>src/<wbr>pages/<wbr>home/<wbr>index.ts</code> and <code>src/<wbr>pages/<wbr>about/<wbr>index.ts</code>, the outbase directory is <code>src</code>, and the entry names template is <code>[dir]/[name]</code>, the output directory will contain <code>pages/<wbr>home/<wbr>index.js</code> and <code>pages/<wbr>about/<wbr>index.js</code>. If the entry names template had been just <code>[name]</code> instead, bundling would have failed because there would have been two output files with the same output path <code>index.js</code> inside the output directory. </p></li><li><code>[name]</code> <p> This is the original file name of the entry point without the extension. For example, if the input entry point file is named <code>app.js</code> then <code>[name]</code> will be substituted with <code>app</code> in the template. </p></li><li><code>[hash]</code> <p> This is the content hash of the output file, which can be used to take optimal advantage of browser caching. Adding <code>[hash]</code> to your entry point names means esbuild will calculate a hash that relates to all content in the corresponding output file (and any output file it imports if <a href="#splitting">code splitting</a> is active). The hash is designed to change if and only if any of the input files relevant to that output file are changed. </p> <p> After that, you can have your web server tell browsers that to cache these files forever (in practice you can say they expire a very long time from now such as in a year). You can then use the information in the <a href="#metafile">metafile</a> to determine which output file path corresponds to which input entry point so you know what path to include in your <code>&lt;script&gt;</code> tag. </p></li></ul>
+      <p>Entry path templates do not need to include a file extension. The appropriate <a href="#out-extension">out extension</a> based on the file type will be automatically added to the end of the output path after template substitution.</p>
+      <p>This option is similar to the <a href="#asset-names">asset names</a> and <a href="#chunk-names">chunk names</a> options.</p>
       <h3 id="footer" data-h2="advanced-options">
         <a class="permalink" href="#footer">#</a>
         Footer
