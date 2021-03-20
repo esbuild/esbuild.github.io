@@ -111,6 +111,7 @@
                   <li id="nav-caching-your-plugin"><a href="#caching-your-plugin">Caching your plugin</a></li>
                 </ul>
               </li>
+              <li id="nav-build-options"><a href="#build-options">Accessing build options</a></li>
               <li id="nav-example-plugins">
                 <a href="#example-plugins">Example plugins</a>
                 <ul class="h3">
@@ -736,6 +737,46 @@ always re-running all such path resolutions even when none of the input files
 have been changed and verifying that none of the path resolutions have
 changed either.
 </p></li><li><p> These cache keys are only correct for an in-memory cache. It would be incorrect to implement a file system cache using the same cache keys. While an in-memory cache is guaranteed to always run the same code for every build because the code is also stored in memory, a file system cache could potentially be accessed by two separate builds that each contain different code. Specifically the code for the <code>slowTransform()</code> function may have been changed in between builds. </p> <p> This can happen in various cases. The package containing the function <code>slowTransform()</code> may have been updated, or one of its transitive dependencies may have been updated even if you have pinned the package's version due to how npm handles semver, or someone may have <a href="https://www.npmjs.com/package/patch-package">mutated the package contents</a> on the file system in the meantime, or the transform function may be calling a node API and different builds could be running on different node versions. </p> <p> If you want to store your cache on the file system, you should guard against changes to the code for the transform function by storing some representation of the code for the transform function in the cache key. This is usually some form of <a href="https://nodejs.org/api/crypto.html#crypto_class_hash">hash</a> that contains the contents of all relevant files in all relevant packages as well as potentially other details such as which node version you are currently running on. Getting all of this to be correct is non-trivial. </p></li></ul>
+      <h2 id="build-options">
+        <a class="permalink" href="#build-options">#</a>
+        Accessing build options
+      </h2>
+      <p>Plugins can access the initial build options from within the <code>setup</code> method. This lets you inspect how the build is configured as well as modify the build options before the build starts. Here is an example:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-keyword">let</span> examplePlugin = {
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;auto-node-env&#x27;</span>,
+  <span class="hljs-function"><span class="hljs-title">setup</span>(<span class="hljs-params">build</span>)</span> {
+    <span class="hljs-keyword">const</span> options = build.initialOptions
+    options.define = options.define || {}
+    options.define[<span class="hljs-string">&#x27;process.env.NODE_ENV&#x27;</span>] =
+      options.minify ? <span class="hljs-string">&#x27;&quot;production&quot;&#x27;</span> : <span class="hljs-string">&#x27;&quot;development&quot;&#x27;</span>
+  },
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-keyword">var</span> examplePlugin = api.Plugin{
+  Name: <span class="hljs-string">&quot;auto-node-env&quot;</span>,
+  Setup: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(build api.PluginBuild)</span></span> {
+    options := build.InitialOptions
+    <span class="hljs-keyword">if</span> options.Define == <span class="hljs-literal">nil</span> {
+      options.Define = <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">string</span>{}
+    }
+    <span class="hljs-keyword">if</span> options.MinifyWhitespace &amp;&amp; options.MinifyIdentifiers &amp;&amp; options.MinifySyntax {
+      options.Define[<span class="hljs-string">`process.env.NODE_ENV`</span>] = <span class="hljs-string">`&quot;production&quot;`</span>
+    } <span class="hljs-keyword">else</span> {
+      options.Define[<span class="hljs-string">`process.env.NODE_ENV`</span>] = <span class="hljs-string">`&quot;development&quot;`</span>
+    }
+  },
+}
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+}</pre>
+      <p>Note that modifications to the build options after the build starts do not affect the build. In particular, <a href="/api/#incremental">incremental rebuilds</a>, <a href="/api/#watch">watch mode</a>, and <a href="/api/#serve">serve mode</a> do not update their build options if plugins mutate the build options object after the first build has started.</p>
       <h2 id="example-plugins">
         <a class="permalink" href="#example-plugins">#</a>
         Example plugins
