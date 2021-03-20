@@ -1100,6 +1100,55 @@ body:
       currently running on. Getting all of this to be correct is non-trivial.
       </p>
 
+  - h2#build-options: Accessing build options
+
+  - p: >
+      Plugins can access the initial build options from within the `setup`
+      method. This lets you inspect how the build is configured as well as
+      modify the build options before the build starts. Here is an example:
+
+  - example:
+      js: |
+        let examplePlugin = {
+          name: 'auto-node-env',
+          setup(build) {
+            const options = build.initialOptions
+            options.define = options.define || {}
+            options.define['process.env.NODE_ENV'] =
+              options.minify ? '"production"' : '"development"'
+          },
+        }
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+
+        var examplePlugin = api.Plugin{
+          Name: "auto-node-env",
+          Setup: func(build api.PluginBuild) {
+            options := build.InitialOptions
+            if options.Define == nil {
+              options.Define = map[string]string{}
+            }
+            if options.MinifyWhitespace && options.MinifyIdentifiers && options.MinifySyntax {
+              options.Define[`process.env.NODE_ENV`] = `"production"`
+            } else {
+              options.Define[`process.env.NODE_ENV`] = `"development"`
+            }
+          },
+        }
+
+        func main() {
+        }
+
+  - p: >
+      Note that modifications to the build options after the build starts do
+      not affect the build. In particular, [incremental rebuilds](/api/#incremental),
+      [watch mode](/api/#watch), and [serve mode](/api/#serve) do not
+      update their build options if plugins mutate the build options object
+      after the first build has started.
+
   - h2: Example plugins
 
   - p: >

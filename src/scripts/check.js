@@ -218,8 +218,9 @@ async function main() {
     let times = {}
 
     for (const obj of page.body) {
-      const tag = Object.keys(obj)[0]
-      const value = obj[tag]
+      let tag = Object.keys(obj)[0]
+      let value = obj[tag]
+      tag = tag.replace(/#.*/, '')
       if (tag === 'h2') h2 = value, h3 = null
       if (tag === 'h3') h3 = value
       if (tag !== 'example' || value.noCheck) continue;

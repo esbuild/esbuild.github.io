@@ -83,12 +83,21 @@ function generateNav(key) {
     if (k !== 'faq' || k === key) {
       let h3s
       for (let { tag, value } of page.body) {
+        let cssID
+
+        // Strip off a trailing CSS id
+        if (tag.includes('#')) {
+          let i = tag.indexOf('#')
+          cssID = tag.slice(i + 1)
+          tag = tag.slice(0, i)
+        }
+
         if (tag === 'h2') {
           h3s = []
-          h2 = { value, h3s }
+          h2 = { cssID: cssID || toID(value), value, h3s }
           h2s.push(h2)
         } else if (tag === 'h3' && k === key) {
-          h3s.push({ value })
+          h3s.push({ cssID: cssID || toID(value), value })
         }
       }
     }
@@ -104,17 +113,17 @@ function generateNav(key) {
       nav.push(`            <a href="/${escapeAttribute(k)}/">${escapeHTML(title)}</a>`)
       nav.push(`            <ul class="h2">`)
 
-      for (let { value, h3s } of h2s) {
-        let a = `<a href="${target}#${escapeAttribute(toID(value))}">${escapeHTML(value)}</a>`
+      for (let { cssID, value, h3s } of h2s) {
+        let a = `<a href="${target}#${escapeAttribute(cssID)}">${escapeHTML(value)}</a>`
 
         if (h3s.length > 0) {
-          nav.push(`              <li${k === key ? ` id="nav-${escapeAttribute(toID(value))}"` : ''}>`)
+          nav.push(`              <li${k === key ? ` id="nav-${escapeAttribute(cssID)}"` : ''}>`)
           nav.push(`                ${a}`)
           nav.push(`                <ul class="h3">`)
 
-          for (let { value } of h3s) {
-            let a = `<a href="#${escapeAttribute(toID(value))}">${escapeHTML(value)}</a>`
-            nav.push(`                  <li id="nav-${escapeAttribute(toID(value))}">${a}</li>`)
+          for (let { cssID, value } of h3s) {
+            let a = `<a href="#${escapeAttribute(cssID)}">${escapeHTML(value)}</a>`
+            nav.push(`                  <li id="nav-${escapeAttribute(cssID)}">${a}</li>`)
           }
 
           nav.push(`                </ul>`)
@@ -122,7 +131,7 @@ function generateNav(key) {
         }
 
         else {
-          nav.push(`              <li${k === key ? ` id="nav-${escapeAttribute(toID(value))}"` : ''}>${a}</li>`)
+          nav.push(`              <li${k === key ? ` id="nav-${escapeAttribute(cssID)}"` : ''}>${a}</li>`)
         }
       }
 
