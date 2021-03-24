@@ -106,7 +106,7 @@ body:
       things down.
       </p>
       <p>
-      Another benefit of Go is that it can store things as compactly in memory,
+      Another benefit of Go is that it can store things compactly in memory,
       which enables it to use less memory and fit more in the CPU cache. All
       object fields have types and fields are packed tightly together so e.g.
       several boolean flags only take one byte each. Go also has value semantics
