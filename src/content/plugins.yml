@@ -155,7 +155,7 @@ body:
   - h3: Namespaces
 
   - p: >
-      Every module as an associated namespace. By default esbuild operates
+      Every module has an associated namespace. By default esbuild operates
       in the `file` namespace, which corresponds to files on the file
       system. But esbuild can also handle "virtual" modules that don't have
       a corresponding location on the file system. One case when this happens
