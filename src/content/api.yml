@@ -84,6 +84,7 @@ body:
     - Log limit
     - Minify
     - Pure
+    - Source Root
     - Sourcefile
     - Sourcemap
     - Sources Content
@@ -189,6 +190,7 @@ body:
     - Pure
     - Resolve extensions
     - Serve
+    - Source Root
     - Sourcefile
     - Sourcemap
     - Sources Content
@@ -4206,6 +4208,51 @@ body:
             Bundle:            true,
             ResolveExtensions: []string{".ts", ".js"},
             Write:             true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - h3: Source Root
+
+  - p: >
+      This feature is only relevant when [source maps](#sourcemap) are enabled.
+      It lets you set the value of the `sourceRoot` field in the source map,
+      which specifies the path that all other paths in the source map are
+      relative to. If this field is not present, all paths in the source map
+      are interpreted as being relative to the directory containing the source
+      map instead.
+
+  - p: >
+      You can configure `sourceRoot` like this:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --sourcemap --source-root=https://raw.githubusercontent.com/some/repo/v1.2.3/
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          sourcemap: true,
+          sourceRoot: 'https://raw.githubusercontent.com/some/repo/v1.2.3/',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Sourcemap:   api.SourceMapInline,
+            SourceRoot:  "https://raw.githubusercontent.com/some/repo/v1.2.3/",
           })
 
           if len(result.Errors) > 0 {
