@@ -427,13 +427,15 @@ type ResolveKind =
         <a href="javascript:void 0" class="go2">Go</a>
       </div>
       <pre class="switchable js2">interface OnResolveResult {
-  path?: string;
-  external?: boolean;
-  pluginData?: any;
-  namespace?: string;
   errors?: Message[];
-  warnings?: Message[];
+  external?: boolean;
+  namespace?: string;
+  path?: string;
+  pluginData?: any;
   pluginName?: string;
+  warnings?: Message[];
+  watchDirs?: string[];
+  watchFiles?: string[];
 }
 
 interface Message {
@@ -451,13 +453,15 @@ interface Location {
   lineText: string;
 }</pre>
       <pre class="switchable go2"><span class="hljs-keyword">type</span> OnResolveResult <span class="hljs-keyword">struct</span> {
-  Path       <span class="hljs-keyword">string</span>
-  External   <span class="hljs-keyword">bool</span>
-  PluginData <span class="hljs-keyword">interface</span>{}
-  Namespace  <span class="hljs-keyword">string</span>
   Errors     []Message
-  Warnings   []Message
+  External   <span class="hljs-keyword">bool</span>
+  Namespace  <span class="hljs-keyword">string</span>
+  Path       <span class="hljs-keyword">string</span>
+  PluginData <span class="hljs-keyword">interface</span>{}
   PluginName <span class="hljs-keyword">string</span>
+  Warnings   []Message
+  WatchDirs  []<span class="hljs-keyword">string</span>
+  WatchFiles []<span class="hljs-keyword">string</span>
 }
 
 <span class="hljs-keyword">type</span> Message <span class="hljs-keyword">struct</span> {
@@ -474,7 +478,7 @@ interface Location {
   Length    <span class="hljs-keyword">int</span> <span class="hljs-comment">// in bytes</span>
   LineText  <span class="hljs-keyword">string</span>
 }</pre>
-      <ul><li><code>path</code> <p> Set this to a non-empty string to resolve the import to a specific path. If this is set, no more on-resolve callbacks will be run for this import path in this module. If this is not set, esbuild will continue to run on-resolve callbacks that were registered after the current one. Then, if the path still isn't resolved, esbuild will default to resolving the path relative to the resolve directory of the current module. </p></li><li><code>external</code> <p> Set this to <code>true</code> to mark the module as <a href="/api/#external">external</a>, which means it will not be included in the bundle and will instead be imported at run-time. </p></li><li><code>namespace</code> <p> This is the namespace associated with the resolved path. If left empty, it will default to the <code>file</code> namespace for non-external paths. Paths in the file namespace must be an absolute path for the current file system (so starting with a forward slash on Unix and with a drive letter on Windows). </p> <p> If you want to resolve to a path that isn't a file system path, you should set the namespace to something other than <code>file</code> or an empty string. This tells esbuild to not treat the path as pointing to something on the file system. </p></li><li><code>errors</code> and <code>warnings</code> <p> These properties let you pass any log messages generated during path resolution to esbuild where they will be displayed in the terminal according to the current <a href="/api/#log-level">log level</a> and end up in the final build result. For example, if you are calling a library and that library can return errors and/or warnings, you will want to forward them using these properties. </p> <p> If you only have a single error to return, you don't have to pass it via <code>errors</code>. You can simply throw the error in JavaScript or return the <code>error</code> object as the second return value in Go. </p></li><li><code>pluginName</code> <p> This property lets you replace this plugin's name with another name for this path resolution operation. It's useful for proxying another plugin through this plugin. For example, it lets you have a single plugin that forwards to a child process containing multiple plugins. You probably won't need to use this. </p></li><li><code>pluginData</code> <p> This property will be passed to the next plugin that runs in the plugin chain. If you return it from an <code>onLoad</code> plugin, it will be passed to the <code>onResolve</code> plugins for any imports in that file, and if you return it from an <code>onResolve</code> plugin, an arbitrary one will be passed to the <code>onLoad</code> plugin when it loads the file (it's arbitrary since the relationship is many-to-one). This is useful to pass data between different plugins without them having to coordinate directly. </p></li></ul>
+      <ul><li><code>path</code> <p> Set this to a non-empty string to resolve the import to a specific path. If this is set, no more on-resolve callbacks will be run for this import path in this module. If this is not set, esbuild will continue to run on-resolve callbacks that were registered after the current one. Then, if the path still isn't resolved, esbuild will default to resolving the path relative to the resolve directory of the current module. </p></li><li><code>external</code> <p> Set this to <code>true</code> to mark the module as <a href="/api/#external">external</a>, which means it will not be included in the bundle and will instead be imported at run-time. </p></li><li><code>namespace</code> <p> This is the namespace associated with the resolved path. If left empty, it will default to the <code>file</code> namespace for non-external paths. Paths in the file namespace must be an absolute path for the current file system (so starting with a forward slash on Unix and with a drive letter on Windows). </p> <p> If you want to resolve to a path that isn't a file system path, you should set the namespace to something other than <code>file</code> or an empty string. This tells esbuild to not treat the path as pointing to something on the file system. </p></li><li><code>errors</code> and <code>warnings</code> <p> These properties let you pass any log messages generated during path resolution to esbuild where they will be displayed in the terminal according to the current <a href="/api/#log-level">log level</a> and end up in the final build result. For example, if you are calling a library and that library can return errors and/or warnings, you will want to forward them using these properties. </p> <p> If you only have a single error to return, you don't have to pass it via <code>errors</code>. You can simply throw the error in JavaScript or return the <code>error</code> object as the second return value in Go. </p></li><li><code>watchFiles</code> and <code>watchDirs</code> <p> These properties let you return additional file system paths for esbuild's <a href="/api/#watch">watch mode</a> to scan. By default esbuild will only scan the path provided to <code>onLoad</code> plugins, and only if the namespace is <code>file</code>. If your plugin needs to react to additional changes in the file system, it needs to use one of these properties. </p> <p> A rebuild will be triggered if any file in the <code>watchFiles</code> array has been changed since the last build. Change detection is somewhat complicated and may check the file contents and/or the file's metadata. </p> <p> A rebuild will also be triggered if the list of directory entries for any directory in the <code>watchDirs</code> array has been changed since the last build. Note that this does not check anything about the contents of any file in these directories, and it also does not check any subdirectories. Think of this as checking the output of the Unix <code>ls</code> command. </p> <p> For robustness, you should include all file system paths that were used during the evaluation of the plugin. For example, if your plugin does something equivalent to <code>require.resolve()</code>, you'll need to include the paths of all &quot;does this file exist&quot; checks, not just the final path. Otherwise a new file could be created that causes the build to become outdated, but esbuild doesn't detect it because that path wasn't listed. </p></li><li><code>pluginName</code> <p> This property lets you replace this plugin's name with another name for this path resolution operation. It's useful for proxying another plugin through this plugin. For example, it lets you have a single plugin that forwards to a child process containing multiple plugins. You probably won't need to use this. </p></li><li><code>pluginData</code> <p> This property will be passed to the next plugin that runs in the plugin chain. If you return it from an <code>onLoad</code> plugin, it will be passed to the <code>onResolve</code> plugins for any imports in that file, and if you return it from an <code>onResolve</code> plugin, an arbitrary one will be passed to the <code>onLoad</code> plugin when it loads the file (it's arbitrary since the relationship is many-to-one). This is useful to pass data between different plugins without them having to coordinate directly. </p></li></ul>
       <h2 id="load-callbacks">
         <a class="permalink" href="#load-callbacks">#</a>
         Load callbacks
@@ -601,12 +605,14 @@ interface Location {
       </div>
       <pre class="switchable js2">interface OnLoadResult {
   contents?: string | <span class="hljs-built_in">Uint8Array</span>;
+  errors?: Message[];
   loader?: Loader;
   pluginData?: any;
-  resolveDir?: string;
-  errors?: Message[];
-  warnings?: Message[];
   pluginName?: string;
+  resolveDir?: string;
+  warnings?: Message[];
+  watchDirs?: string[];
+  watchFiles?: string[];
 }
 
 interface Message {
@@ -625,12 +631,14 @@ interface Location {
 }</pre>
       <pre class="switchable go2"><span class="hljs-keyword">type</span> OnLoadResult <span class="hljs-keyword">struct</span> {
   Contents   *<span class="hljs-keyword">string</span>
+  Errors     []Message
   Loader     Loader
   PluginData <span class="hljs-keyword">interface</span>{}
-  ResolveDir <span class="hljs-keyword">string</span>
-  Errors     []Message
-  Warnings   []Message
   PluginName <span class="hljs-keyword">string</span>
+  ResolveDir <span class="hljs-keyword">string</span>
+  Warnings   []Message
+  WatchDirs  []<span class="hljs-keyword">string</span>
+  WatchFiles []<span class="hljs-keyword">string</span>
 }
 
 <span class="hljs-keyword">type</span> Message <span class="hljs-keyword">struct</span> {
@@ -647,7 +655,7 @@ interface Location {
   Length    <span class="hljs-keyword">int</span> <span class="hljs-comment">// in bytes</span>
   LineText  <span class="hljs-keyword">string</span>
 }</pre>
-      <ul><li><code>contents</code> <p> Set this to a string to specify the contents of the module. If this is set, no more on-load callbacks will be run for this resolved path. If this is not set, esbuild will continue to run on-load callbacks that were registered after the current one. Then, if the contents are still not set, esbuild will default to loading the contents from the file system if the resolved path is in the <code>file</code> namespace. </p></li><li><code>loader</code> <p> This tells esbuild how to interpret the contents. For example, the <a href="/content-types/#javascript"><code>js</code></a> loader interprets the contents as JavaScript and the <a href="/content-types/#css"><code>css</code></a> loader interprets the contents as CSS. The loader defaults to <code>js</code> if it's not specified. See the <a href="/content-types/">content types</a> page for a complete list of all built-in loaders. </p></li><li><code>resolveDir</code> <p> This is the file system directory to use when resolving an import path in this module to a real path on the file system. For modules in the <code>file</code> namespace, this value defaults to the directory part of the module path. Otherwise this value defaults to empty unless the plugin provides one. If the plugin doesn't provide one, esbuild's default behavior won't resolve any imports in this module. This directory will be passed to any <a href="#resolve-callbacks">resolve callbacks</a> that run on unresolved import paths in this module. </p></li><li><code>errors</code> and <code>warnings</code> <p> These properties let you pass any log messages generated during path resolution to esbuild where they will be displayed in the terminal according to the current <a href="/api/#log-level">log level</a> and end up in the final build result. For example, if you are calling a library and that library can return errors and/or warnings, you will want to forward them using these properties. </p> <p> If you only have a single error to return, you don't have to pass it via <code>errors</code>. You can simply throw the error in JavaScript or return the <code>error</code> object as the second return value in Go. </p></li><li><code>pluginName</code> <p> This property lets you replace this plugin's name with another name for this module load operation. It's useful for proxying another plugin through this plugin. For example, it lets you have a single plugin that forwards to a child process containing multiple plugins. You probably won't need to use this. </p></li><li><code>pluginData</code> <p> This property will be passed to the next plugin that runs in the plugin chain. If you return it from an <code>onLoad</code> plugin, it will be passed to the <code>onResolve</code> plugins for any imports in that file, and if you return it from an <code>onResolve</code> plugin, an arbitrary one will be passed to the <code>onLoad</code> plugin when it loads the file (it's arbitrary since the relationship is many-to-one). This is useful to pass data between different plugins without them having to coordinate directly. </p></li></ul>
+      <ul><li><code>contents</code> <p> Set this to a string to specify the contents of the module. If this is set, no more on-load callbacks will be run for this resolved path. If this is not set, esbuild will continue to run on-load callbacks that were registered after the current one. Then, if the contents are still not set, esbuild will default to loading the contents from the file system if the resolved path is in the <code>file</code> namespace. </p></li><li><code>loader</code> <p> This tells esbuild how to interpret the contents. For example, the <a href="/content-types/#javascript"><code>js</code></a> loader interprets the contents as JavaScript and the <a href="/content-types/#css"><code>css</code></a> loader interprets the contents as CSS. The loader defaults to <code>js</code> if it's not specified. See the <a href="/content-types/">content types</a> page for a complete list of all built-in loaders. </p></li><li><code>resolveDir</code> <p> This is the file system directory to use when resolving an import path in this module to a real path on the file system. For modules in the <code>file</code> namespace, this value defaults to the directory part of the module path. Otherwise this value defaults to empty unless the plugin provides one. If the plugin doesn't provide one, esbuild's default behavior won't resolve any imports in this module. This directory will be passed to any <a href="#resolve-callbacks">resolve callbacks</a> that run on unresolved import paths in this module. </p></li><li><code>errors</code> and <code>warnings</code> <p> These properties let you pass any log messages generated during path resolution to esbuild where they will be displayed in the terminal according to the current <a href="/api/#log-level">log level</a> and end up in the final build result. For example, if you are calling a library and that library can return errors and/or warnings, you will want to forward them using these properties. </p> <p> If you only have a single error to return, you don't have to pass it via <code>errors</code>. You can simply throw the error in JavaScript or return the <code>error</code> object as the second return value in Go. </p></li><li><code>watchFiles</code> and <code>watchDirs</code> <p> These properties let you return additional file system paths for esbuild's <a href="/api/#watch">watch mode</a> to scan. By default esbuild will only scan the path provided to <code>onLoad</code> plugins, and only if the namespace is <code>file</code>. If your plugin needs to react to additional changes in the file system, it needs to use one of these properties. </p> <p> A rebuild will be triggered if any file in the <code>watchFiles</code> array has been changed since the last build. Change detection is somewhat complicated and may check the file contents and/or the file's metadata. </p> <p> A rebuild will also be triggered if the list of directory entries for any directory in the <code>watchDirs</code> array has been changed since the last build. Note that this does not check anything about the contents of any file in these directories, and it also does not check any subdirectories. Think of this as checking the output of the Unix <code>ls</code> command. </p> <p> For robustness, you should include all file system paths that were used during the evaluation of the plugin. For example, if your plugin does something equivalent to <code>require.resolve()</code>, you'll need to include the paths of all &quot;does this file exist&quot; checks, not just the final path. Otherwise a new file could be created that causes the build to become outdated, but esbuild doesn't detect it because that path wasn't listed. </p></li><li><code>pluginName</code> <p> This property lets you replace this plugin's name with another name for this module load operation. It's useful for proxying another plugin through this plugin. For example, it lets you have a single plugin that forwards to a child process containing multiple plugins. You probably won't need to use this. </p></li><li><code>pluginData</code> <p> This property will be passed to the next plugin that runs in the plugin chain. If you return it from an <code>onLoad</code> plugin, it will be passed to the <code>onResolve</code> plugins for any imports in that file, and if you return it from an <code>onResolve</code> plugin, an arbitrary one will be passed to the <code>onLoad</code> plugin when it loads the file (it's arbitrary since the relationship is many-to-one). This is useful to pass data between different plugins without them having to coordinate directly. </p></li></ul>
       <h3 id="caching-your-plugin" data-h2="load-callbacks">
         <a class="permalink" href="#caching-your-plugin">#</a>
         Caching your plugin
