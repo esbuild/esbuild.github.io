@@ -69,8 +69,8 @@ body:
       See also [the list of finished ECMAScript proposals](https://github.com/tc39/proposals/blob/master/finished-proposals.md)
       and [the list of active ECMAScript proposals](https://github.com/tc39/proposals/blob/master/README.md).
       Note that while transforming code containing top-level await is
-      supported, bundling code containing top-level await is not yet
-      supported.
+      supported, bundling code containing top-level await is only supported
+      when the [output format](/api/#format) is set to [`esm`](/api/#format-esm).
 
   - h3: JavaScript caveats
 
