@@ -110,6 +110,7 @@
                   <li id="nav-public-path"><a href="#public-path">Public path</a></li>
                   <li id="nav-pure"><a href="#pure">Pure</a></li>
                   <li id="nav-resolve-extensions"><a href="#resolve-extensions">Resolve extensions</a></li>
+                  <li id="nav-source-root"><a href="#source-root">Source Root</a></li>
                   <li id="nav-sourcefile"><a href="#sourcefile">Sourcefile</a></li>
                   <li id="nav-sources-content"><a href="#sources-content">Sources Content</a></li>
                   <li id="nav-stdin"><a href="#stdin">Stdin</a></li>
@@ -241,6 +242,7 @@
         <li><a href="#log-level">Log level</a></li>
         <li><a href="#log-limit">Log limit</a></li>
         <li><a href="#pure">Pure</a></li>
+        <li><a href="#source-root">Source Root</a></li>
         <li><a href="#sourcefile">Sourcefile</a></li>
         <li><a href="#sources-content">Sources Content</a></li>
         <li><a href="#tree-shaking">Tree shaking</a></li>
@@ -326,6 +328,7 @@
         <li><a href="#public-path">Public path</a></li>
         <li><a href="#pure">Pure</a></li>
         <li><a href="#resolve-extensions">Resolve extensions</a></li>
+        <li><a href="#source-root">Source Root</a></li>
         <li><a href="#sourcefile">Sourcefile</a></li>
         <li><a href="#sources-content">Sources Content</a></li>
         <li><a href="#stdin">Stdin</a></li>
@@ -2757,6 +2760,40 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     Bundle:            <span class="hljs-literal">true</span>,
     ResolveExtensions: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;.ts&quot;</span>, <span class="hljs-string">&quot;.js&quot;</span>},
     Write:             <span class="hljs-literal">true</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <h3 id="source-root" data-h2="advanced-options">
+        <a class="permalink" href="#source-root">#</a>
+        Source Root
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This feature is only relevant when <a href="#sourcemap">source maps</a> are enabled. It lets you set the value of the <code>sourceRoot</code> field in the source map, which specifies the path that all other paths in the source map are relative to. If this field is not present, all paths in the source map are interpreted as being relative to the directory containing the source map instead.</p>
+      <p>You can configure <code>sourceRoot</code> like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --sourcemap --source-root=https://raw.githubusercontent.com/some/repo/v1.2.3/</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">sourcemap</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">sourceRoot</span>: <span class="hljs-string">&#x27;https://raw.githubusercontent.com/some/repo/v1.2.3/&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Sourcemap:   api.SourceMapInline,
+    SourceRoot:  <span class="hljs-string">&quot;https://raw.githubusercontent.com/some/repo/v1.2.3/&quot;</span>,
   })
 
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
