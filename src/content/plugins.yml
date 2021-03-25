@@ -474,13 +474,15 @@ body:
 
       js: |
         interface OnResolveResult {
-          path?: string;
-          external?: boolean;
-          pluginData?: any;
-          namespace?: string;
           errors?: Message[];
-          warnings?: Message[];
+          external?: boolean;
+          namespace?: string;
+          path?: string;
+          pluginData?: any;
           pluginName?: string;
+          warnings?: Message[];
+          watchDirs?: string[];
+          watchFiles?: string[];
         }
 
         interface Message {
@@ -500,13 +502,15 @@ body:
 
       go: |
         type OnResolveResult struct {
-          Path       string
-          External   bool
-          PluginData interface{}
-          Namespace  string
           Errors     []Message
-          Warnings   []Message
+          External   bool
+          Namespace  string
+          Path       string
+          PluginData interface{}
           PluginName string
+          Warnings   []Message
+          WatchDirs  []string
+          WatchFiles []string
         }
 
         type Message struct {
@@ -574,6 +578,36 @@ body:
       If you only have a single error to return, you don't have to pass it via
       `errors`. You can simply throw the error in JavaScript or return the
       `error` object as the second return value in Go.
+      </p>
+
+    - >
+      `watchFiles` and `watchDirs`
+      <p>
+      These properties let you return additional file system paths for esbuild's
+      [watch mode](/api/#watch) to scan. By default esbuild will only scan the
+      path provided to `onLoad` plugins, and only if the namespace is `file`.
+      If your plugin needs to react to additional changes in the file system,
+      it needs to use one of these properties.
+      </p>
+      <p>
+      A rebuild will be triggered if any file in the `watchFiles` array has been
+      changed since the last build. Change detection is somewhat complicated
+      and may check the file contents and/or the file's metadata.
+      </p>
+      <p>
+      A rebuild will also be triggered if the list of directory entries for any
+      directory in the `watchDirs` array has been changed since the last build.
+      Note that this does not check anything about the contents of any file
+      in these directories, and it also does not check any subdirectories. Think
+      of this as checking the output of the Unix `ls` command.
+      </p>
+      <p>
+      For robustness, you should include all file system paths that were used
+      during the evaluation of the plugin. For example, if your plugin does
+      something equivalent to `require.resolve()`, you'll need to include the
+      paths of all "does this file exist" checks, not just the final path.
+      Otherwise a new file could be created that causes the build to become
+      outdated, but esbuild doesn't detect it because that path wasn't listed.
       </p>
 
     - >
@@ -805,12 +839,14 @@ body:
       js: |
         interface OnLoadResult {
           contents?: string | Uint8Array;
+          errors?: Message[];
           loader?: Loader;
           pluginData?: any;
-          resolveDir?: string;
-          errors?: Message[];
-          warnings?: Message[];
           pluginName?: string;
+          resolveDir?: string;
+          warnings?: Message[];
+          watchDirs?: string[];
+          watchFiles?: string[];
         }
 
         interface Message {
@@ -831,12 +867,14 @@ body:
       go: |
         type OnLoadResult struct {
           Contents   *string
+          Errors     []Message
           Loader     Loader
           PluginData interface{}
-          ResolveDir string
-          Errors     []Message
-          Warnings   []Message
           PluginName string
+          ResolveDir string
+          Warnings   []Message
+          WatchDirs  []string
+          WatchFiles []string
         }
 
         type Message struct {
@@ -904,6 +942,36 @@ body:
       If you only have a single error to return, you don't have to pass it via
       `errors`. You can simply throw the error in JavaScript or return the
       `error` object as the second return value in Go.
+      </p>
+
+    - >
+      `watchFiles` and `watchDirs`
+      <p>
+      These properties let you return additional file system paths for esbuild's
+      [watch mode](/api/#watch) to scan. By default esbuild will only scan the
+      path provided to `onLoad` plugins, and only if the namespace is `file`.
+      If your plugin needs to react to additional changes in the file system,
+      it needs to use one of these properties.
+      </p>
+      <p>
+      A rebuild will be triggered if any file in the `watchFiles` array has been
+      changed since the last build. Change detection is somewhat complicated
+      and may check the file contents and/or the file's metadata.
+      </p>
+      <p>
+      A rebuild will also be triggered if the list of directory entries for any
+      directory in the `watchDirs` array has been changed since the last build.
+      Note that this does not check anything about the contents of any file
+      in these directories, and it also does not check any subdirectories. Think
+      of this as checking the output of the Unix `ls` command.
+      </p>
+      <p>
+      For robustness, you should include all file system paths that were used
+      during the evaluation of the plugin. For example, if your plugin does
+      something equivalent to `require.resolve()`, you'll need to include the
+      paths of all "does this file exist" checks, not just the final path.
+      Otherwise a new file could be created that causes the build to become
+      outdated, but esbuild doesn't detect it because that path wasn't listed.
       </p>
 
     - >
