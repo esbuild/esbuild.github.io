@@ -265,7 +265,7 @@
         <a class="permalink" href="#namespaces">#</a>
         Namespaces
       </h3>
-      <p>Every module as an associated namespace. By default esbuild operates in the <code>file</code> namespace, which corresponds to files on the file system. But esbuild can also handle &quot;virtual&quot; modules that don't have a corresponding location on the file system. One case when this happens is when a module is provided using <a href="/api/#stdin">stdin</a>.</p>
+      <p>Every module has an associated namespace. By default esbuild operates in the <code>file</code> namespace, which corresponds to files on the file system. But esbuild can also handle &quot;virtual&quot; modules that don't have a corresponding location on the file system. One case when this happens is when a module is provided using <a href="/api/#stdin">stdin</a>.</p>
       <p>Plugins can be used to create virtual modules. Virtual modules usually use a namespace other than <code>file</code> to distinguish them from file system modules. Usually the namespace is specific to the plugin that created them. For example, the sample <a href="#http-plugin">HTTP plugin</a> below uses the <code>http-url</code> namespace for downloaded files.</p>
       <h3 id="filters" data-h2="concepts">
         <a class="permalink" href="#filters">#</a>
