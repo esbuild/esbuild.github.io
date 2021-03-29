@@ -164,6 +164,7 @@ body:
     - Conditions
     - Define
     - Entry names
+    - Entry points
     - External
     - Footer
     - Format
@@ -200,7 +201,7 @@ body:
     - Tree shaking
     - Tsconfig
     - Watch
-    - Working Directory
+    - Working directory
     - Write
 
   - h2: Simple options
@@ -404,6 +405,136 @@ body:
       shells, you will probably want to switch to using the [JavaScript API](/api/)
       instead. There you can use regular JavaScript syntax to eliminate
       cross-platform differences.
+
+  - h3: Entry points
+
+  - p: >
+      This is an array of files that each serve as an input to the bundling
+      algorithm. They are called "entry points" because each one is meant to
+      be the initial script that is evaluated which then loads all other aspects
+      of the code that it represents. Instead of loading many libraries in your
+      page with `<script>` tags, you would instead use `import` statements to
+      import them into your entry point (or into another file that is then
+      imported into your entry point).
+
+  - p: >
+      Simple apps only need one entry point but additional entry points can be
+      useful if there are multiple logically-independent groups of code such as
+      a main thread and a worker thread, or an app with separate relatively
+      unrelated areas such as a landing page, an editor page, and a settings page.
+      Separate entry points helps introduce separation of concerns and helps
+      reduce the amount of unnecessary code that the browser needs to download.
+      If applicable, enabling [code splitting](#splitting) can further reduce
+      download sizes when browsing to a second page whose entry point shares
+      some already-downloaded code with a first page that has already been
+      visited.
+
+  - p: >
+      The simple way to specify entry points is to just pass an array of file
+      paths:
+
+  - example:
+      in:
+        home.ts: '1 + 2'
+        settings.ts: '1 + 2'
+
+      cli: |
+        esbuild home.ts settings.ts --bundle --outdir=out
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['home.ts', 'settings.ts'],
+          bundle: true,
+          write: true,
+          outdir: 'out',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"home.ts", "settings.ts"},
+            Bundle:      true,
+            Write:       true,
+            Outdir:      "out",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      This will generate two output files, `out/home.js` and `out/settings.js`
+      corresponding to the two entry points `home.ts` and `settings.ts`.
+
+  - p: >
+      For further control over how the paths of the output files are derived
+      from the corresponding input entry points, you should look into these
+      options:
+
+  - ul:
+    - '[Entry names](#entry-names)'
+    - '[Out extension](#out-extension)'
+    - '[Outbase](#outbase)'
+    - '[Outdir](#outdir)'
+    - '[Outfile](#outfile)'
+
+  - p: >
+      In addition, you can also specify a fully custom output path for each
+      individual entry point using an alternative entry point syntax:
+
+  - example:
+      in:
+        home.js: '1 + 2'
+        settings.js: '1 + 2'
+
+      cli: |
+        esbuild out1=home.js out2=settings.js --bundle --outdir=out
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: {
+            out1: 'home.js',
+            out2: 'settings.js',
+          },
+          bundle: true,
+          write: true,
+          outdir: 'out',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPointsAdvanced: []api.EntryPoint{{
+              OutputPath: "out1",
+              InputPath:  "home.js",
+            }, {
+              OutputPath: "out2",
+              InputPath:  "settings.js",
+            }},
+            Bundle: true,
+            Write:  true,
+            Outdir: "out",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      This will generate two output files, `out/out1.js` and `out/out2.js`
+      corresponding to the two entry points `home.ts` and `settings.ts`.
 
   - h3: External
 
@@ -4687,7 +4818,7 @@ body:
           }
         }
 
-  - h3: Working Directory
+  - h3: Working directory
 
   - p: >
       This API option lets you specify the working directory to use for the
