@@ -67,6 +67,7 @@
                 <ul class="h3">
                   <li id="nav-bundle"><a href="#bundle">Bundle</a></li>
                   <li id="nav-define"><a href="#define">Define</a></li>
+                  <li id="nav-entry-points"><a href="#entry-points">Entry points</a></li>
                   <li id="nav-external"><a href="#external">External</a></li>
                   <li id="nav-format"><a href="#format">Format</a></li>
                   <li id="nav-inject"><a href="#inject">Inject</a></li>
@@ -117,7 +118,7 @@
                   <li id="nav-tree-shaking"><a href="#tree-shaking">Tree shaking</a></li>
                   <li id="nav-tsconfig"><a href="#tsconfig">Tsconfig</a></li>
                   <li id="nav-tsconfig-raw"><a href="#tsconfig-raw">Tsconfig raw</a></li>
-                  <li id="nav-working-directory"><a href="#working-directory">Working Directory</a></li>
+                  <li id="nav-working-directory"><a href="#working-directory">Working directory</a></li>
                 </ul>
               </li>
               <li id="nav-js-specific-details">
@@ -287,6 +288,7 @@
       <ul>
         <li><a href="#bundle">Bundle</a></li>
         <li><a href="#define">Define</a></li>
+        <li><a href="#entry-points">Entry points</a></li>
         <li><a href="#external">External</a></li>
         <li><a href="#format">Format</a></li>
         <li><a href="#inject">Inject</a></li>
@@ -334,7 +336,7 @@
         <li><a href="#stdin">Stdin</a></li>
         <li><a href="#tree-shaking">Tree shaking</a></li>
         <li><a href="#tsconfig">Tsconfig</a></li>
-        <li><a href="#working-directory">Working Directory</a></li>
+        <li><a href="#working-directory">Working directory</a></li>
       </ul>
       <h2 id="simple-options">
         <a class="permalink" href="#simple-options">#</a>
@@ -462,6 +464,86 @@
   }
 }</pre>
       <p>If you still run into cross-platform quote escaping issues with different shells, you will probably want to switch to using the <a href="/api/">JavaScript API</a> instead. There you can use regular JavaScript syntax to eliminate cross-platform differences.</p>
+      <h3 id="entry-points" data-h2="simple-options">
+        <a class="permalink" href="#entry-points">#</a>
+        Entry points
+      </h3>
+      <p><i>Supported by: <a href="#build-api">Build</a></i></p>
+      <p>This is an array of files that each serve as an input to the bundling algorithm. They are called &quot;entry points&quot; because each one is meant to be the initial script that is evaluated which then loads all other aspects of the code that it represents. Instead of loading many libraries in your page with <code>&lt;script&gt;</code> tags, you would instead use <code>import</code> statements to import them into your entry point (or into another file that is then imported into your entry point).</p>
+      <p>Simple apps only need one entry point but additional entry points can be useful if there are multiple logically-independent groups of code such as a main thread and a worker thread, or an app with separate relatively unrelated areas such as a landing page, an editor page, and a settings page. Separate entry points helps introduce separation of concerns and helps reduce the amount of unnecessary code that the browser needs to download. If applicable, enabling <a href="#splitting">code splitting</a> can further reduce download sizes when browsing to a second page whose entry point shares some already-downloaded code with a first page that has already been visited.</p>
+      <p>The simple way to specify entry points is to just pass an array of file paths:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild home.ts settings.ts --bundle --outdir=out</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;home.ts&#x27;</span>, <span class="hljs-string">&#x27;settings.ts&#x27;</span>],
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">write</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;out&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;home.ts&quot;</span>, <span class="hljs-string">&quot;settings.ts&quot;</span>},
+    Bundle:      <span class="hljs-literal">true</span>,
+    Write:       <span class="hljs-literal">true</span>,
+    Outdir:      <span class="hljs-string">&quot;out&quot;</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>This will generate two output files, <code>out/home.js</code> and <code>out/settings.js</code> corresponding to the two entry points <code>home.ts</code> and <code>settings.ts</code>.</p>
+      <p>For further control over how the paths of the output files are derived from the corresponding input entry points, you should look into these options:</p>
+      <ul><li><a href="#entry-names">Entry names</a></li><li><a href="#out-extension">Out extension</a></li><li><a href="#outbase">Outbase</a></li><li><a href="#outdir">Outdir</a></li><li><a href="#outfile">Outfile</a></li></ul>
+      <p>In addition, you can also specify a fully custom output path for each individual entry point using an alternative entry point syntax:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild out1=home.js out2=settings.js --bundle --outdir=out</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: {
+    <span class="hljs-attr">out1</span>: <span class="hljs-string">&#x27;home.js&#x27;</span>,
+    <span class="hljs-attr">out2</span>: <span class="hljs-string">&#x27;settings.js&#x27;</span>,
+  },
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">write</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;out&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPointsAdvanced: []api.EntryPoint{{
+      OutputPath: <span class="hljs-string">&quot;out1&quot;</span>,
+      InputPath:  <span class="hljs-string">&quot;home.js&quot;</span>,
+    }, {
+      OutputPath: <span class="hljs-string">&quot;out2&quot;</span>,
+      InputPath:  <span class="hljs-string">&quot;settings.js&quot;</span>,
+    }},
+    Bundle: <span class="hljs-literal">true</span>,
+    Write:  <span class="hljs-literal">true</span>,
+    Outdir: <span class="hljs-string">&quot;out&quot;</span>,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>This will generate two output files, <code>out/out1.js</code> and <code>out/out2.js</code> corresponding to the two entry points <code>home.ts</code> and <code>settings.ts</code>.</p>
       <h3 id="external" data-h2="simple-options">
         <a class="permalink" href="#external">#</a>
         External
@@ -3091,7 +3173,7 @@ one();</pre>
 }</pre>
       <h3 id="working-directory" data-h2="advanced-options">
         <a class="permalink" href="#working-directory">#</a>
-        Working Directory
+        Working directory
       </h3>
       <p><i>Supported by: <a href="#build-api">Build</a></i></p>
       <p>This API option lets you specify the working directory to use for the build. It normally defaults to the <a href="https://en.wikipedia.org/wiki/Working_directory">current working directory</a> of the process you are using to call esbuild's API. The working directory is used by esbuild for a few different things including resolving relative paths given as API options to absolute paths and pretty-printing absolute paths as relative paths in log messages. Here is how to override it:</p>

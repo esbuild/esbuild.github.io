@@ -364,7 +364,7 @@
       <ol><li>Install the Go compiler:
 <p><a href="https://golang.org/dl/">https://golang.org/dl/</a></p></li><li>Download the source code:
 <pre>
-git clone --depth 1 --branch v0.10.0 https://github.com/evanw/esbuild.git
+git clone --depth 1 --branch v0.11.0 https://github.com/evanw/esbuild.git
 cd esbuild
 </pre></li><li>Build the <code>esbuild</code> executable (it will be <code>esbuild.exe</code> on Windows):
 <pre>go build ./cmd/esbuild</pre></li></ol>
@@ -377,7 +377,7 @@ cd esbuild
       </h3>
       <p>Although the precompiled native executables are hosted using npm, you don't actually need npm installed to download them. The npm package registry is a normal HTTP server and packages are normal gzipped tar files.</p>
       <p>Here is an example of downloading a binary executable directly:</p>
-      <pre class="cli1"><span class="repl-in">curl -O https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.10.0.tgz</span><span class="repl-in">tar xf ./esbuild-darwin-64-0.10.0.tgz</span><span class="repl-in">./package/bin/esbuild</span><span class="repl-out">Usage:
+      <pre class="cli1"><span class="repl-in">curl -O https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.11.0.tgz</span><span class="repl-in">tar xf ./esbuild-darwin-64-0.11.0.tgz</span><span class="repl-in">./package/bin/esbuild</span><span class="repl-out">Usage:
   esbuild [options] [entry points]
 
 ...</span></pre>
