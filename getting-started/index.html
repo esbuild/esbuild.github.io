@@ -231,47 +231,13 @@
     os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
-      <p>Some npm packages you want to use may not be designed to be run in the browser. Sometimes you can use esbuild's configuration options to work around certain issues and successfully bundle the package anyway. For example, the <code>react</code> library contains code that checks the value of <code>process<wbr>.env<wbr>.NODE_ENV</code>. This will crash in the browser because the variable called <code>process</code> only exists in node, not in the browser. To work around this you can <a href="/api/#define">define</a> a custom value for this variable at build time:</p>
-      <div class="switcher">
-        <a href="javascript:void 0" class="cli3">CLI</a>
-        <a href="javascript:void 0" class="js3">JS</a>
-        <a href="javascript:void 0" class="go3">Go</a>
-      </div>
-      <pre class="switchable cli3">esbuild app.jsx --bundle --define:process.env.NODE_ENV=\&quot;production\&quot;</pre>
-      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
-  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.jsx&#x27;</span>],
-  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
-  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
-  <span class="hljs-attr">define</span>: {
-    <span class="hljs-string">&#x27;process.env.NODE_ENV&#x27;</span>: <span class="hljs-string">&#x27;&quot;production&quot;&#x27;</span>,
-  },
-})</pre>
-      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
-
-<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
-<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-  result := api.Build(api.BuildOptions{
-    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.jsx&quot;</span>},
-    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
-    Bundle:      <span class="hljs-literal">true</span>,
-    Define: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">string</span>{
-      <span class="hljs-string">&quot;process.env.NODE_ENV&quot;</span>: <span class="hljs-string">`&quot;production&quot;`</span>,
-    },
-    Write: <span class="hljs-literal">true</span>,
-  })
-
-  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
-    os.Exit(<span class="hljs-number">1</span>)
-  }
-}</pre>
       <p>Sometimes a package you want to use may import another package that is only available on node, such as the built-in <code>path</code> package. When that happens you can substitute the package for a browser-friendly alternative by using the <a href="https://github.com/defunctzombie/package-browser-field-spec">browser field</a> in your <code>package.json</code> file like this:</p>
       <pre>{
   <span class="hljs-attr">&quot;browser&quot;</span>: {
     <span class="hljs-attr">&quot;path&quot;</span>: <span class="hljs-string">&quot;path-browserify&quot;</span>
   }
 }</pre>
+      <p>Some npm packages you want to use may not be designed to be run in the browser. Sometimes you can use esbuild's configuration options to work around certain issues and successfully bundle the package anyway. Undefined globals can be replaced with either the <a href="/api/#define">define</a> feature in simple cases or the <a href="/api/#inject">inject</a> feature in more complex cases.</p>
       <h2 id="bundling-for-node">
         <a class="permalink" href="#bundling-for-node">#</a>
         Bundling for node
