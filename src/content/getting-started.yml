@@ -187,55 +187,6 @@ body:
         }
 
   - p: >
-      Some npm packages you want to use may not be designed to be run in the
-      browser. Sometimes you can use esbuild's configuration options to
-      work around certain issues and successfully bundle the package anyway.
-      For example, the `react` library contains code that checks the value of
-      <code>process<wbr>.env<wbr>.NODE_ENV</code>. This will crash in the
-      browser because the variable called `process` only exists in node, not
-      in the browser. To work around this you can [define](/api/#define) a
-      custom value for this variable at build time:
-
-  - example:
-      in:
-        app.jsx: '<div/>'
-
-      cli: |
-        esbuild app.jsx --bundle --define:process.env.NODE_ENV=\"production\"
-
-      js: |
-        require('esbuild').buildSync({
-          entryPoints: ['app.jsx'],
-          bundle: true,
-          outfile: 'out.js',
-          define: {
-            'process.env.NODE_ENV': '"production"',
-          },
-        })
-
-      go: |
-        package main
-
-        import "github.com/evanw/esbuild/pkg/api"
-        import "os"
-
-        func main() {
-          result := api.Build(api.BuildOptions{
-            EntryPoints: []string{"app.jsx"},
-            Outfile:     "out.js",
-            Bundle:      true,
-            Define: map[string]string{
-              "process.env.NODE_ENV": `"production"`,
-            },
-            Write: true,
-          })
-
-          if len(result.Errors) > 0 {
-            os.Exit(1)
-          }
-        }
-
-  - p: >
       Sometimes a package you want to use may import another package that is
       only available on node, such as the built-in `path` package. When that
       happens you can substitute the package for a browser-friendly alternative
@@ -248,6 +199,14 @@ body:
           "path": "path-browserify"
         }
       }
+
+  - p: >
+      Some npm packages you want to use may not be designed to be run in the
+      browser. Sometimes you can use esbuild's configuration options to
+      work around certain issues and successfully bundle the package anyway.
+      Undefined globals can be replaced with either the [define](/api/#define)
+      feature in simple cases or the [inject](/api/#inject) feature in more
+      complex cases.
 
   - h2: Bundling for node
 

@@ -1607,6 +1607,15 @@ body:
       is substituted with `false`. This code is present in some packages that
       have been published to npm.
       </p>
+    - >
+      <p>
+      All <code>process.<wbr>env.<wbr>NODE_ENV</code> expressions are automatically
+      [defined](#define) to `"production"` if all [minification](#minify)
+      options are enabled and `"development"` otherwise. This only happens if
+      `process`, `process.env`, and `process.env.NODE_ENV` are not already
+      defined. This substitution is necessary to avoid React-based code crashing
+      instantly (since `process` is a node API, not a web API).
+      </p>
 
   - p: >
       When the platform is set to `node`:
