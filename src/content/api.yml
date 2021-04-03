@@ -2001,7 +2001,7 @@ body:
     - >
       `host`
       <p>
-      This is the port that ended up being used by the web server. It will be
+      This is the host that ended up being used by the web server. It will be
       `0.0.0.0` (i.e. serving on all available network interfaces) unless a
       custom host was configured.
       </p>
