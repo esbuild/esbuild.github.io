@@ -1684,7 +1684,7 @@ result.Stop()</pre>
   <span class="hljs-attr">watch</span>: {
     <span class="hljs-function"><span class="hljs-title">onRebuild</span>(<span class="hljs-params">error, result</span>)</span> {
       <span class="hljs-keyword">if</span> (error) <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;watch build failed:&#x27;</span>, error)
-      <span class="hljs-keyword">else</span> <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;watch build succeeded:&#x27;</span>, result)
+      <span class="hljs-keyword">else</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;watch build succeeded:&#x27;</span>, result)
     },
   },
 }).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
