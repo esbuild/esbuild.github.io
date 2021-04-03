@@ -2511,7 +2511,7 @@ body:
           watch: {
             onRebuild(error, result) {
               if (error) console.error('watch build failed:', error)
-              else console.error('watch build succeeded:', result)
+              else console.log('watch build succeeded:', result)
             },
           },
         }).then(result => {
