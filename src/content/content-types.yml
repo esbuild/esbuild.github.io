@@ -57,13 +57,15 @@ body:
       These syntax features are currently always passed through un-transformed:
 
   - table: |
-      | Syntax transform                                                                    | Unsupported when `--target` is below | Example                     |
-      |-------------------------------------------------------------------------------------|--------------------------------------|-----------------------------|
-      | [Asynchronous iteration](https://github.com/tc39/proposal-async-iteration)          | `es2018`                             | `for await (let x of y) {}` |
-      | [Async generators](https://github.com/tc39/proposal-async-iteration)                | `es2018`                             | `async function* foo() {}`  |
-      | [BigInt](https://github.com/tc39/proposal-bigint)                                   | `es2020`                             | `123n`                      |
-      | [Hashbang grammar](https://github.com/tc39/proposal-hashbang)                       | `esnext`                             | `#!/usr/bin/env node`       |
-      | [Top-level await](https://github.com/tc39/proposal-top-level-await)                 | `esnext`                             | `await import(x)`           |
+      | Syntax transform                                                                                                       | Unsupported when `--target` is below | Example                     |
+      |------------------------------------------------------------------------------------------------------------------------|--------------------------------------|-----------------------------|
+      | [Asynchronous iteration](https://github.com/tc39/proposal-async-iteration)                                             | `es2018`                             | `for await (let x of y) {}` |
+      | [Async generators](https://github.com/tc39/proposal-async-iteration)                                                   | `es2018`                             | `async function* foo() {}`  |
+      | [BigInt](https://github.com/tc39/proposal-bigint)                                                                      | `es2020`                             | `123n`                      |
+      | [Hashbang grammar](https://github.com/tc39/proposal-hashbang)                                                          | `esnext`                             | `#!/usr/bin/env node`       |
+      | [Top-level await](https://github.com/tc39/proposal-top-level-await)                                                    | `esnext`                             | `await import(x)`           |
+      | [Ergonomic brand checks](https://github.com/tc39/proposal-private-fields-in-in)                                        | `esnext`                             | `#foo in bar`               |
+      | [Arbitrary module namespace identifiers](https://github.com/bmeck/proposal-arbitrary-module-namespace-identifiers)     | `esnext`                             | `export {foo as 'f o o'}`   |
 
   - p: >
       See also [the list of finished ECMAScript proposals](https://github.com/tc39/proposals/blob/master/finished-proposals.md)
