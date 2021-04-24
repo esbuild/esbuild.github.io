@@ -320,7 +320,7 @@ body:
       The recommended way to install esbuild is to [install the native executable using npm](#install-esbuild).
       But you can also install esbuild in these ways:
 
-  - h3: Install the WASM version
+  - h3#wasm: Install the WASM version
 
   - p: >
       In addition to the `esbuild` npm package, there is also an `esbuild-wasm`
@@ -342,6 +342,40 @@ body:
       use the WebAssembly package like this if there is no other option, such
       as when you want to use esbuild on an unsupported platform. The WebAssembly
       package is primarily intended to only be used [in the browser](/api/#running-in-the-browser).
+
+  - h3#deno: Use Deno instead of node
+
+  - p: >
+      There is also basic support for the [Deno](https://deno.land) JavaScript
+      environment if you'd like to use esbuild with that instead. The package
+      is hosted at [https://deno.land/x/esbuild](https://deno.land/x/esbuild)
+      and uses the native esbuild executable. The executable will be downloaded
+      and cached from npm at run-time so your computer will need network access
+      to registry.npmjs.org to make use of this package. Using the package
+      looks like this:
+
+  - pre.js: |
+      import * as esbuild from 'https://deno.land/x/esbuild@vCURRENT_ESBUILD_VERSION/mod.js'
+      const ts = 'let test: boolean = true'
+      const result = await esbuild.transform(ts, { loader: 'ts' })
+      console.log('result:', result)
+      esbuild.stop()
+
+  - p: >
+      It has basically the same API as esbuild's npm package with one addition:
+      you need to call `stop()` when you're done because unlike node, Deno doesn't
+      provide the necessary APIs to allow Deno to exit while esbuild's internal
+      child process is still running.
+
+  - p: >
+      **Why this is not recommended:**
+      Deno is newer than node, less widely used, and supports fewer platforms
+      than node, so node is recommended as the primary way to run esbuild.
+      Deno also uses the internet as a package system instead of existing
+      JavaScript package ecosystems, and esbuild is designed around and
+      optimized for npm-style package management. You should still be able to
+      use esbuild with Deno, but you will need a plugin if you would like to
+      be able to bundle HTTP URLs.
 
   - h3: Build from source
 
