@@ -79,6 +79,7 @@ body:
     - JSX factory
     - JSX fragment
     - Keep names
+    - Legal comments
     - Loader
     - Log level
     - Log limit
@@ -174,6 +175,7 @@ body:
     - JSX factory
     - JSX fragment
     - Keep names
+    - Legal comments
     - Loader
     - Log level
     - Log limit
@@ -3657,6 +3659,71 @@ body:
             os.Exit(1)
           }
         }
+
+  - h3: Legal comments
+
+  - p: >
+      A "legal comment" is considered to be any statement-level comment that
+      contains `@license` or `@preserve` or that starts with `//!` or `/*!`.
+      These comments are preserved in output files by default since that
+      follows the intent of the original authors of the code. However, this
+      behavior can be configured by using one of the following options:
+
+  - ul:
+    - >
+      <p>`none`<br>Do not preserve any legal comments.</p>
+
+    - >
+      <p>`inline`<br>Preserve all legal comments.</p>
+
+    - >
+      <p>`eof`<br>Move all legal comments to the end of the file.</p>
+
+    - >
+      <p>`linked`<br>Move all legal comments to a `.LEGAL.txt` file and link to them with a comment.</p>
+
+    - >
+      <p>`external`<br>Move all legal comments to a `.LEGAL.txt` file but to not link to them.</p>
+
+  - p: >
+      The default behavior is `eof` when [bundle](#bundle) is enabled and
+      `inline` otherwise. Setting the legal comment mode looks like this:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --legal-comments=eof
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          legalComments: 'eof',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints:   []string{"app.js"},
+            LegalComments: api.LegalCommentsEndOfFile,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Note that "statement-level" means the comment must appear in a context
+      where multiple statements are allowed such as in the top-level scope or
+      in a statement block. So comments inside expressions are not considered
+      license comments.
 
   - h3: Log level
 
