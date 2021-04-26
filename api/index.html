@@ -100,6 +100,7 @@
                   <li id="nav-jsx-factory"><a href="#jsx-factory">JSX factory</a></li>
                   <li id="nav-jsx-fragment"><a href="#jsx-fragment">JSX fragment</a></li>
                   <li id="nav-keep-names"><a href="#keep-names">Keep names</a></li>
+                  <li id="nav-legal-comments"><a href="#legal-comments">Legal comments</a></li>
                   <li id="nav-log-level"><a href="#log-level">Log level</a></li>
                   <li id="nav-log-limit"><a href="#log-limit">Log limit</a></li>
                   <li id="nav-main-fields"><a href="#main-fields">Main fields</a></li>
@@ -240,6 +241,7 @@
         <li><a href="#jsx-factory">JSX factory</a></li>
         <li><a href="#jsx-fragment">JSX fragment</a></li>
         <li><a href="#keep-names">Keep names</a></li>
+        <li><a href="#legal-comments">Legal comments</a></li>
         <li><a href="#log-level">Log level</a></li>
         <li><a href="#log-limit">Log limit</a></li>
         <li><a href="#pure">Pure</a></li>
@@ -319,6 +321,7 @@
         <li><a href="#jsx-factory">JSX factory</a></li>
         <li><a href="#jsx-fragment">JSX fragment</a></li>
         <li><a href="#keep-names">Keep names</a></li>
+        <li><a href="#legal-comments">Legal comments</a></li>
         <li><a href="#log-level">Log level</a></li>
         <li><a href="#log-limit">Log limit</a></li>
         <li><a href="#main-fields">Main fields</a></li>
@@ -2381,6 +2384,40 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     os.Exit(<span class="hljs-number">1</span>)
   }
 }</pre>
+      <h3 id="legal-comments" data-h2="advanced-options">
+        <a class="permalink" href="#legal-comments">#</a>
+        Legal comments
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>A &quot;legal comment&quot; is considered to be any statement-level comment that contains <code>@license</code> or <code>@preserve</code> or that starts with <code>//!</code> or <code>/*!</code>. These comments are preserved in output files by default since that follows the intent of the original authors of the code. However, this behavior can be configured by using one of the following options:</p>
+      <ul><li><p><code>none</code><br>Do not preserve any legal comments.</p></li><li><p><code>inline</code><br>Preserve all legal comments.</p></li><li><p><code>eof</code><br>Move all legal comments to the end of the file.</p></li><li><p><code>linked</code><br>Move all legal comments to a <code>.LEGAL.txt</code> file and link to them with a comment.</p></li><li><p><code>external</code><br>Move all legal comments to a <code>.LEGAL.txt</code> file but to not link to them.</p></li></ul>
+      <p>The default behavior is <code>eof</code> when <a href="#bundle">bundle</a> is enabled and <code>inline</code> otherwise. Setting the legal comment mode looks like this:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3">esbuild app.js --legal-comments=eof</pre>
+      <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">legalComments</span>: <span class="hljs-string">&#x27;eof&#x27;</span>,
+})</pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints:   []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    LegalComments: api.LegalCommentsEndOfFile,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}</pre>
+      <p>Note that &quot;statement-level&quot; means the comment must appear in a context where multiple statements are allowed such as in the top-level scope or in a statement block. So comments inside expressions are not considered license comments.</p>
       <h3 id="log-level" data-h2="advanced-options">
         <a class="permalink" href="#log-level">#</a>
         Log level
