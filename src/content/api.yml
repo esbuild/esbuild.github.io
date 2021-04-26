@@ -3729,13 +3729,29 @@ body:
 
   - p: >
       The log level can be changed to prevent esbuild from printing warning
-      and/or error messages to the terminal. The four log levels are `info`
-      (show everything), `warning` (show warnings and errors), `error`
-      (just show errors), and `silent` (show nothing).
+      and/or error messages to the terminal. The six log levels are:
+
+  - ul:
+    - >
+      <p>`silent`<br>Do not show any log output.</p>
+    - >
+      <p>`error`<br>Only show errors.</p>
+    - >
+      <p>`warning`<br>Only show warnings and errors.</p>
+    - >
+      <p>`info`<br>Show warnings, errors, and an output file summary. This is
+      the default log level.</p>
+    - >
+      <p>`debug`<br>Log everything from `info` and some additional messages
+      that may help you debug a broken bundle. This log level has a performance
+      impact and some of the messages may be false positives, so this information
+      is not shown by default.</p>
+    - >
+      <p>`verbose`<br>This generates a torrent of log messages and was added to
+      debug issues with file system drivers. It's not intended for general use.</p>
 
   - p: >
-      For example, you can hide all warnings by setting the log level to
-      `error`:
+      The log level can be set like this:
 
   - example:
       cli: |
