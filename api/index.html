@@ -2423,8 +2423,9 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
         Log level
       </h3>
       <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
-      <p>The log level can be changed to prevent esbuild from printing warning and/or error messages to the terminal. The four log levels are <code>info</code> (show everything), <code>warning</code> (show warnings and errors), <code>error</code> (just show errors), and <code>silent</code> (show nothing).</p>
-      <p>For example, you can hide all warnings by setting the log level to <code>error</code>:</p>
+      <p>The log level can be changed to prevent esbuild from printing warning and/or error messages to the terminal. The six log levels are:</p>
+      <ul><li><p><code>silent</code><br>Do not show any log output.</p></li><li><p><code>error</code><br>Only show errors.</p></li><li><p><code>warning</code><br>Only show warnings and errors.</p></li><li><p><code>info</code><br>Show warnings, errors, and an output file summary. This is the default log level.</p></li><li><p><code>debug</code><br>Log everything from <code>info</code> and some additional messages that may help you debug a broken bundle. This log level has a performance impact and some of the messages may be false positives, so this information is not shown by default.</p></li><li><p><code>verbose</code><br>This generates a torrent of log messages and was added to debug issues with file system drivers. It's not intended for general use.</p></li></ul>
+      <p>The log level can be set like this:</p>
       <div class="switcher">
         <a href="javascript:void 0" class="cli3">CLI</a>
         <a href="javascript:void 0" class="js3">JS</a>
