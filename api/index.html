@@ -265,7 +265,7 @@
       <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>).writeFileSync(<span class="hljs-string">&#x27;in.ts&#x27;</span>, <span class="hljs-string">&#x27;let x: number = 1&#x27;</span>)</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
   <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;in.ts&#x27;</span>],
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
-})</span><span class="repl-out">{ warnings: [] }</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>).readFileSync(<span class="hljs-string">&#x27;out.js&#x27;</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>)</span><span class="repl-out">'let x = 1;\n'</span></pre>
+})</span><span class="repl-out">{ errors: [], warnings: [] }</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>).readFileSync(<span class="hljs-string">&#x27;out.js&#x27;</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>)</span><span class="repl-out">'let x = 1;\n'</span></pre>
       <pre class="switchable go3"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> <span class="hljs-string">&quot;io/ioutil&quot;</span>
@@ -361,7 +361,7 @@
   <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;in.js&#x27;</span>],
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
-})</span><span class="repl-out">{ warnings: [] }</span></pre>
+})</span><span class="repl-out">{ errors: [], warnings: [] }</span></pre>
       <pre class="switchable go3"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
@@ -568,7 +568,7 @@
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
   <span class="hljs-attr">external</span>: [<span class="hljs-string">&#x27;fsevents&#x27;</span>],
-})</span><span class="repl-out">{ warnings: [] }</span></pre>
+})</span><span class="repl-out">{ errors: [], warnings: [] }</span></pre>
       <pre class="switchable go3"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> <span class="hljs-string">&quot;io/ioutil&quot;</span>
