@@ -120,7 +120,7 @@ body:
               outfile: 'out.js',
             })
         - expect: |
-            { warnings: [] }
+            { errors: [], warnings: [] }
         - $: |
             require('fs').readFileSync('out.js', 'utf8')
         - expect: |
@@ -231,7 +231,7 @@ body:
               outfile: 'out.js',
             })
         - expect: |
-            { warnings: [] }
+            { errors: [], warnings: [] }
 
       go: |
         package main
@@ -579,7 +579,7 @@ body:
               external: ['fsevents'],
             })
         - expect: |
-            { warnings: [] }
+            { errors: [], warnings: [] }
 
       go: |
         package main
