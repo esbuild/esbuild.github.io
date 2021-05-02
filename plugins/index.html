@@ -111,6 +111,8 @@
                   <li id="nav-caching-your-plugin"><a href="#caching-your-plugin">Caching your plugin</a></li>
                 </ul>
               </li>
+              <li id="nav-start-callbacks"><a href="#start-callbacks">Start callbacks</a></li>
+              <li id="nav-end-callbacks"><a href="#end-callbacks">End callbacks</a></li>
               <li id="nav-build-options"><a href="#build-options">Accessing build options</a></li>
               <li id="nav-example-plugins">
                 <a href="#example-plugins">Example plugins</a>
@@ -745,6 +747,79 @@ always re-running all such path resolutions even when none of the input files
 have been changed and verifying that none of the path resolutions have
 changed either.
 </p></li><li><p> These cache keys are only correct for an in-memory cache. It would be incorrect to implement a file system cache using the same cache keys. While an in-memory cache is guaranteed to always run the same code for every build because the code is also stored in memory, a file system cache could potentially be accessed by two separate builds that each contain different code. Specifically the code for the <code>slowTransform()</code> function may have been changed in between builds. </p> <p> This can happen in various cases. The package containing the function <code>slowTransform()</code> may have been updated, or one of its transitive dependencies may have been updated even if you have pinned the package's version due to how npm handles semver, or someone may have <a href="https://www.npmjs.com/package/patch-package">mutated the package contents</a> on the file system in the meantime, or the transform function may be calling a node API and different builds could be running on different node versions. </p> <p> If you want to store your cache on the file system, you should guard against changes to the code for the transform function by storing some representation of the code for the transform function in the cache key. This is usually some form of <a href="https://nodejs.org/api/crypto.html#crypto_class_hash">hash</a> that contains the contents of all relevant files in all relevant packages as well as potentially other details such as which node version you are currently running on. Getting all of this to be correct is non-trivial. </p></li></ul>
+      <h2 id="start-callbacks">
+        <a class="permalink" href="#start-callbacks">#</a>
+        Start callbacks
+      </h2>
+      <p>Register a start callback to be notified when a new build starts. This triggers for all builds, not just the initial build, so it's especially useful for <a href="/api/#incremental">incremental builds</a>, <a href="/api/#watch">watch mode</a>, and the <a href="/api/#serve">serve API</a>. Here's how to add a start callback:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-keyword">let</span> examplePlugin = {
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;example&#x27;</span>,
+  <span class="hljs-function"><span class="hljs-title">setup</span>(<span class="hljs-params">build</span>)</span> {
+    build.onStart(<span class="hljs-function">() =&gt;</span> {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;build started&#x27;</span>)
+    })
+  },
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-keyword">var</span> examplePlugin = api.Plugin{
+  Name: <span class="hljs-string">&quot;example&quot;</span>,
+  Setup: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(build api.PluginBuild)</span></span> {
+    build.OnStart(<span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span> <span class="hljs-params">(api.OnStartResult, error)</span></span> {
+      fmt.Fprintf(os.Stderr, <span class="hljs-string">&quot;build started\n&quot;</span>)
+      <span class="hljs-keyword">return</span> api.OnStartResult{}, <span class="hljs-literal">nil</span>
+    })
+  },
+}
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+}</pre>
+      <p>You should not use a start callback for initialization since it can be run multiple times. If you want to initialize something, just put your plugin initialization code directly inside the <code>setup</code> function instead.</p>
+      <p>The start callback can be <code>async</code> and can return a promise. However, the build does not wait for the promise to be resolved before starting, so a slow start callback will not necessarily slow down the build. All start callbacks are also run concurrently, not consecutively. The returned promise is purely for error reporting, and matters when the start callback needs to do an asynchronous operation that may fail or may produce warnings. If your plugin needs to wait for an asynchronous task in your start callback to complete before any <a href="#resolve-callbacks">resolve</a> or <a href="#load-callbacks">load</a> callbacks are run, you will need to have your resolve or load callbacks block on that asynchronous task.</p>
+      <p>Note that start callbacks do not have the ability to mutate the <a href="#build-options">build options</a>. The initial build options can only be modified within the <code>setup</code> function and are consumed once <code>setup</code> returns. All builds after the first one reuse the same initial options so the initial options are never re-consumed, and modifications to <code>build.initialOptions</code> that are done within the start callback are ignored.</p>
+      <h2 id="end-callbacks">
+        <a class="permalink" href="#end-callbacks">#</a>
+        End callbacks
+      </h2>
+      <p>Register a end callback to be notified when a new build ends. This triggers for all builds, not just the initial build, so it's especially useful for <a href="/api/#incremental">incremental builds</a>, <a href="/api/#watch">watch mode</a>, and the <a href="/api/#serve">serve API</a>. Here's how to add an end callback:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="js2">JS</a>
+        <a href="javascript:void 0" class="go2">Go</a>
+      </div>
+      <pre class="switchable js2"><span class="hljs-keyword">let</span> examplePlugin = {
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;example&#x27;</span>,
+  <span class="hljs-function"><span class="hljs-title">setup</span>(<span class="hljs-params">build</span>)</span> {
+    build.onEnd(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`build ended with <span class="hljs-subst">${result.errors.length}</span> errors`</span>)
+    })
+  },
+}</pre>
+      <pre class="switchable go2"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-keyword">var</span> examplePlugin = api.Plugin{
+  Name: <span class="hljs-string">&quot;example&quot;</span>,
+  Setup: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(build api.PluginBuild)</span></span> {
+    build.OnEnd(<span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(result *api.BuildResult)</span></span> {
+      fmt.Fprintf(os.Stderr, <span class="hljs-string">&quot;build ended with %d errors\n&quot;</span>, <span class="hljs-built_in">len</span>(result.Errors))
+    })
+  },
+}
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+}</pre>
+      <p>All end callbacks are run in serial and each callback is given access to the final build result. It can modify the build result before returning and can delay the end of the build by returning a promise. If you want to be able to inspect the build graph, you should enable the <a href="/api/#metafile">metafile</a> setting on the <a href="#build-options">initial options</a> and the build graph will be returned as the <code>metafile</code> property on the build result object.</p>
       <h2 id="build-options">
         <a class="permalink" href="#build-options">#</a>
         Accessing build options
