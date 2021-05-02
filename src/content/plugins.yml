@@ -1168,6 +1168,116 @@ body:
       currently running on. Getting all of this to be correct is non-trivial.
       </p>
 
+  - h2: Start callbacks
+
+  - p: >
+      Register a start callback to be notified when a new build starts. This
+      triggers for all builds, not just the initial build, so it's especially
+      useful for [incremental builds](/api/#incremental), [watch mode](/api/#watch),
+      and the [serve API](/api/#serve). Here's how to add a start callback:
+
+  - example:
+      js: |
+        let examplePlugin = {
+          name: 'example',
+          setup(build) {
+            build.onStart(() => {
+              console.log('build started')
+            })
+          },
+        }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        var examplePlugin = api.Plugin{
+          Name: "example",
+          Setup: func(build api.PluginBuild) {
+            build.OnStart(func() (api.OnStartResult, error) {
+              fmt.Fprintf(os.Stderr, "build started\n")
+              return api.OnStartResult{}, nil
+            })
+          },
+        }
+
+        func main() {
+        }
+
+  - p: >
+      You should not use a start callback for initialization since it can be run
+      multiple times. If you want to initialize something, just put your plugin
+      initialization code directly inside the `setup` function instead.
+
+  - p: >
+      The start callback can be `async` and can return a promise. However, the
+      build does not wait for the promise to be resolved before starting, so a
+      slow start callback will not necessarily slow down the build. All start
+      callbacks are also run concurrently, not consecutively. The returned
+      promise is purely for error reporting, and matters when the start callback
+      needs to do an asynchronous operation that may fail or may produce warnings.
+      If your plugin needs to wait for an asynchronous task in your start callback
+      to complete before any [resolve](#resolve-callbacks) or [load](#load-callbacks)
+      callbacks are run, you will need to have your resolve or load callbacks
+      block on that asynchronous task.
+
+  - p: >
+      Note that start callbacks do not have the ability to mutate the [build options](#build-options).
+      The initial build options can only be modified within the `setup` function
+      and are consumed once `setup` returns. All builds after the first one
+      reuse the same initial options so the initial options are never re-consumed,
+      and modifications to `build.initialOptions` that are done within the start
+      callback are ignored.
+
+  - h2: End callbacks
+
+  - p: >
+      Register a end callback to be notified when a new build ends. This
+      triggers for all builds, not just the initial build, so it's especially
+      useful for [incremental builds](/api/#incremental), [watch mode](/api/#watch),
+      and the [serve API](/api/#serve). Here's how to add an end callback:
+
+  - example:
+      js: |
+        let examplePlugin = {
+          name: 'example',
+          setup(build) {
+            build.onEnd(result => {
+              console.log(`build ended with ${result.errors.length} errors`)
+            })
+          },
+        }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        var examplePlugin = api.Plugin{
+          Name: "example",
+          Setup: func(build api.PluginBuild) {
+            build.OnEnd(func(result *api.BuildResult) {
+              fmt.Fprintf(os.Stderr, "build ended with %d errors\n", len(result.Errors))
+            })
+          },
+        }
+
+        func main() {
+        }
+
+  - p: >
+      All end callbacks are run in serial and each callback is given access to
+      the final build result. It can modify the build result before returning
+      and can delay the end of the build by returning a promise. If you want to
+      be able to inspect the build graph, you should enable the [metafile](/api/#metafile)
+      setting on the [initial options](#build-options) and the build graph will
+      be returned as the `metafile` property on the build result object.
+
   - h2#build-options: Accessing build options
 
   - p: >
