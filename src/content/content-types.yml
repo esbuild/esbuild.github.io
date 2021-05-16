@@ -44,6 +44,7 @@ body:
       | [Optional catch binding](https://github.com/tc39/proposal-optional-catch-binding)   | `es2019`                             | `try {} catch {}`          |
       | [Optional chaining](https://github.com/tc39/proposal-optional-chaining)             | `es2020`                             | `a?.b`                     |
       | [Nullish coalescing](https://github.com/tc39/proposal-nullish-coalescing)           | `es2020`                             | `a ?? b`                   |
+      | [Logical assignment operators](https://github.com/tc39/proposal-logical-assignment) | `es2020`                             | `a ??= b`                  |
       | [`import.meta`](https://github.com/tc39/proposal-import-meta)                       | `es2020`                             | `import.meta`              |
       | [Class instance fields](https://github.com/tc39/proposal-class-fields)              | `esnext`                             | `class { x }`              |
       | [Static class fields](https://github.com/tc39/proposal-static-class-features)       | `esnext`                             | `class { static x }`       |
@@ -51,7 +52,8 @@ body:
       | [Private instance fields](https://github.com/tc39/proposal-class-fields)            | `esnext`                             | `class { #x }`             |
       | [Private static methods](https://github.com/tc39/proposal-static-class-features)    | `esnext`                             | `class { static #x() {} }` |
       | [Private static fields](https://github.com/tc39/proposal-static-class-features)     | `esnext`                             | `class { static #x }`      |
-      | [Logical assignment operators](https://github.com/tc39/proposal-logical-assignment) | `esnext`                             | `a ??= b`                  |
+      | [Ergonomic brand checks](https://github.com/tc39/proposal-private-fields-in-in)     | `esnext`                             | `#x in y`                  |
+      | [Import assertions](https://github.com/tc39/proposal-import-assertions)             | `esnext`                             | `import "x" assert {}`     |
 
   - p: >
       These syntax features are currently always passed through un-transformed:
@@ -64,7 +66,6 @@ body:
       | [BigInt](https://github.com/tc39/proposal-bigint)                                                                      | `es2020`                             | `123n`                      |
       | [Hashbang grammar](https://github.com/tc39/proposal-hashbang)                                                          | `esnext`                             | `#!/usr/bin/env node`       |
       | [Top-level await](https://github.com/tc39/proposal-top-level-await)                                                    | `esnext`                             | `await import(x)`           |
-      | [Ergonomic brand checks](https://github.com/tc39/proposal-private-fields-in-in)                                        | `esnext`                             | `#foo in bar`               |
       | [Arbitrary module namespace identifiers](https://github.com/bmeck/proposal-arbitrary-module-namespace-identifiers)     | `esnext`                             | `export {foo as 'f o o'}`   |
 
   - p: >
