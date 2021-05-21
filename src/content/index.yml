@@ -6,11 +6,10 @@ index:
 
     - benchmark.animated:
         '[esbuild](https://github.com/evanw/esbuild)': 0.37
-        '[rollup](https://github.com/rollup/rollup) + [terser](https://github.com/terser/terser)': 36.00
-        '[webpack](https://github.com/webpack/webpack) 4': 41.91
-        '[webpack](https://github.com/webpack/webpack) 5': 54.50
-        '[parcel](https://github.com/parcel-bundler/parcel) 2': 56.71
-        '[parcel](https://github.com/parcel-bundler/parcel) 1': 118.51
+        '[rollup](https://github.com/rollup/rollup) + [terser](https://github.com/terser/terser)': 37.79
+        '[parcel](https://github.com/parcel-bundler/parcel) 2': 39.28
+        '[webpack](https://github.com/webpack/webpack) 4': 43.07
+        '[webpack](https://github.com/webpack/webpack) 5': 55.25
 
     - figcaption: >
         Above: the time to do a production bundle of 10 copies of the

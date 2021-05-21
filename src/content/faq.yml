@@ -130,12 +130,11 @@ body:
   - figcaption: JavaScript benchmark
   - benchmark:
       '[esbuild](https://github.com/evanw/esbuild)': 0.37
-      '[esbuild](https://github.com/evanw/esbuild) (1 thread)': 1.54
-      '[rollup](https://github.com/rollup/rollup) + [terser](https://github.com/terser/terser)': 36.00
-      '[webpack](https://github.com/webpack/webpack) 4': 41.91
-      '[webpack](https://github.com/webpack/webpack) 5': 54.50
-      '[parcel](https://github.com/parcel-bundler/parcel) 2': 56.71
-      '[parcel](https://github.com/parcel-bundler/parcel) 1': 118.51
+      '[esbuild](https://github.com/evanw/esbuild) (1 thread)': 1.61
+      '[rollup](https://github.com/rollup/rollup) + [terser](https://github.com/terser/terser)': 37.79
+      '[parcel](https://github.com/parcel-bundler/parcel) 2': 39.28
+      '[webpack](https://github.com/webpack/webpack) 4': 43.07
+      '[webpack](https://github.com/webpack/webpack) 5': 55.25
 
   - p: >
       This benchmark approximates a large JavaScript codebase by duplicating
@@ -147,13 +146,12 @@ body:
   - table: |
       | Bundler            |    Time | Relative slowdown | Absolute speed | Output size |
       | :----------------- | ------: | ----------------: | -------------: | ----------: |
-      | esbuild            |   0.37s |                1x |  1479.6 kloc/s |      5.80mb |
-      | esbuild (1 thread) |   1.54s |                4x |   355.5 kloc/s |      5.80mb |
-      | rollup + terser    |  36.00s |               97x |    15.2 kloc/s |      5.81mb |
-      | webpack 4          |  41.91s |              113x |    13.1 kloc/s |      5.97mb |
-      | webpack 5          |  54.50s |              147x |    10.0 kloc/s |      5.84mb |
-      | parcel 2           |  56.71s |              153x |     9.7 kloc/s |      5.92mb |
-      | parcel 1           | 118.51s |              320x |     4.6 kloc/s |      5.89mb |
+      | esbuild            |   0.37s |                1x |  1479.6 kloc/s |      5.81mb |
+      | esbuild (1 thread) |   1.61s |                4x |   340.0 kloc/s |      5.81mb |
+      | rollup + terser    |  37.79s |              102x |    14.5 kloc/s |      5.81mb |
+      | parcel 2           |  39.28s |              106x |    13.9 kloc/s |      5.87mb |
+      | webpack 4          |  43.07s |              116x |    12.7 kloc/s |      5.97mb |
+      | webpack 5          |  55.25s |              149x |     9.9 kloc/s |      5.84mb |
 
   - p: >
       Each time reported is the best of three runs. I'm running esbuild with
@@ -162,25 +160,19 @@ body:
       <code>rollup-<wbr>plugin-<wbr>terser</code> plugin because Rollup
       itself doesn't support minification. Webpack uses
       <code>--mode=<wbr>production <wbr>--devtool=<wbr>sourcemap</code>.
-      Parcel uses the default options. Absolute speed is based on the total
+      Parcel 2 uses the default options (Parcel 1 isn't included because the
+      generated code crashes on startup). Absolute speed is based on the total
       line count including comments and blank lines, which is currently 547,441.
       The tests were done on a 6-core 2019 MacBook Pro with 16gb of RAM.
 
-  - p: >
-      Caveats:
-
-  - ul:
-      - 'Parcel 1: The bundle crashes at run time with <code>TypeError:
-        <wbr>Cannot <wbr>redefine <wbr>property: <wbr>dynamic</code>'
-
   - figcaption: TypeScript benchmark
   - benchmark:
-      '[esbuild](https://github.com/evanw/esbuild)': 0.09
-      '[esbuild](https://github.com/evanw/esbuild) (1 thread)': 0.37
-      '[webpack](https://github.com/webpack/webpack) 4': 18.38
-      '[parcel](https://github.com/parcel-bundler/parcel) 1': 18.76
-      '[webpack](https://github.com/webpack/webpack) 5': 25.12
-      '[parcel](https://github.com/parcel-bundler/parcel) 2': 42.32
+      '[esbuild](https://github.com/evanw/esbuild)': 0.11
+      '[esbuild](https://github.com/evanw/esbuild) (1 thread)': 0.40
+      '[webpack](https://github.com/webpack/webpack) 4': 19.14
+      '[parcel](https://github.com/parcel-bundler/parcel) 1': 22.41
+      '[webpack](https://github.com/webpack/webpack) 5': 25.61
+      '[parcel](https://github.com/parcel-bundler/parcel) 2': 31.39
 
   - p: >
       This benchmark uses the [Rome](https://github.com/facebookexperimental/rome)
@@ -192,12 +184,12 @@ body:
   - table: |
       | Bundler            |    Time | Relative slowdown | Absolute speed | Output size |
       | :----------------- | ------: | ----------------: | -------------: | ----------: |
-      | esbuild            |   0.09s |                1x |  1464.8 kloc/s |      0.97mb |
-      | esbuild (1 thread) |   0.37s |                4x |   356.3 kloc/s |      0.97mb |
-      | webpack 4          |  18.38s |              204x |     7.2 kloc/s |      1.26mb |
-      | parcel 1           |  18.76s |              208x |     7.0 kloc/s |      1.56mb |
-      | webpack 5          |  24.57s |              273x |     5.4 kloc/s |      1.26mb |
-      | parcel 2           |  42.32s |              470x |     3.1 kloc/s |      1.68mb |
+      | esbuild            |   0.11s |                1x |  1198.5 kloc/s |      0.97mb |
+      | esbuild (1 thread) |   0.40s |                4x |   329.6 kloc/s |      0.97mb |
+      | webpack 4          |  19.14s |              174x |     6.9 kloc/s |      1.26mb |
+      | parcel 1           |  22.41s |              204x |     5.9 kloc/s |      1.56mb |
+      | webpack 5          |  25.61s |              233x |     5.1 kloc/s |      1.26mb |
+      | parcel 2           |  31.39s |              285x |     4.2 kloc/s |      0.97mb |
 
   - p: >
       Each time reported is the best of three runs. I'm running esbuild with
