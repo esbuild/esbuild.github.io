@@ -97,6 +97,7 @@
                   <li id="nav-footer"><a href="#footer">Footer</a></li>
                   <li id="nav-global-name"><a href="#global-name">Global name</a></li>
                   <li id="nav-incremental"><a href="#incremental">Incremental</a></li>
+                  <li id="nav-jsx"><a href="#jsx">JSX</a></li>
                   <li id="nav-jsx-factory"><a href="#jsx-factory">JSX factory</a></li>
                   <li id="nav-jsx-fragment"><a href="#jsx-fragment">JSX fragment</a></li>
                   <li id="nav-keep-names"><a href="#keep-names">Keep names</a></li>
@@ -240,6 +241,7 @@
         <li><a href="#color">Color</a></li>
         <li><a href="#footer">Footer</a></li>
         <li><a href="#global-name">Global name</a></li>
+        <li><a href="#jsx">JSX</a></li>
         <li><a href="#jsx-factory">JSX factory</a></li>
         <li><a href="#jsx-fragment">JSX fragment</a></li>
         <li><a href="#keep-names">Keep names</a></li>
@@ -320,6 +322,7 @@
         <li><a href="#footer">Footer</a></li>
         <li><a href="#global-name">Global name</a></li>
         <li><a href="#incremental">Incremental</a></li>
+        <li><a href="#jsx">JSX</a></li>
         <li><a href="#jsx-factory">JSX factory</a></li>
         <li><a href="#jsx-fragment">JSX fragment</a></li>
         <li><a href="#keep-names">Keep names</a></li>
@@ -2252,6 +2255,42 @@ example()</pre>
     }
   }
 }</pre>
+      <h3 id="jsx" data-h2="advanced-options">
+        <a class="permalink" href="#jsx">#</a>
+        JSX
+      </h3>
+      <p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p>
+      <p>This option tells esbuild what to do about JSX syntax. You can either have esbuild transform JSX to JS (the default) or preserve the JSX syntax in the output. To preserve JSX syntax:</p>
+      <div class="switcher">
+        <a href="javascript:void 0" class="cli3">CLI</a>
+        <a href="javascript:void 0" class="js3">JS</a>
+        <a href="javascript:void 0" class="go3">Go</a>
+      </div>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;&lt;div/&gt;&#x27;</span> | esbuild --jsx=preserve --loader=jsx</span><span class="repl-out">&lt;div /&gt;;</span></pre>
+      <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(<span class="hljs-string">&#x27;&lt;div/&gt;&#x27;</span>, {
+  <span class="hljs-attr">jsx</span>: <span class="hljs-string">&#x27;preserve&#x27;</span>,
+  <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;jsx&#x27;</span>,
+})</span><span class="repl-out">{
+  code: '&lt;div /&gt;;\n',
+  map: '',
+  warnings: []
+}</span></pre>
+      <pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Transform(<span class="hljs-string">&quot;&lt;div/&gt;&quot;</span>, api.TransformOptions{
+    JSXMode: api.JSXModePreserve,
+    Loader:  api.LoaderJSX,
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}</pre>
+      <p>Note that if you preserve JSX syntax, the output files are no longer valid JavaScript code. This feature is intended to be used when you want to transform the JSX syntax in esbuild's output files by another tool after bundling, usually one with a different JSX-to-JS transform than the one esbuild implements.</p>
       <h3 id="jsx-factory" data-h2="advanced-options">
         <a class="permalink" href="#jsx-factory">#</a>
         JSX factory

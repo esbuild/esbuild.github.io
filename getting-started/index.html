@@ -330,7 +330,7 @@
         Use Deno instead of node
       </h3>
       <p>There is also basic support for the <a href="https://deno.land">Deno</a> JavaScript environment if you'd like to use esbuild with that instead. The package is hosted at <a href="https://deno.land/x/esbuild">https://deno.land/x/esbuild</a> and uses the native esbuild executable. The executable will be downloaded and cached from npm at run-time so your computer will need network access to registry.npmjs.org to make use of this package. Using the package looks like this:</p>
-      <pre><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;https://deno.land/x/esbuild@v0.11.17/mod.js&#x27;</span>
+      <pre><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;https://deno.land/x/esbuild@v0.12.4/mod.js&#x27;</span>
 <span class="hljs-keyword">const</span> ts = <span class="hljs-string">&#x27;let test: boolean = true&#x27;</span>
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> esbuild.transform(ts, { <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;ts&#x27;</span> })
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;result:&#x27;</span>, result)
@@ -345,7 +345,7 @@ esbuild.stop()</pre>
       <ol><li>Install the Go compiler:
 <p><a href="https://golang.org/dl/">https://golang.org/dl/</a></p></li><li>Download the source code:
 <pre>
-git clone --depth 1 --branch v0.11.17 https://github.com/evanw/esbuild.git
+git clone --depth 1 --branch v0.12.4 https://github.com/evanw/esbuild.git
 cd esbuild
 </pre></li><li>Build the <code>esbuild</code> executable (it will be <code>esbuild.exe</code> on Windows):
 <pre>go build ./cmd/esbuild</pre></li></ol>
@@ -358,7 +358,7 @@ cd esbuild
       </h3>
       <p>Although the precompiled native executables are hosted using npm, you don't actually need npm installed to download them. The npm package registry is a normal HTTP server and packages are normal gzipped tar files.</p>
       <p>Here is an example of downloading a binary executable directly:</p>
-      <pre class="cli1"><span class="repl-in">curl -O https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.11.17.tgz</span><span class="repl-in">tar xf ./esbuild-darwin-64-0.11.17.tgz</span><span class="repl-in">./package/bin/esbuild</span><span class="repl-out">Usage:
+      <pre class="cli1"><span class="repl-in">curl -O https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.12.4.tgz</span><span class="repl-in">tar xf ./esbuild-darwin-64-0.12.4.tgz</span><span class="repl-in">./package/bin/esbuild</span><span class="repl-out">Usage:
   esbuild [options] [entry points]
 
 ...</span></pre>
