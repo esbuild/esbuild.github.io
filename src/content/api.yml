@@ -728,8 +728,10 @@ body:
             echo 'module.exports = "test"' | esbuild --format=esm
         - expect: |
             ...
-            var require_stdin = __commonJS((exports, module) => {
-              module.exports = "test";
+            var require_stdin = __commonJS({
+              "<stdin>"(exports, module) {
+                module.exports = "test";
+              }
             });
             export default require_stdin();
 
