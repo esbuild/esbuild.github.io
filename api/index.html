@@ -564,14 +564,13 @@
         <a href="javascript:void 0" class="js3">JS</a>
         <a href="javascript:void 0" class="go3">Go</a>
       </div>
-      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;require(&quot;fsevents&quot;)&#x27;</span> &gt; app.js</span><span class="repl-in">esbuild app.js --bundle --external:fsevents</span><span class="repl-out">(() =&gt; {
-  // app.js
-  require("fsevents");
-})();</span></pre>
+      <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;require(&quot;fsevents&quot;)&#x27;</span> &gt; app.js</span><span class="repl-in">esbuild app.js --bundle --external:fsevents --platform=node</span><span class="repl-out">// app.js
+require("fsevents");</span></pre>
       <pre class="switchable js3"><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>).writeFileSync(<span class="hljs-string">&#x27;app.js&#x27;</span>, <span class="hljs-string">&#x27;require(&quot;fsevents&quot;)&#x27;</span>)</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
   <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">platform</span>: <span class="hljs-string">&#x27;node&#x27;</span>,
   <span class="hljs-attr">external</span>: [<span class="hljs-string">&#x27;fsevents&#x27;</span>],
 })</span><span class="repl-out">{ errors: [], warnings: [] }</span></pre>
       <pre class="switchable go3"><span class="hljs-keyword">package</span> main
@@ -588,6 +587,7 @@
     Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
     Bundle:      <span class="hljs-literal">true</span>,
     Write:       <span class="hljs-literal">true</span>,
+    Platform:    api.PlatformNode,
     External:    []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;fsevents&quot;</span>},
   })
 
@@ -683,8 +683,10 @@ process.stdout.write(out.code)</pre>
         <a href="javascript:void 0" class="go3">Go</a>
       </div>
       <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;module.exports = &quot;test&quot;&#x27;</span> | esbuild --format=esm</span><span class="repl-out">...
-var require_stdin = __commonJS((exports, module) =&gt; {
-  module.exports = "test";
+var require_stdin = __commonJS({
+  "&lt;stdin&gt;"(exports, module) {
+    module.exports = "test";
+  }
 });
 export default require_stdin();</span></pre>
       <pre class="switchable js3"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;module.exports = &quot;test&quot;&#x27;</span>
