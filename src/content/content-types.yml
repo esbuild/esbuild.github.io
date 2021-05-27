@@ -343,13 +343,12 @@ body:
     - >
       [`paths`](https://www.typescriptlang.org/tsconfig#paths)
     - >
+      [`target`](https://www.typescriptlang.org/tsconfig#target)
+    - >
       [`useDefineForClassFields`](https://www.typescriptlang.org/tsconfig#useDefineForClassFields)
 
   - p: >
-      All other fields will be ignored. Note that this includes TypeScript's
-      [`target`](https://www.typescriptlang.org/tsconfig#target) setting.
-      You'll need to set the compilation target using esbuild's own
-      [`target`](/api/#target) setting instead. Also note that import path
+      All other fields will be ignored. Note that import path
       transformation requires [`bundling`](/api/#bundle) to be enabled,
       since path resolution only happens during bundling.
 

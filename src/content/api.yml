@@ -76,6 +76,7 @@ body:
     - Footer
     - Format
     - Global name
+    - JSX
     - JSX factory
     - JSX fragment
     - Keep names
@@ -172,6 +173,7 @@ body:
     - Global name
     - Incremental
     - Inject
+    - JSX
     - JSX factory
     - JSX fragment
     - Keep names
@@ -3461,6 +3463,57 @@ body:
             }
           }
         }
+
+  - h3: JSX
+
+  - p: >
+      This option tells esbuild what to do about JSX syntax. You can either have
+      esbuild transform JSX to JS (the default) or preserve the JSX syntax in the
+      output. To preserve JSX syntax:
+
+  - example:
+      cli:
+        - $: |
+            echo '<div/>' | esbuild --jsx=preserve --loader=jsx
+        - expect: |
+            <div />;
+
+      js:
+        - $: |
+            require('esbuild').transformSync('<div/>', {
+              jsx: 'preserve',
+              loader: 'jsx',
+            })
+        - expect: |
+            {
+              code: '<div />;\n',
+              map: '',
+              warnings: []
+            }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          result := api.Transform("<div/>", api.TransformOptions{
+            JSXMode: api.JSXModePreserve,
+            Loader:  api.LoaderJSX,
+          })
+
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
+
+  - p: >
+      Note that if you preserve JSX syntax, the output files are no longer valid
+      JavaScript code. This feature is intended to be used when you want to
+      transform the JSX syntax in esbuild's output files by another tool after
+      bundling, usually one with a different JSX-to-JS transform than the one
+      esbuild implements.
 
   - h3: JSX factory
 
