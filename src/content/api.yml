@@ -563,12 +563,10 @@ body:
         - $: |
             echo 'require("fsevents")' > app.js
         - $: |
-            esbuild app.js --bundle --external:fsevents
+            esbuild app.js --bundle --external:fsevents --platform=node
         - expect: |
-            (() => {
-              // app.js
-              require("fsevents");
-            })();
+            // app.js
+            require("fsevents");
 
       js:
         - $: |
@@ -578,6 +576,7 @@ body:
               entryPoints: ['app.js'],
               outfile: 'out.js',
               bundle: true,
+              platform: 'node',
               external: ['fsevents'],
             })
         - expect: |
@@ -598,6 +597,7 @@ body:
             Outfile:     "out.js",
             Bundle:      true,
             Write:       true,
+            Platform:    api.PlatformNode,
             External:    []string{"fsevents"},
           })
 
