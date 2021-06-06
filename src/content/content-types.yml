@@ -616,11 +616,6 @@ body:
   - h2: CSS
   - p: 'Loader: `css`'
 
-  - warning: >
-      The CSS content type is new and is still a work in progress.  You can follow 
-      [the tracking issue](https://github.com/evanw/esbuild/issues/20) for updates 
-      about this feature.
-
   - p: >
       This loader is enabled by default for `.css` files. It loads the file
       as CSS syntax. CSS is a first-class content type in esbuild, which means
