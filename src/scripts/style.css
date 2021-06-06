@@ -1,3 +1,68 @@
+/* Theme: light */
+
+body:not([data-theme=dark]) {
+  --bg-grad: rgba(255, 255, 255, 0) 0%, #fff 25%, #fff 75%, rgba(255, 255, 255, 0) 100%;
+  --bg: #fff;
+  --dark: none;
+  --fg-on: #000;
+  --fg: #222;
+  --lite: block;
+  --menu-bg: #fff;
+  --menu-fg: #222;
+  --menu-a: 0.25;
+  --pre-dim: #777;
+  --pre-val: #870;
+  --pre: #222;
+  --svg: #444;
+  --td: #ddd;
+  --tr: #f7f7f7;
+  --warn: #222;
+}
+
+/* Theme: dark (JS triggered) */
+
+body[data-theme=dark] {
+  --bg-grad: rgba(25, 25, 25, 0) 0%, #191919 25%, #191919 75%, rgba(25, 25, 25, 0) 100%;
+  --bg: #191919;
+  --dark: block;
+  --fg-on: #ddd;
+  --fg: #aaa;
+  --lite: none;
+  --menu-bg: #222;
+  --menu-fg: #aaa;
+  --menu-a: 0.65;
+  --pre-dim: #999;
+  --pre-val: #cb8;
+  --pre: #ccc;
+  --svg: #aaa;
+  --td: #333;
+  --tr: #151515;
+  --warn: #ddd;
+}
+
+/* Theme: dark (JS disabled) */
+
+@media (prefers-color-scheme: dark) {
+  body:not([data-theme=light]) {
+    --bg-grad: rgba(25, 25, 25, 0) 0%, #191919 25%, #191919 75%, rgba(25, 25, 25, 0) 100%;
+    --bg: #191919;
+    --dark: block;
+    --fg-on: #ddd;
+    --fg: #aaa;
+    --lite: none;
+    --menu-bg: #222;
+    --menu-fg: #aaa;
+    --menu-a: 0.65;
+    --pre-dim: #999;
+    --pre-val: #cb8;
+    --pre: #ccc;
+    --svg: #aaa;
+    --td: #333;
+    --tr: #151515;
+    --warn: #ddd;
+  }
+}
+
 body {
   font: 16px/140% sans-serif;
 }
@@ -506,247 +571,84 @@ body.has-js {
   }
 }
 
-/* ---------- Light colors ---------- */
+/* ---------- Colors ---------- */
 
-body:not([data-theme=dark]),
-body:not([data-theme=dark]) #menubar,
-body:not([data-theme=dark]) #menu,
-body:not([data-theme=dark]) nav ul ul {
-  background: #fff;
-  color: #222;
+body,
+#menu,
+nav ul ul {
+  background: var(--bg);
+  color: var(--fg);
 }
 
-body:not([data-theme=dark]) #menubar {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+#menubar {
+  box-shadow: 0 0 10px rgba(0, 0, 0, var(--menu-a));
+  background: var(--menu-bg);
+  color: var(--menu-fg);
 }
 
-body:not([data-theme=dark]) .progress {
-  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #fff 25%, #fff 75%, rgba(255, 255, 255, 0) 100%);
+.progress {
+  background: linear-gradient(to right, var(--bg-grad));
 }
 
-body:not([data-theme=dark]) path,
-body:not([data-theme=dark]) rect,
-body:not([data-theme=dark]) circle {
-  fill: #444;
-  stroke: #444;
+path,
+rect,
+circle {
+  fill: var(--svg);
+  stroke: var(--svg);
 }
 
-body:not([data-theme=dark]) h1,
-body:not([data-theme=dark]) h2,
-body:not([data-theme=dark]) h3,
-body:not([data-theme=dark]) .logo,
-body:not([data-theme=dark]) nav ul,
-body:not([data-theme=dark]) nav li.current {
-  color: #000;
+h1,
+h2,
+h3,
+.logo,
+nav ul,
+nav li.current {
+  color: var(--fg-on);
 }
 
-body:not([data-theme=dark]) a:hover path,
-body:not([data-theme=dark]) a:hover rect,
-body:not([data-theme=dark]) a:hover circle {
-  fill: #000;
-  stroke: #000;
+a:hover path,
+a:hover rect,
+a:hover circle {
+  fill: var(--fg-on);
+  stroke: var(--fg-on);
 }
 
-body:not([data-theme=dark]) .hljs-comment,
-body:not([data-theme=dark]) .hljs-keyword,
-body:not([data-theme=dark]) .hljs-literal {
-  color: #777;
+pre {
+  color: var(--pre);
 }
 
-body:not([data-theme=dark]) .hljs-regexp,
-body:not([data-theme=dark]) .hljs-string,
-body:not([data-theme=dark]) .hljs-number,
-body:not([data-theme=dark]) .hljs-tag {
-  color: #870;
+.hljs-comment,
+.hljs-keyword,
+.hljs-literal {
+  color: var(--pre-dim);
 }
 
-body:not([data-theme=dark]) #theme-dark {
-  display: none;
+.hljs-regexp,
+.hljs-string,
+.hljs-number,
+.hljs-tag {
+  color: var(--pre-val);
 }
 
-body:not([data-theme=dark]) #theme-light {
-  display: block;
+#theme-dark {
+  display: var(--dark);
 }
 
-body:not([data-theme=dark]) td,
-body:not([data-theme=dark]) th {
-  border: 1px solid #ddd;
+#theme-light {
+  display: var(--lite);
 }
 
-body:not([data-theme=dark]) tr:hover {
-  background: #f7f7f7;
+td,
+th {
+  border: 1px solid var(--td);
 }
 
-body:not([data-theme=dark]) .warning {
-  color: inherit;
+tr:hover {
+  background: var(--tr);
 }
 
-/* ---------- Dark colors ---------- */
-
-body[data-theme=dark],
-body[data-theme=dark] #menu,
-body[data-theme=dark] nav ul ul {
-  background: #191919;
-  color: #aaa;
-}
-
-body[data-theme=dark] #menubar {
-  background: #222;
-  color: #aaa;
-}
-
-body[data-theme=dark] #menubar {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.65);
-}
-
-body[data-theme=dark] .progress {
-  background: linear-gradient(to right, rgba(25, 25, 25, 0) 0%, #191919 25%, #191919 75%, rgba(25, 25, 25, 0) 100%);
-}
-
-body[data-theme=dark] path,
-body[data-theme=dark] rect,
-body[data-theme=dark] circle {
-  fill: #aaa;
-  stroke: #aaa;
-}
-
-body[data-theme=dark] h1,
-body[data-theme=dark] h2,
-body[data-theme=dark] h3,
-body[data-theme=dark] .logo,
-body[data-theme=dark] nav ul,
-body[data-theme=dark] nav li.current {
-  color: #ddd;
-}
-
-body[data-theme=dark] a:hover path,
-body[data-theme=dark] a:hover rect,
-body[data-theme=dark] a:hover circle {
-  fill: #ddd;
-  stroke: #ddd;
-}
-
-body[data-theme=dark] pre {
-  color: #ccc;
-}
-
-body[data-theme=dark] .hljs-comment,
-body[data-theme=dark] .hljs-keyword,
-body[data-theme=dark] .hljs-literal {
-  color: #999;
-}
-
-body[data-theme=dark] .hljs-regexp,
-body[data-theme=dark] .hljs-string,
-body[data-theme=dark] .hljs-number,
-body[data-theme=dark] .hljs-tag {
-  color: #cb8;
-}
-
-body[data-theme=dark] #theme-dark {
-  display: block;
-}
-
-body[data-theme=dark] #theme-light {
-  display: none;
-}
-
-body[data-theme=dark] td,
-body[data-theme=dark] th {
-  border: 1px solid #333;
-}
-
-body[data-theme=dark] tr:hover {
-  background: #151515;
-}
-
-body[data-theme=dark] .warning {
-  color: #ddd;
-}
-
-/* ---------- Dark colors without JavaScript ---------- */
-
-@media (prefers-color-scheme: dark) {
-  body:not([data-theme=light]),
-  body:not([data-theme=light]) #menu,
-  body:not([data-theme=light]) nav ul ul {
-    background: #191919;
-    color: #aaa;
-  }
-
-  body:not([data-theme=light]) #menubar {
-    background: #222;
-    color: #aaa;
-  }
-
-  body:not([data-theme=light]) #menubar {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.65);
-  }
-
-  body:not([data-theme=light]) .progress {
-    background: linear-gradient(to right, rgba(25, 25, 25, 0) 0%, #191919 25%, #191919 75%, rgba(25, 25, 25, 0) 100%);
-  }
-
-  body:not([data-theme=light]) path,
-  body:not([data-theme=light]) rect,
-  body:not([data-theme=light]) circle {
-    fill: #aaa;
-    stroke: #aaa;
-  }
-
-  body:not([data-theme=light]) h1,
-  body:not([data-theme=light]) h2,
-  body:not([data-theme=light]) h3,
-  body:not([data-theme=light]) .logo,
-  body:not([data-theme=light]) nav ul,
-  body:not([data-theme=light]) nav li.current {
-    color: #ddd;
-  }
-
-  body:not([data-theme=light]) a:hover path,
-  body:not([data-theme=light]) a:hover rect,
-  body:not([data-theme=light]) a:hover circle {
-    fill: #ddd;
-    stroke: #ddd;
-  }
-
-  body:not([data-theme=light]) pre {
-    color: #ccc;
-  }
-
-  body:not([data-theme=light]) .hljs-comment,
-  body:not([data-theme=light]) .hljs-keyword,
-  body:not([data-theme=light]) .hljs-literal {
-    color: #999;
-  }
-
-  body:not([data-theme=light]) .hljs-regexp,
-  body:not([data-theme=light]) .hljs-string,
-  body:not([data-theme=light]) .hljs-number,
-  body:not([data-theme=light]) .hljs-tag {
-    color: #cb8;
-  }
-
-  body:not([data-theme=light]) #theme-dark {
-    display: block;
-  }
-
-  body:not([data-theme=light]) #theme-light {
-    display: none;
-  }
-
-  body:not([data-theme=light]) td,
-  body:not([data-theme=light]) th {
-    border: 1px solid #333;
-  }
-
-  body:not([data-theme=light]) tr:hover {
-    background: #151515;
-  }
-
-  body:not([data-theme=light]) .warning {
-    color: #ddd;
-  }
+.warning {
+  color: var(--warn);
 }
 
 /* ---------- Multi-line SVGs last ---------- */
@@ -754,6 +656,6 @@ body[data-theme=dark] .warning {
 .js2 .repl-in:before,
 .js3 .repl-in:before {
   background-image: url('data:image/svg+xml,<svg width="16" height="20" xmlns="http://www.w3.org/2000/svg">\
-    <path d="M2 5.5L6 9.5 2 13.5" stroke-width="1.5" fill="none" stroke="%237f7f7f"/>\
-  </svg>');
+<path d="M2 5.5L6 9.5 2 13.5" stroke-width="1.5" fill="none" stroke="%237f7f7f"/>\
+</svg>');
 }
