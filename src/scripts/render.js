@@ -26,20 +26,11 @@ function minifyCSS(css) {
   return esbuild.transformSync(css, { loader: 'css', target, minify: true }).code.trim()
 }
 
-function copyAndMinify(from, to) {
-  esbuild.buildSync({
-    entryPoints: [from],
-    outfile: to,
-    minify: true,
-    target,
-  })
-}
-
 fs.mkdirSync(outDir, { recursive: true })
 fs.copyFileSync(path.join(scriptsDir, 'index.png'), path.join(outDir, 'index.png'))
 fs.copyFileSync(path.join(scriptsDir, 'favicon.svg'), path.join(outDir, 'favicon.svg'))
 
-copyAndMinify(path.join(scriptsDir, 'style.css'), path.join(outDir, 'style.css'))
+const minifiedCSS = minifyCSS(fs.readFileSync(path.join(scriptsDir, 'style.css'), 'utf8'))
 const minifiedJS = minifyJS(fs.readFileSync(path.join(scriptsDir, 'script.js'), 'utf8'))
 
 for (const link of fs.readdirSync(linkDir)) {
@@ -515,7 +506,7 @@ for (let [key, page] of pages) {
   html.push(`<meta property="twitter:card" content="summary_large_image"/>`)
   html.push(`<meta property="twitter:title" content="esbuild - ${escapeAttribute(page.title)}"/>`)
   html.push(`<meta property="twitter:image" content="https://esbuild.github.io/index.png"/>`)
-  html.push(`<link rel="stylesheet" href="/style.css">`)
+  html.push(`<style>${minifiedCSS}</style>`)
   html.push(`<meta name="viewport" content="width=device-width, initial-scale=1">`)
 
   // End header
