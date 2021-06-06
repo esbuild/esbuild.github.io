@@ -617,11 +617,9 @@ body:
   - p: 'Loader: `css`'
 
   - warning: >
-      The CSS content type is new and is still a work in progress. There is
-      also a known [ordering issue](https://github.com/evanw/esbuild/issues/465)
-      with importing CSS files from JavaScript files. You can follow
-      [the tracking issue](https://github.com/evanw/esbuild/issues/20)
-      for updates about this feature.
+      The CSS content type is new and is still a work in progress.  You can follow 
+      [the tracking issue](https://github.com/evanw/esbuild/issues/20) for updates 
+      about this feature.
 
   - p: >
       This loader is enabled by default for `.css` files. It loads the file
