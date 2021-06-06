@@ -15,6 +15,15 @@ const linkOutDir = path.join(outDir, 'link')
 // of esbuild. This should be reasonably up to date.
 const CURRENT_ESBUILD_VERSION = require('../../package.json').dependencies.esbuild;
 
+function buildAndMinify(file) {
+  return esbuild.buildSync({
+    entryPoints: [file],
+    minify: true,
+    target: ['chrome1', 'safari1', 'firefox1', 'edge1'],
+    write: false,
+  }).outputFiles[0].text
+}
+
 function copyAndMinify(from, to) {
   esbuild.buildSync({
     entryPoints: [from],
@@ -29,7 +38,7 @@ fs.copyFileSync(path.join(scriptsDir, 'index.png'), path.join(outDir, 'index.png
 fs.copyFileSync(path.join(scriptsDir, 'favicon.svg'), path.join(outDir, 'favicon.svg'))
 
 copyAndMinify(path.join(scriptsDir, 'style.css'), path.join(outDir, 'style.css'))
-copyAndMinify(path.join(scriptsDir, 'script.js'), path.join(outDir, 'script.js'))
+const minifiedJS = buildAndMinify(path.join(scriptsDir, 'script.js'))
 
 for (const link of fs.readdirSync(linkDir)) {
   if (link.startsWith('.') || !link.endsWith('.html')) continue
@@ -481,24 +490,7 @@ for (let [key, page] of pages) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body${key === 'index' ? ' class="index"' : ''}>
-    <script>
-      function os() {
-        return navigator.platform === 'Win32' ? 'windows' : 'unix'
-      }
-      try {
-        document.body.dataset.mode3 = localStorage.getItem('mode3') || 'cli'
-        document.body.dataset.mode2 = localStorage.getItem('mode2') || 'js'
-        document.body.dataset.os2 = localStorage.getItem('os2') || os()
-        document.body.dataset.theme = localStorage.getItem('theme')
-      } catch (e) {
-        document.body.dataset.mode3 = 'cli'
-        document.body.dataset.mode2 = 'js'
-        document.body.dataset.os2 = os()
-        document.body.dataset.theme = null
-      }
-      document.body.classList.add('has-js')
-    </script>
-    <script src="/script.js" defer></script>
+    <script>${minifiedJS}</script>
     <div id="menubar">
       <a id="menutoggle" href="javascript:void 0" aria-label="Toggle the menu">
         <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
