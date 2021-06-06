@@ -120,42 +120,42 @@ function generateNav(key) {
     let target = k === key ? '' : `/${escapeAttribute(k)}/`
 
     if (h2s.length > 0) {
-      nav.push(`          <li>`)
-      nav.push(`            <a href="/${escapeAttribute(k)}/">${escapeHTML(title)}</a>`)
-      nav.push(`            <ul class="h2">`)
+      nav.push(`<li>`)
+      nav.push(`<a href="/${escapeAttribute(k)}/">${escapeHTML(title)}</a>`)
+      nav.push(`<ul class="h2">`)
 
       for (let { cssID, value, h3s } of h2s) {
         let a = `<a href="${target}#${escapeAttribute(cssID)}">${escapeHTML(value)}</a>`
 
         if (h3s.length > 0) {
-          nav.push(`              <li${k === key ? ` id="nav-${escapeAttribute(cssID)}"` : ''}>`)
-          nav.push(`                ${a}`)
-          nav.push(`                <ul class="h3">`)
+          nav.push(`<li${k === key ? ` id="nav-${escapeAttribute(cssID)}"` : ''}>`)
+          nav.push(a)
+          nav.push(`<ul class="h3">`)
 
           for (let { cssID, value } of h3s) {
             let a = `<a href="#${escapeAttribute(cssID)}">${escapeHTML(value)}</a>`
-            nav.push(`                  <li id="nav-${escapeAttribute(cssID)}">${a}</li>`)
+            nav.push(`<li id="nav-${escapeAttribute(cssID)}">${a}</li>`)
           }
 
-          nav.push(`                </ul>`)
-          nav.push(`              </li>`)
+          nav.push(`</ul>`)
+          nav.push(`</li>`)
         }
 
         else {
-          nav.push(`              <li${k === key ? ` id="nav-${escapeAttribute(cssID)}"` : ''}>${a}</li>`)
+          nav.push(`<li${k === key ? ` id="nav-${escapeAttribute(cssID)}"` : ''}>${a}</li>`)
         }
       }
 
-      nav.push(`            </ul>`)
-      nav.push(`          </li>`)
+      nav.push(`</ul>`)
+      nav.push(`</li>`)
     }
 
     else {
-      nav.push(`          <li><a href="/${escapeAttribute(k)}/">${escapeHTML(title)}</a></li>`)
+      nav.push(`<li><a href="/${escapeAttribute(k)}/">${escapeHTML(title)}</a></li>`)
     }
   }
 
-  return nav.join('\n')
+  return nav.join('')
 }
 
 function renderBenchmarkSVG(entries) {
@@ -264,17 +264,17 @@ function renderBenchmark(entries, { leftWidth, bench, animated }) {
         }
       `
     }
-    tags.push(`      <style>${minifyCSS(css)}</style>`)
+    tags.push(`<style>${minifyCSS(css)}</style>`)
   }
 
   // Begin chart
-  tags.push(`      <figure class="bench" style="position:relative;max-width:${width}px;height:${height}px;font-size:13px;line-height:${barHeight}px;">`)
-  tags.push(`        <div style="position:absolute;left:${leftWidth}px;top:0;right:0;height:${height - bottomHeight}px;">`)
+  tags.push(`<figure class="bench" style="position:relative;max-width:${width}px;height:${height}px;font-size:13px;line-height:${barHeight}px;">`)
+  tags.push(`<div style="position:absolute;left:${leftWidth}px;top:0;right:0;height:${height - bottomHeight}px;">`)
 
   // Horizontal axis bars
   for (let i = 0; i * horizontalScale < rightWidth; i += horizontalStep) {
     let x = (100 * i * horizontalScale / rightWidth).toFixed(2) + '%'
-    tags.push(`          <div style="position:absolute;left:${x};top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>`)
+    tags.push(`<div style="position:absolute;left:${x};top:0;width:1px;bottom:0;background:rgba(127,127,127,0.25);"></div>`)
   }
 
   // Bars
@@ -287,11 +287,11 @@ function renderBenchmark(entries, { leftWidth, bench, animated }) {
     let barY = y + barMargin
     let barH = h - 2 * barMargin
     let bold = i === 0 ? 'font-weight:bold;' : ''
-    tags.push(`          <div style="position:absolute;left:0;top:${barY}px;width:${w};height:${barH}px;background:rgba(191,191,191,0.2);"></div>`)
-    tags.push(`          <div style="position:absolute;left:0;top:${barY}px;width:${w};height:${barH}px;background:#FFCF00;" class="${barID}"></div>`)
-    tags.push(`          <div style="position:absolute;right:100%;top:${y}px;width:${leftWidth}px;height:${h}px;` +
+    tags.push(`<div style="position:absolute;left:0;top:${barY}px;width:${w};height:${barH}px;background:rgba(191,191,191,0.2);"></div>`)
+    tags.push(`<div style="position:absolute;left:0;top:${barY}px;width:${w};height:${barH}px;background:#FFCF00;" class="${barID}"></div>`)
+    tags.push(`<div style="position:absolute;right:100%;top:${y}px;width:${leftWidth}px;height:${h}px;` +
       `text-align:right;white-space:nowrap;margin-right:${labelMargin}px;${bold}">${md.renderInline(name.trim())}</div>`)
-    tags.push(`          <div style="position:absolute;left:${w};top:${y}px;height:${h}px;` +
+    tags.push(`<div style="position:absolute;left:${w};top:${y}px;height:${h}px;` +
       `margin-left:${labelMargin}px;${bold}">${escapeHTML(time.toFixed(2))}s</div>`)
   }
 
@@ -299,19 +299,19 @@ function renderBenchmark(entries, { leftWidth, bench, animated }) {
   for (let i = 0; i * horizontalScale < rightWidth; i += horizontalStep) {
     let x = (100 * i * horizontalScale / rightWidth).toFixed(2) + '%'
     let y = topHeight + labelMargin / 2
-    tags.push(`          <div style="position:absolute;left:${x};top:${y}px;width:50px;margin-left:-25px;text-align:center;">${escapeHTML(i + 's')}</div>`)
+    tags.push(`<div style="position:absolute;left:${x};top:${y}px;width:50px;margin-left:-25px;text-align:center;">${escapeHTML(i + 's')}</div>`)
   }
 
   // End chart
   if (animated) {
     let y = topHeight + labelMargin / 2
-    tags.push(`          <div id="${bench}-progress" class="progress" style="position:absolute;top:${y}px;width:50px;margin-left:-25px;text-align:center;"></div>`)
+    tags.push(`<div id="${bench}-progress" class="progress" style="position:absolute;top:${y}px;width:50px;margin-left:-25px;text-align:center;"></div>`)
   }
-  tags.push(`        </div>`)
+  tags.push(`</div>`)
 
   // Animate the time
   if (animated) {
-    tags.push(`      <script>${minifyJS(`
+    tags.push(`<script>${minifyJS(`
       (() => {
         var el = document.getElementById('${bench}-progress')
         var interval
@@ -338,8 +338,8 @@ function renderBenchmark(entries, { leftWidth, bench, animated }) {
     `)}</script>`)
   }
 
-  tags.push(`      </figure>`)
-  return tags.join('\n')
+  tags.push(`</figure>`)
+  return tags.join('')
 }
 
 function renderExample(kind, value) {
@@ -388,11 +388,11 @@ function generateMain(key, main) {
       if (value.windows) elements.push(['windows', 'Windows'])
       if (elements.length === 1) {
         let [kind] = elements[0]
-        return `      <pre class="${kind + elements.length}">${renderExample(kind, value[kind])}</pre>`
+        return `<pre class="${kind + elements.length}">${renderExample(kind, value[kind])}</pre>`
       }
-      let switcherContent = elements.map(([kind, name]) => `        <a href="javascript:void 0" class="${kind + elements.length}">${name}</a>`)
-      let exampleContent = elements.map(([kind]) => `      <pre class="switchable ${kind + elements.length}">${renderExample(kind, value[kind])}</pre>`)
-      return `      <div class="switcher">\n${switcherContent.join('\n')}\n      </div>\n${exampleContent.join('\n')}`
+      let switcherContent = elements.map(([kind, name]) => `<a href="javascript:void 0" class="${kind + elements.length}">${name}</a>`)
+      let exampleContent = elements.map(([kind]) => `<pre class="switchable ${kind + elements.length}">${renderExample(kind, value[kind])}</pre>`)
+      return `<div class="switcher">\n${switcherContent.join('\n')}\n      </div>\n${exampleContent.join('\n')}`
     }
 
     if (/^h[234]$/.test(tag)) {
@@ -401,13 +401,12 @@ function generateMain(key, main) {
       let dataset = ''
       if (tag !== 'h2' && h2) dataset += ` data-h2="${escapeAttribute(h2)}"`
       if (tag === 'h4' && h3) dataset += ` data-h3="${escapeAttribute(h3)}"`
-      let html = `      <${tag} id="${escapeAttribute(toID(cssID || value))}"${dataset}>
-        <a class="permalink" href="#${escapeAttribute(toID(cssID || value))}">#</a>
-        ${md.renderInline(value)}
-      </${tag}>`
+      let html = `<${tag} id="${escapeAttribute(toID(cssID || value))}"${dataset}>` +
+        `<a class="permalink" href="#${escapeAttribute(toID(cssID || value))}">#</a>` +
+        `${md.renderInline(value)}</${tag}>`
       let calls = apiCallsForOption[value]
       if (calls) {
-        html += `\n      <p><i>Supported by: ${calls.map(call => {
+        html += `<p><i>Supported by: ${calls.map(call => {
           return `<a href="#${escapeAttribute(call)}">${call[0].toUpperCase() + call.slice(1).replace('-api', '')}</a>`
         }).join(' | ')}</i></p>`
       }
@@ -415,11 +414,11 @@ function generateMain(key, main) {
     }
 
     if (tag === 'toc') {
-      let toc = `      <ul>\n`
+      let toc = `<ul>\n`
       for (let { tag: t, value: v } of main.body) {
-        if (t === 'h2') toc += `        <li><a href="#${escapeAttribute(toID(v))}">${md.renderInline(v.trim())}</a></li>\n`
+        if (t === 'h2') toc += `<li><a href="#${escapeAttribute(toID(v))}">${md.renderInline(v.trim())}</a></li>\n`
       }
-      return toc + `      </ul>`
+      return toc + `</ul>`
     }
 
     if (tag === 'benchmark' || tag === 'benchmark.animated') {
@@ -436,15 +435,15 @@ function generateMain(key, main) {
     }
 
     if (tag === 'pre.raw') {
-      return `      <pre>${value.trim()}</pre>`
+      return `<pre>${value.trim()}</pre>`
     }
 
     if (tag.startsWith('pre.')) {
-      return `      <pre>${hljs.highlight(tag.slice(4), value.trim()).value}</pre>`
+      return `<pre>${hljs.highlight(tag.slice(4), value.trim()).value}</pre>`
     }
 
     if (tag === 'pre') {
-      return `      <pre>${escapeHTML(value.trim())}</pre>`
+      return `<pre>${escapeHTML(value.trim())}</pre>`
     }
 
     if (tag === 'available-options') {
@@ -464,32 +463,32 @@ function generateMain(key, main) {
       let lines = []
       for (let h2 in sections) {
         if (sections[h2].length === 0) continue
-        lines.push(`      <p>${escapeHTML(h2)}:</p>`);
-        lines.push(`      <ul>`);
+        lines.push(`<p>${escapeHTML(h2)}:</p>`);
+        lines.push(`<ul>`);
         for (let item of sections[h2]) {
-          lines.push(`        <li><a href="#${escapeAttribute(toID(item))}">${escapeHTML(item)}</a></li>`);
+          lines.push(`<li><a href="#${escapeAttribute(toID(item))}">${escapeHTML(item)}</a></li>`);
         }
-        lines.push(`      </ul>`);
+        lines.push(`</ul>`);
       }
-      return lines.join('\n')
+      return lines.join('')
     }
 
     if (tag === 'ul' || tag === 'ol') {
-      return `      <${tag}>${value.map(x =>
+      return `<${tag}>${value.map(x =>
         `<li>${md.renderInline(x.replace(/CURRENT_ESBUILD_VERSION/g, CURRENT_ESBUILD_VERSION).trim())}</li>`
       ).join('')}</${tag}>`
     }
 
     if (tag === 'table') {
-      return `      ${md.render(value.trim()).replace(/\n/g, '\n      ').trim()}`
+      return `${md.render(value.trim()).replace(/\n/g, '\n      ').trim()}`
     }
 
     if (tag === 'warning') {
-      return `      <div class="warning">${md.renderInline(value.trim())}</div>`
+      return `<div class="warning">${md.renderInline(value.trim())}</div>`
     }
 
-    return `      <${tag}>${md.renderInline(value.trim())}</${tag}>`
-  }).join('\n')
+    return `<${tag}>${md.renderInline(value.trim())}</${tag}>`
+  }).join('')
 }
 
 for (let [key, page] of pages) {
@@ -499,68 +498,92 @@ for (let [key, page] of pages) {
     fs.mkdirSync(dir, { recursive: true })
   }
 
-  let html = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf8">
-    <title>esbuild - ${escapeHTML(page.title)}</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <meta property="og:title" content="esbuild - ${escapeAttribute(page.title)}"/>
-    <meta property="og:type" content="website"/>
-    <meta property="og:image" content="https://esbuild.github.io/index.png"/>
-    <meta property="twitter:card" content="summary_large_image"/>
-    <meta property="twitter:title" content="esbuild - ${escapeAttribute(page.title)}"/>
-    <meta property="twitter:image" content="https://esbuild.github.io/index.png"/>
-    <link rel="stylesheet" href="/style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head>
-  <body${key === 'index' ? ' class="index"' : ''}>
-    <script>${minifiedJS}</script>
-    <div id="menubar">
-      <a id="menutoggle" href="javascript:void 0" aria-label="Toggle the menu">
-        <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
-          <rect x="15" y="18" width="20" height="2" stroke-width="0"></rect>
-          <rect x="15" y="24" width="20" height="2" stroke-width="0"></rect>
-          <rect x="15" y="30" width="20" height="2" stroke-width="0"></rect>
-        </svg>
-      </a>
-    </div>
-    <nav>
-      <div id="shadow"></div>
-      <div id="menu">
-        <a href="/" class="logo">esbuild</a>
-        <ul>
-${generateNav(key)}
-        </ul>
-        <div id="icons">
-          <a href="https://github.com/evanw/esbuild" aria-label="View this project on GitHub">
-            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">
-              <path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55
-                -.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
-                -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
-                -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2
-                .82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27
-                .82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A
-                8.01 8.01 0 0021 13a8 8 0 00-8-8z"></path>
-            </svg>
-          </a><a href="javascript:void 0" id="theme" aria-label="Toggle dark mode">
-            <svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"></path>
-              <circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"></circle>
-            </svg>
-            <svg id="theme-dark" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10.1 6.6a8.08 8.08 0 00.24 11.06 8.08 8.08 0 0011.06.24c-6.46.9-12.2-4.84-11.3-11.3z" stroke-width="0"></path>
-            </svg>
-          </a>
-        </div>
-      </div>
-    </nav>
+  let html = []
 
-    <main>
-${generateMain(key, page)}
-    </main>
-  </body>
-</html>
-`
-  fs.writeFileSync(path.join(dir, 'index.html'), html)
+  // Begin header
+  html.push(`<!DOCTYPE html>`)
+  html.push(`<html lang="en">`)
+  html.push(`<head>`)
+
+  // Header content
+  html.push(`<meta charset="utf8">`)
+  html.push(`<title>esbuild - ${escapeHTML(page.title)}</title>`)
+  html.push(`<link rel="icon" type="image/svg+xml" href="/favicon.svg">`)
+  html.push(`<meta property="og:title" content="esbuild - ${escapeAttribute(page.title)}"/>`)
+  html.push(`<meta property="og:type" content="website"/>`)
+  html.push(`<meta property="og:image" content="https://esbuild.github.io/index.png"/>`)
+  html.push(`<meta property="twitter:card" content="summary_large_image"/>`)
+  html.push(`<meta property="twitter:title" content="esbuild - ${escapeAttribute(page.title)}"/>`)
+  html.push(`<meta property="twitter:image" content="https://esbuild.github.io/index.png"/>`)
+  html.push(`<link rel="stylesheet" href="/style.css">`)
+  html.push(`<meta name="viewport" content="width=device-width, initial-scale=1">`)
+
+  // End header
+  html.push(`</head>`)
+
+  // Begin body
+  html.push(`<body${key === 'index' ? ' class="index"' : ''}>`)
+  html.push(`<script>${minifiedJS}</script>`)
+
+  // Menu bar
+  html.push(`<div id="menubar">`)
+  html.push(`<a id="menutoggle" href="javascript:void 0" aria-label="Toggle the menu">`)
+  html.push(`<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">`)
+  html.push(`<rect x="15" y="18" width="20" height="2" stroke-width="0"></rect>`)
+  html.push(`<rect x="15" y="24" width="20" height="2" stroke-width="0"></rect>`)
+  html.push(`<rect x="15" y="30" width="20" height="2" stroke-width="0"></rect>`)
+  html.push(`</svg>`)
+  html.push(`</a>`)
+  html.push(`</div>`)
+
+  // Begin menu
+  html.push(`<nav>`)
+  html.push(`<div id="shadow"></div>`)
+  html.push(`<div id="menu">`)
+  html.push(`<a href="/" class="logo">esbuild</a>`)
+  html.push(`<ul>`)
+  html.push(generateNav(key))
+  html.push(`</ul>`)
+  html.push(`<div id="icons">`)
+
+  // View on github
+  html.push(`<a href="https://github.com/evanw/esbuild" aria-label="View this project on GitHub">`)
+  html.push(`<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25">`)
+  html.push(`<path fill-rule="evenodd" stroke-width="0" d="M13 5a8 8 0 00-2.53 15.59c.4.07.55-.17.55`)
+  html.push(`-.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52`)
+  html.push(`-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78`)
+  html.push(`-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2`)
+  html.push(`.82a7.42 7.42 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27`)
+  html.push(`.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A`)
+  html.push(`8.01 8.01 0 0021 13a8 8 0 00-8-8z"></path>`)
+  html.push(`</svg>`)
+  html.push(`</a>`)
+
+  // Toggle dark mode
+  html.push(`<a href="javascript:void 0" id="theme" aria-label="Toggle dark mode">`)
+  html.push(`<svg id="theme-light" width="25" height="25" xmlns="http://www.w3.org/2000/svg">`)
+  html.push(`<path d="M13.5 4v3m9.5 6.5h-3M13.5 23v-3M7 13.5H4M9 9L7 7m13 0l-2 2m2 11l-2-2M7 20l2-2"></path>`)
+  html.push(`<circle cx="13.5" cy="13.5" r="4.5" stroke-width="0"></circle>`)
+  html.push(`</svg>`)
+  html.push(`<svg id="theme-dark" width="25" height="25" xmlns="http://www.w3.org/2000/svg">`)
+  html.push(`<path d="M10.1 6.6a8.08 8.08 0 00.24 11.06 8.08 8.08 0 0011.06.24c-6.46.9-12.2-4.84-11.3-11.3z" stroke-width="0"></path>`)
+  html.push(`</svg>`)
+  html.push(`</a>`)
+
+  // End menu
+  html.push(`</div>`)
+  html.push(`</div>`)
+  html.push(`</nav>`)
+
+  // Main content
+  html.push(`<main>`)
+  html.push(generateMain(key, page))
+  html.push(`</main>`)
+
+  // End body
+  html.push(`</body>`)
+  html.push(`</html>`)
+  html.push(`\n`)
+
+  fs.writeFileSync(path.join(dir, 'index.html'), html.join(''))
 }
