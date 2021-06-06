@@ -4,9 +4,8 @@ body:
 
   - warning: >
       The plugin API is new and still experimental. It may change in the future
-      before version 1.0.0 of esbuild as new use cases are uncovered. Consider
-      this particular plugin API as being specific to the 0.8.x version of
-      esbuild. You can follow [the tracking issue](https://github.com/evanw/esbuild/issues/111)
+      before version 1.0.0 of esbuild as new use cases are uncovered. You can
+      follow [the tracking issue](https://github.com/evanw/esbuild/issues/111)
       for updates about this feature.
 
   - p: >
