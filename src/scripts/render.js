@@ -4,6 +4,7 @@ const md = require('markdown-it')({ html: true })
 const hljs = require('highlight.js')
 const esbuild = require('esbuild')
 const fs = require('fs')
+
 const repoDir = path.dirname(path.dirname(__dirname))
 const scriptsDir = path.join(repoDir, 'src', 'scripts')
 const contentDir = path.join(repoDir, 'src', 'content')
@@ -11,17 +12,18 @@ const outDir = path.join(repoDir, 'out')
 const linkDir = path.join(scriptsDir, 'link')
 const linkOutDir = path.join(outDir, 'link')
 
+const target = ['chrome1', 'safari1', 'firefox1', 'edge1']
+
 // Replace "CURRENT_ESBUILD_VERSION" with the currently-installed version
 // of esbuild. This should be reasonably up to date.
 const CURRENT_ESBUILD_VERSION = require('../../package.json').dependencies.esbuild;
 
-function buildAndMinify(file) {
-  return esbuild.buildSync({
-    entryPoints: [file],
-    minify: true,
-    target: ['chrome1', 'safari1', 'firefox1', 'edge1'],
-    write: false,
-  }).outputFiles[0].text
+function minifyJS(js) {
+  return esbuild.transformSync(js, { target, minify: true }).code.trim()
+}
+
+function minifyCSS(css) {
+  return esbuild.transformSync(css, { loader: 'css', target, minify: true }).code.trim()
 }
 
 function copyAndMinify(from, to) {
@@ -29,7 +31,7 @@ function copyAndMinify(from, to) {
     entryPoints: [from],
     outfile: to,
     minify: true,
-    target: ['chrome1', 'safari1', 'firefox1', 'edge1'],
+    target,
   })
 }
 
@@ -38,7 +40,7 @@ fs.copyFileSync(path.join(scriptsDir, 'index.png'), path.join(outDir, 'index.png
 fs.copyFileSync(path.join(scriptsDir, 'favicon.svg'), path.join(outDir, 'favicon.svg'))
 
 copyAndMinify(path.join(scriptsDir, 'style.css'), path.join(outDir, 'style.css'))
-const minifiedJS = buildAndMinify(path.join(scriptsDir, 'script.js'))
+const minifiedJS = minifyJS(fs.readFileSync(path.join(scriptsDir, 'script.js'), 'utf8'))
 
 for (const link of fs.readdirSync(linkDir)) {
   if (link.startsWith('.') || !link.endsWith('.html')) continue
@@ -243,14 +245,26 @@ function renderBenchmark(entries, { leftWidth, bench, animated }) {
 
   // Style tag
   if (animated) {
-    tags.push(`      <style>`)
-    tags.push(`        @keyframes ${bench}-anim { 0% { left: 0 } 100% { left: ${100 * max * horizontalScale / rightWidth}% } }`)
-    tags.push(`        #${bench}-progress { animation: ${bench}-anim ${max}s linear; left: ${100 * max * horizontalScale / rightWidth}% }`)
+    let css = `
+      @keyframes ${bench}-anim {
+        0% { left: 0; }
+        100% { left: ${(100 * max * horizontalScale / rightWidth).toFixed(3)}%; }
+      }
+      #${bench}-progress {
+        animation: ${bench}-anim ${max}s linear;
+        left: ${(100 * max * horizontalScale / rightWidth).toFixed(3)}%;
+      }
+    `
     for (let i = 0; i < times.length; i++) {
       let [_, time] = times[i]
-      tags.push(`        .${bench}-bar${i} { animation: scale-bar ${time}s linear; transform-origin: left }`)
+      css += `
+        .${bench}-bar${i} {
+          animation: scale-bar ${time}s linear;
+          transform-origin: left;
+        }
+      `
     }
-    tags.push(`      </style>`)
+    tags.push(`      <style>${minifyCSS(css)}</style>`)
   }
 
   // Begin chart
@@ -297,20 +311,31 @@ function renderBenchmark(entries, { leftWidth, bench, animated }) {
 
   // Animate the time
   if (animated) {
-    tags.push(`      <script>`)
-    tags.push(`        (function() {`)
-    tags.push(`          var anim, el = document.getElementById('${bench}-progress')`)
-    tags.push(`          if (!el.getAnimations) return`)
-    tags.push(`          function update() {`)
-    tags.push(`            anim = anim || el.getAnimations()[0]`)
-    tags.push(`            if (!anim) return`)
-    tags.push(`            el.textContent = Math.floor(anim.timeline.currentTime / 1000) + 's'`)
-    tags.push(`            if (anim.playState === 'finished') clearInterval(i), el.style.display = 'none'`)
-    tags.push(`          }`)
-    tags.push(`          var i = setInterval(update, 250)`)
-    tags.push(`          update()`)
-    tags.push(`        })()`)
-    tags.push(`      </script>`)
+    tags.push(`      <script>${minifyJS(`
+      (() => {
+        var el = document.getElementById('${bench}-progress')
+        var interval
+        var anim
+
+        var update = () => {
+          anim ||= el.getAnimations()[0]
+
+          if (anim) {
+            el.textContent = Math.floor(anim.timeline.currentTime / 1000) + 's'
+
+            if (anim.playState === 'finished') {
+              clearInterval(interval)
+              el.style.display = 'none'
+            }
+          }
+        }
+
+        if (el.getAnimations) {
+          interval = setInterval(update, 250)
+          update()
+        }
+      })()
+    `)}</script>`)
   }
 
   tags.push(`      </figure>`)
