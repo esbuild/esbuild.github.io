@@ -27,7 +27,6 @@ function minifyCSS(css) {
 }
 
 fs.mkdirSync(outDir, { recursive: true })
-fs.copyFileSync(path.join(scriptsDir, 'index.png'), path.join(outDir, 'index.png'))
 fs.copyFileSync(path.join(scriptsDir, 'favicon.svg'), path.join(outDir, 'favicon.svg'))
 
 const minifiedCSS = minifyCSS(fs.readFileSync(path.join(scriptsDir, 'style.css'), 'utf8'))
@@ -502,10 +501,6 @@ for (let [key, page] of pages) {
   html.push(`<link rel="icon" type="image/svg+xml" href="/favicon.svg">`)
   html.push(`<meta property="og:title" content="esbuild - ${escapeAttribute(page.title)}"/>`)
   html.push(`<meta property="og:type" content="website"/>`)
-  html.push(`<meta property="og:image" content="https://esbuild.github.io/index.png"/>`)
-  html.push(`<meta property="twitter:card" content="summary_large_image"/>`)
-  html.push(`<meta property="twitter:title" content="esbuild - ${escapeAttribute(page.title)}"/>`)
-  html.push(`<meta property="twitter:image" content="https://esbuild.github.io/index.png"/>`)
   html.push(`<style>${minifiedCSS}</style>`)
   html.push(`<meta name="viewport" content="width=device-width, initial-scale=1">`)
 
