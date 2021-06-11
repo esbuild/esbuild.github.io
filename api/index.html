@@ -1398,7 +1398,7 @@ result.Stop()</pre><p>Watch mode in esbuild is implemented using polling instead
 <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
   result := api.Build(api.BuildOptions{
     EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;src/main-app/app.js&quot;</span>},
-    AssetNames:  <span class="hljs-string">&quot;[dir]/[name]-[hash]&quot;</span>,
+    EntryNames:  <span class="hljs-string">&quot;[dir]/[name]-[hash]&quot;</span>,
     Outbase:     <span class="hljs-string">&quot;src&quot;</span>,
     Bundle:      <span class="hljs-literal">true</span>,
     Outdir:      <span class="hljs-string">&quot;out&quot;</span>,
