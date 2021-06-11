@@ -3163,7 +3163,7 @@ body:
         func main() {
           result := api.Build(api.BuildOptions{
             EntryPoints: []string{"src/main-app/app.js"},
-            AssetNames:  "[dir]/[name]-[hash]",
+            EntryNames:  "[dir]/[name]-[hash]",
             Outbase:     "src",
             Bundle:      true,
             Outdir:      "out",
