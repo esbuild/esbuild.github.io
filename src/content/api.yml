@@ -2668,9 +2668,18 @@ body:
         }
 
   - p: >
-      There are two placeholders that can be used in asset path templates:
+      There are three placeholders that can be used in asset path templates:
 
   - ul:
+    - >
+      `[dir]`
+      <p>
+      This is the relative path from the directory containing the asset file to
+      the [outbase](#outbase) directory. Its purpose is to help asset output
+      paths look more aesthetically pleasing by mirroring the input directory
+      structure inside of the output directory.
+      </p>
+
     - >
       `[name]`
       <p>
