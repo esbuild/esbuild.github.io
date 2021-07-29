@@ -346,6 +346,16 @@ body:
       [`target`](https://www.typescriptlang.org/tsconfig#target)
     - >
       [`useDefineForClassFields`](https://www.typescriptlang.org/tsconfig#useDefineForClassFields)
+      <p>
+      Note: TypeScript silently shipped a breaking change in version 4.3.2 where
+      if the `useDefineForClassFields` option is not specified, it defaults to
+      `true` if you specify <code>target: <wbr>"ESNext"</code>. Before version 4.3.2, the
+      `useDefineForClassFields` option always defaulted to `false`.
+      The latest version of esbuild has been updated to reflect the behavior
+      of TypeScript version 4.3.2. If you need the old behavior, make sure to
+      specify <code>useDefineForClassFields: <wbr>false</code> in addition to <code>target: <wbr>"ESNext"</code>.
+      See TypeScript PR [#42663](https://github.com/microsoft/TypeScript/pull/42663) for more information.
+      </p>
 
   - p: >
       All other fields will be ignored. Note that import path
