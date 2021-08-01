@@ -77,7 +77,15 @@
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
     os.Exit(<span class="hljs-number">1</span>)
   }
-}</pre><p>Refer to the <a href="/getting-started/#your-first-bundle">getting started guide</a> for an example of bundling with real-world code.</p><p>Note that bundling is different than file concatenation. Passing esbuild multiple input files with bundling enabled will create two separate bundles instead of joining the input files together. To join a set of files together with esbuild, import them all into a single entry point file and bundle just that one file with esbuild.</p><h3 id="define" data-h2="simple-options"><a class="permalink" href="#define">#</a>Define</h3><p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p><p>This feature provides a way to replace global identifiers with constant expressions. It can be a way to change the behavior some code between builds without changing the code itself:</p><div class="switcher">
+}</pre><p>Refer to the <a href="/getting-started/#your-first-bundle">getting started guide</a> for an example of bundling with real-world code.</p><p>Note that bundling is different than file concatenation. Passing esbuild multiple input files with bundling enabled will create two separate bundles instead of joining the input files together. To join a set of files together with esbuild, import them all into a single entry point file and bundle just that one file with esbuild.</p><p>Also note that bundling only works with statically-defined imports (i.e. when the import path is a string literal). Imports that are defined at run-time (i.e. imports that depend on run-time code evaluation) are not bundled, since bundling is a compile-time operation. If you need to bundle code that does this, you will likely need to use another bundler instead of esbuild. For example:</p><pre><span class="hljs-comment">// Static imports (will be bundled by esbuild)</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;pkg&#x27;</span>;
+<span class="hljs-keyword">import</span>(<span class="hljs-string">&#x27;pkg&#x27;</span>);
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;pkg&#x27;</span>);
+
+<span class="hljs-comment">// Dynamic imports (will not be bundled by esbuild)</span>
+<span class="hljs-keyword">import</span>(<span class="hljs-string">`pkg/<span class="hljs-subst">${foo}</span>`</span>);
+<span class="hljs-built_in">require</span>(<span class="hljs-string">`pkg/<span class="hljs-subst">${foo}</span>`</span>);
+[<span class="hljs-string">&#x27;pkg&#x27;</span>].map(<span class="hljs-built_in">require</span>);</pre><h3 id="define" data-h2="simple-options"><a class="permalink" href="#define">#</a>Define</h3><p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p><p>This feature provides a way to replace global identifiers with constant expressions. It can be a way to change the behavior some code between builds without changing the code itself:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
