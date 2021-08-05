@@ -197,6 +197,48 @@ body:
       variables in as arguments.
       </p>
 
+  - h4#function-toString: >
+      The value of `toString()` is not preserved on functions (and classes)
+  - p: >
+      It's somewhat common to call `toString()` on a JavaScript function
+      object and then pass that string to some form of `eval` to get a new
+      function object. This effectively "rips" the function out of the
+      containing file and breaks links with all variables in that file.
+      Doing this with esbuild is not supported and may not work. In
+      particular, esbuild often uses helper methods to implement certain
+      features and it assumes that JavaScript scope rules have not been
+      tampered with. For example:
+  - pre.js: |
+      let pow = (a, b) => a ** b;
+      let pow2 = (0, eval)(pow.toString());
+      console.log(pow2(2, 3));
+  - p: >
+      When this code is compiled for ES6, where the `**` operator isn't
+      available, the `**` operator is replaced with a call to the `__pow`
+      helper function:
+  - pre.js: |
+      let __pow = Math.pow;
+      let pow = (a, b) => __pow(a, b);
+      let pow2 = (0, eval)(pow.toString());
+      console.log(pow2(2, 3));
+  - p: >
+      If you try to run this code, you'll get an error such as
+      <code>ReferenceError: <wbr>__pow <wbr>is <wbr>not <wbr>defined</code>
+      because the function <code>(a, b) <wbr>=&gt; <wbr>__pow(a, b)</code>
+      depends on the locally-scoped symbol `__pow` which is not available
+      in the global scope. This is the case for many JavaScript language
+      features including `async` functions, as well as some esbuild-specific
+      features such as the [keep names](/api/#keep-names) setting.
+  - p: >
+      This problem most often comes up when people get the source code of a
+      function with `.toString()` and then try to use it as the body of a
+      [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
+      If you are doing this and you want to use esbuild, you should instead build
+      the source code for the web worker in a separate build step and then
+      insert the web worker source code as a string into the code that
+      creates the web worker. The [define](/api/#define) feature is one way
+      to insert the string at build time.
+
   - h2: TypeScript
   - p: 'Loader: `ts` or `tsx`'
 
