@@ -2130,7 +2130,14 @@ body:
       generated output file back to a line/column offset in the corresponding
       original input file. This is useful if your generated code is
       sufficiently different from your original code (e.g. your original code
-      is TypeScript or you enabled [minification](#minify)).
+      is TypeScript or you enabled [minification](#minify)). This is also useful
+      if you prefer looking at individual files in your browser's developer
+      tools instead of one big bundled file.
+
+  - p: >
+      Note that source map output is supported for both JavaScript and CSS, and
+      the same options apply to both. Everything below that talks about `.js`
+      files also applies similarly to `.css` files.
 
   - p: >
       Enabling source map generation will generate a `.js.map` file alongside
