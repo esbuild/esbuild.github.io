@@ -83,7 +83,8 @@ code {
 /* ---------- Benchmark ---------- */
 
 @keyframes scale-bar {
-  0% { transform: scale(0, 1); }
+  /* Note: This scale factor has to be non-zero to avoid a WebKit bug: https://bugs.webkit.org/show_bug.cgi?id=228896 */
+  0% { transform: scale(0.0000001, 1); }
   100% { transform: scale(1, 1); }
 }
 
