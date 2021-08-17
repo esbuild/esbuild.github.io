@@ -1381,10 +1381,10 @@ body:
       functions had to be preserved verbatim, minification would hardly do
       anything at all and would be virtually useless. However, this means that
       JavaScript code relying on the return value of `.toString()` will likely
-      break when minified. For example, some patterns in the [Angular](https://angular.io/)
-      framework break when code is minified because Angular uses `.toString()`
-      to read the argument names of functions. A workaround is to not use
-      those patterns.
+      break when minified. For example, some patterns in the [AngularJS](https://angularjs.org/)
+      framework break when code is minified because AngularJS uses `.toString()`
+      to read the argument names of functions. A workaround is to use [explicit
+      annotations instead](https://docs.angularjs.org/api/auto/service/$injector#injection-function-annotation).
       </p>
 
     - >
