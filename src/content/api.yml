@@ -157,6 +157,7 @@ body:
       take the following options:
 
   - available-options:
+    - Allow overwrite
     - Asset names
     - Banner
     - Bundle
@@ -2634,6 +2635,48 @@ body:
         }
 
   - h2: Advanced options
+
+  - h3: Allow overwrite
+
+  - p: >
+      Enabling this setting allows output files to overwrite input files. It's
+      not  enabled by default because doing so means overwriting your source
+      code, which can lead to data loss if your code is not checked in. But
+      supporting this makes certain workflows easier by avoiding the need for
+      a temporary directory. So you can enable this when you want to deliberately
+      overwrite your source code:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --outdir=. --allow-overwrite
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          outdir: '.',
+          allowOverwrite: true,
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints:    []string{"app.js"},
+            Outdir:         ".",
+            AllowOverwrite: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
 
   - h3: Asset names
 
