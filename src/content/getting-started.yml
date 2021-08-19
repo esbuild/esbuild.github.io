@@ -459,6 +459,7 @@ body:
       | `esbuild-linux-ppc64le`  | `linux`   | `ppc64`        |
       | `esbuild-windows-32`     | `win32`   | `ia32`         |
       | `esbuild-windows-64`     | `win32`   | `x64`          |
+      | `esbuild-windows-arm64`  | `win32`   | `arm64`        |
 
   - p: >
       **Why this is not recommended:**
