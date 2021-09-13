@@ -69,6 +69,7 @@ async function checkCli(text, value) {
     }
 
     let stdout = ''
+    let stderr = ''
 
     for (let item of value.cli) {
       if (item.$) {
@@ -83,14 +84,18 @@ async function checkCli(text, value) {
           assert.strictEqual(result.stderr, '')
         }
 
-        stdout = result.stdout
+        stdout = result.stdout.replace(/\n\n$/, '\n')
+        stderr = result.stderr.replace(/\n\n$/, '\n')
       }
 
       else if (item.expect) {
         if (item.expect.startsWith('...\n')) {
           let expect = item.expect.slice(4)
-          let text = stdout.slice(Math.max(0, stdout.length - expect.length))
-          assert.strictEqual(text, expect)
+          let stdoutTail = stdout.slice(Math.max(0, stdout.length - expect.length))
+          if (stdoutTail !== expect) {
+            let stderrTail = stderr.slice(Math.max(0, stderr.length - expect.length))
+            if (stderrTail !== expect) assert.strictEqual(stdoutTail, expect)
+          }
         } else {
           assert.strictEqual(stdout, item.expect)
         }
