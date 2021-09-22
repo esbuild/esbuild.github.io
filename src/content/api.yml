@@ -2137,9 +2137,19 @@ body:
       files also applies similarly to `.css` files.
 
   - p: >
-      Enabling source map generation will generate a `.js.map` file alongside
-      any generated `.js` file and add a special `//# sourceMappingURL=` comment
-      to the bottom of the `.js` file pointing to the `.js.map` file:
+      There are four different modes for source map generation:
+
+  - div: >
+      <ol start="1"><li>
+      <code>linked</code>
+      <p>
+      This mode means the source map is generated into a separate `.js.map`
+      output file alongside the `.js` output file, and the `.js` output file contains
+      a special `//# sourceMappingURL=` comment that points to the `.js.map` output file.
+      That way the browser knows where to find the source map for a given file
+      when you open the debugger. Use `linked` source map mode like this:
+      </p>
+      </li></ol>
 
   - example:
       in:
@@ -2174,16 +2184,16 @@ body:
           }
         }
 
-  - p: >
-      If the input file itself contains a special `//# sourceMappingURL=`
-      comment, esbuild will automatically try to parse the linked source map.
-      If successful, the mappings in the generated source map will map all the
-      way back to the original source code referenced in the input source map.
-
-  - p: >
-      If you want to omit the special `//# sourceMappingURL=` comment from the
-      generated `.js` file but you still want to generate the `.js.map` files,
-      you should set the source map mode to `external`:
+  - div: >
+      <ol start="2"><li>
+      <code>external</code>
+      <p>
+      This mode means the source map is generated into a separate `.js.map`
+      output file alongside the `.js` output file, but unlike `linked` mode the `.js`
+      output file does not contain a `//# sourceMappingURL=` comment. Use `external`
+      source map mode like this:
+      </p>
+      </li></ol>
 
   - example:
       in:
@@ -2218,10 +2228,20 @@ body:
           }
         }
 
-  - p: >
-      If you want to insert the entire source map into the `.js` file instead
-      of generating a separate `.js.map` file, you should set the source map
-      mode to `inline`:
+  - div: >
+      <ol start="3"><li>
+      <code>inline</code>
+      <p>
+      This mode means the source map is appended to the end of the `.js` output
+      file as a base64 payload inside a `//# sourceMappingURL=` comment. No
+      additional `.js.map` output file is generated. Keep in mind that source
+      maps are usually very big because they contain all of your original source
+      code, so you usually do not want to ship code containing `inline` source
+      maps. To remove the source code from the source map (keeping only the file
+      names and the line/column mappings), use the [sources content](#sources-content) option.
+      Use `inline` source map mode like this:
+      </p>
+      </li></ol>
 
   - example:
       in:
@@ -2256,16 +2276,16 @@ body:
           }
         }
 
-  - p: >
-      Keep in mind that source maps are usually very big because they contain
-      all of your original source code, so you usually do not want to ship code
-      containing `inline` source maps. To remove the source code from the source
-      map (keeping only the file names and the line/column mappings), use the
-      [sources content](#sources-content) option.
-
-  - p: >
-      If you want to have the effect of both `inline` and `external`
-      simultaneously, you should set the source map mode to `both`:
+  - div: >
+      <ol start="4"><li>
+      <code>both</code>
+      <p>
+      This mode is a combination of `inline` and `external`. The source map is
+      appended inline to the end of the `.js` output file, and another copy of
+      the same source map is written to a separate `.js.map` output file
+      alongside the `.js` output file. Use `both` source map mode like this:
+      </p>
+      </li></ol>
 
   - example:
       in:
@@ -2299,6 +2319,15 @@ body:
             os.Exit(1)
           }
         }
+
+  - p: >
+      The [build API](#build-api) supports all four source map modes listed above,
+      but the [transform API](#transform-api) does not support the `linked` mode.
+      This is because the output returned from the transform API does not have an
+      associated filename. If you want the output of the transform API to have a
+      source map comment, you can append one yourself. In addition, the CLI form
+      of the transform API only supports the `inline` mode because the output is
+      written to stdout so generating multiple output files is not possible.
 
   - h4: Using source maps
 
