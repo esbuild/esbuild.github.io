@@ -2410,13 +2410,14 @@ body:
   - h3: Target
 
   - p: >
-      This sets the target environment for the generated JavaScript code. For
-      example, you can configure esbuild to not generate any newer JavaScript
-      that node version 10 can't handle. The target can either be set to a
-      JavaScript language version such as `es2020` or to a list of versions of
-      individual engines (currently either `chrome`, `firefox`, `safari`, `edge`,
-      or `node`). The default target is `esnext` which means that by default,
-      esbuild will assume all of the latest JavaScript features are supported.
+      This sets the target environment for the generated JavaScript and/or CSS
+      code. For example, you can configure esbuild to not generate any newer
+      JavaScript or CSS that Chrome version 58 can't handle. The target can
+      either be set to a JavaScript language version such as `es2020` or to a
+      list of versions of individual engines (currently either `chrome`,
+      `firefox`, `safari`, `edge`, or `node`). The default target is `esnext`
+      which means that by default, esbuild will assume all of the latest
+      JavaScript and CSS features are supported.
 
   - p: >
       Here is an example that uses all of the available target environment names

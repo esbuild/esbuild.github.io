@@ -17,6 +17,16 @@ body:
       doesn't make a distinction between the two.
 
   - p: >
+      Note that by default, esbuild's output will take advantage of all modern
+      JS features. For example, <code>a !== <wbr>void 0 && <wbr>a !== <wbr>null ? <wbr>a : b</code>
+      will become <code>a ?? b</code> when minifying is enabled which makes use
+      of syntax from the [ES2020](https://262.ecma-international.org/11.0/#prod-CoalesceExpression)
+      version of JavaScript. If this is undesired, you must specify esbuild's
+      [target](/api/#target) setting to say in which browsers you need the
+      output to work correctly. Then esbuild will avoid using JavaScript
+      features that are too modern for those browsers.
+
+  - p: >
       All modern JavaScript syntax is supported by esbuild. Newer syntax may
       not be supported by older browsers, however, so you may want to
       configure the [target](/api/#target) option to tell esbuild to convert
@@ -713,6 +723,18 @@ body:
       have to configure a loader for image and font files, since esbuild
       doesn't have any pre-configured. Usually this is either the
       [data URL](#data-url) loader or the [external file](#external-file) loader.
+
+  - p: >
+      Note that by default, esbuild's output will take advantage of all modern
+      CSS features. For example, <code>color: <wbr>rgba(255, <wbr>0, <wbr>0, <wbr>0.4)</code>
+      will become <code>color: <wbr>#f006</code> when minifying is enabled
+      which makes use of syntax from [CSS Color Module Level 4](https://drafts.csswg.org/css-color-4/#changes-from-3).
+      If this is undesired, you must specify esbuild's [target](/api/#target)
+      setting to say in which browsers you need the output to work correctly.
+      Then esbuild will avoid using CSS features that are too modern for those
+      browsers.
+
+  - h3#css-from-js: Import from JavaScript
 
   - p: >
       You can also import CSS from JavaScript. When you do this, esbuild will
