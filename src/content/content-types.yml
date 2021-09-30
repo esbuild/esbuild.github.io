@@ -264,14 +264,16 @@ body:
       non-exhaustive list):
 
   - table: |
-      | Syntax feature         | Example                         |
-      |------------------------|---------------------------------|
-      | Interface declarations | `interface Foo {}`              |
-      | Type declarations      | `type Foo = number`             |
-      | Function declarations  | `function foo(): void;`         |
-      | Ambient declarations   | `declare module 'foo' {}`       |
-      | Type-only imports      | `import type {Type} from 'foo'` |
-      | Type-only exports      | `export type {Type} from 'foo'` |
+      | Syntax feature              | Example                         |
+      |-----------------------------|---------------------------------|
+      | Interface declarations      | `interface Foo {}`              |
+      | Type declarations           | `type Foo = number`             |
+      | Function declarations       | `function foo(): void;`         |
+      | Ambient declarations        | `declare module 'foo' {}`       |
+      | Type-only imports           | `import type {Type} from 'foo'` |
+      | Type-only exports           | `export type {Type} from 'foo'` |
+      | Type-only import specifiers | `import {type Type} from 'foo'` |
+      | Type-only export specifiers | `export {type Type} from 'foo'` |
 
   - p: >
       TypeScript-only syntax extensions are supported, and are always
