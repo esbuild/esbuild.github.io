@@ -267,24 +267,39 @@ body:
       a set of files together with esbuild, import them all into a single
       entry point file and bundle just that one file with esbuild.
 
+  - h4: Non-analyzable imports
+
   - p: >
-      Also note that bundling only works with statically-defined imports
+      Bundling with esbuild only works with statically-defined imports
       (i.e. when the import path is a string literal). Imports that are
       defined at run-time (i.e. imports that depend on run-time code
       evaluation) are not bundled, since bundling is a compile-time
-      operation. If you need to bundle code that does this, you will
-      likely need to use another bundler instead of esbuild. For example:
+      operation. For example:
 
   - pre.js: |
-      // Static imports (will be bundled by esbuild)
+      // Analyzable imports (will be bundled by esbuild)
       import 'pkg';
       import('pkg');
       require('pkg');
 
-      // Dynamic imports (will not be bundled by esbuild)
+      // Non-analyzable imports (will not be bundled by esbuild)
       import(`pkg/${foo}`);
       require(`pkg/${foo}`);
       ['pkg'].map(require);
+
+  - p: >
+      The way to work around this issue is to mark the package containing this
+      problematic code as [external](#external) so that it's not included in
+      the bundle. You will then need to ensure that a copy of the external
+      package is available to your bundled code at run-time.
+
+  - p: >
+      Some bundlers such as [Webpack](https://webpack.js.org/) try to support
+      this by including all potentially-reachable files in the bundle and then
+      emulating a file system at run-time. However, run-time file system
+      emulation is out of scope and will not be implemented in esbuild. If you
+      really need to bundle code that does this, you will likely need to use
+      another bundler instead of esbuild.
 
   - h3: Define
 
