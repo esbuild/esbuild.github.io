@@ -18,6 +18,18 @@ body:
       find the [TypeScript type definitions](https://github.com/evanw/esbuild/blob/master/lib/types.ts)
       for esbuild helpful as a reference. If you are using Go be sure to check
       out the automatically generated [Go documentation](https://pkg.go.dev/github.com/evanw/esbuild/pkg/api).
+  
+  - h2: Command-line notes
+ 
+  - p: >
+      `=` is used when specifying the flag provides a single value, which
+      overwrites the previously-specified value. So `--foo=bar --foo=baz` results
+      in `foo` having the value `baz`. Since `outdir` is a single value, it uses `=`.
+
+  - p: >
+      `:` is used when specifying the flag provides an additional value, which is
+      added to previous values. So `--foo:bar --foo:baz` results in `foo` having the
+      values `bar` and `baz`. Since `external` is an array of values, it uses `:`.
 
   - h2: Transform API
 
