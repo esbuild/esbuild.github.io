@@ -94,7 +94,7 @@
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
     os.Exit(<span class="hljs-number">1</span>)
   }
-}</pre><p>Sometimes the packages you want to use contain code that can't be bundled for some reason. An example of this is a package with native extensions such as <code>fsevents</code>. Or, you may want to exclude a package from the bundle for other reasons. This can be done by marking the package as external:</p><div class="switcher">
+}</pre><p>Sometimes the packages you want to use contain code that can't be bundled for some reason. An example of this is a package with native extensions such as <code>fsevents</code>. Or, you may want to exclude a package from the bundle for other reasons. This can be done by marking the package as <a href="/api/#external">external</a>:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -129,7 +129,7 @@
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> esbuild.transform(ts, { <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;ts&#x27;</span> })
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;result:&#x27;</span>, result)
 esbuild.stop()</pre><p>It has basically the same API as esbuild's npm package with one addition: you need to call <code>stop()</code> when you're done because unlike node, Deno doesn't provide the necessary APIs to allow Deno to exit while esbuild's internal child process is still running.</p><p><strong>Why this is not recommended:</strong> Deno is newer than node, less widely used, and supports fewer platforms than node, so node is recommended as the primary way to run esbuild. Deno also uses the internet as a package system instead of existing JavaScript package ecosystems, and esbuild is designed around and optimized for npm-style package management. You should still be able to use esbuild with Deno, but you will need a plugin if you would like to be able to bundle HTTP URLs.</p><h3 id="build-from-source" data-h2="other-ways-to-install"><a class="permalink" href="#build-from-source">#</a>Build from source</h3><p>To build esbuild from source:</p><ol><li>Install the Go compiler:
-<p><a href="https://golang.org/dl/">https://golang.org/dl/</a></p></li><li>Download the source code:
+<p><a href="https://golang.org/dl/">https://golang.org/dl/</a></p></li><li>Download the source code for esbuild:
 <pre>
 git clone --depth 1 --branch v0.13.3 https://github.com/evanw/esbuild.git
 cd esbuild
