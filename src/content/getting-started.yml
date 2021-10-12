@@ -276,7 +276,7 @@ body:
       bundled for some reason. An example of this is a package with
       native extensions such as `fsevents`. Or, you may want to exclude
       a package from the bundle for other reasons. This can be done by
-      marking the package as external:
+      marking the package as [external](/api/#external):
 
   - example:
       in:
@@ -388,7 +388,7 @@ body:
       <p>[https://golang.org/dl/](https://golang.org/dl/)</p>
 
     - |
-      Download the source code:
+      Download the source code for esbuild:
       <pre>
       git clone --depth 1 --branch vCURRENT_ESBUILD_VERSION https://github.com/evanw/esbuild.git
       cd esbuild
