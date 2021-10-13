@@ -253,11 +253,12 @@ body:
   - p: 'Loader: `ts` or `tsx`'
 
   - p: >
-      This loader is enabled by default for `.ts` and `.tsx` files, which
-      means esbuild has built-in support for parsing TypeScript syntax and
-      discarding the type annotations. However, esbuild _does not_ do any type
-      checking so you will still need to run `tsc -noEmit` in parallel with
-      esbuild to check types. This is not something esbuild does itself.
+      This loader is enabled by default for `.ts`, `.tsx`, `.mts`, and `.cts`
+      files, which means esbuild has built-in support for parsing TypeScript
+      syntax and discarding the type annotations. However, esbuild _does not_
+      do any type checking so you will still need to run `tsc -noEmit` in
+      parallel with esbuild to check types. This is not something esbuild does
+      itself.
 
   - p: >
       TypeScript type declarations like these are parsed and ignored (a
