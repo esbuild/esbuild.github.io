@@ -4176,14 +4176,16 @@ body:
 
   - ul:
     - >
-      <p>`silent`<br>Do not show any log output.</p>
+      <p>`silent`<br>Do not show any log output. This is the default log level
+      when using the JS [`transform` API](#transform-api).</p>
     - >
       <p>`error`<br>Only show errors.</p>
     - >
-      <p>`warning`<br>Only show warnings and errors.</p>
+      <p>`warning`<br>Only show warnings and errors. This is the default log
+      level when using the JS [`build` API](#build-api).</p>
     - >
       <p>`info`<br>Show warnings, errors, and an output file summary. This is
-      the default log level.</p>
+      the default log level when using the CLI.</p>
     - >
       <p>`debug`<br>Log everything from `info` and some additional messages
       that may help you debug a broken bundle. This log level has a performance
