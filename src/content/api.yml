@@ -19,6 +19,15 @@ body:
       for esbuild helpful as a reference. If you are using Go be sure to check
       out the automatically generated [Go documentation](https://pkg.go.dev/github.com/evanw/esbuild/pkg/api).
 
+  - p: >
+      If you are using the command-line API, it may be helpful to know that the
+      flags come in one of three forms: `--foo`, `--foo=bar`, or `--foo:bar`.
+      The form `--foo` is used for enabling boolean flags such as [`--minify`](#minify),
+      the form `--foo=bar` is used for flags that have a single value and are
+      only specified once such as [`--platform=`](#platform), and the form
+      `--foo:bar` is used for flags that have multiple values and can be
+      re-specified multiple times such as [`--external:`](#external).
+
   - h2: Transform API
 
   - p: >
