@@ -667,7 +667,10 @@ body:
 
   - p: >
       This sets the output format for the generated JavaScript files. There are
-      currently three possible values: `iife`, `cjs`, and `esm`.
+      currently three possible values that can be configured: `iife`, `cjs`,
+      and `esm`. When no output format is specified, esbuild picks an output
+      format for you if [bundling](#bundle) is enabled (as described below),
+      or doesn't do any format conversion if [bundling](#bundle) is disabled.
 
   - h4#format-iife: IIFE
 
@@ -678,8 +681,10 @@ body:
       conflict with variables in the global scope. If your entry point has
       exports that you want to expose as a global in the browser, you can
       configure that global's name using the [global name](#global-name)
-      setting. The `iife` format is the default format unless you set
-      [platform](#platform) to `node`. Using it looks like this:
+      setting. The `iife` format will automatically be enabled when no output
+      format is specified, [bundling](#bundle) is enabled, and [platform](#platform)
+      is set to `browser` (which it is by default). Specifying the `esm` format
+      looks like this:
 
   - example:
       cli:
@@ -722,8 +727,9 @@ body:
       It assumes the environment contains `exports`, `require`, and `module`.
       Entry points with exports in ECMAScript module syntax will be converted
       to a module with a getter on `exports` for each export name. The `cjs`
-      format is the default format when you set [platform](#platform) to `node`.
-      Using it looks like this:
+      format will automatically be enabled when no output format is specified,
+      [bundling](#bundle) is enabled, and [platform](#platform) is set to `node`.
+      Specifying the `cjs` format looks like this:
 
   - example:
       cli:
@@ -767,7 +773,9 @@ body:
       The `esm` format stands for "ECMAScript module". It assumes the environment
       supports `import` and `export` syntax. Entry points with exports in CommonJS
       module syntax will be converted to a single `default` export of the value
-      of `module.exports`. Using it looks like this:
+      of `module.exports`. The `esm` format will automatically be enabled when no
+      output format is specified, [bundling](#bundle) is enabled, and [platform](#platform)
+      is set to `neutral`. Specifying the `esm` format looks like this:
 
   - example:
       cli:
@@ -1625,9 +1633,10 @@ body:
   - ul:
     - >
       <p>
-      The default output [format](#format) is set to `iife`, which wraps the
-      generated JavaScript code in an immediately-invoked function expression
-      to prevent variables from leaking into the global scope.
+      When [bundling](#bundle) is enabled the default output [format](#format)
+      is set to `iife`, which wraps the generated JavaScript code in an
+      immediately-invoked function expression to prevent variables from leaking
+      into the global scope.
       </p>
     - >
       <p>
@@ -1655,12 +1664,12 @@ body:
       </p>
     - >
       <p>
-      All <code>process.<wbr>env.<wbr>NODE_ENV</code> expressions are automatically
-      [defined](#define) to `"production"` if all [minification](#minify)
-      options are enabled and `"development"` otherwise. This only happens if
-      `process`, `process.env`, and `process.env.NODE_ENV` are not already
-      defined. This substitution is necessary to avoid React-based code crashing
-      instantly (since `process` is a node API, not a web API).
+      When using the [build API](#build-api), all <code>process.<wbr>env.<wbr>NODE_ENV</code>
+      expressions are automatically [defined](#define) to `"production"` if all
+      [minification](#minify) options are enabled and `"development"` otherwise.
+      This only happens if `process`, `process.env`, and `process.env.NODE_ENV`
+      are not already defined. This substitution is necessary to avoid React-based
+      code crashing instantly (since `process` is a node API, not a web API).
       </p>
 
   - p: >
@@ -1669,10 +1678,10 @@ body:
   - ul:
     - >
       <p>
-      The default output [format](#format) is set to `cjs`, which stands for
-      CommonJS (the module format used by node). ES6-style exports using
-      `export` statements will be converted into getters on the CommonJS
-      `exports` object.
+      When [bundling](#bundle) is enabled the default output [format](#format)
+      is set to `cjs`, which stands for  CommonJS (the module format used by node).
+      ES6-style exports using `export` statements will be converted into getters
+      on the CommonJS `exports` object.
       </p>
     - >
       <p>
@@ -1707,9 +1716,10 @@ body:
   - ul:
     - >
       <p>
-      The default output [format](#format) is set to `esm`, which uses the
-      `export` syntax introduced with ECMAScript 2015 (i.e. ES6). You can change
-      the output format if this default is not appropriate.
+      When [bundling](#bundle) is enabled the default output [format](#format)
+      is set to `esm`, which uses the `export` syntax introduced with ECMAScript
+      2015 (i.e. ES6). You can change the output format if this default is not
+      appropriate.
       </p>
     - >
       <p>
