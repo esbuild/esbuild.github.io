@@ -355,6 +355,7 @@ function renderExample(kind, value) {
 function generateMain(key, main) {
   let apiCallsForOption = {}
   let benchmarkCount = 0
+  let h2 = null
 
   return main.body.map(({ tag, value }) => {
     let cssID = ''
@@ -384,6 +385,7 @@ function generateMain(key, main) {
     }
 
     if (/^h[234]$/.test(tag)) {
+      if (tag === 'h2') h2 = toID(value)
       let html = `<${tag} id="${escapeAttribute(toID(cssID || value))}">` +
         `<a class="permalink" href="#${escapeAttribute(toID(cssID || value))}">#</a>` +
         `${md.renderInline(value)}</${tag}>`
