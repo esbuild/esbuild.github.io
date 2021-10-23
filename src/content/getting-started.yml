@@ -458,6 +458,7 @@ body:
       | `esbuild-linux-arm64`    | `linux`   | `arm64`        |
       | `esbuild-linux-mips64le` | `linux`   | `mips64el`     |
       | `esbuild-linux-ppc64le`  | `linux`   | `ppc64`        |
+      | `esbuild-netbsd-64`      | `netbsd`  | `x64`          |
       | `esbuild-openbsd-64`     | `openbsd` | `x64`          |
       | `esbuild-sunos-64`       | `sunos`   | `x64`          |
       | `esbuild-windows-32`     | `win32`   | `ia32`         |
