@@ -54,18 +54,14 @@
       for (var i = 0; i < headers.length; i++) {
         var h = headers[i]
         if (h.getBoundingClientRect().top > 10) break
-        if (h.dataset.h3) {
-          h2 = getElementById(h.dataset.h2)
-          h3 = getElementById(h.dataset.h3)
-          h4 = h
-        } else if (h.dataset.h2) {
-          h2 = getElementById(h.dataset.h2)
+        if (h.tagName === 'H2') {
+          h2 = h
+          h3 = h4 = null
+        } else if (h.tagName === 'H3') {
           h3 = h
           h4 = null
         } else {
-          h2 = h
-          h3 = null
-          h4 = null
+          h4 = h
         }
       }
 
@@ -104,7 +100,7 @@
 
     var pathhash
     var throttle = null
-    var headers = doc.querySelectorAll('h2, h3, h4')
+    var headers = doc.querySelectorAll('h2,h3,h4')
 
     addEventListener('scroll', updateNav, { passive: true })
     addEventListener('load', updateNav)

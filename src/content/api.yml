@@ -5405,19 +5405,14 @@ body:
   - h2: JS-specific details
 
   - p: >
-      Because JavaScript is single-threaded, there are several different ways
-      to invoke the API with different performance and convenience tradeoffs.
-      It's important to be aware of the differences to pick the correct one for
-      your situation.
+      The node-based JS API comes in both synchronous and asynchronous flavors,
+      each with different tradeoffs. It's important to be aware of the differences
+      to pick the correct one for your situation:
+
+  - h4: Sync API
 
   - p: >
-      First there is the synchronous API. This is the most convenient option
-      because single-threaded JavaScript code has the cleanest syntax. It's
-      also optimal performance-wise if all you need to do is run esbuild and
-      then exit. However, it blocks the main thread so you do not want to use
-      it if you have other work to perform in the meantime. This is also the
-      only option that cannot use plugins (since plugins are asynchronous).
-      It looks like this:
+      Synchronous API calls return their results inline:
 
   - pre.js: |
       let esbuild = require('esbuild')
@@ -5425,20 +5420,58 @@ body:
       let result2 = esbuild.buildSync(options)
 
   - p: >
-      Then there is the asynchronous API. Each call returns a promise instead
-      of completing immediately. Under the hood, the esbuild binary is spawned
-      as a single child process shared between all calls in the host process.
-      The host communicates with the child over the stdin, stdout, and stderr
-      pipes using a custom binary protocol. This is ideal if you only need to
-      run esbuild once but you need to do other work in the background. It also
-      allows you to run many simultaneous esbuild API calls concurrently which
-      are then spread across all available cores for maximum performance. Using
-      it looks something like this:
+      Pros:
+
+  - ul:
+    - >
+      Avoiding promises can result in cleaner code
+    - >
+      Works in situations that must be synchronous such as within
+      <a href="https://nodejs.org/api/modules.html#requireextensions"><code>require<wbr>.extensions</code></a>
+
+  - p: >
+      Cons:
+
+  - ul:
+    - >
+      You can't use [plugins](/plugins/) with the synchronous API since plugins are asynchronous
+    - >
+      It blocks the current thread so you can't perform other work in the meantime
+    - >
+      Using the synchronous API prevents esbuild from parallelizing esbuild API calls
+
+  - h4: Async API
+
+  - p: >
+      Asynchronous API calls return their results using a promise:
 
   - pre.js: |
       let esbuild = require('esbuild')
       esbuild.transform(code, options).then(result => { ... })
       esbuild.build(options).then(result => { ... })
+
+  - p: >
+      Pros:
+
+  - ul:
+    - >
+      You can use [plugins](/plugins/) with the asynchronous API
+    - >
+      The current thread is not blocked so you can perform other work in the meantime
+    - >
+      You can run many simultaneous esbuild API calls concurrently which are
+      then spread across all available CPUs for maximum performance
+
+  - p: >
+      Cons:
+
+  - ul:
+    - >
+      Using promises can result in messier code, especially in CommonJS where
+      [top-level await](https://v8.dev/features/top-level-await) is not available
+    - >
+      Doesn't work in situations that must be synchronous such as within
+      <a href="https://nodejs.org/api/modules.html#requireextensions"><code>require<wbr>.extensions</code></a>
 
   - h3: Running in the browser
   - p: >
