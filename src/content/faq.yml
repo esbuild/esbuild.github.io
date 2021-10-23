@@ -273,15 +273,13 @@ body:
     - >
       **Used by other projects**
       <p>
-      The API is already being used as a library within some other
-      developer tools. For example, [Vite](https://github.com/vitejs/vite)
-      and [Snowpack](https://github.com/pikapkg/snowpack) are using
-      esbuild's [transform API](/api/#transform-api) to transform
-      TypeScript into JavaScript. And [Hugo](https://github.com/gohugoio/hugo)
-      is using esbuild's bundler to package JavaScript code during a build.
-      I have also heard reports of others using it in production successfully,
-      although I don't know the details. I intend to use esbuild in
-      production myself once it has enough features but haven't done that yet.
+      The API is already being used as a library within many other
+      developer tools. For example, [Vite](https://vitejs.dev/)
+      and [Snowpack](https://www.snowpack.dev/) are using
+      esbuild to transform TypeScript into JavaScript and
+      [Amazon CDK](https://aws.amazon.com/cdk/) (Cloud Development Kit)
+      and [Phoenix](https://www.phoenixframework.org/) are using
+      esbuild to bundle code.
       </p>
 
     - >
