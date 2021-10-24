@@ -683,7 +683,7 @@ body:
       configure that global's name using the [global name](#global-name)
       setting. The `iife` format will automatically be enabled when no output
       format is specified, [bundling](#bundle) is enabled, and [platform](#platform)
-      is set to `browser` (which it is by default). Specifying the `esm` format
+      is set to `browser` (which it is by default). Specifying the `iife` format
       looks like this:
 
   - example:
