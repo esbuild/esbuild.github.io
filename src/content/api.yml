@@ -1799,7 +1799,7 @@ body:
           outdir: 'www/js',
           bundle: true,
         }).then(server => {
-          // Call "stop" on the web server when you're done
+          // Call "stop" on the web server to stop serving
           server.stop()
         })
 
@@ -1812,7 +1812,7 @@ body:
           Bundle:      true,
         })
 
-        // Call "stop" on the web server when you're done
+        // Call "stop" on the web server to stop serving
         server.Stop()
 
   - p: >
@@ -1872,7 +1872,7 @@ body:
           bundle: true,
           outfile: 'out.js',
         }).then(server => {
-          // Call "stop" on the web server when you're done
+          // Call "stop" on the web server to stop serving
           server.stop()
         })
 
@@ -1885,7 +1885,7 @@ body:
           Outfile:     "out.js",
         })
 
-        // Call "stop" on the web server when you're done
+        // Call "stop" on the web server to stop serving
         server.Stop()
 
   - p: >
@@ -2572,7 +2572,7 @@ body:
           bundle: true,
           watch: true,
         }).then(result => {
-          // Call "stop" on the result when you're done
+          // Call "stop" on the result to stop watching
           result.stop()
         })
 
@@ -2584,7 +2584,7 @@ body:
           Watch:       &api.WatchMode{},
         })
 
-        // Call "stop" on the result when you're done
+        // Call "stop" on the result to stop watching
         result.Stop()
 
   - p: >
@@ -2608,7 +2608,7 @@ body:
             },
           },
         }).then(result => {
-          // Call "stop" on the result when you're done
+          // Call "stop" on the result to stop watching
           result.stop()
         })
 
@@ -2628,7 +2628,7 @@ body:
           },
         })
 
-        // Call "stop" on the result when you're done
+        // Call "stop" on the result to stop watching
         result.Stop()
 
   - p: >
