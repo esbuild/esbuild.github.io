@@ -787,7 +787,7 @@ available alternatives <a href="/content-types/#direct-eval">here</a>.
   <span class="hljs-attr">outdir</span>: <span class="hljs-string">&#x27;www/js&#x27;</span>,
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
 }).then(<span class="hljs-function"><span class="hljs-params">server</span> =&gt;</span> {
-  <span class="hljs-comment">// Call &quot;stop&quot; on the web server when you&#x27;re done</span>
+  <span class="hljs-comment">// Call &quot;stop&quot; on the web server to stop serving</span>
   server.stop()
 })</pre>
 <pre class="switchable go3">server, err := api.Serve(api.ServeOptions{
@@ -798,7 +798,7 @@ available alternatives <a href="/content-types/#direct-eval">here</a>.
   Bundle:      <span class="hljs-literal">true</span>,
 })
 
-<span class="hljs-comment">// Call &quot;stop&quot; on the web server when you&#x27;re done</span>
+<span class="hljs-comment">// Call &quot;stop&quot; on the web server to stop serving</span>
 server.Stop()</pre><p>In the above example, your <code>www/index.html</code> page could reference the compiled code in <code>src/app.js</code> like this:</p><pre><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;js/app.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></pre><p>When you do this, every HTTP request will cause esbuild to rebuild your code and serve you the latest version. So <code>js/app.js</code> will always be up to date every time you reload the page. Note that although the generated code appears to be inside the <code>outdir</code> directory, it's never actually written to the file system with the serve API. Instead the paths for generated code shadow (i.e. takes precedence over) other paths inside the <code>servedir</code> and generated files are served directly from memory.</p><p>The benefit of doing things this way is that you can use the exact same HTML pages in development and production. In development you can run esbuild with <code>--servedir=</code> and esbuild will serve the generated output files directly. For production you can omit that flag and esbuild will write the generated files to the file system. In both cases you should be getting the exact same result in the browser with the exact same code in both development and production.</p><p>The port is automatically chosen by default as the first open port equal to or greater than 8000. The port number is returned from the API call (or printed to the terminal for the CLI) so you can know which URL to visit. The port can be set to something specific if necessary (described further down below).</p><h4 id="serve-generated"><a class="permalink" href="#serve-generated">#</a>Approach 2: Only serve generated files with esbuild</h4><p>With this approach, you just tell esbuild to serve the contents of the <a href="#outdir"><code>outdir</code></a> without giving it any additional content to serve. This works well for more complex development setups. For example, you might want to use NGINX as a reverse proxy to route different paths to separate backend services during development (e.g. <code>/static/</code> to NGINX, <code>/api/</code> to node, <code>/js/</code> to esbuild, etc.). Using esbuild with this approach looks like this:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
@@ -812,7 +812,7 @@ server.Stop()</pre><p>In the above example, your <code>www/index.html</code> pag
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
 }).then(<span class="hljs-function"><span class="hljs-params">server</span> =&gt;</span> {
-  <span class="hljs-comment">// Call &quot;stop&quot; on the web server when you&#x27;re done</span>
+  <span class="hljs-comment">// Call &quot;stop&quot; on the web server to stop serving</span>
   server.stop()
 })</pre>
 <pre class="switchable go3">server, err := api.Serve(api.ServeOptions{
@@ -823,7 +823,7 @@ server.Stop()</pre><p>In the above example, your <code>www/index.html</code> pag
   Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
 })
 
-<span class="hljs-comment">// Call &quot;stop&quot; on the web server when you&#x27;re done</span>
+<span class="hljs-comment">// Call &quot;stop&quot; on the web server to stop serving</span>
 server.Stop()</pre><p>The API call in the above example would serve the compiled contents of <code>src/app.js</code> at <a href="http://localhost:8000/out.js">http://localhost:8000/out.js</a>. Just like with the first approach, every HTTP request will cause esbuild to rebuild your code and serve you the latest version so <code>out.js</code> will always be up to date. Your HTML file (served by another web server on another port) could then reference the compiled file from your HTML like this:</p><pre><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;http://localhost:8000/out.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></pre><p>The URL structure of the web server exactly mirrors the URL structure of the <a href="#outdir">output directory</a> when using the normal build command without the web server enabled. For example, if the output directory normally contains a file called <code>./pages/<wbr>about.js</code>, the web server will have a corresponding <code>/pages/<wbr>about.js</code> path.</p><p>If you would like to browse the web server to see what URLs are available, you can use the built-in directory listing by visiting a directory name instead of a file name. For example, if you're running esbuild's web server on port 8000 you can visit <a href="http://localhost:8000/">http://<wbr>localhost:<wbr>8000/</a> in your browser to view the web server's root directory. From there you can click on links to browse to different files and directories on the web server.</p><h4 id="serve-arguments"><a class="permalink" href="#serve-arguments">#</a>Arguments</h4><p>Notice that the serve API is a different API call than the <a href="#build-api">build API</a>. This is because starting a long-running web server is different enough to warrant different arguments and return values. The first argument to the serve API call is an options object with serve-specific options:</p><div class="switcher">
 <a href="javascript:void 0" class="js2">JS</a>
 <a href="javascript:void 0" class="go2">Go</a>
@@ -1100,7 +1100,7 @@ esbuild.serve({
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
   <span class="hljs-attr">watch</span>: <span class="hljs-literal">true</span>,
 }).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
-  <span class="hljs-comment">// Call &quot;stop&quot; on the result when you&#x27;re done</span>
+  <span class="hljs-comment">// Call &quot;stop&quot; on the result to stop watching</span>
   result.stop()
 })</pre>
 <pre class="switchable go3">result := api.Build(api.BuildOptions{
@@ -1110,7 +1110,7 @@ esbuild.serve({
   Watch:       &amp;api.WatchMode{},
 })
 
-<span class="hljs-comment">// Call &quot;stop&quot; on the result when you&#x27;re done</span>
+<span class="hljs-comment">// Call &quot;stop&quot; on the result to stop watching</span>
 result.Stop()</pre><p>If you are using the JavaScript or Go API, you can optionally provide a callback that will be called whenever an incremental build has completed. This can be used to do something once the build is complete (e.g. to reload your app in the browser):</p><div class="switcher">
 <a href="javascript:void 0" class="js2">JS</a>
 <a href="javascript:void 0" class="go2">Go</a>
@@ -1126,7 +1126,7 @@ result.Stop()</pre><p>If you are using the JavaScript or Go API, you can optiona
     },
   },
 }).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
-  <span class="hljs-comment">// Call &quot;stop&quot; on the result when you&#x27;re done</span>
+  <span class="hljs-comment">// Call &quot;stop&quot; on the result to stop watching</span>
   result.stop()
 })</pre>
 <pre class="switchable go2">result := api.Build(api.BuildOptions{
@@ -1144,7 +1144,7 @@ result.Stop()</pre><p>If you are using the JavaScript or Go API, you can optiona
   },
 })
 
-<span class="hljs-comment">// Call &quot;stop&quot; on the result when you&#x27;re done</span>
+<span class="hljs-comment">// Call &quot;stop&quot; on the result to stop watching</span>
 result.Stop()</pre><p>Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling system is designed to use relatively little CPU vs. a more traditional polling system that scans the whole directory tree at once. The file system is still scanned regularly but each scan only checks a random subset of your files, which means a change to a file will be picked up soon after the change is made but not necessarily instantly.</p><p>With the current heuristics, large projects should be completely scanned around every 2 seconds so in the worst case it could take up to 2 seconds for a change to be noticed. However, after a change has been noticed the change's path goes on a short list of recently changed paths which are checked on every scan, so further changes to recently changed files should be noticed almost instantly.</p><p>Note that it is still possible to implement watch mode yourself using esbuild's <a href="#incremental">incremental build API</a> and a file watcher library of your choice if you don't want to use a polling-based approach.</p><h3 id="write"><a class="permalink" href="#write">#</a>Write</h3><p><i>Supported by: <a href="#build-api">Build</a></i></p><p>The build API call can either write to the file system directly or return the files that would have been written as in-memory buffers. By default the CLI and JavaScript APIs write to the file system and the Go API doesn't. To use the in-memory buffers:</p><div class="switcher">
 <a href="javascript:void 0" class="js2">JS</a>
 <a href="javascript:void 0" class="go2">Go</a>
