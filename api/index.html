@@ -1093,15 +1093,14 @@ esbuild.serve({
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
       </div>
-<pre class="switchable cli3">esbuild app.js --outfile=out.js --bundle --watch</pre>
+<pre class="switchable cli3"><span class="repl-in">esbuild app.js --outfile=out.js --bundle --watch</span><span class="repl-out">[watch] build finished, watching for changes...</span></pre>
 <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
   <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
   <span class="hljs-attr">watch</span>: <span class="hljs-literal">true</span>,
 }).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
-  <span class="hljs-comment">// Call &quot;stop&quot; on the result to stop watching</span>
-  result.stop()
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;watching...&#x27;</span>)
 })</pre>
 <pre class="switchable go3">result := api.Build(api.BuildOptions{
   EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
@@ -1109,9 +1108,7 @@ esbuild.serve({
   Bundle:      <span class="hljs-literal">true</span>,
   Watch:       &amp;api.WatchMode{},
 })
-
-<span class="hljs-comment">// Call &quot;stop&quot; on the result to stop watching</span>
-result.Stop()</pre><p>If you are using the JavaScript or Go API, you can optionally provide a callback that will be called whenever an incremental build has completed. This can be used to do something once the build is complete (e.g. to reload your app in the browser):</p><div class="switcher">
+fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)</pre><p>If you are using the JavaScript or Go API, you can optionally provide a callback that will be called whenever an incremental build has completed. This can be used to do something once the build is complete (e.g. to reload your app in the browser):</p><div class="switcher">
 <a href="javascript:void 0" class="js2">JS</a>
 <a href="javascript:void 0" class="go2">Go</a>
       </div>
@@ -1126,8 +1123,7 @@ result.Stop()</pre><p>If you are using the JavaScript or Go API, you can optiona
     },
   },
 }).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
-  <span class="hljs-comment">// Call &quot;stop&quot; on the result to stop watching</span>
-  result.stop()
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;watching...&#x27;</span>)
 })</pre>
 <pre class="switchable go2">result := api.Build(api.BuildOptions{
   EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
@@ -1143,9 +1139,33 @@ result.Stop()</pre><p>If you are using the JavaScript or Go API, you can optiona
     },
   },
 })
+fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)</pre><p>If you want to stop watch mode at some point in the future, you can call &quot;stop&quot; on the result object to terminate the file watcher:</p><div class="switcher">
+<a href="javascript:void 0" class="js2">JS</a>
+<a href="javascript:void 0" class="go2">Go</a>
+      </div>
+<pre class="switchable js2"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).build({
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
+  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
+  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
+}).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;watching...&#x27;</span>)
 
-<span class="hljs-comment">// Call &quot;stop&quot; on the result to stop watching</span>
-result.Stop()</pre><p>Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling system is designed to use relatively little CPU vs. a more traditional polling system that scans the whole directory tree at once. The file system is still scanned regularly but each scan only checks a random subset of your files, which means a change to a file will be picked up soon after the change is made but not necessarily instantly.</p><p>With the current heuristics, large projects should be completely scanned around every 2 seconds so in the worst case it could take up to 2 seconds for a change to be noticed. However, after a change has been noticed the change's path goes on a short list of recently changed paths which are checked on every scan, so further changes to recently changed files should be noticed almost instantly.</p><p>Note that it is still possible to implement watch mode yourself using esbuild's <a href="#incremental">incremental build API</a> and a file watcher library of your choice if you don't want to use a polling-based approach.</p><h3 id="write"><a class="permalink" href="#write">#</a>Write</h3><p><i>Supported by: <a href="#build-api">Build</a></i></p><p>The build API call can either write to the file system directly or return the files that would have been written as in-memory buffers. By default the CLI and JavaScript APIs write to the file system and the Go API doesn't. To use the in-memory buffers:</p><div class="switcher">
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> {
+    result.stop()
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;stopped watching&#x27;</span>)
+  }, <span class="hljs-number">10</span> * <span class="hljs-number">1000</span>)
+})</pre>
+<pre class="switchable go2">result := api.Build(api.BuildOptions{
+  EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+  Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+  Bundle:      <span class="hljs-literal">true</span>,
+  Watch:       &amp;api.WatchMode{},
+})
+fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)
+
+time.Sleep(<span class="hljs-number">10</span> * time.Second)
+result.Stop()
+fmt.Printf(<span class="hljs-string">&quot;stopped watching\n&quot;</span>)</pre><p>Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling system is designed to use relatively little CPU vs. a more traditional polling system that scans the whole directory tree at once. The file system is still scanned regularly but each scan only checks a random subset of your files, which means a change to a file will be picked up soon after the change is made but not necessarily instantly.</p><p>With the current heuristics, large projects should be completely scanned around every 2 seconds so in the worst case it could take up to 2 seconds for a change to be noticed. However, after a change has been noticed the change's path goes on a short list of recently changed paths which are checked on every scan, so further changes to recently changed files should be noticed almost instantly.</p><p>Note that it is still possible to implement watch mode yourself using esbuild's <a href="#incremental">incremental build API</a> and a file watcher library of your choice if you don't want to use a polling-based approach.</p><h3 id="write"><a class="permalink" href="#write">#</a>Write</h3><p><i>Supported by: <a href="#build-api">Build</a></i></p><p>The build API call can either write to the file system directly or return the files that would have been written as in-memory buffers. By default the CLI and JavaScript APIs write to the file system and the Go API doesn't. To use the in-memory buffers:</p><div class="switcher">
 <a href="javascript:void 0" class="js2">JS</a>
 <a href="javascript:void 0" class="go2">Go</a>
       </div>
@@ -1850,7 +1870,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
     os.Exit(<span class="hljs-number">1</span>)
   }
-}</pre><h3 id="legal-comments"><a class="permalink" href="#legal-comments">#</a>Legal comments</h3><p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p><p>A &quot;legal comment&quot; is considered to be any statement-level comment that contains <code>@license</code> or <code>@preserve</code> or that starts with <code>//!</code> or <code>/*!</code>. These comments are preserved in output files by default since that follows the intent of the original authors of the code. However, this behavior can be configured by using one of the following options:</p><ul><li><p><code>none</code><br>Do not preserve any legal comments.</p></li><li><p><code>inline</code><br>Preserve all legal comments.</p></li><li><p><code>eof</code><br>Move all legal comments to the end of the file.</p></li><li><p><code>linked</code><br>Move all legal comments to a <code>.LEGAL.txt</code> file and link to them with a comment.</p></li><li><p><code>external</code><br>Move all legal comments to a <code>.LEGAL.txt</code> file but to not link to them.</p></li></ul><p>The default behavior is <code>eof</code> when <a href="#bundle">bundle</a> is enabled and <code>inline</code> otherwise. Setting the legal comment mode looks like this:</p><div class="switcher">
+}</pre><h3 id="legal-comments"><a class="permalink" href="#legal-comments">#</a>Legal comments</h3><p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p><p>A &quot;legal comment&quot; is considered to be any statement-level comment in JS or rule-level  comment in CSS that contains <code>@license</code> or <code>@preserve</code> or that starts with <code>//!</code> or <code>/*!</code>. These comments are preserved in output files by default since that follows the intent of the original authors of the code. However, this behavior can be configured by using one of the following options:</p><ul><li><p><code>none</code><br>Do not preserve any legal comments.</p></li><li><p><code>inline</code><br>Preserve all legal comments.</p></li><li><p><code>eof</code><br>Move all legal comments to the end of the file.</p></li><li><p><code>linked</code><br>Move all legal comments to a <code>.LEGAL.txt</code> file and link to them with a comment.</p></li><li><p><code>external</code><br>Move all legal comments to a <code>.LEGAL.txt</code> file but to not link to them.</p></li></ul><p>The default behavior is <code>eof</code> when <a href="#bundle">bundle</a> is enabled and <code>inline</code> otherwise. Setting the legal comment mode looks like this:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -1874,7 +1894,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
     os.Exit(<span class="hljs-number">1</span>)
   }
-}</pre><p>Note that &quot;statement-level&quot; means the comment must appear in a context where multiple statements are allowed such as in the top-level scope or in a statement block. So comments inside expressions are not considered license comments.</p><h3 id="log-level"><a class="permalink" href="#log-level">#</a>Log level</h3><p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p><p>The log level can be changed to prevent esbuild from printing warning and/or error messages to the terminal. The six log levels are:</p><ul><li><p><code>silent</code><br>Do not show any log output. This is the default log level when using the JS <a href="#transform-api"><code>transform</code> API</a>.</p></li><li><p><code>error</code><br>Only show errors.</p></li><li><p><code>warning</code><br>Only show warnings and errors. This is the default log level when using the JS <a href="#build-api"><code>build</code> API</a>.</p></li><li><p><code>info</code><br>Show warnings, errors, and an output file summary. This is the default log level when using the CLI.</p></li><li><p><code>debug</code><br>Log everything from <code>info</code> and some additional messages that may help you debug a broken bundle. This log level has a performance impact and some of the messages may be false positives, so this information is not shown by default.</p></li><li><p><code>verbose</code><br>This generates a torrent of log messages and was added to debug issues with file system drivers. It's not intended for general use.</p></li></ul><p>The log level can be set like this:</p><div class="switcher">
+}</pre><p>Note that &quot;statement-level&quot; for JS and &quot;rule-level&quot; for CSS means the comment must appear in a context where multiple statements or rules are allowed such as in the top-level scope or in a statement or rule block. So comments inside expressions or at the declaration level are not considered license comments.</p><h3 id="log-level"><a class="permalink" href="#log-level">#</a>Log level</h3><p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p><p>The log level can be changed to prevent esbuild from printing warning and/or error messages to the terminal. The six log levels are:</p><ul><li><p><code>silent</code><br>Do not show any log output. This is the default log level when using the JS <a href="#transform-api"><code>transform</code> API</a>.</p></li><li><p><code>error</code><br>Only show errors.</p></li><li><p><code>warning</code><br>Only show warnings and errors. This is the default log level when using the JS <a href="#build-api"><code>build</code> API</a>.</p></li><li><p><code>info</code><br>Show warnings, errors, and an output file summary. This is the default log level when using the CLI.</p></li><li><p><code>debug</code><br>Log everything from <code>info</code> and some additional messages that may help you debug a broken bundle. This log level has a performance impact and some of the messages may be false positives, so this information is not shown by default.</p></li><li><p><code>verbose</code><br>This generates a torrent of log messages and was added to debug issues with file system drivers. It's not intended for general use.</p></li></ul><p>The log level can be set like this:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
