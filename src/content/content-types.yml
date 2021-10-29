@@ -120,6 +120,34 @@ body:
       garbage collection. See [this reference](https://github.com/tc39/ecma262/issues/1657#issuecomment-518916579)
       for more information.
 
+  - h4#real-esm-imports: Imports follow ECMAScript module behavior
+  - p: >
+      You might try to modify global state before importing a module which
+      needs that global state and expect it to work. However, JavaScript
+      (and therefore esbuild) effectively "hoists" all `import` statements
+      to the top of the file, so doing this won't work:
+
+  - pre.js: |
+      window.foo = {}
+      import './something-that-needs-foo'
+
+  - p: >
+      There are some broken implementations of ECMAScript modules out there
+      (e.g. the TypeScript compiler) that don't follow the JavaScript
+      specification in this regard. Code compiled with these tools may "work"
+      since the `import` is replaced with an inline call to `require()`, which
+      ignores the hoisting requirement. But such code will not work with real
+      ECMAScript module implementations such as node, a browser, or esbuild,
+      so writing code like this is non-portable and is not recommended.
+
+  - p: >
+      The way to do this correctly is to move the global state modification
+      into its own import. That way it _will_ be run before the other import:
+
+  - pre.js: |
+      import './assign-to-foo-on-window'
+      import './something-that-needs-foo'
+
   - h4#direct-eval: Avoid direct `eval` when bundling
   - p: >
       Although the expression `eval(x)` looks like a normal function call, it
