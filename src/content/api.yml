@@ -4116,11 +4116,12 @@ body:
   - h3: Legal comments
 
   - p: >
-      A "legal comment" is considered to be any statement-level comment that
-      contains `@license` or `@preserve` or that starts with `//!` or `/*!`.
-      These comments are preserved in output files by default since that
-      follows the intent of the original authors of the code. However, this
-      behavior can be configured by using one of the following options:
+      A "legal comment" is considered to be any statement-level comment in JS
+      or rule-level  comment in CSS that contains `@license` or `@preserve` or
+      that starts with `//!` or `/*!`. These comments are preserved in output
+      files by default since that follows the intent of the original authors
+      of the code. However, this behavior can be configured by using one of
+      the following options:
 
   - ul:
     - >
@@ -4173,10 +4174,11 @@ body:
         }
 
   - p: >
-      Note that "statement-level" means the comment must appear in a context
-      where multiple statements are allowed such as in the top-level scope or
-      in a statement block. So comments inside expressions are not considered
-      license comments.
+      Note that "statement-level" for JS and "rule-level" for CSS means the
+      comment must appear in a context where multiple statements or rules
+      are allowed such as in the top-level scope or in a statement or rule
+      block. So comments inside expressions or at the declaration level are
+      not considered license comments.
 
   - h3: Log level
 
