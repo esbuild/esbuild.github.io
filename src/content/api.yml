@@ -2562,8 +2562,11 @@ body:
   - example:
       noCheck: true
 
-      cli: |
-        esbuild app.js --outfile=out.js --bundle --watch
+      cli:
+        - $: |
+            esbuild app.js --outfile=out.js --bundle --watch
+        - expect: |
+            [watch] build finished, watching for changes...
 
       js: |
         require('esbuild').build({
@@ -2572,8 +2575,7 @@ body:
           bundle: true,
           watch: true,
         }).then(result => {
-          // Call "stop" on the result to stop watching
-          result.stop()
+          console.log('watching...')
         })
 
       go: |
@@ -2583,9 +2585,7 @@ body:
           Bundle:      true,
           Watch:       &api.WatchMode{},
         })
-
-        // Call "stop" on the result to stop watching
-        result.Stop()
+        fmt.Printf("watching...\n")
 
   - p: >
       If you are using the JavaScript or Go API, you can optionally provide a
@@ -2608,8 +2608,7 @@ body:
             },
           },
         }).then(result => {
-          // Call "stop" on the result to stop watching
-          result.stop()
+          console.log('watching...')
         })
 
       go: |
@@ -2627,9 +2626,41 @@ body:
             },
           },
         })
+        fmt.Printf("watching...\n")
 
-        // Call "stop" on the result to stop watching
+  - p: >
+      If you want to stop watch mode at some point in the future, you can call
+      "stop" on the result object to terminate the file watcher:
+
+  - example:
+      noCheck: true
+
+      js: |
+        require('esbuild').build({
+          entryPoints: ['app.js'],
+          outfile: 'out.js',
+          bundle: true,
+        }).then(result => {
+          console.log('watching...')
+
+          setTimeout(() => {
+            result.stop()
+            console.log('stopped watching')
+          }, 10 * 1000)
+        })
+
+      go: |
+        result := api.Build(api.BuildOptions{
+          EntryPoints: []string{"app.js"},
+          Outfile:     "out.js",
+          Bundle:      true,
+          Watch:       &api.WatchMode{},
+        })
+        fmt.Printf("watching...\n")
+
+        time.Sleep(10 * time.Second)
         result.Stop()
+        fmt.Printf("stopped watching\n")
 
   - p: >
       Watch mode in esbuild is implemented using polling instead of OS-specific
