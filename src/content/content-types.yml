@@ -64,6 +64,7 @@ body:
       | [Private static fields](https://github.com/tc39/proposal-static-class-features)     | `esnext`                             | `class { static #x }`      |
       | [Ergonomic brand checks](https://github.com/tc39/proposal-private-fields-in-in)     | `esnext`                             | `#x in y`                  |
       | [Import assertions](https://github.com/tc39/proposal-import-assertions)             | `esnext`                             | `import "x" assert {}`     |
+      | [Class static blocks](https://github.com/tc39/proposal-class-static-block)          | `esnext`                             | `class { static {} }`      |
 
   - p: >
       These syntax features are currently always passed through un-transformed:
