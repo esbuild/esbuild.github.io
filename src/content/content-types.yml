@@ -409,8 +409,9 @@ body:
       publish the compiled JavaScript code as a package for others to use, you
       will probably also want to publish type declarations. This is not something
       that esbuild can do for you because it doesn't retain any type information.
-      You will likely either need to use the TypeScript compiler to generate them
-      or manually write them yourself.
+      You will likely either need to use the TypeScript compiler to generate them, 
+      use [`rollup-plugin-dts`](https://github.com/Swatinem/rollup-plugin-dts/)/
+      [api-extractor](https://api-extractor.com) or manually write them yourself.
       </p>
 
   - h4#tsconfig-json: Only certain `tsconfig.json` fields are respected
