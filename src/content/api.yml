@@ -2640,6 +2640,7 @@ body:
           entryPoints: ['app.js'],
           outfile: 'out.js',
           bundle: true,
+          watch: true,
         }).then(result => {
           console.log('watching...')
 
