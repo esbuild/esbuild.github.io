@@ -438,6 +438,8 @@ body:
     - >
       [`paths`](https://www.typescriptlang.org/tsconfig#paths)
     - >
+      [`preserveValueImports`](https://www.typescriptlang.org/tsconfig/#preserveValueImports)
+    - >
       [`target`](https://www.typescriptlang.org/tsconfig#target)
     - >
       [`useDefineForClassFields`](https://www.typescriptlang.org/tsconfig#useDefineForClassFields)
