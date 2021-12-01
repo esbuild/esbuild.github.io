@@ -320,16 +320,32 @@ body[data-os2=unix] pre.unix2, body[data-os2=windows] pre.windows2 {
   display: none;
 }
 
+.bg-red {
+  background: #e24834;
+}
+
 .color-red {
   color: #e24834;
+}
+
+.bg-yellow {
+  background: #F2D42D;
+}
+
+.color-yellow {
+  color: #F2D42D;
 }
 
 .color-green {
   color: #58A549;
 }
 
-.color-purple {
-  color: #8E69C9;
+.color-black {
+  color: #000;
+}
+
+.color-white {
+  color: #fff;
 }
 
 .color-dim {
