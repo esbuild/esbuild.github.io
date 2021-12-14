@@ -294,10 +294,12 @@ process.stdout.write(out.code)</pre>
 <a href="javascript:void 0" class="go3">Go</a>
       </div>
 <pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;export default &quot;test&quot;&#x27;</span> | esbuild --format=cjs</span><span class="repl-out">...
-__export(exports, {
+var stdin_exports = {};
+__export(stdin_exports, {
   default: () =&gt; stdin_default
 });
-var stdin_default = "test";</span></pre>
+var stdin_default = "test";
+module.exports = __toCommonJS(stdin_exports);</span></pre>
 <pre class="switchable js3"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;export default &quot;test&quot;&#x27;</span>
 <span class="hljs-keyword">let</span> out = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
   <span class="hljs-attr">format</span>: <span class="hljs-string">&#x27;cjs&#x27;</span>,
