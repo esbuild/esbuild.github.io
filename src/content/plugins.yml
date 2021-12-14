@@ -479,6 +479,8 @@ body:
           path?: string;
           pluginData?: any;
           pluginName?: string;
+          sideEffects?: boolean;
+          suffix?: string;
           warnings?: Message[];
           watchDirs?: string[];
           watchFiles?: string[];
@@ -501,15 +503,17 @@ body:
 
       go: |
         type OnResolveResult struct {
-          Errors     []Message
-          External   bool
-          Namespace  string
-          Path       string
-          PluginData interface{}
-          PluginName string
-          Warnings   []Message
-          WatchDirs  []string
-          WatchFiles []string
+          Errors      []Message
+          External    bool
+          Namespace   string
+          Path        string
+          PluginData  interface{}
+          PluginName  string
+          SideEffects SideEffects
+          Suffix      string
+          Warnings    []Message
+          WatchDirs   []string
+          WatchFiles  []string
         }
 
         type Message struct {
@@ -629,6 +633,45 @@ body:
       `onLoad` plugin when it loads the file (it's arbitrary since the
       relationship is many-to-one). This is useful to pass data between
       different plugins without them having to coordinate directly.
+      </p>
+
+    - >
+      `sideEffects`
+      <p>
+      Setting this property to false tells esbuild that imports of this module
+      can be removed if the imported names are unused. This behaves as if
+      `"sideEffects": false` was specified the corresponding `package.json` file.
+      For example, <code>import { x } <wbr>from "y"</code> may be completely
+      removed if `x` is unused and `y` has been marked as `sideEffects: false`.
+      You can read more about what `sideEffects` means in
+      [Webpack's documentation about the feature](https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free).
+      </p>
+
+    - >
+      `suffix`
+      <p>
+      Returning a value here lets you pass along an optional URL query or hash
+      to append to the path that is not included in the path itself. Storing
+      this separately is beneficial in cases when the path is processed by
+      something that is not aware of the suffix, either by esbuild itself or
+      by another plugin.
+      </p>
+      <p>
+      For example, an on-resolve plugin might return a suffix of `?#iefix` for
+      a `.eot` file in a build with a different on-load plugin for paths ending
+      in `.eot`. Keeping the suffix separate means the suffix is still associated
+      with the path but the `.eot` plugin will still match the file without
+      needing to know anything about suffixes.
+      </p>
+      <p>
+      If you do set a suffix, it must begin with either `?` or `#` because
+      it's intended to be a URL query or hash. This feature has certain
+      obscure uses such as hacking around bugs in IE8's CSS parser and may
+      not be that useful otherwise. If you do use it, keep in mind that each
+      unique namespace, path, and suffix combination is considered by esbuild
+      to be a unique module identifier so by returning a different suffix for
+      the same path, you are telling esbuild to create another copy of the
+      module.
       </p>
 
   - h2: Load callbacks
@@ -786,6 +829,7 @@ body:
         interface OnLoadArgs {
           path: string;
           namespace: string;
+          suffix: string;
           pluginData: any;
         }
 
@@ -793,6 +837,7 @@ body:
         type OnLoadArgs struct {
           Path       string
           Namespace  string
+          Suffix     string
           PluginData interface{}
         }
 
@@ -813,6 +858,34 @@ body:
       [resolve callback](#resolve-callbacks) that resolved this file. It
       defaults to the `file` namespace for modules loaded with esbuild's
       default behavior. You can read more about namespaces [here](#namespaces).
+      </p>
+
+    - >
+      `suffix`
+      <p>
+      This is the URL query and/or hash at the end of the file path, if there
+      is one. It's either filled in by esbuild's native path resolution behavior
+      or returned by the [resolve callback](#resolve-callbacks) that resolved
+      this file. This is stored separately from the path so that most plugins
+      can just deal with the path and ignore the suffix. The on-load behavior
+      that's built into esbuild just ignores the suffix and loads the file
+      from its path alone.
+      </p>
+      <p>
+      For context, IE8's CSS parser has a bug where it considers certain URLs
+      to extend to the last `)` instead of the first `)`. So the CSS code
+      <code>url('Foo.eot') <wbr>format('eot')</code> is incorrectly considered
+      to have a URL of <code>Foo.eot') <wbr>format('eot</code>. To avoid this,
+      people typically add something like `?#iefix` so that IE8 sees the URL
+      as <code>Foo.eot?#iefix') <wbr>format('eot</code>. Then the path part of
+      the URL is `Foo.eot` and the query part is <code>?#iefix') <wbr>format('eot</code>,
+      which means IE8 can find the file `Foo.eot` by discarding the query.
+      </p>
+      <p>
+      The suffix feature was added to esbuild to handle CSS files containing
+      these hacks. A URL of `Foo.eot?#iefix` should be considered [external](/api/#external)
+      if all files matching `*.eot` have been marked as external, but the
+      `?#iefix` suffix should still be present in the final output file.
       </p>
 
     - >
