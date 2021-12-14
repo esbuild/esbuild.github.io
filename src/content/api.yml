@@ -737,10 +737,12 @@ body:
             echo 'export default "test"' | esbuild --format=cjs
         - expect: |
             ...
-            __export(exports, {
+            var stdin_exports = {};
+            __export(stdin_exports, {
               default: () => stdin_default
             });
             var stdin_default = "test";
+            module.exports = __toCommonJS(stdin_exports);
 
       js: |
         let js = 'export default "test"'
