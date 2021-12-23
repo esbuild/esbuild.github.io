@@ -203,7 +203,7 @@ body:
       regular expression, so unlike module paths they are not intended for
       storing arbitrary data.
 
-  - h2: On-resolve callbacks
+  - h2#on-resolve: On-resolve callbacks
 
   - p: >
       A callback added using `onResolve` will be run on each import path in
@@ -424,7 +424,7 @@ body:
       `namespace`
       <p>
       This is the namespace of the module containing this import to be resolved,
-      as set by the [on-load callback](#on-load-callbacks) that loaded this file.
+      as set by the [on-load callback](#on-load) that loaded this file.
       This defaults to the `file` namespace for modules loaded with esbuild's
       default behavior. You can read more about namespaces [here](#namespaces).
       </p>
@@ -435,7 +435,7 @@ body:
       This is the file system directory to use when resolving an import path
       to a real path on the file system. For modules in the `file` namespace,
       this value defaults to the directory part of the module path. For virtual
-      modules this value defaults to empty but [on-load callbacks](#on-load-callbacks)
+      modules this value defaults to empty but [on-load callbacks](#on-load)
       can optionally give virtual modules a resolve directory too. If that
       happens, it will be provided to resolve callbacks for unresolved paths
       in that file.
@@ -456,7 +456,7 @@ body:
       `pluginData`
       <p>
       This property is passed from the previous plugin, as set by the
-      [on-load callback](#on-load-callbacks) that loaded this file.
+      [on-load callback](#on-load) that loaded this file.
       </p>
 
   - h3: On-resolve results
@@ -674,7 +674,7 @@ body:
       module.
       </p>
 
-  - h2: On-load callbacks
+  - h2#on-load: On-load callbacks
 
   - p: >
       A callback added using `onLoad` will be run for each unique path/<wbr>namespace
@@ -855,7 +855,7 @@ body:
       `namespace`
       <p>
       This is the namespace that the module path is in, as set by the
-      [on-resolve callback](#on-resolve-callbacks) that resolved this file. It
+      [on-resolve callback](#on-resolve) that resolved this file. It
       defaults to the `file` namespace for modules loaded with esbuild's
       default behavior. You can read more about namespaces [here](#namespaces).
       </p>
@@ -865,7 +865,7 @@ body:
       <p>
       This is the URL query and/or hash at the end of the file path, if there
       is one. It's either filled in by esbuild's native path resolution behavior
-      or returned by the [on-resolve callback](#on-resolve-callbacks) that resolved
+      or returned by the [on-resolve callback](#on-resolve) that resolved
       this file. This is stored separately from the path so that most plugins
       can just deal with the path and ignore the suffix. The on-load behavior
       that's built into esbuild just ignores the suffix and loads the file
@@ -892,7 +892,7 @@ body:
       `pluginData`
       <p>
       This property is passed from the previous plugin, as set by the
-      [on-resolve callback](#on-resolve-callbacks) that runs in the plugin
+      [on-resolve callback](#on-resolve) that runs in the plugin
       chain.
       </p>
 
@@ -996,7 +996,7 @@ body:
       path. Otherwise this value defaults to empty unless the plugin provides
       one. If the plugin doesn't provide one, esbuild's default behavior won't
       resolve any imports in this module. This directory will be passed to any
-      [on-resolve callbacks](#on-resolve-callbacks) that run on unresolved import
+      [on-resolve callbacks](#on-resolve) that run on unresolved import
       paths in this module.
       </p>
 
@@ -1240,13 +1240,13 @@ body:
       currently running on. Getting all of this to be correct is non-trivial.
       </p>
 
-  - h2: Start callbacks
+  - h2#on-start: On-start callbacks
 
   - p: >
-      Register a start callback to be notified when a new build starts. This
+      Register an on-start callback to be notified when a new build starts. This
       triggers for all builds, not just the initial build, so it's especially
       useful for [incremental builds](/api/#incremental), [watch mode](/api/#watch),
-      and the [serve API](/api/#serve). Here's how to add a start callback:
+      and the [serve API](/api/#serve). Here's how to add an on-start callback:
 
   - example:
       js: |
@@ -1280,37 +1280,37 @@ body:
         }
 
   - p: >
-      You should not use a start callback for initialization since it can be run
+      You should not use an on-start callback for initialization since it can be run
       multiple times. If you want to initialize something, just put your plugin
       initialization code directly inside the `setup` function instead.
 
   - p: >
-      The start callback can be `async` and can return a promise. However, the
+      The on-start callback can be `async` and can return a promise. However, the
       build does not wait for the promise to be resolved before starting, so a
-      slow start callback will not necessarily slow down the build. All start
+      slow on-start callback will not necessarily slow down the build. All start
       callbacks are also run concurrently, not consecutively. The returned
-      promise is purely for error reporting, and matters when the start callback
+      promise is purely for error reporting, and matters when the on-start callback
       needs to do an asynchronous operation that may fail or may produce warnings.
-      If your plugin needs to wait for an asynchronous task in your start callback
-      to complete before any [on-resolve](#on-resolve-callbacks) or [on-load](#on-load-callbacks)
+      If your plugin needs to wait for an asynchronous task in your on-start callback
+      to complete before any [on-resolve](#on-resolve) or [on-load](#on-load)
       callbacks are run, you will need to have your resolve or load callbacks
       block on that asynchronous task.
 
   - p: >
-      Note that start callbacks do not have the ability to mutate the [build options](#build-options).
+      Note that on-start callbacks do not have the ability to mutate the [build options](#build-options).
       The initial build options can only be modified within the `setup` function
       and are consumed once `setup` returns. All builds after the first one
       reuse the same initial options so the initial options are never re-consumed,
       and modifications to `build.initialOptions` that are done within the start
       callback are ignored.
 
-  - h2: End callbacks
+  - h2#on-end: On-end callbacks
 
   - p: >
-      Register a end callback to be notified when a new build ends. This
+      Register an on-end callback to be notified when a new build ends. This
       triggers for all builds, not just the initial build, so it's especially
       useful for [incremental builds](/api/#incremental), [watch mode](/api/#watch),
-      and the [serve API](/api/#serve). Here's how to add an end callback:
+      and the [serve API](/api/#serve). Here's how to add an on-end callback:
 
   - example:
       js: |
@@ -1343,7 +1343,7 @@ body:
         }
 
   - p: >
-      All end callbacks are run in serial and each callback is given access to
+      All on-end callbacks are run in serial and each callback is given access to
       the final build result. It can modify the build result before returning
       and can delay the end of the build by returning a promise. If you want to
       be able to inspect the build graph, you should enable the [metafile](/api/#metafile)
@@ -1402,7 +1402,7 @@ body:
   - h2#resolve: Resolving paths
 
   - p: >
-      When a plugin returns a result from an [on-resolve callback](#on-resolve-callbacks),
+      When a plugin returns a result from an [on-resolve callback](#on-resolve),
       the result completely replaces esbuilds built-in path resolution. This gives
       the plugin complete control over how path resolution works, but it means
       that the plugin may have to reimplement some of the behavior that esbuild
@@ -1619,7 +1619,7 @@ body:
     - >
       `pluginData`
       <p>
-      This property can be used to pass custom data to whatever [on-resolve callbacks](#on-resolve-callbacks)
+      This property can be used to pass custom data to whatever [on-resolve callbacks](#on-resolve)
       match this import path. The meaning of this data is left entirely up to you.
       </p>
 
