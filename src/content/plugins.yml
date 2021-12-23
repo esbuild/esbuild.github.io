@@ -1399,6 +1399,136 @@ body:
       update their build options if plugins mutate the build options object
       after the first build has started.
 
+  - h2#resolve: Running path resolution
+
+  - p: >
+      When a plugin returns a result from a [resolve callback](#resolve-callbacks),
+      the result completely replaces esbuilds built-in path resolution. This gives
+      the plugin complete control over how path resolution works, but it means
+      that the plugin may have to reimplement some of the behavior that esbuild
+      already has built-in if it wants to have similar behavior. For example,
+      a plugin may want to search for a package in the user's `node_modules`
+      directory, which is something esbuild already implements.
+
+  - p: >
+      Instead of reimplementing esbuild's built-in behavior, plugins have the
+      option of running esbuild's path resolution manually and inspecting the
+      result. This lets you adjust the inputs and/or the outputs of esbuild's
+      path resolution. Here's an example:
+
+  - example:
+      in:
+        app.js: import 'example'
+        bar/foo.js: console.log(123)
+
+      js: |
+        let examplePlugin = {
+          name: 'example',
+          setup(build) {
+            build.onResolve({ filter: /^example$/ }, async () => {
+              const result = await build.resolve('./foo', { resolveDir: './bar' })
+              if (result.errors.length > 0) {
+                return { errors: result.errors }
+              }
+              return { path: result.path, external: true }
+            })
+          },
+        }
+
+        require('esbuild').build({
+          entryPoints: ['app.js'],
+          bundle: true,
+          outfile: 'out.js',
+          plugins: [examplePlugin],
+        }).catch(() => process.exit(1))
+
+      go: |
+        package main
+
+        import "os"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        var examplePlugin = api.Plugin{
+          Name: "example",
+          Setup: func(build api.PluginBuild) {
+            build.OnResolve(api.OnResolveOptions{Filter: `^example$`},
+              func(api.OnResolveArgs) (api.OnResolveResult, error) {
+                result := build.Resolve("./foo", api.ResolveOptions{ResolveDir: "./bar"})
+                if len(result.Errors) > 0 {
+                  return api.OnResolveResult{Errors: result.Errors}, nil
+                }
+                return api.OnResolveResult{Path: result.Path, External: true}, nil
+              })
+          },
+        }
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Outfile:     "out.js",
+            Plugins:     []api.Plugin{examplePlugin},
+            Write:       true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      This plugin intercepts imports to the path `example`, tells esbuild to
+      resolve the import `./foo` in the directory `./bar`, forces whatever
+      path esbuild returns to be considered external, and maps the import for
+      `example` to that external path.
+
+  - p: >
+      Here are some additional things to know about this API:
+
+  - ul:
+    - >
+      <p>
+      If you don't pass the optional `resolveDir` parameter, esbuild will still
+      run `onResolve` plugin callbacks but will not attempt any path resolution
+      itself. All of esbuild's path resolution logic depends on the `resolveDir`
+      parameter including looking for packages in `node_modules` directories
+      (since it needs to know where those `node_modules` directories might be).
+      </p>
+
+    - >
+      <p>
+      If you want to resolve a file name in a specific directory, make sure the
+      input path starts with `./`. Otherwise the input path will be treated as
+      a package path instead of a relative path. This behavior is identical to
+      esbuild's normal path resolution logic.
+      </p>
+
+    - >
+      <p>
+      If path resolution fails, the `errors` property on the returned object
+      will be a non-empty array containing the error information. This function
+      does not always throw an error when it fails. You need to check for errors
+      after calling it.
+      </p>
+
+    - >
+      <p>
+      The behavior of this function depends on the build configuration. That's
+      why it's a property of the `build` object instead of being a top-level API
+      call. This also means you can't call it until all plugin `setup` functions
+      have finished since these give plugins the opportunity to adjust the build
+      configuration before it's frozen at the start of the build. So the `resolve`
+      function is going to be most useful inside your `onResolve` and/or `onLoad`
+      callbacks.
+      </p>
+
+    - >
+      <p>
+      There is currently no attempt made to detect infinite path resolution loops.
+      Calling `resolve` from within `onResolve` with the same parameters is almost
+      certainly a bad idea.
+      </p>
+
   - h2: Example plugins
 
   - p: >
