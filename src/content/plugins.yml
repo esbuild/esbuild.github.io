@@ -203,7 +203,7 @@ body:
       regular expression, so unlike module paths they are not intended for
       storing arbitrary data.
 
-  - h2: Resolve callbacks
+  - h2: On-resolve callbacks
 
   - p: >
       A callback added using `onResolve` will be run on each import path in
@@ -311,7 +311,7 @@ body:
       Make sure you have appropriate synchronization in place if your plugin
       uses any shared data structures.
 
-  - h3: Resolve options
+  - h3: On-resolve options
 
   - p: >
       The `onResolve` API is meant to be called within the `setup` function and
@@ -349,7 +349,7 @@ body:
         modules in the provided namespace. You can read more about namespaces [here](#namespaces).
         </p>
 
-  - h3: Resolve arguments
+  - h3: On-resolve arguments
 
   - p: >
       When esbuild calls the callback registered by `onResolve`, it will
@@ -424,7 +424,7 @@ body:
       `namespace`
       <p>
       This is the namespace of the module containing this import to be resolved,
-      as set by the [load callback](#load-callbacks) that loaded this file.
+      as set by the [on-load callback](#on-load-callbacks) that loaded this file.
       This defaults to the `file` namespace for modules loaded with esbuild's
       default behavior. You can read more about namespaces [here](#namespaces).
       </p>
@@ -435,7 +435,7 @@ body:
       This is the file system directory to use when resolving an import path
       to a real path on the file system. For modules in the `file` namespace,
       this value defaults to the directory part of the module path. For virtual
-      modules this value defaults to empty but [load callbacks](#load-callbacks)
+      modules this value defaults to empty but [on-load callbacks](#on-load-callbacks)
       can optionally give virtual modules a resolve directory too. If that
       happens, it will be provided to resolve callbacks for unresolved paths
       in that file.
@@ -456,10 +456,10 @@ body:
       `pluginData`
       <p>
       This property is passed from the previous plugin, as set by the
-      [load callback](#load-callbacks) that loaded this file.
+      [on-load callback](#on-load-callbacks) that loaded this file.
       </p>
 
-  - h3: Resolve results
+  - h3: On-resolve results
 
   - p: >
       This is the object that can be returned by a callback added using
@@ -674,7 +674,7 @@ body:
       module.
       </p>
 
-  - h2: Load callbacks
+  - h2: On-load callbacks
 
   - p: >
       A callback added using `onLoad` will be run for each unique path/<wbr>namespace
@@ -778,7 +778,7 @@ body:
       Make sure you have appropriate synchronization in place if your plugin
       uses any shared data structures.
 
-  - h3: Load options
+  - h3: On-load options
 
   - p: >
       The `onLoad` API is meant to be called within the `setup` function and
@@ -816,7 +816,7 @@ body:
         modules in the provided namespace. You can read more about namespaces [here](#namespaces).
         </p>
 
-  - h3: Load arguments
+  - h3: On-load arguments
 
   - p: >
       When esbuild calls the callback registered by `onLoad`, it will
@@ -855,7 +855,7 @@ body:
       `namespace`
       <p>
       This is the namespace that the module path is in, as set by the
-      [resolve callback](#resolve-callbacks) that resolved this file. It
+      [on-resolve callback](#on-resolve-callbacks) that resolved this file. It
       defaults to the `file` namespace for modules loaded with esbuild's
       default behavior. You can read more about namespaces [here](#namespaces).
       </p>
@@ -865,7 +865,7 @@ body:
       <p>
       This is the URL query and/or hash at the end of the file path, if there
       is one. It's either filled in by esbuild's native path resolution behavior
-      or returned by the [resolve callback](#resolve-callbacks) that resolved
+      or returned by the [on-resolve callback](#on-resolve-callbacks) that resolved
       this file. This is stored separately from the path so that most plugins
       can just deal with the path and ignore the suffix. The on-load behavior
       that's built into esbuild just ignores the suffix and loads the file
@@ -892,11 +892,11 @@ body:
       `pluginData`
       <p>
       This property is passed from the previous plugin, as set by the
-      [resolve callback](#resolve-callbacks) that runs in the plugin
+      [on-resolve callback](#on-resolve-callbacks) that runs in the plugin
       chain.
       </p>
 
-  - h3: Load results
+  - h3: On-load results
 
   - p: >
       This is the object that can be returned by a callback added using
@@ -996,7 +996,7 @@ body:
       path. Otherwise this value defaults to empty unless the plugin provides
       one. If the plugin doesn't provide one, esbuild's default behavior won't
       resolve any imports in this module. This directory will be passed to any
-      [resolve callbacks](#resolve-callbacks) that run on unresolved import
+      [on-resolve callbacks](#on-resolve-callbacks) that run on unresolved import
       paths in this module.
       </p>
 
@@ -1292,7 +1292,7 @@ body:
       promise is purely for error reporting, and matters when the start callback
       needs to do an asynchronous operation that may fail or may produce warnings.
       If your plugin needs to wait for an asynchronous task in your start callback
-      to complete before any [resolve](#resolve-callbacks) or [load](#load-callbacks)
+      to complete before any [on-resolve](#on-resolve-callbacks) or [on-load](#on-load-callbacks)
       callbacks are run, you will need to have your resolve or load callbacks
       block on that asynchronous task.
 
@@ -1399,10 +1399,10 @@ body:
       update their build options if plugins mutate the build options object
       after the first build has started.
 
-  - h2#resolve: Running path resolution
+  - h2#resolve: Resolving paths
 
   - p: >
-      When a plugin returns a result from a [resolve callback](#resolve-callbacks),
+      When a plugin returns a result from an [on-resolve callback](#on-resolve-callbacks),
       the result completely replaces esbuilds built-in path resolution. This gives
       the plugin complete control over how path resolution works, but it means
       that the plugin may have to reimplement some of the behavior that esbuild
@@ -1527,6 +1527,226 @@ body:
       There is currently no attempt made to detect infinite path resolution loops.
       Calling `resolve` from within `onResolve` with the same parameters is almost
       certainly a bad idea.
+      </p>
+
+  - h3: Resolve options
+
+  - p: >
+      The `resolve` function takes the path to resolve as the first argument
+      and an object with optional properties as the second argument. This
+      options object is very similar to the [arguments that are passed to `onResolve`](#on-resolve-arguments).
+      Here are the available options:
+
+  - example:
+      noCheck: true
+
+      js: |
+        interface ResolveOptions {
+          importer?: string;
+          namespace?: string;
+          resolveDir?: string;
+          kind?: ResolveKind;
+          pluginData?: any;
+        }
+
+        type ResolveKind =
+          | 'entry-point'
+          | 'import-statement'
+          | 'require-call'
+          | 'dynamic-import'
+          | 'require-resolve'
+          | 'import-rule'
+          | 'url-token'
+
+      go: |
+        type ResolveOptions struct {
+          Importer   string
+          Namespace  string
+          ResolveDir string
+          Kind       ResolveKind
+          PluginData interface{}
+        }
+
+        const (
+          ResolveEntryPoint        ResolveKind
+          ResolveJSImportStatement ResolveKind
+          ResolveJSRequireCall     ResolveKind
+          ResolveJSDynamicImport   ResolveKind
+          ResolveJSRequireResolve  ResolveKind
+          ResolveCSSImportRule     ResolveKind
+          ResolveCSSURLToken       ResolveKind
+        )
+
+  - ul:
+    - >
+      `importer`
+      <p>
+      If set, this is interpreted as the path of the module containing this
+      import to be resolved. This affects plugins with `onResolve` callbacks
+      that check the `importer` value.
+      </p>
+
+    - >
+      `namespace`
+      <p>
+      If set, this is interpreted as the namespace of the module containing this
+      import to be resolved. This affects plugins with `onResolve` callbacks
+      that check the `namespace` value. You can read more about namespaces
+      [here](#namespaces).
+      </p>
+
+    - >
+      `resolveDir`
+      <p>
+      This is the file system directory to use when resolving an import path
+      to a real path on the file system. This must be set for esbuild's built-in
+      path resolution to be able to find a given file, even for non-relative
+      package paths (since esbuild needs to know where the `node_modules`
+      directory is).
+      </p>
+
+    - >
+      `kind`
+      <p>
+      This tells esbuild how the path was imported, which can affect path
+      resolution. For example, [node's path resolution rules](https://nodejs.org/api/packages.html#conditional-exports)
+      say that paths imported using `'require-call'` should respect [conditional
+      package imports](/api/#conditions) in the `"require"` section in `package.json` while paths
+      imported using `'import-statement'` should respect conditional package
+      imports in the `"import"` section instead.
+      </p>
+
+    - >
+      `pluginData`
+      <p>
+      This property can be used to pass custom data to whatever [on-resolve callbacks](#on-resolve-callbacks)
+      match this import path. The meaning of this data is left entirely up to you.
+      </p>
+
+  - h3: Resolve results
+
+  - p: >
+      The `resolve` function returns an object that's very similar to what
+      plugins can [return from an `onResolve` callback](#on-resolve-results).
+      It has the following properties:
+
+  - example:
+      noCheck: true
+
+      js: |
+        export interface ResolveResult {
+          errors: Message[];
+          external: boolean;
+          namespace: string;
+          path: string;
+          pluginData: any;
+          sideEffects: boolean;
+          suffix: string;
+          warnings: Message[];
+        }
+
+        interface Message {
+          text: string;
+          location: Location | null;
+          detail: any; // The original error from a JavaScript plugin, if applicable
+        }
+
+        interface Location {
+          file: string;
+          namespace: string;
+          line: number; // 1-based
+          column: number; // 0-based, in bytes
+          length: number; // in bytes
+          lineText: string;
+        }
+
+      go: |
+        type ResolveResult struct {
+          Errors      []Message
+          External    bool
+          Namespace   string
+          Path        string
+          PluginData  interface{}
+          SideEffects bool
+          Suffix      string
+          Warnings    []Message
+        }
+
+        type Message struct {
+          Text     string
+          Location *Location
+          Detail   interface{} // The original error from a Go plugin, if applicable
+        }
+
+        type Location struct {
+          File      string
+          Namespace string
+          Line      int // 1-based
+          Column    int // 0-based, in bytes
+          Length    int // in bytes
+          LineText  string
+        }
+
+  - ul:
+    - >
+      `path`
+      <p>
+      This is the result of path resolution, or an empty string if path
+      resolution failed.
+      </p>
+
+    - >
+      `external`
+      <p>
+      This will be `true` if the path was marked as [external](/api/#external), which
+      means it will not be included in the bundle and will instead be imported
+      at run-time.
+      </p>
+
+    - >
+      `namespace`
+      <p>
+      This is the namespace associated with the resolved path. You can read
+      more about namespaces [here](#namespaces).
+      </p>
+
+    - >
+      `errors` and `warnings`
+      <p>
+      These properties hold any log messages generated during path resolution,
+      either by any plugins that responded to this path resolution operation
+      or by esbuild itself. These log messages are not automatically included
+      in the log, so they will be completely invisible if you discard them.
+      If you want them to be included in the log, you'll need to return them
+      from either `onResolve` or `onLoad`.
+      </p>
+
+    - >
+      `pluginData`
+      <p>
+      If a plugin responded to this path resolution operation and returned
+      `pluginData` from its `onResolve` callback, that data will end up here.
+      This is useful to pass data between different plugins without them
+      having to coordinate directly.
+      </p>
+
+    - >
+      `sideEffects`
+      <p>
+      This property will be `true` unless the module is somehow annotated as
+      having no side effects, in which case it will be `false`. This will be
+      `false` for packages that have `"sideEffects": false` in the corresponding
+      `package.json` file, and also if a plugin responds to this path resolution
+      operation and returns `sideEffects: false`. You can read more about what
+      `sideEffects` means in [Webpack's documentation about the feature](https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free).
+      </p>
+
+    - >
+      `suffix`
+      <p>
+      This can contain an optional URL query or hash if there was one at the
+      end of the path to be resolved and if removing it was required for the
+      path to resolve successfully.
       </p>
 
   - h2: Example plugins
