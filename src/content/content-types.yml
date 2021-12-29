@@ -314,7 +314,7 @@ body:
       |-------------------------|----------------------------|-------|
       | Namespaces              | `namespace Foo {}`         | |
       | Enums                   | `enum Foo { A, B }`        | |
-      | Const enums             | `const enum Foo { A, B }`  | Behaves the same as regular enums |
+      | Const enums             | `const enum Foo { A, B }`  | |
       | Generic type parameters | `<T>(a: T): T => a`        | Not available with the `tsx` loader |
       | JSX with types          | `<Element<T>/>`            | |
       | Type casts              | `a as B` and `<B>a`        | |
@@ -391,15 +391,6 @@ body:
       JavaScript representation of the corresponding TypeScript type to the
       attached decorator function. Since esbuild does not replicate TypeScript's
       type system, it does not have enough information to implement this feature.
-      </p>
-    - >
-      <p>
-      The [`const enum`](https://www.typescriptlang.org/docs/handbook/enums.html#const-enums)
-      feature in TypeScript defines a set of compile-time constants grouped
-      under a type. Each enum value of that type is replaced by the corresponding
-      constant at compile time. Since esbuild does not replicate TypeScript's
-      type system, `const enum` declarations are compiled as `enum` declarations
-      instead.
       </p>
     - >
       <p>
