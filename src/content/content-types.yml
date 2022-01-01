@@ -278,6 +278,48 @@ body:
       creates the web worker. The [define](/api/#define) feature is one way
       to insert the string at build time.
 
+  - h4#module-namespace-this: >
+      The value of `this` is not preserved on functions called from a module namespace object
+  - p: >
+      In JavaScript, the value of `this` in a function is automatically filled
+      in for you based on how the function is called. For example if a function
+      is called using `obj.fn()`, the value of `this` during the function call
+      will be `obj`. This behavior is respected by esbuild with one exception:
+      if you call a function from a module namespace object, the value of `this`
+      may not be correct. For example, consider this code that calls `foo` from
+      the module namespace object `ns`:
+  - pre.js: |
+      import * as ns from './foo.js'
+      ns.foo()
+  - p: >
+      If `foo.js` tries to reference the module namespace object using `this`,
+      then it won't necessarily work after the code is bundled with esbuild:
+  - pre.js: |
+      // foo.js
+      export function foo() {
+        this.bar()
+      }
+      export function bar() {
+        console.log('bar')
+      }
+  - p: >
+      The reason for this is that esbuild automatically rewrites code most
+      code that uses module namespace objects to code that imports things
+      directly instead. That means the example code above will be converted
+      to this instead, which removes the `this` context for the function call:
+  - pre.js: |
+      import { foo } from './foo.js'
+      foo()
+  - p: >
+      This transformation dramatically improves [tree shaking](/api/#tree-shaking)
+      (a.k.a. dead code elimination) because it makes it possible for esbuild
+      to understand which exported symbols are unused. It has the drawback
+      that this changes the behavior of code that uses `this` to access the
+      module's exports, but this isn't an issue because no one should ever write
+      bizarre code like this in the first place. If you need to access an exported
+      function from the same file, just call it directly (i.e. `bar()` instead
+      of `this.bar()` in the example above).
+
   - h2: TypeScript
   - p: 'Loader: `ts` or `tsx`'
 
