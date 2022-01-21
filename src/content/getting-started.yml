@@ -6,7 +6,9 @@ body:
 
   - p: >
       First, download and install the esbuild command locally. A prebuilt
-      native executable can be installed using npm:
+      native executable can be installed using [npm](https://docs.npmjs.com/cli/v8/commands/npm-install)
+      (which is automatically installed when you install the [node](https://nodejs.org/)
+      JavaScript runtime):
 
   - pre: |
       npm install esbuild
@@ -313,6 +315,52 @@ body:
             os.Exit(1)
           }
         }
+
+  - h2: Simultaneous platforms
+
+  - p: >
+      You cannot install esbuild on one OS, copy the `node_modules` directory
+      to another OS without reinstalling, and then run esbuild on that other OS.
+      This won't work because esbuild is written with native code and needs to
+      install a platform-specific binary executable. Normally this isn't an
+      issue because you typically check your `package.json` file into version
+      control, not your `node_modules` directory, and then everyone runs
+      `npm install` on their local machine after cloning the repository.
+
+  - p: >
+      However, people sometimes get into this situation by installing esbuild
+      on Windows or macOS and copying their `node_modules` directory into a
+      [Docker](https://www.docker.com/) image that runs Linux, or by copying
+      their `node_modules` directory between Windows and [WSL](https://docs.microsoft.com/en-us/windows/wsl/)
+      environments. The way to get this to work depends on your package manager:
+
+  - ul:
+    - >
+        <p>
+        **npm/pnpm:**
+        If you are installing with npm or pnpm, you can try not copying the
+        `node_modules` directory when you copy the files over, and running
+        `npm ci` or `npm install` on the destination platform after the copy.
+        Or you could consider using [Yarn](https://yarnpkg.com/) instead which
+        has built-in support for installing a package on multiple platforms
+        simultaneously.
+        </p>
+
+    - >
+        <p>
+        **Yarn:**
+        If you are installing with Yarn, you can try listing both this platform and the
+        other platform in your `.yarnrc.yml` file using
+        [the `supportedArchitectures` feature](https://yarnpkg.com/configuration/yarnrc/#supportedArchitectures).
+        Keep in mind that this means multiple copies of esbuild will be present
+        on the file system.
+        </p>
+
+  - p: >
+      Another alternative is to [use the `esbuild-wasm` package instead](#wasm),
+      which works the same way on all platforms. But it comes with a heavy
+      performance cost and can sometimes be 10x slower than the `esbuild` package,
+      so you may also not want to do that.
 
   - h2: Other ways to install
 
