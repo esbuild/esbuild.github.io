@@ -2583,14 +2583,31 @@ body:
         })
 
       go: |
-        result := api.Build(api.BuildOptions{
-          EntryPoints: []string{"app.js"},
-          Outfile:     "out.js",
-          Bundle:      true,
-          Write:       true,
-          Watch:       &api.WatchMode{},
-        })
-        fmt.Printf("watching...\n")
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Outfile:     "out.js",
+            Bundle:      true,
+            Write:       true,
+            Watch:       &api.WatchMode{},
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+
+          fmt.Printf("watching...\n")
+
+          // Returning from main() exits immediately in Go.
+          // Block forever so we keep watching and don't exit.
+          <-make(chan bool)
+        }
 
   - p: >
       If you are using the JavaScript or Go API, you can optionally provide a
@@ -2617,22 +2634,39 @@ body:
         })
 
       go: |
-        result := api.Build(api.BuildOptions{
-          EntryPoints: []string{"app.js"},
-          Outfile:     "out.js",
-          Bundle:      true,
-          Write:       true,
-          Watch: &api.WatchMode{
-            OnRebuild: func(result api.BuildResult) {
-              if len(result.Errors) > 0 {
-                fmt.Printf("watch build failed: %d errors\n", len(result.Errors))
-              } else {
-                fmt.Printf("watch build succeeded: %d warnings\n", len(result.Warnings))
-              }
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Outfile:     "out.js",
+            Bundle:      true,
+            Write:       true,
+            Watch: &api.WatchMode{
+              OnRebuild: func(result api.BuildResult) {
+                if len(result.Errors) > 0 {
+                  fmt.Printf("watch build failed: %d errors\n", len(result.Errors))
+                } else {
+                  fmt.Printf("watch build succeeded: %d warnings\n", len(result.Warnings))
+                }
+              },
             },
-          },
-        })
-        fmt.Printf("watching...\n")
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+
+          fmt.Printf("watching...\n")
+
+          // Returning from main() exits immediately in Go.
+          // Block forever so we keep watching and don't exit.
+          <-make(chan bool)
+        }
 
   - p: >
       If you want to stop watch mode at some point in the future, you can call
@@ -2657,18 +2691,32 @@ body:
         })
 
       go: |
-        result := api.Build(api.BuildOptions{
-          EntryPoints: []string{"app.js"},
-          Outfile:     "out.js",
-          Bundle:      true,
-          Write:       true,
-          Watch:       &api.WatchMode{},
-        })
-        fmt.Printf("watching...\n")
+        package main
 
-        time.Sleep(10 * time.Second)
-        result.Stop()
-        fmt.Printf("stopped watching\n")
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+        import "time"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Outfile:     "out.js",
+            Bundle:      true,
+            Write:       true,
+            Watch:       &api.WatchMode{},
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+
+          fmt.Printf("watching...\n")
+
+          time.Sleep(10 * time.Second)
+          result.Stop()
+          fmt.Printf("stopped watching\n")
+        }
 
   - p: >
       Watch mode in esbuild is implemented using polling instead of OS-specific
