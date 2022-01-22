@@ -1108,6 +1108,7 @@ esbuild.serve({
   EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
   Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
   Bundle:      <span class="hljs-literal">true</span>,
+  Write:       <span class="hljs-literal">true</span>,
   Watch:       &amp;api.WatchMode{},
 })
 fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)</pre><p>If you are using the JavaScript or Go API, you can optionally provide a callback that will be called whenever an incremental build has completed. This can be used to do something once the build is complete (e.g. to reload your app in the browser):</p><div class="switcher">
@@ -1131,6 +1132,7 @@ fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)</pre><p>I
   EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
   Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
   Bundle:      <span class="hljs-literal">true</span>,
+  Write:       <span class="hljs-literal">true</span>,
   Watch: &amp;api.WatchMode{
     OnRebuild: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(result api.BuildResult)</span></span> {
       <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
@@ -1162,6 +1164,7 @@ fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)</pre><p>I
   EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
   Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
   Bundle:      <span class="hljs-literal">true</span>,
+  Write:       <span class="hljs-literal">true</span>,
   Watch:       &amp;api.WatchMode{},
 })
 fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)
