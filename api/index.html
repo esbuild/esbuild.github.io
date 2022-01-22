@@ -1104,14 +1104,31 @@ esbuild.serve({
 }).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;watching...&#x27;</span>)
 })</pre>
-<pre class="switchable go3">result := api.Build(api.BuildOptions{
-  EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
-  Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
-  Bundle:      <span class="hljs-literal">true</span>,
-  Write:       <span class="hljs-literal">true</span>,
-  Watch:       &amp;api.WatchMode{},
-})
-fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)</pre><p>If you are using the JavaScript or Go API, you can optionally provide a callback that will be called whenever an incremental build has completed. This can be used to do something once the build is complete (e.g. to reload your app in the browser):</p><div class="switcher">
+<pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Bundle:      <span class="hljs-literal">true</span>,
+    Write:       <span class="hljs-literal">true</span>,
+    Watch:       &amp;api.WatchMode{},
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+
+  fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)
+
+  <span class="hljs-comment">// Returning from main() exits immediately in Go.</span>
+  <span class="hljs-comment">// Block forever so we keep watching and don&#x27;t exit.</span>
+  &lt;-<span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">bool</span>)
+}</pre><p>If you are using the JavaScript or Go API, you can optionally provide a callback that will be called whenever an incremental build has completed. This can be used to do something once the build is complete (e.g. to reload your app in the browser):</p><div class="switcher">
 <a href="javascript:void 0" class="js2">JS</a>
 <a href="javascript:void 0" class="go2">Go</a>
       </div>
@@ -1128,22 +1145,39 @@ fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)</pre><p>I
 }).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;watching...&#x27;</span>)
 })</pre>
-<pre class="switchable go2">result := api.Build(api.BuildOptions{
-  EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
-  Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
-  Bundle:      <span class="hljs-literal">true</span>,
-  Write:       <span class="hljs-literal">true</span>,
-  Watch: &amp;api.WatchMode{
-    OnRebuild: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(result api.BuildResult)</span></span> {
-      <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
-        fmt.Printf(<span class="hljs-string">&quot;watch build failed: %d errors\n&quot;</span>, <span class="hljs-built_in">len</span>(result.Errors))
-      } <span class="hljs-keyword">else</span> {
-        fmt.Printf(<span class="hljs-string">&quot;watch build succeeded: %d warnings\n&quot;</span>, <span class="hljs-built_in">len</span>(result.Warnings))
-      }
+<pre class="switchable go2"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Bundle:      <span class="hljs-literal">true</span>,
+    Write:       <span class="hljs-literal">true</span>,
+    Watch: &amp;api.WatchMode{
+      OnRebuild: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(result api.BuildResult)</span></span> {
+        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+          fmt.Printf(<span class="hljs-string">&quot;watch build failed: %d errors\n&quot;</span>, <span class="hljs-built_in">len</span>(result.Errors))
+        } <span class="hljs-keyword">else</span> {
+          fmt.Printf(<span class="hljs-string">&quot;watch build succeeded: %d warnings\n&quot;</span>, <span class="hljs-built_in">len</span>(result.Warnings))
+        }
+      },
     },
-  },
-})
-fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)</pre><p>If you want to stop watch mode at some point in the future, you can call &quot;stop&quot; on the result object to terminate the file watcher:</p><div class="switcher">
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+
+  fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)
+
+  <span class="hljs-comment">// Returning from main() exits immediately in Go.</span>
+  <span class="hljs-comment">// Block forever so we keep watching and don&#x27;t exit.</span>
+  &lt;-<span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">bool</span>)
+}</pre><p>If you want to stop watch mode at some point in the future, you can call &quot;stop&quot; on the result object to terminate the file watcher:</p><div class="switcher">
 <a href="javascript:void 0" class="js2">JS</a>
 <a href="javascript:void 0" class="go2">Go</a>
       </div>
@@ -1160,18 +1194,32 @@ fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)</pre><p>I
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;stopped watching&#x27;</span>)
   }, <span class="hljs-number">10</span> * <span class="hljs-number">1000</span>)
 })</pre>
-<pre class="switchable go2">result := api.Build(api.BuildOptions{
-  EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
-  Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
-  Bundle:      <span class="hljs-literal">true</span>,
-  Write:       <span class="hljs-literal">true</span>,
-  Watch:       &amp;api.WatchMode{},
-})
-fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)
+<pre class="switchable go2"><span class="hljs-keyword">package</span> main
 
-time.Sleep(<span class="hljs-number">10</span> * time.Second)
-result.Stop()
-fmt.Printf(<span class="hljs-string">&quot;stopped watching\n&quot;</span>)</pre><p>Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling system is designed to use relatively little CPU vs. a more traditional polling system that scans the whole directory tree at once. The file system is still scanned regularly but each scan only checks a random subset of your files, which means a change to a file will be picked up soon after the change is made but not necessarily instantly.</p><p>With the current heuristics, large projects should be completely scanned around every 2 seconds so in the worst case it could take up to 2 seconds for a change to be noticed. However, after a change has been noticed the change's path goes on a short list of recently changed paths which are checked on every scan, so further changes to recently changed files should be noticed almost instantly.</p><p>Note that it is still possible to implement watch mode yourself using esbuild's <a href="#incremental">incremental build API</a> and a file watcher library of your choice if you don't want to use a polling-based approach.</p><h3 id="write"><a class="permalink" href="#write">#</a>Write</h3><p><i>Supported by: <a href="#build-api">Build</a></i></p><p>The build API call can either write to the file system directly or return the files that would have been written as in-memory buffers. By default the CLI and JavaScript APIs write to the file system and the Go API doesn't. To use the in-memory buffers:</p><div class="switcher">
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;time&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Bundle:      <span class="hljs-literal">true</span>,
+    Write:       <span class="hljs-literal">true</span>,
+    Watch:       &amp;api.WatchMode{},
+  })
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+
+  fmt.Printf(<span class="hljs-string">&quot;watching...\n&quot;</span>)
+
+  time.Sleep(<span class="hljs-number">10</span> * time.Second)
+  result.Stop()
+  fmt.Printf(<span class="hljs-string">&quot;stopped watching\n&quot;</span>)
+}</pre><p>Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling system is designed to use relatively little CPU vs. a more traditional polling system that scans the whole directory tree at once. The file system is still scanned regularly but each scan only checks a random subset of your files, which means a change to a file will be picked up soon after the change is made but not necessarily instantly.</p><p>With the current heuristics, large projects should be completely scanned around every 2 seconds so in the worst case it could take up to 2 seconds for a change to be noticed. However, after a change has been noticed the change's path goes on a short list of recently changed paths which are checked on every scan, so further changes to recently changed files should be noticed almost instantly.</p><p>Note that it is still possible to implement watch mode yourself using esbuild's <a href="#incremental">incremental build API</a> and a file watcher library of your choice if you don't want to use a polling-based approach.</p><h3 id="write"><a class="permalink" href="#write">#</a>Write</h3><p><i>Supported by: <a href="#build-api">Build</a></i></p><p>The build API call can either write to the file system directly or return the files that would have been written as in-memory buffers. By default the CLI and JavaScript APIs write to the file system and the Go API doesn't. To use the in-memory buffers:</p><div class="switcher">
 <a href="javascript:void 0" class="js2">JS</a>
 <a href="javascript:void 0" class="go2">Go</a>
       </div>
