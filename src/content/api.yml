@@ -659,11 +659,45 @@ body:
       You can also use the `*` wildcard character in an external path to mark
       all files matching that pattern as external. For example, you can use
       `*.png` to remove all `.png` files or `/images/*` to remove all paths
-      starting with `/images/`. When a `*` wildcard character is present in an
-      external path, that pattern will be applied to the original path in the
-      source code instead of to the path after it has been resolved to a real
-      file system path. This lets you match on paths that aren't real file
-      system paths.
+      starting with `/images/`.
+
+  - p: >
+      External paths are applied both before and after path resolution, which
+      lets you match against both the import path in the source code and the
+      absolute file system path. The path is considered to be external if the
+      external path matches in either case. The specific behavior is as follows:
+
+  - ul:
+    - >
+      <p>
+      Before path resolution begins, import paths are checked against all
+      external paths. In addition, if the external path looks like a package
+      path (i.e. doesn't start with `/` or `./` or `../`), import paths are
+      checked to see if they have that package path as a path prefix.
+      </p>
+      <p>
+      This means that <code>--external:<wbr>@foo/<wbr>bar</code> implicitly
+      also means <code>--external:<wbr>@foo/<wbr>bar/\*</code> which matches
+      the import path <code>@foo/<wbr>bar/<wbr>baz</code>. So it marks all
+      paths inside the `@foo/bar` package as external too.
+      </p>
+
+    - >
+      <p>
+      After path resolution ends, the resolved absolute paths are checked
+      against all external paths that don't look like a package path (i.e.
+      those that start with `/` or `./` or `../`). But before checking, the
+      external path is joined with the current working directory and then
+      normalized, becoming an absolute path (even if it contains a `*`
+      wildcard character).
+      </p>
+      <p>
+      This means that you can mark everything in the directory `dir` as
+      external using <code>--external:<wbr>./dir/\*</code>. Note that the
+      leading `./` is important. Using <code>--external:<wbr>dir/\*</code>
+      instead is treated as a package path and is not checked for after
+      path resolution ends.
+      </p>
 
   - h3: Format
 

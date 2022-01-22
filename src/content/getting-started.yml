@@ -274,25 +274,25 @@ body:
         }
 
   - p: >
-      Sometimes the packages you want to use contain code that can't be
-      bundled for some reason. An example of this is a package with
-      native extensions such as `fsevents`. Or, you may want to exclude
-      a package from the bundle for other reasons. This can be done by
-      marking the package as [external](/api/#external):
+      You also may not want to bundle your dependencies with esbuild. There
+      are many node-specific features that esbuild doesn't support while
+      bundling such as `__dirname`, `import.meta.url`, `fs.readFileSync`,
+      and `*.node` native binary modules. You can exclude all of your
+      dependencies from the bundle by marking them as [external](/api/#external):
 
   - example:
       in:
         app.jsx: '<div/>'
 
       cli: |
-        esbuild app.jsx --bundle --platform=node --external:fsevents
+        esbuild app.jsx --bundle --platform=node --external:./node_modules/*
 
       js: |
         require('esbuild').buildSync({
           entryPoints: ['app.jsx'],
           bundle: true,
           platform: 'node',
-          external: ['fsevents'],
+          external: ['./node_modules/*'],
           outfile: 'out.js',
         })
 
@@ -307,7 +307,7 @@ body:
             EntryPoints: []string{"app.jsx"},
             Bundle:      true,
             Platform:    api.PlatformNode,
-            External:    []string{"fsevents"},
+            External:    []string{"./node_modules/*"},
             Write:       true,
           })
 
@@ -315,6 +315,10 @@ body:
             os.Exit(1)
           }
         }
+
+  - p: >
+      If you do this, your dependencies must still be present on the file
+      system at run-time since they are no longer included in the bundle.
 
   - h2: Simultaneous platforms
 
