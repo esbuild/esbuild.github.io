@@ -2587,6 +2587,7 @@ body:
           EntryPoints: []string{"app.js"},
           Outfile:     "out.js",
           Bundle:      true,
+          Write:       true,
           Watch:       &api.WatchMode{},
         })
         fmt.Printf("watching...\n")
@@ -2620,6 +2621,7 @@ body:
           EntryPoints: []string{"app.js"},
           Outfile:     "out.js",
           Bundle:      true,
+          Write:       true,
           Watch: &api.WatchMode{
             OnRebuild: func(result api.BuildResult) {
               if len(result.Errors) > 0 {
@@ -2659,6 +2661,7 @@ body:
           EntryPoints: []string{"app.js"},
           Outfile:     "out.js",
           Bundle:      true,
+          Write:       true,
           Watch:       &api.WatchMode{},
         })
         fmt.Printf("watching...\n")
