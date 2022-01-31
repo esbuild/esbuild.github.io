@@ -95,12 +95,13 @@ body:
     - Loader
     - Log level
     - Log limit
+    - Mangle props
     - Minify
     - Pure
-    - Source Root
+    - Source root
     - Sourcefile
     - Sourcemap
-    - Sources Content
+    - Sources content
     - Target
     - Tree shaking
     - Tsconfig raw
@@ -197,6 +198,7 @@ body:
     - Log level
     - Log limit
     - Main fields
+    - Mangle props
     - Metafile
     - Minify
     - Node paths
@@ -210,10 +212,10 @@ body:
     - Pure
     - Resolve extensions
     - Serve
-    - Source Root
+    - Source root
     - Sourcefile
     - Sourcemap
-    - Sources Content
+    - Sources content
     - Splitting
     - Stdin
     - Target
@@ -4640,6 +4642,145 @@ body:
         }
       }
 
+  - h3: Mangle props
+
+  - warning: >
+      **Using this feature can break your code in subtle ways.** Do not use this
+      feature unless you know what you are doing, and you know exactly how it
+      will affect both your code and all of your dependencies.
+
+  - p: >
+      This setting lets you pass a regular expression to esbuild to tell
+      esbuild to automatically rename all properties that match this regular
+      expression. It's useful when you want to minify certain property names
+      in your code either to make the generated code smaller or to somewhat
+      obfuscate your code's intent.
+
+  - p: >
+      Here's an example that uses the regular expression `_$` to mangle all
+      properties ending in an underscore, such as `foo_`. This mangles
+      <code>print({ <wbr>foo_: 0 <wbr>}.foo_)</code>
+      into <code>print({ <wbr>a: 0 <wbr>}.a)</code>:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --mangle-props=_$
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          mangleProps: /_$/,
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            MangleProps: "_$",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Only mangling properties that end in an underscore is a reasonable
+      heuristic because normal JS code doesn't typically contain identifiers
+      like that. Browser APIs also don't use this naming convention so this
+      also avoids conflicts with browser APIs. If you want to avoid mangling
+      names such as [`__defineGetter__`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/__defineGetter__)
+      you could consider using a more complex regular expression such as
+      `[^_]_$` (i.e. must end in a non-underscore followed by an underscore).
+
+  - p: >
+      This is a separate setting instead of being part of the [minify](#minify)
+      setting because it's an unsafe transformation that does not work on
+      arbitrary JavaScript code. It only works if the provided regular
+      expression matches all of the properties that you want mangled and does
+      not match any of the properties that you don't want mangled. It also only
+      works if you do not under any circumstances reference a property name
+      to be mangled as a string. For example, it means you can't use
+      <code>Object.<wbr>defineProperty(obj, <wbr>'prop', <wbr>...)</code>
+      or <code>obj['prop']</code> with a mangled property. Specifically the
+      following syntax constructs are the only ones eligible for property mangling:
+
+  - table: |
+      | Syntax                          | Example                 |
+      |---------------------------------|-------------------------|
+      | Dot property access             | `x.foo_`                |
+      | Dot optional chain              | `x?.foo_`               |
+      | Object properties               | `x = { foo_: y }`       |
+      | Object methods                  | `x = { foo_() {} }`     |
+      | Class fields                    | `class x { foo_ = y }`  |
+      | Class methods                   | `class x { foo_() {} }` |
+      | Object destructuring binding    | `let { foo_: x } = y`   |
+      | Object destructuring assignment | `({ foo_: x } = y)`     |
+      | JSX element names               | `<X.foo_></X.foo_>`     |
+      | JSX attribute names             | `<X foo_={y} />`        |
+
+  - p: >
+      You can avoid property mangling for an individual property by quoting it
+      as a string. However, you must consistently use quotes or no quotes for
+      a given property everywhere for this to work. For example,
+      <code>print({ <wbr>foo_: 0 <wbr>}.foo_)</code> will be mangled into
+      <code>print({ <wbr>a: 0 <wbr>}.a)</code> while
+      <code>print({ <wbr>'foo_': 0 <wbr>}['foo_'])</code> will not be mangled.
+
+  - p: >
+      When using this feature, keep in mind that property names are only
+      consistently mangled within a single esbuild API call but not across
+      esbuild API calls. Each esbuild API call does an independent property
+      mangling operation so output files generated by two different API calls
+      may mangle the same property to two different names, which could cause
+      the resulting code to behave incorrectly.
+
+  - p: >
+      If you would like to exclude certain properties from mangling, you can
+      reserve them with an additional setting. For example, this uses the
+      regular expression `^__.*__$` to reserve all properties that start and
+      end with two underscores, such as `__foo__`:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --mangle-props=_$ "--reserve-props=^__.*__$"
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          mangleProps: /_$/,
+          reserveProps: /^__.*__$/,
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints:  []string{"app.js"},
+            MangleProps:  "_$",
+            ReserveProps: "^__.*__$",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
   - h3: Metafile
 
   - p: >
@@ -5141,7 +5282,7 @@ body:
           }
         }
 
-  - h3: Source Root
+  - h3: Source root
 
   - p: >
       This feature is only relevant when [source maps](#sourcemap) are enabled.
@@ -5235,7 +5376,7 @@ body:
           }
         }
 
-  - h3: Sources Content
+  - h3: Sources content
 
   - p: >
       [Source maps](#sourcemap) are generated using [version 3](https://sourcemaps.info/spec.html)
