@@ -80,6 +80,13 @@ code {
   white-space: nowrap;
 }
 
+/* Firefox doesn't support <wbr> so enable wrapping in <code> elements in Firefox */
+@-moz-document url-prefix() {
+  code {
+    white-space: pre-wrap;
+  }
+}
+
 /* ---------- Benchmark ---------- */
 
 @keyframes scale-bar {
