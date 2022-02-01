@@ -4714,18 +4714,20 @@ body:
       following syntax constructs are the only ones eligible for property mangling:
 
   - table: |
-      | Syntax                          | Example                 |
-      |---------------------------------|-------------------------|
-      | Dot property access             | `x.foo_`                |
-      | Dot optional chain              | `x?.foo_`               |
-      | Object properties               | `x = { foo_: y }`       |
-      | Object methods                  | `x = { foo_() {} }`     |
-      | Class fields                    | `class x { foo_ = y }`  |
-      | Class methods                   | `class x { foo_() {} }` |
-      | Object destructuring binding    | `let { foo_: x } = y`   |
-      | Object destructuring assignment | `({ foo_: x } = y)`     |
-      | JSX element names               | `<X.foo_></X.foo_>`     |
-      | JSX attribute names             | `<X foo_={y} />`        |
+      | Syntax                          | Example                                   |
+      |---------------------------------|-------------------------------------------|
+      | Dot property access             | `x.foo_`                                  |
+      | Dot optional chain              | `x?.foo_`                                 |
+      | Object properties               | `x = { foo_: y }`                         |
+      | Object methods                  | `x = { foo_() {} }`                       |
+      | Class fields                    | `class x { foo_ = y }`                    |
+      | Class methods                   | `class x { foo_() {} }`                   |
+      | Object destructuring binding    | `let { foo_: x } = y`                     |
+      | Object destructuring assignment | `({ foo_: x } = y)`                       |
+      | JSX element names               | `<X.foo_></X.foo_>`                       |
+      | JSX attribute names             | `<X foo_={y} />`                          |
+      | TypeScript namespace exports    | `namespace x { export let foo_ = y }`     |
+      | TypeScript parameter properties | `class x { constructor(public foo_) {} }` |
 
   - p: >
       You can avoid property mangling for an individual property by quoting it
