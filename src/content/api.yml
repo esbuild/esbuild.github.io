@@ -4745,6 +4745,9 @@ body:
       may mangle the same property to two different names, which could cause
       the resulting code to behave incorrectly.
 
+  - h4#reserve-props: >
+      Preventing renaming
+
   - p: >
       If you would like to exclude certain properties from mangling, you can
       reserve them with an additional setting. For example, this uses the
@@ -4782,6 +4785,133 @@ body:
             os.Exit(1)
           }
         }
+
+  - h4#mangle-cache: >
+      Persisting renaming decisions
+
+  - p: >
+      Advanced usage of the property mangling feature involves storing the
+      mapping from original name to mangled name in a persistent cache. When
+      enabled, all mangled property renamings are recorded in the cache during
+      the initial build. Subsequent builds reuse the renamings stored in the
+      cache and add additional renamings for any newly-added properties. This
+      has a few consequences:
+
+  - ul:
+    - >
+      <p>
+      You can customize what mangled properties are renamed to by editing the
+      cache before passing it to esbuild.
+      </p>
+
+    - >
+      <p>
+      The cache serves as a list of all properties that were mangled. You can
+      easily scan it to see if there are any unexpected property renamings.
+      </p>
+
+    - >
+      <p>
+      You can disable mangling for individual properties by setting the renamed
+      value to `false` instead of to a string. This is similar to the [reserve props](#reserve-props)
+      setting but on a per-property basis.
+      </p>
+
+    - >
+      <p>
+      You can ensure consistent renaming between builds (e.g. a main-thread
+      file and a web worker, or a library and a plugin). Without this feature,
+      each build would do an independent renaming operation and the mangled
+      property names likely wouldn't be consistent.
+      </p>
+
+  - p: >
+      For example, consider the following input file:
+
+  - pre.js: |
+      console.log({
+        someProp_: 1,
+        customRenaming_: 2,
+        disabledRenaming_: 3
+      });
+
+  - p: >
+      If we want `customRenaming_` to be renamed to `cR_` and we don't want
+      `disabledRenaming_` to be renamed at all, we can pass the following
+      mangle cache JSON to esbuild:
+
+  - pre.json: |
+      {
+        "customRenaming_": "cR_",
+        "disabledRenaming_": false
+      }
+
+  - p: >
+      The mangle cache JSON can be passed to esbuild like this:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --mangle-props=_$ --mangle-cache=cache.json
+
+      js: |
+        let result = require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          mangleProps: /_$/,
+          mangleCache: {
+            customRenaming_: "cR_",
+            disabledRenaming_: false
+          },
+        })
+
+        console.log('updated mangle cache:', result.mangleCache)
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            MangleProps: "_$",
+            MangleCache: map[string]interface{}{
+              "customRenaming_":   "cR_",
+              "disabledRenaming_": false,
+            },
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+
+          fmt.Println("updated mangle cache:", result.MangleCache)
+        }
+
+  - p: >
+      When property naming is enabled, that will result in the following
+      output file:
+
+  - pre.js: |
+      console.log({
+        a: 1,
+        cR_: 2,
+        disabledRenaming_: 3
+      });
+
+  - p: >
+      And the following updated mangle cache:
+
+  - pre.json: |
+      {
+        "customRenaming_": "cR_",
+        "disabledRenaming_": false,
+        "someProp_": "a"
+      }
 
   - h3: Metafile
 
