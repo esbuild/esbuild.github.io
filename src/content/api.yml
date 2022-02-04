@@ -3096,7 +3096,7 @@ body:
         }
 
   - p: >
-      There are three placeholders that can be used in asset path templates:
+      There are four placeholders that can be used in asset path templates:
 
   - ul:
     - >
@@ -3126,6 +3126,15 @@ body:
       and <code>components/<wbr>select/<wbr>icon.png</code> in which case
       you'll need the hash to distinguish between the two assets that are both
       named `icon`.
+      </p>
+
+    - >
+      `[ext]`
+      <p>
+      This is the file extension of the asset (i.e. everything after the end of
+      the last `.` character). It can be used to put different types of assets
+      into different directories. For example, <code>--asset-names=<wbr>assets/<wbr>[ext]/<wbr>[name]-[hash]</code>
+      might write out an asset named `image.png` as <code>assets/<wbr>png/<wbr>image-CQFGD2NG.png</code>.
       </p>
 
   - p: >
@@ -3347,7 +3356,7 @@ body:
         }
 
   - p: >
-      There are two placeholders that can be used in chunk path templates:
+      There are three placeholders that can be used in chunk path templates:
 
   - ul:
     - >
@@ -3363,6 +3372,15 @@ body:
       This is the content hash of the chunk. Including this is necessary to
       distinguish different chunks from each other in the case where multiple
       chunks of shared code are generated.
+      </p>
+
+    - >
+      `[ext]`
+      <p>
+      This is the file extension of the chunk (i.e. everything after the end of
+      the last `.` character). It can be used to put different types of chunks
+      into different directories. For example, <code>--chunk-names=<wbr>chunks/<wbr>[ext]/<wbr>[name]-[hash]</code>
+      might write out a chunk as <code>chunks/<wbr>css/<wbr>chunk-DEFJT7KY.css</code>.
       </p>
 
   - p: >
@@ -3737,7 +3755,7 @@ body:
         }
 
   - p: >
-      There are three placeholders that can be used in entry path templates:
+      There are four placeholders that can be used in entry path templates:
 
   - ul:
     - >
@@ -3786,6 +3804,16 @@ body:
       [metafile](#metafile) to determine which output file path corresponds to
       which input entry point so you know what path to include in your `<script>`
       tag.
+      </p>
+
+    - >
+      `[ext]`
+      <p>
+      This is the file extension that the entry point file will be written out to
+      (i.e. the [out extension](#out-extension) setting, not the original file
+      extension). It can be used to put different types of entry points into different
+      directories. For example, <code>--entry-names=<wbr>entries/<wbr>[ext]/<wbr>[name]</code>
+      might write the output file for `app.ts` to <code>entries/<wbr>js/<wbr>app.js</code>.
       </p>
 
   - p: >
