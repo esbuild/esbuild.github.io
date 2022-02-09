@@ -71,6 +71,19 @@ a {
   color: inherit;
 }
 
+footer {
+  font-size: 80%;
+  line-height: 140%;
+  font-style: italic;
+}
+
+sup {
+  vertical-align: top;
+  font-size: 70%;
+  line-height: 100%;
+  font-style: normal;
+}
+
 code {
   font: 16px/140% 'Noto Sans Mono', monospace;
   background: rgba(159, 159, 159, 0.15);
