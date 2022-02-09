@@ -93,6 +93,24 @@ code {
   white-space: nowrap;
 }
 
+.dl {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+
+/* Use :after so the mask doesn't affect the focus ring, which should still appear */
+.dl:after {
+  content: '';
+  display: block;
+  width: 22px;
+  height: 22px;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
 /* Firefox doesn't support <wbr> so enable wrapping in <code> elements in Firefox */
 @-moz-document url-prefix() {
   code {
@@ -688,11 +706,34 @@ tr:hover {
   color: var(--warn);
 }
 
+.dl:after {
+  background: var(--fg);
+}
+
+.dl:hover:after {
+  background: var(--fg-on);
+}
+
 /* ---------- Multi-line SVGs last ---------- */
 
 .js2 .repl-in:before,
 .js3 .repl-in:before {
   background-image: url('data:image/svg+xml,<svg width="16" height="20" xmlns="http://www.w3.org/2000/svg">\
 <path d="M2 5.5L6 9.5 2 13.5" stroke-width="1.5" fill="none" stroke="%237f7f7f"/>\
+</svg>');
+}
+
+/* .dl:after {
+  mask-image: url('data:image/svg+xml,<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">\
+  <path d="M8 1V11M8 11L3 6M8 11L13 6M1 14H15" stroke="black" stroke-width="2"/>\
+</svg>');
+} */
+
+.dl:after {
+  mask-image: url('data:image/svg+xml,<svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">\
+  <path d="M11 2V15M11 15L4 8M11 15L18 8M2 19H20" stroke="black" stroke-width="2"/>\
+</svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">\
+  <path d="M11 2V15M11 15L4 8M11 15L18 8M2 19H20" stroke="black" stroke-width="2"/>\
 </svg>');
 }

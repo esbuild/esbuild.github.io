@@ -497,26 +497,26 @@ body:
       full list of native executable packages for the platforms esbuild supports:
 
   - table: |
-      | Package name                                                                     | OS                   | Architecture           |
-      |----------------------------------------------------------------------------------|----------------------|------------------------|
-      | [`esbuild-android-arm64`](https://www.npmjs.org/package/esbuild-android-arm64)   | `android`            | `arm64`                |
-      | [`esbuild-darwin-64`](https://www.npmjs.org/package/esbuild-darwin-64)           | `darwin`             | `x64`                  |
-      | [`esbuild-darwin-arm64`](https://www.npmjs.org/package/esbuild-darwin-arm64)     | `darwin`             | `arm64`                |
-      | [`esbuild-freebsd-64`](https://www.npmjs.org/package/esbuild-freebsd-64)         | `freebsd`            | `x64`                  |
-      | [`esbuild-freebsd-arm64`](https://www.npmjs.org/package/esbuild-freebsd-arm64)   | `freebsd`            | `arm64`                |
-      | [`esbuild-linux-32`](https://www.npmjs.org/package/esbuild-linux-32)             | `linux`              | `ia32`                 |
-      | [`esbuild-linux-64`](https://www.npmjs.org/package/esbuild-linux-64)             | `linux`              | `x64`                  |
-      | [`esbuild-linux-arm`](https://www.npmjs.org/package/esbuild-linux-arm)           | `linux`              | `arm`                  |
-      | [`esbuild-linux-arm64`](https://www.npmjs.org/package/esbuild-linux-arm64)       | `linux`              | `arm64`                |
-      | [`esbuild-linux-mips64le`](https://www.npmjs.org/package/esbuild-linux-mips64le) | `linux`              | `mips64el`<sup>2</sup> |
-      | [`esbuild-linux-ppc64le`](https://www.npmjs.org/package/esbuild-linux-ppc64le)   | `linux`              | `ppc64`                |
-      | [`esbuild-linux-s390x`](https://www.npmjs.org/package/esbuild-linux-s390x)       | `linux`              | `s390x`                |
-      | [`esbuild-netbsd-64`](https://www.npmjs.org/package/esbuild-netbsd-64)           | `netbsd`<sup>1</sup> | `x64`                  |
-      | [`esbuild-openbsd-64`](https://www.npmjs.org/package/esbuild-openbsd-64)         | `openbsd`            | `x64`                  |
-      | [`esbuild-sunos-64`](https://www.npmjs.org/package/esbuild-sunos-64)             | `sunos`              | `x64`                  |
-      | [`esbuild-windows-32`](https://www.npmjs.org/package/esbuild-windows-32)         | `win32`              | `ia32`                 |
-      | [`esbuild-windows-64`](https://www.npmjs.org/package/esbuild-windows-64)         | `win32`              | `x64`                  |
-      | [`esbuild-windows-arm64`](https://www.npmjs.org/package/esbuild-windows-arm64)   | `win32`              | `arm64`                |
+      | Package name                                                                     | OS                   | Architecture           | Download                                                                                                                         |
+      |----------------------------------------------------------------------------------|----------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+      | [`esbuild-android-arm64`](https://www.npmjs.org/package/esbuild-android-arm64)   | `android`            | `arm64`                | <a class="dl" href="https://registry.npmjs.org/esbuild-android-arm64/-/esbuild-android-arm64-CURRENT_ESBUILD_VERSION.tgz"></a>   |
+      | [`esbuild-darwin-64`](https://www.npmjs.org/package/esbuild-darwin-64)           | `darwin`             | `x64`                  | <a class="dl" href="https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-CURRENT_ESBUILD_VERSION.tgz"></a>           |
+      | [`esbuild-darwin-arm64`](https://www.npmjs.org/package/esbuild-darwin-arm64)     | `darwin`             | `arm64`                | <a class="dl" href="https://registry.npmjs.org/esbuild-darwin-arm64/-/esbuild-darwin-arm64-CURRENT_ESBUILD_VERSION.tgz"></a>     |
+      | [`esbuild-freebsd-64`](https://www.npmjs.org/package/esbuild-freebsd-64)         | `freebsd`            | `x64`                  | <a class="dl" href="https://registry.npmjs.org/esbuild-freebsd-64/-/esbuild-freebsd-64-CURRENT_ESBUILD_VERSION.tgz"></a>         |
+      | [`esbuild-freebsd-arm64`](https://www.npmjs.org/package/esbuild-freebsd-arm64)   | `freebsd`            | `arm64`                | <a class="dl" href="https://registry.npmjs.org/esbuild-freebsd-arm64/-/esbuild-freebsd-arm64-CURRENT_ESBUILD_VERSION.tgz"></a>   |
+      | [`esbuild-linux-32`](https://www.npmjs.org/package/esbuild-linux-32)             | `linux`              | `ia32`                 | <a class="dl" href="https://registry.npmjs.org/esbuild-linux-32/-/esbuild-linux-32-CURRENT_ESBUILD_VERSION.tgz"></a>             |
+      | [`esbuild-linux-64`](https://www.npmjs.org/package/esbuild-linux-64)             | `linux`              | `x64`                  | <a class="dl" href="https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-CURRENT_ESBUILD_VERSION.tgz"></a>             |
+      | [`esbuild-linux-arm`](https://www.npmjs.org/package/esbuild-linux-arm)           | `linux`              | `arm`                  | <a class="dl" href="https://registry.npmjs.org/esbuild-linux-arm/-/esbuild-linux-arm-CURRENT_ESBUILD_VERSION.tgz"></a>           |
+      | [`esbuild-linux-arm64`](https://www.npmjs.org/package/esbuild-linux-arm64)       | `linux`              | `arm64`                | <a class="dl" href="https://registry.npmjs.org/esbuild-linux-arm64/-/esbuild-linux-arm64-CURRENT_ESBUILD_VERSION.tgz"></a>       |
+      | [`esbuild-linux-mips64le`](https://www.npmjs.org/package/esbuild-linux-mips64le) | `linux`              | `mips64el`<sup>2</sup> | <a class="dl" href="https://registry.npmjs.org/esbuild-linux-mips64le/-/esbuild-linux-mips64le-CURRENT_ESBUILD_VERSION.tgz"></a> |
+      | [`esbuild-linux-ppc64le`](https://www.npmjs.org/package/esbuild-linux-ppc64le)   | `linux`              | `ppc64`                | <a class="dl" href="https://registry.npmjs.org/esbuild-linux-ppc64le/-/esbuild-linux-ppc64le-CURRENT_ESBUILD_VERSION.tgz"></a>   |
+      | [`esbuild-linux-s390x`](https://www.npmjs.org/package/esbuild-linux-s390x)       | `linux`              | `s390x`                | <a class="dl" href="https://registry.npmjs.org/esbuild-linux-s390x/-/esbuild-linux-s390x-CURRENT_ESBUILD_VERSION.tgz"></a>       |
+      | [`esbuild-netbsd-64`](https://www.npmjs.org/package/esbuild-netbsd-64)           | `netbsd`<sup>1</sup> | `x64`                  | <a class="dl" href="https://registry.npmjs.org/esbuild-netbsd-64/-/esbuild-netbsd-64-CURRENT_ESBUILD_VERSION.tgz"></a>           |
+      | [`esbuild-openbsd-64`](https://www.npmjs.org/package/esbuild-openbsd-64)         | `openbsd`            | `x64`                  | <a class="dl" href="https://registry.npmjs.org/esbuild-openbsd-64/-/esbuild-openbsd-64-CURRENT_ESBUILD_VERSION.tgz"></a>         |
+      | [`esbuild-sunos-64`](https://www.npmjs.org/package/esbuild-sunos-64)             | `sunos`              | `x64`                  | <a class="dl" href="https://registry.npmjs.org/esbuild-sunos-64/-/esbuild-sunos-64-CURRENT_ESBUILD_VERSION.tgz"></a>             |
+      | [`esbuild-windows-32`](https://www.npmjs.org/package/esbuild-windows-32)         | `win32`              | `ia32`                 | <a class="dl" href="https://registry.npmjs.org/esbuild-windows-32/-/esbuild-windows-32-CURRENT_ESBUILD_VERSION.tgz"></a>         |
+      | [`esbuild-windows-64`](https://www.npmjs.org/package/esbuild-windows-64)         | `win32`              | `x64`                  | <a class="dl" href="https://registry.npmjs.org/esbuild-windows-64/-/esbuild-windows-64-CURRENT_ESBUILD_VERSION.tgz"></a>         |
+      | [`esbuild-windows-arm64`](https://www.npmjs.org/package/esbuild-windows-arm64)   | `win32`              | `arm64`                | <a class="dl" href="https://registry.npmjs.org/esbuild-windows-arm64/-/esbuild-windows-arm64-CURRENT_ESBUILD_VERSION.tgz"></a>   |
 
   - p: >
       **Why this is not recommended:**
