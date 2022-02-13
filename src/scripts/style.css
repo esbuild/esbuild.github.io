@@ -723,17 +723,11 @@ tr:hover {
 </svg>');
 }
 
-/* .dl:after {
-  mask-image: url('data:image/svg+xml,<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">\
-  <path d="M8 1V11M8 11L3 6M8 11L13 6M1 14H15" stroke="black" stroke-width="2"/>\
-</svg>');
-} */
-
 .dl:after {
   mask-image: url('data:image/svg+xml,<svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">\
-  <path d="M11 2V15M11 15L4 8M11 15L18 8M2 19H20" stroke="black" stroke-width="2"/>\
+<path d="M11 2V15M4 8L11.7071 15.7071M18 8L10.2929 15.7071M2 19H20" stroke="black" stroke-width="2"/>\
 </svg>');
   -webkit-mask-image: url('data:image/svg+xml,<svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">\
-  <path d="M11 2V15M11 15L4 8M11 15L18 8M2 19H20" stroke="black" stroke-width="2"/>\
+<path d="M11 2V15M4 8L11.7071 15.7071M18 8L10.2929 15.7071M2 19H20" stroke="black" stroke-width="2"/>\
 </svg>');
 }
