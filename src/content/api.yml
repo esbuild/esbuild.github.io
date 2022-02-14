@@ -1449,6 +1449,16 @@ body:
 
     - >
       <p>
+      The character escape sequence `\n` will be replaced with a newline
+      character in JavaScript template literals. String literals will also be
+      converted into template literals if the [target](#target) supports them
+      and if doing so would result in smaller output. **This is not a bug.**
+      Minification means you are asking for smaller output, and the escape
+      sequence `\n` takes two bytes while the newline character takes one byte.
+      </p>
+
+    - >
+      <p>
       By default esbuild won't minify the names of top-level declarations. This
       is because esbuild doesn't know what you will be doing with the output.
       You might be injecting the minified code into the middle of some other
