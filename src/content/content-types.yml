@@ -320,6 +320,111 @@ body:
       function from the same file, just call it directly (i.e. `bar()` instead
       of `this.bar()` in the example above).
 
+  - h4#default-interop: >
+      The `default` export can be error-prone
+  - p: >
+      The ES module format (i.e. ESM) have a special export called `default`
+      that sometimes behaves differently than all other export names. When
+      code in the ESM format that has a `default` export is converted to the
+      CommonJS format, and then that CommonJS code is imported into another
+      module in ESM format, there are two different interpretations of what
+      should happen that are both widely-used (the [Babel](babeljs.io/) way
+      and the [Node](nodejs.org/) way). This is very unfortunate because it
+      causes endless compatibility headaches, especially since JavaScript
+      libraries are often authored in ESM and published as CommonJS.
+
+  - p: >
+      When esbuild [bundles](/api/#bundle) code that does this, it has to
+      decide which interpretation to use, and there's no perfect answer. The
+      heuristics that esbuild uses are the same heuristics that [Webpack](https://webpack.js.org/)
+      uses (see below for details). Since Webpack is the most widely-used
+      bundler, this means that esbuild is being the most compatible that it can
+      be with the existing ecosystem regarding this compatibility problem. So
+      the good news is that if you can get code with this problem to work with
+      esbuild, it should also work with Webpack.
+
+  - p: >
+      Here's an example that demonstrates the problem:
+
+  - pre.js: |
+      // index.js
+      import foo from './somelib.js'
+      console.log(foo)
+
+  - pre.js: |
+      // somelib.js
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports["default"] = 'foo';
+
+  - p: >
+      And here are the two interpretations, both of which are widely-used:
+
+  - ul:
+    - |
+      <p>**The Babel interpretation**</p>
+
+      <p>
+      If the Babel interpretation is used, this code will print `foo`. Their
+      rationale is that `somelib.js` was converted from ESM into CommonJS (as
+      you can tell by the `__esModule` marker) and the original code looked
+      something like this:
+      </p>
+
+      <pre>
+      // somelib.js
+      export default 'foo'
+      </pre>
+
+      <p>
+      If `somelib.js` hadn't been converted from ESM into CommonJS, then this
+      code would print `foo`, so it should still print `foo` regardless of the
+      module format. This is accomplished by detecting when a CommonJS module
+      used to be an ES module via the `__esModule` marker (which all module
+      conversion tools set including Babel, TypeScript, Webpack, and esbuild)
+      and setting the default import to <code>exports.<wbr>default</code> if
+      the `__esModule` marker is present. This behavior is important because
+      it's necessary to run cross-compiled ESM correctly in a CommonJS environment,
+      and for a long time that was the only way to run ESM code in Node before
+      Node eventually added native ESM support.
+      </p>
+
+    - >
+      <p>**The Node interpretation**</p>
+
+      <p>
+      If the Node interpretation is used, this code will print <code>{ default: <wbr>'foo' }</code>.
+      Their rationale is that CommonJS code uses dynamic exports while ESM code
+      uses static exports, so the fully general approach to importing CommonJS
+      into ESM is to expose the CommonJS `exports` object itself somehow. For
+      example, CommonJS code can do <code>exports[<wbr>Math.<wbr>random()<wbr>] =<wbr> 'foo'</code>
+      which has no equivalent in ESM syntax. The `default` export is used for
+      this because that's actually what it was originally designed for by the
+      people who came up with the ES module specification. This interpretation
+      is entirely reasonable for normal CommonJS modules. It only causes
+      compatibility problems for CommonJS modules that used to be ES modules
+      (i.e. when `__esModule` is present) in which case the behavior diverges
+      from the Babel interpretation.
+      </p>
+
+  - p: >
+      *If you are a library author:* When writing new code, you should strongly
+      consider avoiding the `default` export entirely. It has unfortunately been
+      tainted with compatibility problems and using it will likely cause problems
+      for your users at some point.
+
+  - p: >
+      *If you are a library user:* By default, esbuild will use the Babel interpretation.
+      If you want esbuild to use the Node interpretation instead, you need to
+      either put your code in a file ending in `.mts` or `.mjs`, or you need to
+      add <code>"type": <wbr>"module"</code> to your `package.json` file. The
+      rationale is that Node's native ESM support can only run ESM code if the
+      file extension is `.mjs` or <code>"type": <wbr>"module"</code> is present,
+      so doing that is a good signal that the code is intended to be run in Node,
+      and should therefore use the Node interpretation of `default` import. This
+      is the same heuristic that Webpack uses.
+
   - h2: TypeScript
   - p: 'Loader: `ts` or `tsx`'
 
