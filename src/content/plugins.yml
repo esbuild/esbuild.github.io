@@ -1285,16 +1285,10 @@ body:
       initialization code directly inside the `setup` function instead.
 
   - p: >
-      The on-start callback can be `async` and can return a promise. However, the
-      build does not wait for the promise to be resolved before starting, so a
-      slow on-start callback will not necessarily slow down the build. All start
-      callbacks are also run concurrently, not consecutively. The returned
-      promise is purely for error reporting, and matters when the on-start callback
-      needs to do an asynchronous operation that may fail or may produce warnings.
-      If your plugin needs to wait for an asynchronous task in your on-start callback
-      to complete before any [on-resolve](#on-resolve) or [on-load](#on-load)
-      callbacks are run, you will need to have your resolve or load callbacks
-      block on that asynchronous task.
+      The on-start callback can be `async` and can return a promise. All on-start
+      callbacks from all plugins are run concurrently, and then the build waits
+      for all on-start callbacks to finish before proceeding. On-start callbacks
+      can optionally return errors and/or warnings to be included with the build.
 
   - p: >
       Note that on-start callbacks do not have the ability to mutate the [build options](#build-options).
