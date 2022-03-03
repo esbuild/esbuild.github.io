@@ -324,17 +324,17 @@ body:
   - example:
       cli:
         - $: |
-            echo 'DEBUG && require("hooks")' | esbuild --define:DEBUG=true
+            echo 'hooks = DEBUG && require("hooks")' | esbuild --define:DEBUG=true
         - expect: |
-            require("hooks");
+            hooks = require("hooks");
 
         - $: |
-            echo 'DEBUG && require("hooks")' | esbuild --define:DEBUG=false
+            echo 'hooks = DEBUG && require("hooks")' | esbuild --define:DEBUG=false
         - expect: |
-            false;
+            hooks = false;
 
       js:
-        - $: let js = 'DEBUG && require("hooks")'
+        - $: let js = 'hooks = DEBUG && require("hooks")'
 
         - $: |
             require('esbuild').transformSync(js, {
@@ -342,7 +342,7 @@ body:
             })
         - expect: |
             {
-              code: 'require("hooks");\n',
+              code: 'hooks = require("hooks");\n',
               map: '',
               warnings: []
             }
@@ -353,7 +353,7 @@ body:
             })
         - expect: |
             {
-              code: 'false;\n',
+              code: 'hooks = false;\n',
               map: '',
               warnings: []
             }
@@ -365,7 +365,7 @@ body:
         import "github.com/evanw/esbuild/pkg/api"
 
         func main() {
-          js := "DEBUG && require('hooks')"
+          js := "hooks = DEBUG && require('hooks')"
 
           result1 := api.Transform(js, api.TransformOptions{
             Define: map[string]string{"DEBUG": "true"},
