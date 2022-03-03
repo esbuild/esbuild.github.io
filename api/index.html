@@ -90,17 +90,17 @@
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
       </div>
-<pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;DEBUG &amp;&amp; require(&quot;hooks&quot;)&#x27;</span> | esbuild --define:DEBUG=<span class="hljs-literal">true</span></span><span class="repl-out">require("hooks");</span><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;DEBUG &amp;&amp; require(&quot;hooks&quot;)&#x27;</span> | esbuild --define:DEBUG=<span class="hljs-literal">false</span></span><span class="repl-out">false;</span></pre>
-<pre class="switchable js3"><span class="repl-in"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;DEBUG &amp;&amp; require(&quot;hooks&quot;)&#x27;</span></span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
+<pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;hooks = DEBUG &amp;&amp; require(&quot;hooks&quot;)&#x27;</span> | esbuild --define:DEBUG=<span class="hljs-literal">true</span></span><span class="repl-out">hooks = require("hooks");</span><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;hooks = DEBUG &amp;&amp; require(&quot;hooks&quot;)&#x27;</span> | esbuild --define:DEBUG=<span class="hljs-literal">false</span></span><span class="repl-out">hooks = false;</span></pre>
+<pre class="switchable js3"><span class="repl-in"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;hooks = DEBUG &amp;&amp; require(&quot;hooks&quot;)&#x27;</span></span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
   <span class="hljs-attr">define</span>: { <span class="hljs-attr">DEBUG</span>: <span class="hljs-string">&#x27;true&#x27;</span> },
 })</span><span class="repl-out">{
-  code: 'require("hooks");\n',
+  code: 'hooks = require("hooks");\n',
   map: '',
   warnings: []
 }</span><span class="repl-in"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
   <span class="hljs-attr">define</span>: { <span class="hljs-attr">DEBUG</span>: <span class="hljs-string">&#x27;false&#x27;</span> },
 })</span><span class="repl-out">{
-  code: 'false;\n',
+  code: 'hooks = false;\n',
   map: '',
   warnings: []
 }</span></pre>
@@ -110,7 +110,7 @@
 <span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
 
 <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-  js := <span class="hljs-string">&quot;DEBUG &amp;&amp; require(&#x27;hooks&#x27;)&quot;</span>
+  js := <span class="hljs-string">&quot;hooks = DEBUG &amp;&amp; require(&#x27;hooks&#x27;)&quot;</span>
 
   result1 := api.Transform(js, api.TransformOptions{
     Define: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;DEBUG&quot;</span>: <span class="hljs-string">&quot;true&quot;</span>},
