@@ -1107,7 +1107,7 @@ body:
         name: 'example',
         setup(build) {
           let fs = require('fs')
-          let cache = new Map
+          let cache = new Map()
 
           build.onLoad({ filter: /\.example$/ }, async (args) => {
             let input = await fs.promises.readFile(args.path, 'utf8')
