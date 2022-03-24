@@ -671,7 +671,8 @@ a:hover circle {
   stroke: var(--fg-on);
 }
 
-pre {
+pre,
+.hljs-tag .hljs-string {
   color: var(--pre);
 }
 
