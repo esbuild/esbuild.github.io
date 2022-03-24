@@ -779,8 +779,8 @@ body:
             __export(stdin_exports, {
               default: () => stdin_default
             });
-            var stdin_default = "test";
             module.exports = __toCommonJS(stdin_exports);
+            var stdin_default = "test";
 
       js: |
         let js = 'export default "test"'
@@ -2916,7 +2916,7 @@ body:
             ...
 
               out.js                                                                    27.4kb  100.0%
-               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   70.1%
+               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   70.2%
                ├ node_modules/react/cjs/react.production.min.js                          5.9kb   21.5%
                ├ node_modules/object-assign/index.js                                     962b     3.4%
                ├ example.jsx                                                             137b     0.5%
@@ -2991,7 +2991,7 @@ body:
             ...
 
               out.js ─────────────────────────────────────────────────────────────────── 27.4kb ─ 100.0%
-               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 70.1%
+               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 70.2%
                │  └ node_modules/react-dom/server.browser.js
                │     └ example.jsx
                ├ node_modules/react/cjs/react.production.min.js ───────────────────────── 5.9kb ── 21.5%
