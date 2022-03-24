@@ -298,8 +298,8 @@ var stdin_exports = {};
 __export(stdin_exports, {
   default: () =&gt; stdin_default
 });
-var stdin_default = "test";
-module.exports = __toCommonJS(stdin_exports);</span></pre>
+module.exports = __toCommonJS(stdin_exports);
+var stdin_default = "test";</span></pre>
 <pre class="switchable js3"><span class="hljs-keyword">let</span> js = <span class="hljs-string">&#x27;export default &quot;test&quot;&#x27;</span>
 <span class="hljs-keyword">let</span> out = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).transformSync(js, {
   <span class="hljs-attr">format</span>: <span class="hljs-string">&#x27;cjs&#x27;</span>,
@@ -1288,7 +1288,7 @@ esbuild.serve({
 <pre class="switchable cli3"><span class="repl-in">esbuild --bundle example.jsx --outfile=out.js --minify --analyze</span><span class="repl-out">...
 
   out.js                                                                    27.4kb  100.0%
-   ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   70.1%
+   ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   70.2%
    ├ node_modules/react/cjs/react.production.min.js                          5.9kb   21.5%
    ├ node_modules/object-assign/index.js                                     962b     3.4%
    ├ example.jsx                                                             137b     0.5%
@@ -1337,7 +1337,7 @@ esbuild.serve({
 <pre class="switchable cli3"><span class="repl-in">esbuild --bundle example.jsx --outfile=out.js --minify --analyze=verbose</span><span class="repl-out">...
 
   out.js ─────────────────────────────────────────────────────────────────── 27.4kb ─ 100.0%
-   ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 70.1%
+   ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 70.2%
    │  └ node_modules/react-dom/server.browser.js
    │     └ example.jsx
    ├ node_modules/react/cjs/react.production.min.js ───────────────────────── 5.9kb ── 21.5%
