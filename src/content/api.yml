@@ -5520,6 +5520,14 @@ body:
           }
         }
 
+  - p: >
+      Note that esbuild deliberately does not include the new `.mjs` and `.cjs`
+      extensions in this list. Node's resolution algorithm doesn't treat these
+      as implicit file extensions, so esbuild doesn't either. If you want to
+      import files with these extensions you should either explicitly add the
+      extensions in your import paths or change this setting to include the
+      additional extensions that you want to be implicit.
+
   - h3: Source root
 
   - p: >
