@@ -16,7 +16,7 @@ body:
   - ul:
     - >
       <p>
-      It's written in [Go](https://golang.org/) and compiles to native code.
+      It's written in [Go](https://go.dev/) and compiles to native code.
       </p>
       <p>
       Most other bundlers are written in JavaScript, but a command-line

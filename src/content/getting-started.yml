@@ -437,7 +437,7 @@ body:
   - ol:
     - |
       Install the Go compiler:
-      <p>[https://golang.org/dl/](https://golang.org/dl/)</p>
+      <p>[https://go.dev/dl/](https://go.dev/dl/)</p>
 
     - |
       Download the source code for esbuild:

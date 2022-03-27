@@ -187,7 +187,7 @@ body:
 
   - p: >
       The allowed regular expression syntax is the syntax supported by Go's
-      [regular expression engine](https://golang.org/pkg/regexp/). This is
+      [regular expression engine](https://pkg.go.dev/regexp/). This is
       slightly different than JavaScript. Specifically, look-ahead,
       look-behind, and backreferences are not supported. Go's regular
       expression engine is designed to avoid the catastrophic
