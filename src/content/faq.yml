@@ -328,3 +328,43 @@ body:
       esbuild is not meant to be an all-in-one solution for all frontend
       needs.
       </p>
+
+  - h2: Anti-virus software
+
+  - p: >
+      Since esbuild is written in native code, anti-virus software can sometimes
+      incorrectly flag it as a virus. _This does not mean esbuild is a virus._ I
+      do not publish malicious code and I take supply chain security very seriously.
+
+  - p: >
+      Virtually all of esbuild's code is first-party code except for [one dependency](https://github.com/evanw/esbuild/blob/master/go.mod)
+      on Google's set of supplemental Go packages. My development work is done
+      on different machine that is isolated from the one I use to publish builds.
+      I have done additional work to ensure that esbuild's published builds are
+      completely reproducible and after every release, published builds are
+      [automatically compared](https://github.com/evanw/esbuild/blob/master/.github/workflows/validate.yml)
+      to ones locally-built in an unrelated environment to ensure that they are
+      bitwise identical (i.e. that the Go compiler itself has not been compromised).
+      You can also build esbuild from source yourself and compare your build artifacts
+      to the published ones to independently verify this.
+
+  - p: >
+      Having to deal with false-positives is an unfortunate reality of using
+      anti-virus software. Here are some possible workarounds if your anti-virus
+      won't let you use esbuild:
+
+  - ul:
+    - >
+      Ignore your anti-virus software and remove esbuild from quarantine
+
+    - >
+      Report the specific esbuild native executable as a false-positive to your
+      anti-virus software vendor
+
+    - >
+      Use [`esbuild-wasm`](/getting-started/#wasm) instead of `esbuild` to
+      bypass your anti-virus software (which likely won't flag WebAssembly
+      files the same way it flags native executables)
+
+    - >
+      Use another build tool instead of esbuild
