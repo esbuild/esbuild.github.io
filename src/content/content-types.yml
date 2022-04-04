@@ -917,6 +917,17 @@ body:
       Then esbuild will avoid using CSS features that are too modern for those
       browsers.
 
+  - p: >
+      CSS has a [general syntax specification](https://www.w3.org/TR/css-syntax-3/)
+      that all CSS processors use and then [many specifications](https://www.w3.org/Style/CSS/current-work)
+      that define what specific CSS rules mean. While esbuild understands
+      general CSS syntax and can understand some CSS rules (enough to bundle
+      CSS file together and to minify CSS reasonably well), esbuild does not
+      contain complete knowledge of CSS. This means esbuild takes a "garbage
+      in, garbage out" philosophy toward CSS. If you want to verify that your
+      compiled CSS is free of typos, you should be using a CSS linter in
+      addition to esbuild.
+
   - h3#css-from-js: Import from JavaScript
 
   - p: >
