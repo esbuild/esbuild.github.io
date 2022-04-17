@@ -2150,7 +2150,8 @@ body:
       by putting a proxy in front of esbuild.
 
   - p: >
-      Here's a simple example of a proxy server to get you started. It adds a
+      Here's a simple example of a proxy server to get you started, using node's
+      built-in [`http`](https://nodejs.org/api/http.html) module. It adds a
       custom 404 page instead of esbuild's default 404 page:
 
   - pre.js: |
@@ -2209,7 +2210,9 @@ body:
     - Injecting your own 404 page (the example above)
     - Customizing the mapping of routes to files on the file system
     - Redirecting some routes to an API server instead of to esbuild
-    - Adding support for HTTPS using your own self-signed certificates
+    - >
+      Adding support for HTTPS using your own self-signed certificates
+      ([instructions here](https://nodejs.org/en/knowledge/HTTP/servers/how-to-create-a-HTTPS-server/))
 
   - p: >
       You can also use a real proxy such as [NGINX](https://nginx.org/en/docs/beginners_guide.html#proxy)
