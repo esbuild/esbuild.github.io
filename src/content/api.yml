@@ -5403,47 +5403,47 @@ body:
       Some expressions such as JSX and certain built-in globals are automatically
       annotated as `/* @__PURE__ */` in esbuild. You can also configure additional
       globals to be marked `/* @__PURE__ */` as well. For example, you can mark
-      the global `console.log` function as such to have it be automatically
-      removed from your bundle when the bundle is minified as long as the result
-      isn't used.
+      the global <code>document.<wbr>createElement</code> function as such to have
+      it be automatically removed from your bundle when the bundle is minified as
+      long as the result isn't used.
 
   - p: >
       It's worth mentioning that the effect of the annotation only extends to
       the call itself, not to the arguments. Arguments with side effects are
-      still kept:
+      still kept even when minification is enabled:
 
   - example:
       cli:
         - $: |
-            echo 'console.log("foo:", foo())' | esbuild --pure:console.log
+            echo 'document.createElement(elemName())' | esbuild --pure:document.createElement
         - expect: |
-            /* @__PURE__ */ console.log("foo:", foo());
+            /* @__PURE__ */ document.createElement(elemName());
         - $: |
-            echo 'console.log("foo:", foo())' | esbuild --pure:console.log --minify
+            echo 'document.createElement(elemName())' | esbuild --pure:document.createElement --minify
         - expect: |
-            foo();
+            elemName();
 
       js:
         - $: |
-            let js = 'console.log("foo:", foo())'
+            let js = 'document.createElement(elemName())'
         - $: |
             require('esbuild').transformSync(js, {
-              pure: ['console.log'],
+              pure: ['document.createElement'],
             })
         - expect: |
             {
-              code: '/* @__PURE__ */ console.log("foo:", foo());\n',
+              code: '/* @__PURE__ */ document.createElement(elemName());\n',
               map: '',
               warnings: []
             }
         - $: |
             require('esbuild').transformSync(js, {
-              pure: ['console.log'],
+              pure: ['document.createElement'],
               minify: true,
             })
         - expect: |
             {
-              code: 'foo();\n',
+              code: 'elemName();\n',
               map: '',
               warnings: []
             }
@@ -5455,10 +5455,10 @@ body:
         import "github.com/evanw/esbuild/pkg/api"
 
         func main() {
-          js := "console.log('foo:', foo())"
+          js := "document.createElement(elemName())"
 
           result1 := api.Transform(js, api.TransformOptions{
-            Pure: []string{"console.log"},
+            Pure: []string{"document.createElement"},
           })
 
           if len(result1.Errors) == 0 {
@@ -5466,7 +5466,7 @@ body:
           }
 
           result2 := api.Transform(js, api.TransformOptions{
-            Pure:         []string{"console.log"},
+            Pure:         []string{"document.createElement"},
             MinifySyntax: true,
           })
 
@@ -5474,6 +5474,14 @@ body:
             fmt.Printf("%s", result2.Code)
           }
         }
+
+  - p: >
+      Note that if you are trying to remove all calls to `console` API methods
+      such as `console.log` and also want to remove the evaluation of arguments
+      with side effects, there is a special case available for this: you can use
+      the [drop feature](#drop) instead of marking `console` API calls as pure.
+      However, this mechanism is specific to the `console` API and doesn't work
+      with other call expressions.
 
   - h3: Resolve extensions
 
@@ -5817,14 +5825,14 @@ body:
       one();
 
   - p: >
-      This way esbuild will only bundle the parts of your libraries that you
+      This way esbuild will only bundle the parts of your packages that you
       actually use, which can sometimes be a substantial size savings. Note
       that esbuild's tree shaking implementation relies on the use of ECMAScript
       module `import` and `export` statements. It does not work with CommonJS
-      modules. Many libraries on npm include both formats and esbuild tries to
+      modules. Many packages on npm include both formats and esbuild tries to
       pick the format that works with tree shaking by default. You can
       customize which format esbuild picks using the [main fields](#main-fields)
-      option.
+      and/or [conditions](#conditions) options depending on the package.
 
   - p: >
       By default, tree shaking is only enabled either when [bundling](#bundle)
@@ -5897,11 +5905,70 @@ body:
           }
         }
 
+  - h4: Tree shaking and side effects
+
   - p: >
-      Note that tree shaking automatically takes into account user-specified
-      side-effect annotations. If you are bundling code with annotations that
-      have been authored incorrectly, you may need to [ignore annotations](#ignore-annotations)
-      to make sure the bundled code is correct.
+      The side effect detection used for tree shaking is conservative, meaning
+      that esbuild only considers code removable as dead code if it can be sure
+      that there are no hidden side effects. For example, primitive literals
+      such as `12.34` and `"abcd"` are side-effect free and can be removed while
+      expressions such as `"ab" + cd` and `foo.bar` are not side-effect free
+      (joining strings invokes `toString()` which can have side effects, and
+      member access can invoke a getter which can also have side effects). Even
+      referencing a global identifier is considered to be a side effect because
+      it will throw a `ReferenceError` if there is no global with that name.
+      Here's an example:
+
+  - pre.js: |
+      // These are considered side-effect free
+      let a = 12.34;
+      let b = "abcd";
+      let c = { a: a };
+
+      // These are not considered side-effect free
+      // since they could cause some code to run
+      let x = "ab" + cd;
+      let y = foo.bar;
+      let z = { [x]: x };
+
+  - p: >
+      Sometimes it's desirable to allow some code to be tree shaken even if that
+      code can't be automatically determined to have no side effects. This can
+      be done with a [pure annotation comment](#pure) which tells esbuild to
+      trust the author of the code that there are no side effects within the
+      annotated code. The annotation comment is `/* @__PURE__ */` and can only
+      precede a new or call expression. You can annotate an immediately-invoked
+      function expression and put arbitrary side effects inside the function
+      body:
+
+  - pre.js: |
+      // This is considered side-effect free due to
+      // the annotation, and will be removed if unused
+      let gammaTable = /* @__PURE__ */ (() => {
+        // Side-effect detection is skipped in here
+        let table = new Uint8Array(256);
+        for (let i = 0; i < 256; i++)
+          table[i] = Math.pow(i / 255, 2.2) * 255;
+        return table;
+      })();
+
+  - p: >
+      While the fact that `/* @__PURE__ */` only works on call expressions
+      can sometimes make code more verbose, a big benefit of this syntax is
+      that it's portable across many other tools in the JavaScript ecosystem
+      including the popular [UglifyJS](github.com/mishoo/uglifyjs) and
+      [Terser](github.com/terser/terser) JavaScript minifiers (which are
+      used by other major tools including [Webpack](github.com/webpack/webpack)
+      and [Parcel](https://github.com/parcel-bundler/parcel)).
+
+  - p: >
+      Note that the annotations cause esbuild to assume that the annotated
+      code is side-effect free. If the annotations are wrong and the code
+      actually does have important side effects, these annotations can result
+      in broken code. If you are bundling third-party code with annotations
+      that have been authored incorrectly, you may need to enable
+      [ignoring annotations](#ignore-annotations) to make sure the bundled
+      code is correct.
 
   - h3: Tsconfig
 
