@@ -1050,21 +1050,24 @@ esbuild.serve({
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
     os.Exit(<span class="hljs-number">1</span>)
   }
-}</pre><h3 id="target"><a class="permalink" href="#target">#</a>Target</h3><p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p><p>This sets the target environment for the generated JavaScript and/or CSS code. For example, you can configure esbuild to not generate any newer JavaScript or CSS that Chrome version 58 can't handle. The target can either be set to a JavaScript language version such as <code>es2020</code> or to a list of versions of individual engines (currently either <code>chrome</code>, <code>firefox</code>, <code>safari</code>, <code>edge</code>, or <code>node</code>). The default target is <code>esnext</code> which means that by default, esbuild will assume all of the latest JavaScript and CSS features are supported.</p><p>Here is an example that uses all of the available target environment names in esbuild. Note that you don't need to specify all of them; you can just specify the subset of target environments that your project cares about. You can also be more precise about version numbers if you'd like (e.g. <code>node12.19.0</code> instead of just <code>node12</code>):</p><div class="switcher">
+}</pre><h3 id="target"><a class="permalink" href="#target">#</a>Target</h3><p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p><p>This sets the target environment for the generated JavaScript and/or CSS code. It tells esbuild to transform JavaScript syntax that is too new for these environments into older JavaScript syntax that will work in these environments. For example, the <code>??</code> operator was introduced in Chrome 80 so esbuild will convert it into an equivalent (but more verbose) conditional expression when targeting Chrome 79 or earlier.</p><p>Note that this is only concerned with syntax features, not APIs. It does <em>not</em> automatically add <a href="https://developer.mozilla.org/en-US/docs/Glossary/Polyfill">polyfills</a> for new APIs that are not used by these environments. You will have to explicitly import polyfills for the APIs you need (e.g. by importing <a href="https://www.npmjs.com/package/core-js"><code>core-js</code></a>). Automatic polyfill injection is outside of esbuild's scope.</p><p>Each target environment is an environment name followed by a version number. The following environment names are currently supported:</p><ul><li><code>chrome</code></li><li><code>edge</code></li><li><code>firefox</code></li><li><code>ie</code></li><li><code>ios</code></li><li><code>node</code></li><li><code>opera</code></li><li><code>safari</code></li></ul><p>In addition, you can also specify JavaScript language versions such as <code>es2020</code>. The default target is <code>esnext</code> which means that by default, esbuild will assume all of the latest JavaScript and CSS features are supported. Here is an example that uses all of the available target environment names in esbuild. You don't need to specify all of them; you can just specify the subset of target environments that your project cares about. You can also be more precise about version numbers if you'd like (e.g. <code>node12.19.0</code> instead of just <code>node12</code>):</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
       </div>
-<pre class="switchable cli3">esbuild app.js --target=es2020,chrome58,firefox57,safari11,edge16,node12</pre>
+<pre class="switchable cli3">esbuild app.js --target=es2020,chrome58,edge16,firefox57,ie11,ios10,node12,opera45,safari11</pre>
 <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
   <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
   <span class="hljs-attr">target</span>: [
     <span class="hljs-string">&#x27;es2020&#x27;</span>,
     <span class="hljs-string">&#x27;chrome58&#x27;</span>,
-    <span class="hljs-string">&#x27;firefox57&#x27;</span>,
-    <span class="hljs-string">&#x27;safari11&#x27;</span>,
     <span class="hljs-string">&#x27;edge16&#x27;</span>,
+    <span class="hljs-string">&#x27;firefox57&#x27;</span>,
+    <span class="hljs-string">&#x27;ie11&#x27;</span>,
+    <span class="hljs-string">&#x27;ios10&#x27;</span>,
     <span class="hljs-string">&#x27;node12&#x27;</span>,
+    <span class="hljs-string">&#x27;opera45&#x27;</span>,
+    <span class="hljs-string">&#x27;safari11&#x27;</span>,
   ],
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
 })</pre>
@@ -1079,10 +1082,13 @@ esbuild.serve({
     Target:      api.ES2020,
     Engines: []api.Engine{
       {Name: api.EngineChrome, Version: <span class="hljs-string">&quot;58&quot;</span>},
-      {Name: api.EngineFirefox, Version: <span class="hljs-string">&quot;57&quot;</span>},
-      {Name: api.EngineSafari, Version: <span class="hljs-string">&quot;11&quot;</span>},
       {Name: api.EngineEdge, Version: <span class="hljs-string">&quot;16&quot;</span>},
+      {Name: api.EngineFirefox, Version: <span class="hljs-string">&quot;57&quot;</span>},
+      {Name: api.EngineIE, Version: <span class="hljs-string">&quot;11&quot;</span>},
+      {Name: api.EngineIOS, Version: <span class="hljs-string">&quot;10&quot;</span>},
       {Name: api.EngineNode, Version: <span class="hljs-string">&quot;12&quot;</span>},
+      {Name: api.EngineOpera, Version: <span class="hljs-string">&quot;45&quot;</span>},
+      {Name: api.EngineSafari, Version: <span class="hljs-string">&quot;11&quot;</span>},
     },
     Write: <span class="hljs-literal">true</span>,
   })
@@ -1090,7 +1096,7 @@ esbuild.serve({
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
     os.Exit(<span class="hljs-number">1</span>)
   }
-}</pre><p>You can refer to the <a href="/content-types/#javascript">JavaScript loader</a> for the details about which syntax features were introduced with which language versions. Keep in mind that while JavaScript language versions such as <code>es2020</code> are identified by year, that is the year the specification is approved. It has nothing to do with the year all major browsers implement that specification which often happens earlier or later than that year.</p><p>Note that if you use a syntax feature that esbuild doesn't yet have support for transforming to your current language target, esbuild will generate an error where the unsupported syntax is used. This is often the case when targeting the <code>es5</code> language version, for example, since esbuild only supports transforming most newer JavaScript syntax features to <code>es6</code>.</p><h3 id="watch"><a class="permalink" href="#watch">#</a>Watch</h3><p><i>Supported by: <a href="#build-api">Build</a></i></p><p>Enabling watch mode on the build API tells esbuild to listen for changes on the file system and to rebuild whenever a file changes that could invalidate the build. Using it looks like this:</p><div class="switcher">
+}</pre><p>You can refer to the <a href="/content-types/#javascript">JavaScript loader</a> for the details about which syntax features were introduced with which language versions. Keep in mind that while JavaScript language versions such as <code>es2020</code> are identified by year, that is the year the specification is approved. It has nothing to do with the year all major browsers implement that specification which often happens earlier or later than that year.</p><p>If you use a syntax feature that esbuild doesn't yet have support for transforming to your current language target, esbuild will generate an error where the unsupported syntax is used. This is often the case when targeting the <code>es5</code> language version, for example, since esbuild only supports transforming most newer JavaScript syntax features to <code>es6</code>.</p><h3 id="watch"><a class="permalink" href="#watch">#</a>Watch</h3><p><i>Supported by: <a href="#build-api">Build</a></i></p><p>Enabling watch mode on the build API tells esbuild to listen for changes on the file system and to rebuild whenever a file changes that could invalidate the build. Using it looks like this:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
