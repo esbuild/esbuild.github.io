@@ -139,10 +139,12 @@ body:
   - p: >
       The bundler outputs code for the browser by default, so no additional
       configuration is necessary to get started. For development builds you
-      probably want to enable source maps with `--sourcemap`, and for
-      production builds you probably want to enable minification with
-      `--minify`. You probably also want to configure the target environment
-      for the browsers you support. All of that might looks something like this:
+      probably want to enable [source maps](/api/#sourcemap) with `--sourcemap`,
+      and for production builds you probably want to enable [minification](/api/#minify)
+      with `--minify`. You probably also want to configure the [target](/api/#target)
+      environment for the browsers you support so that JavaScript syntax which is
+      too new will be transformed into older JavaScript syntax. All of that might
+      looks something like this:
 
   - example:
       in:
@@ -189,20 +191,6 @@ body:
         }
 
   - p: >
-      Sometimes a package you want to use may import another package that is
-      only available on node, such as the built-in `path` package. When that
-      happens you can substitute the package for a browser-friendly alternative
-      by using the [browser field](https://github.com/defunctzombie/package-browser-field-spec)
-      in your `package.json` file like this:
-
-  - pre.json: |
-      {
-        "browser": {
-          "path": "path-browserify"
-        }
-      }
-
-  - p: >
       Some npm packages you want to use may not be designed to be run in the
       browser. Sometimes you can use esbuild's configuration options to
       work around certain issues and successfully bundle the package anyway.
@@ -233,7 +221,8 @@ body:
 
   - p: >
       If your code uses newer JavaScript syntax that doesn't work in your
-      version of node, you will want to configure the target version of node:
+      version of node, you will want to configure the [target](/api/#target)
+      version of node:
 
   - example:
       in:
