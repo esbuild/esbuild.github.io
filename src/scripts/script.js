@@ -22,6 +22,12 @@
   addEventListener('click', e => {
     if (e.target.parentElement && e.target.parentElement.className === 'switcher') {
       var target = e.target.className
+      // Normalize class name when needed.
+      // e.g. some user browser extension may add classes to parentElement.
+      // since these cases class is always appended we can grab the first class
+      if (target.indexOf(' ') > 0) {
+        target = target.replace(/ .*/,'')
+      }
 
       if (/^(cli|js|go)[23]$/.test(target)) {
         var before = e.target.offsetTop - body.scrollTop
