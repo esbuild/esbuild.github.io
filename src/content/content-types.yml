@@ -864,8 +864,8 @@ body:
   - p: >
       This loader is enabled by default for `.css` files. It loads the file
       as CSS syntax. CSS is a first-class content type in esbuild, which means
-      esbuild can bundle CSS files directly without needing to import your CSS
-      from JavaScript code:
+      esbuild can [bundle](/api/#bundle) CSS files directly without needing to
+      import your CSS from JavaScript code:
 
   - example:
       in:
@@ -917,17 +917,6 @@ body:
       Then esbuild will avoid using CSS features that are too modern for those
       browsers.
 
-  - p: >
-      CSS has a [general syntax specification](https://www.w3.org/TR/css-syntax-3/)
-      that all CSS processors use and then [many specifications](https://www.w3.org/Style/CSS/current-work)
-      that define what specific CSS rules mean. While esbuild understands
-      general CSS syntax and can understand some CSS rules (enough to bundle
-      CSS file together and to minify CSS reasonably well), esbuild does not
-      contain complete knowledge of CSS. This means esbuild takes a "garbage
-      in, garbage out" philosophy toward CSS. If you want to verify that your
-      compiled CSS is free of typos, you should be using a CSS linter in
-      addition to esbuild.
-
   - h3#css-from-js: Import from JavaScript
 
   - p: >
@@ -964,6 +953,106 @@ body:
           <script src="app.js"></script>
         </head>
       </html>
+
+  - h3#css-caveats: CSS caveats
+
+  - p: >
+      You should keep the following things in mind when using CSS with esbuild:
+
+  - h4#css-linting: Limited CSS verification
+  - p: >
+      CSS has a [general syntax specification](https://www.w3.org/TR/css-syntax-3/)
+      that all CSS processors use and then [many specifications](https://www.w3.org/Style/CSS/current-work)
+      that define what specific CSS rules mean. While esbuild understands
+      general CSS syntax and can understand some CSS rules (enough to bundle
+      CSS file together and to minify CSS reasonably well), esbuild does not
+      contain complete knowledge of CSS. This means esbuild takes a "garbage
+      in, garbage out" philosophy toward CSS. If you want to verify that your
+      compiled CSS is free of typos, you should be using a CSS linter in
+      addition to esbuild.
+
+  - h4#css-import-order: >
+      `@import` order matches the browser
+  - p: >
+      The `@import` rule in CSS behaves differently than the `import` keyword
+      in JavaScript. In JavaScript, an `import` means roughly "make sure the
+      imported file is evaluated before this file is evaluated" but in CSS,
+      `@import` means roughly "re-evaluate the imported file again here"
+      instead. For example, consider the following files:
+
+  - ul:
+    - '<code>entry.css</code><pre>@import "foreground.css";<br>@import "background.css";</pre>'
+    - '<code>foreground.css</code><pre>@import "reset.css";<br>body {<br>  color: white;<br>}</pre>'
+    - '<code>background.css</code><pre>@import "reset.css";<br>body {<br>  background: black;<br>}</pre>'
+    - '<code>reset.css</code><pre>body {<br>  color: black;<br>  background: white;<br>}</pre>'
+
+  - p: >
+      Using your intuition from JavaScript, you might think that this code first
+      resets the body to black text on a white background, and then overrides
+      that to white text on a black background. _**This is not what happens.**_
+      Instead, the body will be entirely black (both the foreground and the
+      background). This is because `@import` is supposed to behave as if the
+      import rule was replaced by the imported file<sup id="footnote-use-1"><a href="#footnote-def-1">1</a></sup>
+      (sort of like `#include` in C/C++), which leads to the browser seeing
+      the following code:
+
+  - pre.css: |
+      /* reset.css */
+      body {
+        color: black;
+        background: white;
+      }
+
+      /* foreground.css */
+      body {
+        color: white;
+      }
+
+      /* reset.css */
+      body {
+        color: black;
+        background: white;
+      }
+
+      /* background.css */
+      body {
+        background: black;
+      }
+
+  - p: >
+      which ultimately reduces down to this:
+
+  - pre: |
+      body {
+        color: black;
+        background: black;
+      }
+
+  - p: >
+      This behavior is unfortunate, but esbuild behaves this way because that's
+      how CSS is specified, and that's how CSS works in browsers. This is
+      important to know about because some other commonly-used CSS processing
+      tools such as [`postcss-import`](https://github.com/postcss/postcss-import/issues/462)
+      incorrectly resolve CSS imports in JavaScript order instead of in CSS order.
+      If you are porting CSS code written for those tools to esbuild (or even
+      just switching over to running your CSS code natively in the browser),
+      you may have appearance changes if your code depends on the incorrect
+      import order.
+
+  - p: >
+      <footer>
+      <sup id="footnote-def-1"><a href="#footnote-use-1">1</a></sup>
+      [The specification says](https://www.w3.org/TR/css-cascade-3/#at-import)
+      "user agents must treat the contents of the stylesheet as if they were
+      written in place of the @import rule" but that's not actually how CSS works.
+      If CSS worked that way, then cyclic imports would cause a hang due to
+      infinite expansion. The way it actually works is that an imported CSS
+      file is evaluated once at the **last** duplicate `@import` rule (as
+      compared to JavaScript where an imported JS file is evaluated once at
+      the **first** duplicate `import` statement). This is considered an
+      implementation detail and only really matters when there are import
+      cycles.
+      </footer>
 
   - h2: Text
   - p: 'Loader: `text`'

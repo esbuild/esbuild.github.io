@@ -84,8 +84,13 @@ sup {
   font-style: normal;
 }
 
+footer>sup[id] {
+  position: relative;
+  padding-top: 20px;
+}
+
 code {
-  font: 16px/140% 'Noto Sans Mono', monospace;
+  font-family: 'Noto Sans Mono', monospace;
   background: rgba(159, 159, 159, 0.15);
   padding: 1px 4px;
   margin: -1px 0;
@@ -121,9 +126,15 @@ code {
 /* ---------- Benchmark ---------- */
 
 @keyframes scale-bar {
+
   /* Note: This scale factor has to be non-zero to avoid a WebKit bug: https://bugs.webkit.org/show_bug.cgi?id=228896 */
-  0% { transform: scale(0.0000001, 1); }
-  100% { transform: scale(1, 1); }
+  0% {
+    transform: scale(0.0000001, 1);
+  }
+
+  100% {
+    transform: scale(1, 1);
+  }
 }
 
 /* ---------- Nav ---------- */
@@ -158,7 +169,7 @@ nav li {
   list-style: none;
 }
 
-#menu > ul > li {
+#menu>ul>li {
   padding-top: 20px;
 }
 
@@ -176,7 +187,7 @@ nav ul.h3 {
   padding: 0 0 0 10px;
 }
 
-nav li.current > ul.h3 {
+nav li.current>ul.h3 {
   font-weight: normal;
 }
 
@@ -218,7 +229,7 @@ figcaption {
   margin: 40px 0 -40px 0;
 }
 
-figure + figcaption {
+figure+figcaption {
   font-weight: normal;
   text-align: left;
   margin: -40px auto 60px auto;
@@ -257,7 +268,9 @@ h4 {
   line-height: 26px;
 }
 
-h2, h3, h4 {
+h2,
+h3,
+h4 {
   position: relative;
   margin: -10px 0 20px 0;
 }
@@ -338,11 +351,27 @@ pre:before {
   font: 12px/140% sans-serif;
 }
 
-pre.cli3:before { content: 'CLI'; }
-pre.js3:before, pre.js2:before { content: 'JS'; }
-pre.go3:before, pre.go2:before { content: 'Go'; }
-pre.unix2:before { content: 'Unix'; }
-pre.windows2:before { content: 'Windows'; }
+pre.cli3:before {
+  content: 'CLI';
+}
+
+pre.js3:before,
+pre.js2:before {
+  content: 'JS';
+}
+
+pre.go3:before,
+pre.go2:before {
+  content: 'Go';
+}
+
+pre.unix2:before {
+  content: 'Unix';
+}
+
+pre.windows2:before {
+  content: 'Windows';
+}
 
 .has-js pre.switchable {
   margin-top: 0;
@@ -351,9 +380,12 @@ pre.windows2:before { content: 'Windows'; }
 }
 
 body[data-mode3=cli] pre.cli3,
-body[data-mode3=js] pre.js3, body[data-mode2=js] pre.js2,
-body[data-mode3=go] pre.go3, body[data-mode2=go] pre.go2,
-body[data-os2=unix] pre.unix2, body[data-os2=windows] pre.windows2 {
+body[data-mode3=js] pre.js3,
+body[data-mode2=js] pre.js2,
+body[data-mode3=go] pre.go3,
+body[data-mode2=go] pre.go2,
+body[data-os2=unix] pre.unix2,
+body[data-os2=windows] pre.windows2 {
   display: block;
 }
 
@@ -405,9 +437,12 @@ body[data-os2=unix] pre.unix2, body[data-os2=windows] pre.windows2 {
   color: #7f7f7f;
 }
 
-.cli1 .repl-in:before, .unix1 .repl-in:before,
-.cli2 .repl-in:before, .unix2 .repl-in:before,
-.cli3 .repl-in:before, .unix3 .repl-in:before {
+.cli1 .repl-in:before,
+.unix1 .repl-in:before,
+.cli2 .repl-in:before,
+.unix2 .repl-in:before,
+.cli3 .repl-in:before,
+.unix3 .repl-in:before {
   content: '$';
 }
 
@@ -430,8 +465,8 @@ body[data-os2=unix] pre.unix2, body[data-os2=windows] pre.windows2 {
   color: #7f7f7f;
 }
 
-.repl-in + .repl-in,
-.repl-out + .repl-in {
+.repl-in+.repl-in,
+.repl-out+.repl-in {
   margin-top: 20px;
 }
 
@@ -468,9 +503,12 @@ body[data-os2=unix] pre.unix2, body[data-os2=windows] pre.windows2 {
 }
 
 body[data-mode3=cli] .switcher .cli3,
-body[data-mode3=js] .switcher .js3, body[data-mode2=js] .switcher .js2,
-body[data-mode3=go] .switcher .go3, body[data-mode2=go] .switcher .go2,
-body[data-os2=unix] .switcher .unix2, body[data-os2=windows] .switcher .windows2 {
+body[data-mode3=js] .switcher .js3,
+body[data-mode2=js] .switcher .js2,
+body[data-mode3=go] .switcher .go3,
+body[data-mode2=go] .switcher .go2,
+body[data-os2=unix] .switcher .unix2,
+body[data-os2=windows] .switcher .windows2 {
   background: rgba(127, 127, 127, 0.25);
 }
 
@@ -562,6 +600,7 @@ body.has-js {
 }
 
 @media (min-width: 800px) {
+
   body,
   body.has-js {
     position: relative;
