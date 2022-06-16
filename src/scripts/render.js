@@ -352,6 +352,58 @@ function renderExample(kind, value) {
   return hljs.highlight(hljsLang, value.trim()).value
 }
 
+// Format the example log messages automatically so they are kept up to date
+function formatMessagesInText(text) {
+  return text.replace(/\{\{ FORMAT_MESSAGES\(('[^']*'), (\{(?:[^}]|\{[^}]*\})*\})\) \}\}/g, (_, input, options) => {
+    const evalExpr = x => new Function('return ' + x.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'))()
+    input = evalExpr(input)
+    options = evalExpr(options)
+
+    const { sourcefile, loader, ...remainingOptions } = options
+    let warnings = []
+    let errors = []
+
+    try {
+      ({ warnings } = esbuild.buildSync({
+        stdin: { contents: input, sourcefile, loader },
+        logLevel: 'silent',
+        write: false,
+        ...remainingOptions,
+      }))
+    } catch (e) {
+      ({ warnings, errors } = e)
+    }
+
+    let result = escapeHTML([].concat(
+      esbuild.formatMessagesSync(warnings, { kind: 'warning', terminalWidth: 100, color: true }),
+      esbuild.formatMessagesSync(errors, { kind: 'error', terminalWidth: 100, color: true }),
+    ).join('').trim())
+
+    if (result === '') {
+      const indent = x => ('\n' + x).replace(/\n/g, '\n  ')
+      throw new Error(`Unexpectedly got no warnings for this code:\n${indent(input)}\n\nwith these options:\n${indent(JSON.stringify(options, null, 2))}\n`)
+    }
+
+    result = '<span>' + result.replace(/\033\[([^m]*)m/g, (_, escape) => {
+      switch (escape) {
+        case '1': return '</span><span style="font-weight:bold">'
+        case '31': return '</span><span class="color-red">'
+        case '32': return '</span><span class="color-green">'
+        case '33': return '</span><span class="color-yellow">'
+        case '37': return '</span><span class="color-dim">'
+        case '41;31': return '</span><span class="bg-red color-red">'
+        case '41;97': return '</span><span class="bg-red color-white">'
+        case '43;33': return '</span><span class="bg-yellow color-yellow">'
+        case '43;30': return '</span><span class="bg-yellow color-black">'
+        case '0': return '</span><span>'
+      }
+      throw new Error(`Unknown escape sequence: ${escape}`)
+    }) + '</span>'
+
+    return result
+  })
+}
+
 function generateMain(key, main) {
   let apiCallsForOption = {}
   let benchmarkCount = 0
@@ -420,7 +472,7 @@ function generateMain(key, main) {
     }
 
     if (tag === 'pre.raw') {
-      return `<pre>${value.trim()}</pre>`
+      return `<pre>${formatMessagesInText(value.trim())}</pre>`
     }
 
     if (tag.startsWith('pre.')) {
@@ -472,7 +524,7 @@ function generateMain(key, main) {
       return `<div class="warning">${md.renderInline(value.trim())}</div>`
     }
 
-    return `<${tag}>${md.renderInline(value.trim())}</${tag}>`
+    return `<${tag}>${formatMessagesInText(md.renderInline(value.trim()))}</${tag}>`
   }).join('')
 }
 

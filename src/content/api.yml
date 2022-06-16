@@ -3466,26 +3466,8 @@ body:
       default, color is automatically enabled if stderr is a TTY session and
       automatically disabled otherwise. Colored output in esbuild looks like this:
 
-  - pre.raw: |
-      <span class="color-yellow">▲ <span class="bg-yellow">[<span class="color-black">WARNING</span>]</span></span> <b>The "typeof" operator will never evaluate to "null"</b>
-
-          example.js:2:16:
-        <span class="color-dim">    2 │ log(typeof x == </span><span class="color-green">"null"</span><span class="color-dim">)</span>
-        <span class="color-dim">      ╵                 </span><span class="color-green">~~~~~~</span>
-
-        The expression "typeof x" actually evaluates to "object" in JavaScript, not "null". You need to
-        use "x === null" to test for null.
-
-      <span class="color-red">✘ <span class="bg-red">[<span class="color-white">ERROR</span>]</span></span> <b>Could not resolve "logger"</b>
-
-          example.js:1:16:
-        <span class="color-dim">    1 │ import log from </span><span class="color-green">"logger"</span>
-        <span class="color-dim">      ╵                 </span><span class="color-green">~~~~~~~~</span>
-
-        You can mark the path "logger" as external to exclude it from the bundle, which will remove this
-        error.
-
-      1 warning and 1 error
+  - pre.raw: >
+      {{ FORMAT_MESSAGES('import log from "logger"\nlog(typeof x == "null")', { sourcefile: 'example.js', bundle: true }) }}
 
   - p: >
       Colored output can be force-enabled by setting color to `true`. This is
@@ -4674,36 +4656,36 @@ body:
   - p: >
       The log level for each message type can be overridden to any value
       supported by the [log level](/api/#log-level) setting. All
-      currently-available message types are listed below:
+      currently-available message types are listed below (click on each one
+      for an example log message):
 
-  - p: >
+  - p: |
       <ul>
         <li>
           **JS:**
           <ul>
-            <li>`assign-to-constant`</li>
-            <li>`assign-to-import`</li>
-            <li>`call-import-namespace`</li>
-            <li>`commonjs-variable-in-esm`</li>
-            <li>`delete-super-property`</li>
-            <li>`direct-eval`</li>
-            <li>`duplicate-case`</li>
-            <li>`duplicate-object-key`</li>
-            <li>`empty-import-meta`</li>
-            <li>`equals-nan`</li>
-            <li>`equals-negative-zero`</li>
-            <li>`equals-new-object`</li>
-            <li>`html-comment-in-js`</li>
-            <li>`impossible-typeof`</li>
-            <li>`indirect-require`</li>
-            <li>`private-name-will-throw`</li>
-            <li>`semicolon-after-return`</li>
-            <li>`suspicious-boolean-not`</li>
-            <li>`this-is-undefined-in-esm`</li>
-            <li>`unsupported-dynamic-import`</li>
-            <li>`unsupported-jsx-comment`</li>
-            <li>`unsupported-regexp`</li>
-            <li>`unsupported-require-call`</li>
+            <li><details><summary>`assign-to-constant`</summary><pre>{{ FORMAT_MESSAGES('const foo = 1; foo = 2', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`assign-to-import`</summary><pre>{{ FORMAT_MESSAGES('import foo from "foo"; foo = null', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`call-import-namespace`</summary><pre>{{ FORMAT_MESSAGES('import * as foo from "foo"; foo()', { sourcefile: 'example.js', format: 'esm' }) }}</pre></details></li>
+            <li><details><summary>`commonjs-variable-in-esm`</summary><pre>{{ FORMAT_MESSAGES('exports.foo = 1; export let bar = 2', { sourcefile: 'example.js', format: 'esm' }) }}</pre></details></li>
+            <li><details><summary>`delete-super-property`</summary><pre>{{ FORMAT_MESSAGES('class Foo extends Object { foo() { delete super.foo } }', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`duplicate-case`</summary><pre>{{ FORMAT_MESSAGES('switch (foo) { case 1: return 1; case 1: return 2 }', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`duplicate-object-key`</summary><pre>{{ FORMAT_MESSAGES('foo = { bar: 1, bar: 2 }', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`empty-import-meta`</summary><pre>{{ FORMAT_MESSAGES('foo = import.meta', { sourcefile: 'example.js', target: 'chrome50' }) }}</pre></details></li>
+            <li><details><summary>`equals-nan`</summary><pre>{{ FORMAT_MESSAGES('foo = foo.filter(x => x !== NaN)', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`equals-negative-zero`</summary><pre>{{ FORMAT_MESSAGES('foo = foo.filter(x => x !== -0)', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`equals-new-object`</summary><pre>{{ FORMAT_MESSAGES('foo = foo.filter(x => x !== [])', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`html-comment-in-js`</summary><pre>{{ FORMAT_MESSAGES('<!-- comment -->', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`impossible-typeof`</summary><pre>{{ FORMAT_MESSAGES('foo = foo.map(x => typeof x !== "null")', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`indirect-require`</summary><pre>{{ FORMAT_MESSAGES('let r = require, fs = r("fs")', { sourcefile: 'example.js', bundle: true, logOverride: { 'indirect-require': 'warning' } }) }}</pre></details></li>
+            <li><details><summary>`private-name-will-throw`</summary><pre>{{ FORMAT_MESSAGES('class Foo { get #foo() {} bar() { this.#foo++ } }', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`semicolon-after-return`</summary><pre>{{ FORMAT_MESSAGES('return\nx', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`suspicious-boolean-not`</summary><pre>{{ FORMAT_MESSAGES('if (!foo in bar) {\n}', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`this-is-undefined-in-esm`</summary><pre>{{ FORMAT_MESSAGES('this.foo = 1; export let bar = 2', { sourcefile: 'example.js', bundle: true }) }}</pre></details></li>
+            <li><details><summary>`unsupported-dynamic-import`</summary><pre>{{ FORMAT_MESSAGES('import(foo)', { sourcefile: 'example.js', bundle: true, logOverride: { 'unsupported-dynamic-import': 'warning' } }) }}</pre></details></li>
+            <li><details><summary>`unsupported-jsx-comment`</summary><pre>{{ FORMAT_MESSAGES('// @jsx 123', { sourcefile: 'example.jsx', loader: 'jsx' }) }}</pre></details></li>
+            <li><details><summary>`unsupported-regexp`</summary><pre>{{ FORMAT_MESSAGES('/./d', { sourcefile: 'example.js', target: 'chrome50', logOverride: { 'unsupported-regexp': 'warning' } }) }}</pre></details></li>
+            <li><details><summary>`unsupported-require-call`</summary><pre>{{ FORMAT_MESSAGES('require(foo)', { sourcefile: 'example.js', bundle: true, logOverride: { 'unsupported-require-call': 'warning' } }) }}</pre></details></li>
           </ul>
           <br>
         </li>
@@ -4711,16 +4693,16 @@ body:
         <li>
           **CSS:**
           <ul>
-            <li>`css-syntax-error`</li>
-            <li>`invalid-@charset`</li>
-            <li>`invalid-@import`</li>
-            <li>`invalid-@nest`</li>
-            <li>`invalid-@layer`</li>
-            <li>`invalid-calc`</li>
-            <li>`js-comment-in-css`</li>
-            <li>`unsupported-@charset`</li>
-            <li>`unsupported-@namespace`</li>
-            <li>`unsupported-css-property`</li>
+            <li><details><summary>`css-syntax-error`</summary><pre>{{ FORMAT_MESSAGES('div[] {\n}', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
+            <li><details><summary>`invalid-@charset`</summary><pre>{{ FORMAT_MESSAGES('div { color: red } @charset "UTF-8";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
+            <li><details><summary>`invalid-@import`</summary><pre>{{ FORMAT_MESSAGES('div { color: red } @import "foo.css";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
+            <li><details><summary>`invalid-@nest`</summary><pre>{{ FORMAT_MESSAGES('& div {\n}', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
+            <li><details><summary>`invalid-@layer`</summary><pre>{{ FORMAT_MESSAGES('@layer initial {\n}', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
+            <li><details><summary>`invalid-calc`</summary><pre>{{ FORMAT_MESSAGES('div { z-index: calc(-(1+2)); }', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
+            <li><details><summary>`js-comment-in-css`</summary><pre>{{ FORMAT_MESSAGES('// comment', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
+            <li><details><summary>`unsupported-@charset`</summary><pre>{{ FORMAT_MESSAGES('@charset "ASCII";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
+            <li><details><summary>`unsupported-@namespace`</summary><pre>{{ FORMAT_MESSAGES('@namespace "ns";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
+            <li><details><summary>`unsupported-css-property`</summary><pre>{{ FORMAT_MESSAGES('div { widht: 1px }', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
           </ul>
           <br>
         </li>
