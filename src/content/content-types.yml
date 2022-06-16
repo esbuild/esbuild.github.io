@@ -1384,9 +1384,9 @@ body:
             Loader: map[string]api.Loader{
               ".json": api.LoaderCopy,
             },
-            Outdir:       "out",
-            Write:        true,
-            OutputFormat: api.FormatESM,
+            Outdir: "out",
+            Write:  true,
+            Format: api.FormatESModule,
           })
 
           if len(result.Errors) > 0 {
