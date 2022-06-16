@@ -1255,6 +1255,12 @@ body:
         }
 
   - h2: External file
+  - p: >
+      There are two different loaders that can be used for external files
+      depending on the behavior you're looking for. Both loaders are
+      described below:
+
+  - h4#file: The `file` loader
   - p: 'Loader: `file`'
 
   - p: >
@@ -1269,8 +1275,10 @@ body:
       document.body.appendChild(image)
 
   - p: >
-      Note that this loader is not enabled by default. You will need to
-      configure it for the appropriate file extension like this:
+      This behavior is intentionally similar to Webpack's
+      [`file-loader`](https://v4.webpack.js.org/loaders/file-loader/)
+      package. Note that this loader is not enabled by default. You will need
+      to configure it for the appropriate file extension like this:
 
   - example:
       in:
@@ -1319,3 +1327,81 @@ body:
       By default the exported string is just the file name. If you would like to
       prepend a base path to the exported string, this can be done with the
       [public path](/api/#public-path) API option.
+
+  - h4#copy: The `copy` loader
+  - p: 'Loader: `copy`'
+
+  - p: >
+      This loader will copy the file to the output directory and rewrite the
+      import path to point to the copied file. This means the import will still
+      exist in the final bundle and the final bundle will still reference the
+      file instead of including the file inside the bundle. This might be useful
+      if you are running additional bundling tools on esbuild's output, if you
+      want to omit a rarely-used data file from the bundle for faster startup
+      performance, or if you want to rely on specific behavior of your runtime
+      that's triggered by an import. For example:
+
+  - pre.js: |
+      import json from './example.json' assert { type: 'json' }
+      console.log(json)
+
+  - p: >
+      If you bundle the above code with the following command:
+
+  - example:
+      in:
+        app.js: |
+          import json from './example.json' assert { type: 'json' }
+          console.log(json)
+        example.json: |
+          'this is some data'
+
+      cli: |
+        esbuild app.js --bundle --loader:.json=copy --outdir=out --format=esm
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          loader: { '.json': 'copy' },
+          outdir: 'out',
+          format: 'esm',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Loader: map[string]api.Loader{
+              ".json": api.LoaderCopy,
+            },
+            Outdir:       "out",
+            Write:        true,
+            OutputFormat: api.FormatESM,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      the resulting `out/app.js` file might look something like this:
+
+  - pre.js: |
+      // app.js
+      import json from "./example-PVCBWCM4.json" assert { type: "json" };
+      console.log(json);
+
+  - p: >
+      Notice how the import path has been rewritten to point to the copied file
+      `out/example-PVCBWCM4.json` (a content hash has been added due to the
+      default value of the [asset names](/api/#asset-names) setting), and how
+      the [import assertion](https://v8.dev/features/import-assertions) for JSON
+      has been kept so the runtime will be able to load the JSON file.
