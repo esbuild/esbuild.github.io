@@ -620,9 +620,9 @@ image.src = url
     Loader: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]api.Loader{
       <span class="hljs-string">&quot;.json&quot;</span>: api.LoaderCopy,
     },
-    Outdir:       <span class="hljs-string">&quot;out&quot;</span>,
-    Write:        <span class="hljs-literal">true</span>,
-    OutputFormat: api.FormatESM,
+    Outdir: <span class="hljs-string">&quot;out&quot;</span>,
+    Write:  <span class="hljs-literal">true</span>,
+    Format: api.FormatESModule,
   })
 
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
