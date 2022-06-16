@@ -564,6 +564,8 @@ body:
 
   - ul:
     - >
+      [`alwaysStrict`](https://www.typescriptlang.org/tsconfig#alwaysStrict)
+    - >
       [`baseUrl`](https://www.typescriptlang.org/tsconfig#baseUrl)
     - >
       [`extends`](https://www.typescriptlang.org/tsconfig#extends)
