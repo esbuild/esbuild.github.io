@@ -95,6 +95,7 @@ body:
     - Loader
     - Log level
     - Log limit
+    - Log override
     - Mangle props
     - Minify
     - Pure
@@ -197,6 +198,7 @@ body:
     - Loader
     - Log level
     - Log limit
+    - Log override
     - Main fields
     - Mangle props
     - Metafile
@@ -4611,6 +4613,158 @@ body:
             os.Exit(1)
           }
         }
+
+  - h3: Log override
+
+  - p: >
+      This feature lets you change the log level of individual types of log
+      messages. You can use it to silence a particular type of warning, to
+      enable additional warnings that aren't enabled by default, or even to
+      turn warnings into errors.
+
+  - p: >
+      For example, when targeting older browsers, esbuild automatically
+      transforms regular expression literals which use features that are
+      too new for those browsers into <code>new <wbr>RegExp()</code> calls
+      to allow the generated code to run without being considered a syntax
+      error by the browser. However, these calls will still throw at runtime
+      if you don't add a polyfill for `RegExp` because that regular
+      expression syntax is still unsupported. If you want esbuild to generate
+      a warning when you use newer unsupported regular expression syntax, you
+      can do that like this:
+
+  - example:
+      in:
+        app.js: '/./d'
+
+      cli: |
+        esbuild app.js --log-override:unsupported-regexp=warning --target=chrome50
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          logOverride: {
+            'unsupported-regexp': 'warning',
+          },
+          target: 'chrome50',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            LogOverride: map[string]api.LogLevel{
+              "unsupported-regexp": api.LogLevelWarning,
+            },
+            Engines: []api.Engine{
+              {Name: api.EngineChrome, Version: "50"},
+            },
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      The log level for each message type can be overridden to any value
+      supported by the [log level](/api/#log-level) setting. All
+      currently-available message types are listed below:
+
+  - p: >
+      <ul>
+        <li>
+          **JS:**
+          <ul>
+            <li>`assign-to-constant`</li>
+            <li>`assign-to-import`</li>
+            <li>`call-import-namespace`</li>
+            <li>`commonjs-variable-in-esm`</li>
+            <li>`delete-super-property`</li>
+            <li>`direct-eval`</li>
+            <li>`duplicate-case`</li>
+            <li>`duplicate-object-key`</li>
+            <li>`empty-import-meta`</li>
+            <li>`equals-nan`</li>
+            <li>`equals-negative-zero`</li>
+            <li>`equals-new-object`</li>
+            <li>`html-comment-in-js`</li>
+            <li>`impossible-typeof`</li>
+            <li>`indirect-require`</li>
+            <li>`private-name-will-throw`</li>
+            <li>`semicolon-after-return`</li>
+            <li>`suspicious-boolean-not`</li>
+            <li>`this-is-undefined-in-esm`</li>
+            <li>`unsupported-dynamic-import`</li>
+            <li>`unsupported-jsx-comment`</li>
+            <li>`unsupported-regexp`</li>
+            <li>`unsupported-require-call`</li>
+          </ul>
+          <br>
+        </li>
+
+        <li>
+          **CSS:**
+          <ul>
+            <li>`css-syntax-error`</li>
+            <li>`invalid-@charset`</li>
+            <li>`invalid-@import`</li>
+            <li>`invalid-@nest`</li>
+            <li>`invalid-@layer`</li>
+            <li>`invalid-calc`</li>
+            <li>`js-comment-in-css`</li>
+            <li>`unsupported-@charset`</li>
+            <li>`unsupported-@namespace`</li>
+            <li>`unsupported-css-property`</li>
+          </ul>
+          <br>
+        </li>
+
+        <li>
+          **Bundler:**
+          <ul>
+            <li>`ambiguous-reexport`</li>
+            <li>`different-path-case`</li>
+            <li>`ignored-bare-import`</li>
+            <li>`ignored-dynamic-import`</li>
+            <li>`import-is-undefined`</li>
+            <li>`require-resolve-not-external`</li>
+          </ul>
+          <br>
+        </li>
+
+        <li>
+          **Source maps:**
+          <ul>
+            <li>`invalid-source-mappings`</li>
+            <li>`sections-in-source-map`</li>
+            <li>`missing-source-map`</li>
+            <li>`unsupported-source-map-comment`</li>
+          </ul>
+          <br>
+        </li>
+
+        <li>
+          **Resolver:**
+          <ul>
+            <li>`package.json`</li>
+            <li>`tsconfig.json`</li>
+          </ul>
+          <br>
+        </li>
+      </ul>
+
+  - p: >
+      These message
+      types should be reasonably stable but new ones may be added and old
+      ones may occasionally be removed in the future. If a message type
+      is removed, any overrides for that message type will just be
+      silently ignored.
 
   - h3: Main fields
 
