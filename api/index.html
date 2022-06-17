@@ -2354,12 +2354,56 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 <li>
 <strong>Bundler:</strong>
 <ul>
-<li><code>ambiguous-reexport</code></li>
-<li><code>different-path-case</code></li>
-<li><code>ignored-bare-import</code></li>
-<li><code>ignored-dynamic-import</code></li>
-<li><code>import-is-undefined</code></li>
-<li><code>require-resolve-not-external</code></li>
+<li><details><summary><code>ambiguous-reexport</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Re-export of "foo" in "example.js" is ambiguous and has been removed</span><span> [ambiguous-reexport]
+
+  One definition of "foo" comes from "a.js" here:
+
+    a.js:1:11:
+</span><span class="color-dim">      1 │ export let </span><span class="color-green">foo</span><span class="color-dim"> = 1
+        ╵            </span><span class="color-green">~~~</span><span>
+
+  Another definition of "foo" comes from "b.js" here:
+
+    b.js:1:11:
+</span><span class="color-dim">      1 │ export let </span><span class="color-green">foo</span><span class="color-dim"> = 2
+        ╵            </span><span class="color-green">~~~</span><span></span></pre></details></li>
+<li><details><summary><code>different-path-case</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Use "foo.js" instead of "Foo.js" to avoid issues with case-sensitive file systems</span><span> [different-path-case]
+
+    example.js:2:7:
+</span><span class="color-dim">      2 │ import </span><span class="color-green">"./Foo.js"</span><span class="color-dim">
+        ╵        </span><span class="color-green">~~~~~~~~~~</span><span></span></pre></details></li>
+<li><details><summary><code>ignored-bare-import</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Ignoring this import because "node_modules/foo/index.js" was marked as having no side effects</span><span> [ignored-bare-import]
+
+    example.js:1:7:
+</span><span class="color-dim">      1 │ import </span><span class="color-green">"foo"</span><span class="color-dim">
+        ╵        </span><span class="color-green">~~~~~</span><span>
+
+  "sideEffects" is false in the enclosing "package.json" file
+
+    node_modules/foo/package.json:2:2:
+</span><span class="color-dim">      2 │   </span><span class="color-green">"sideEffects"</span><span class="color-dim">: false
+        ╵   </span><span class="color-green">~~~~~~~~~~~~~</span><span></span></pre></details></li>
+<li><details><summary><code>ignored-dynamic-import</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Importing "foo" was allowed even though it could not be resolved because dynamic import failures appear to be handled here:</span><span> [ignored-dynamic-import]
+
+    example.js:1:7:
+</span><span class="color-dim">      1 │ import(</span><span class="color-green">"foo"</span><span class="color-dim">).catch(e =&gt; {
+        ╵        </span><span class="color-green">~~~~~</span><span>
+
+  The handler for dynamic import failures is here:
+
+    example.js:1:14:
+</span><span class="color-dim">      1 │ import("foo").</span><span class="color-green">catch</span><span class="color-dim">(e =&gt; {
+        ╵               </span><span class="color-green">~~~~~</span><span></span></pre></details></li>
+<li><details><summary><code>import-is-undefined</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Import "foo" will always be undefined because the file "foo.js" has no exports</span><span> [import-is-undefined]
+
+    example.js:1:9:
+</span><span class="color-dim">      1 │ import { </span><span class="color-green">foo</span><span class="color-dim"> } from "./foo"
+        ╵          </span><span class="color-green">~~~</span><span></span></pre></details></li>
+<li><details><summary><code>require-resolve-not-external</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"foo" should be marked as external for use with "require.resolve"</span><span> [require-resolve-not-external]
+
+    example.js:1:26:
+</span><span class="color-dim">      1 │ let foo = require.resolve(</span><span class="color-green">"foo"</span><span class="color-dim">)
+        ╵                           </span><span class="color-green">~~~~~</span><span></span></pre></details></li>
 </ul>
 <br>
 </li>
@@ -2367,10 +2411,26 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 <li>
 <strong>Source maps:</strong>
 <ul>
-<li><code>invalid-source-mappings</code></li>
-<li><code>sections-in-source-map</code></li>
-<li><code>missing-source-map</code></li>
-<li><code>unsupported-source-map-comment</code></li>
+<li><details><summary><code>invalid-source-mappings</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Bad "mappings" data in source map at character 3: Invalid original column value: -2</span><span> [invalid-source-mappings]
+
+    example.js.map:2:18:
+</span><span class="color-dim">      2 │   "mappings": "aAA</span><span class="color-green">F</span><span class="color-dim">A,UAAU;;"
+        ╵                   </span><span class="color-green">^</span><span></span></pre></details></li>
+<li><details><summary><code>sections-in-source-map</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Source maps with "sections" are not supported</span><span> [sections-in-source-map]
+
+    example.js.map:2:2:
+</span><span class="color-dim">      2 │   </span><span class="color-green">"sections"</span><span class="color-dim">: []
+        ╵   </span><span class="color-green">~~~~~~~~~~</span><span></span></pre></details></li>
+<li><details><summary><code>missing-source-map</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Cannot read file ".": is a directory</span><span> [missing-source-map]
+
+    example.js:1:21:
+</span><span class="color-dim">      1 │ //# sourceMappingURL=</span><span class="color-green">.</span><span class="color-dim">
+        ╵                      </span><span class="color-green">^</span><span></span></pre></details></li>
+<li><details><summary><code>unsupported-source-map-comment</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Unsupported source map comment: could not decode percent-escaped data: invalid URL escape "%\""</span><span> [unsupported-source-map-comment]
+
+    example.js:1:21:
+</span><span class="color-dim">      1 │ //# sourceMappingURL=</span><span class="color-green">data:application/json,"%"</span><span class="color-dim">
+        ╵                      </span><span class="color-green">~~~~~~~~~~~~~~~~~~~~~~~~~</span><span></span></pre></details></li>
 </ul>
 <br>
 </li>
@@ -2378,8 +2438,18 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 <li>
 <strong>Resolver:</strong>
 <ul>
-<li><code>package.json</code></li>
-<li><code>tsconfig.json</code></li>
+<li><details><summary><code>package.json</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"esm" is not a valid value for the "type" field</span><span> [package.json]
+
+    package.json:1:10:
+</span><span class="color-dim">      1 │ { "type": </span><span class="color-green">"esm"</span><span class="color-dim"> }
+        ╵           </span><span class="color-green">~~~~~</span><span>
+
+  The "type" field must be set to either "commonjs" or "module".</span></pre></details></li>
+<li><details><summary><code>tsconfig.json</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Unrecognized target environment "ES4"</span><span> [tsconfig.json]
+
+    tsconfig.json:1:33:
+</span><span class="color-dim">      1 │ { "compilerOptions": { "target": </span><span class="color-green">"ES4"</span><span class="color-dim"> } }
+        ╵                                  </span><span class="color-green">~~~~~</span><span></span></pre></details></li>
 </ul>
 <br>
 </li>
