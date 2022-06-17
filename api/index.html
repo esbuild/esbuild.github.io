@@ -1530,7 +1530,7 @@ esbuild.serve({
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
     os.Exit(<span class="hljs-number">1</span>)
   }
-}</pre><p>There are three placeholders that can be used in chunk path templates:</p><ul><li><code>[name]</code> <p> This will currently always be the text <code>chunk</code>, although this placeholder may take on additional values in future releases. </p></li><li><code>[hash]</code> <p> This is the content hash of the chunk. Including this is necessary to distinguish different chunks from each other in the case where multiple chunks of shared code are generated. </p></li><li><code>[ext]</code> <p> This is the file extension of the chunk (i.e. everything after the end of the last <code>.</code> character). It can be used to put different types of chunks into different directories. For example, <code>--chunk-names=<wbr>chunks/<wbr>[ext]/<wbr>[name]-[hash]</code> might write out a chunk as <code>chunks/<wbr>css/<wbr>chunk-DEFJT7KY.css</code>. </p></li></ul><p>Chunk path templates do not need to include a file extension. The configured <a href="#out-extension">out extension</a> for the appropriate content type will be automatically added to the end of the output path after template substitution.</p><p>Note that this option only controls the names for automatically-generated chunks of shared code. It does <em>not</em> control the names for output files related to entry points. The names of these are currently determined from the path of the original entry point file relative to the <a href="#outbase">outbase</a> directory, and this behavior cannot be changed. An additional API option will be added in the future to let you change the file names of entry point output files.</p><p>This option is similar to the <a href="#asset-names">asset names</a> and <a href="#entry-names">entry names</a> options.</p><h3 id="color"><a class="permalink" href="#color">#</a>Color</h3><p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p><p>This option enables or disables colors in the error and warning messages that esbuild writes to stderr file descriptor in the terminal. By default, color is automatically enabled if stderr is a TTY session and automatically disabled otherwise. Colored output in esbuild looks like this:</p><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The "typeof" operator will never evaluate to "null"</span><span>
+}</pre><p>There are three placeholders that can be used in chunk path templates:</p><ul><li><code>[name]</code> <p> This will currently always be the text <code>chunk</code>, although this placeholder may take on additional values in future releases. </p></li><li><code>[hash]</code> <p> This is the content hash of the chunk. Including this is necessary to distinguish different chunks from each other in the case where multiple chunks of shared code are generated. </p></li><li><code>[ext]</code> <p> This is the file extension of the chunk (i.e. everything after the end of the last <code>.</code> character). It can be used to put different types of chunks into different directories. For example, <code>--chunk-names=<wbr>chunks/<wbr>[ext]/<wbr>[name]-[hash]</code> might write out a chunk as <code>chunks/<wbr>css/<wbr>chunk-DEFJT7KY.css</code>. </p></li></ul><p>Chunk path templates do not need to include a file extension. The configured <a href="#out-extension">out extension</a> for the appropriate content type will be automatically added to the end of the output path after template substitution.</p><p>Note that this option only controls the names for automatically-generated chunks of shared code. It does <em>not</em> control the names for output files related to entry points. The names of these are currently determined from the path of the original entry point file relative to the <a href="#outbase">outbase</a> directory, and this behavior cannot be changed. An additional API option will be added in the future to let you change the file names of entry point output files.</p><p>This option is similar to the <a href="#asset-names">asset names</a> and <a href="#entry-names">entry names</a> options.</p><h3 id="color"><a class="permalink" href="#color">#</a>Color</h3><p><i>Supported by: <a href="#transform-api">Transform</a> | <a href="#build-api">Build</a></i></p><p>This option enables or disables colors in the error and warning messages that esbuild writes to stderr file descriptor in the terminal. By default, color is automatically enabled if stderr is a TTY session and automatically disabled otherwise. Colored output in esbuild looks like this:</p><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The "typeof" operator will never evaluate to "null"</span><span> [impossible-typeof]
 
     example.js:2:16:
 </span><span class="color-dim">      2 │ log(typeof x == </span><span class="color-green">"null"</span><span class="color-dim">)
@@ -2096,7 +2096,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 <li>
 <strong>JS:</strong>
 <ul>
-<li><details><summary><code>assign-to-constant</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">This assignment will throw because "foo" is a constant</span><span>
+<li><details><summary><code>assign-to-constant</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">This assignment will throw because "foo" is a constant</span><span> [assign-to-constant]
 
     example.js:1:15:
 </span><span class="color-dim">      1 │ const foo = 1; </span><span class="color-green">foo</span><span class="color-dim"> = 2
@@ -2107,7 +2107,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     example.js:1:6:
 </span><span class="color-dim">      1 │ const </span><span class="color-green">foo</span><span class="color-dim"> = 1; foo = 2
         ╵       </span><span class="color-green">~~~</span><span></span></pre></details></li>
-<li><details><summary><code>assign-to-import</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">This assignment will throw because "foo" is an import</span><span>
+<li><details><summary><code>assign-to-import</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">This assignment will throw because "foo" is an import</span><span> [assign-to-import]
 
     example.js:1:23:
 </span><span class="color-dim">      1 │ import foo from "foo"; </span><span class="color-green">foo</span><span class="color-dim"> = null
@@ -2115,7 +2115,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 
   Imports are immutable in JavaScript. To modify the value of this import, you must export a setter
   function in the imported file (e.g. "setFoo") and then import and call that function here instead.</span></pre></details></li>
-<li><details><summary><code>call-import-namespace</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Calling "foo" will crash at run-time because it's an import namespace object, not a function</span><span>
+<li><details><summary><code>call-import-namespace</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Calling "foo" will crash at run-time because it's an import namespace object, not a function</span><span> [call-import-namespace]
 
     example.js:1:28:
 </span><span class="color-dim">      1 │ import * as foo from "foo"; </span><span class="color-green">foo</span><span class="color-dim">()
@@ -2127,7 +2127,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 </span><span class="color-dim">      1 │ import </span><span class="color-green">* as foo</span><span class="color-dim"> from "foo"; foo()
         │        </span><span class="color-green">~~~~~~~~</span><span class="color-dim">
         ╵        </span><span class="color-green">foo</span><span></span></pre></details></li>
-<li><details><summary><code>commonjs-variable-in-esm</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The CommonJS "exports" variable is treated as a global variable in an ECMAScript module and may not work as expected</span><span>
+<li><details><summary><code>commonjs-variable-in-esm</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The CommonJS "exports" variable is treated as a global variable in an ECMAScript module and may not work as expected</span><span> [commonjs-variable-in-esm]
 
     example.js:1:0:
 </span><span class="color-dim">      1 │ </span><span class="color-green">exports</span><span class="color-dim">.foo = 1; export let bar = 2
@@ -2138,12 +2138,12 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     example.js:1:17:
 </span><span class="color-dim">      1 │ exports.foo = 1; </span><span class="color-green">export</span><span class="color-dim"> let bar = 2
         ╵                  </span><span class="color-green">~~~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>delete-super-property</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Attempting to delete a property of "super" will throw a ReferenceError</span><span>
+<li><details><summary><code>delete-super-property</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Attempting to delete a property of "super" will throw a ReferenceError</span><span> [delete-super-property]
 
     example.js:1:42:
 </span><span class="color-dim">      1 │ class Foo extends Object { foo() { delete </span><span class="color-green">super</span><span class="color-dim">.foo } }
         ╵                                           </span><span class="color-green">~~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>duplicate-case</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">This case clause will never be evaluated because it duplicates an earlier case clause</span><span>
+<li><details><summary><code>duplicate-case</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">This case clause will never be evaluated because it duplicates an earlier case clause</span><span> [duplicate-case]
 
     example.js:1:33:
 </span><span class="color-dim">      1 │ switch (foo) { case 1: return 1; </span><span class="color-green">case</span><span class="color-dim"> 1: return 2 }
@@ -2154,7 +2154,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     example.js:1:15:
 </span><span class="color-dim">      1 │ switch (foo) { </span><span class="color-green">case</span><span class="color-dim"> 1: return 1; case 1: return 2 }
         ╵                </span><span class="color-green">~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>duplicate-object-key</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Duplicate key "bar" in object literal</span><span>
+<li><details><summary><code>duplicate-object-key</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Duplicate key "bar" in object literal</span><span> [duplicate-object-key]
 
     example.js:1:16:
 </span><span class="color-dim">      1 │ foo = { bar: 1, </span><span class="color-green">bar</span><span class="color-dim">: 2 }
@@ -2165,12 +2165,12 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     example.js:1:8:
 </span><span class="color-dim">      1 │ foo = { </span><span class="color-green">bar</span><span class="color-dim">: 1, bar: 2 }
         ╵         </span><span class="color-green">~~~</span><span></span></pre></details></li>
-<li><details><summary><code>empty-import-meta</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"import.meta" is not available in the configured target environment ("chrome50") and will be empty</span><span>
+<li><details><summary><code>empty-import-meta</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"import.meta" is not available in the configured target environment ("chrome50") and will be empty</span><span> [empty-import-meta]
 
     example.js:1:6:
 </span><span class="color-dim">      1 │ foo = </span><span class="color-green">import.meta</span><span class="color-dim">
         ╵       </span><span class="color-green">~~~~~~~~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>equals-nan</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Comparison with NaN using the "!==" operator here is always true</span><span>
+<li><details><summary><code>equals-nan</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Comparison with NaN using the "!==" operator here is always true</span><span> [equals-nan]
 
     example.js:1:24:
 </span><span class="color-dim">      1 │ foo = foo.filter(x =&gt; x </span><span class="color-green">!==</span><span class="color-dim"> NaN)
@@ -2178,7 +2178,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 
   Floating-point equality is defined such that NaN is never equal to anything, so "x === NaN" always
   returns false. You need to use "isNaN(x)" instead to test for NaN.</span></pre></details></li>
-<li><details><summary><code>equals-negative-zero</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Comparison with -0 using the "!==" operator will also match 0</span><span>
+<li><details><summary><code>equals-negative-zero</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Comparison with -0 using the "!==" operator will also match 0</span><span> [equals-negative-zero]
 
     example.js:1:28:
 </span><span class="color-dim">      1 │ foo = foo.filter(x =&gt; x !== </span><span class="color-green">-0</span><span class="color-dim">)
@@ -2186,7 +2186,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 
   Floating-point equality is defined such that 0 and -0 are equal, so "x === -0" returns true for
   both 0 and -0. You need to use "Object.is(x, -0)" instead to test for -0.</span></pre></details></li>
-<li><details><summary><code>equals-new-object</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Comparison using the "!==" operator here is always true</span><span>
+<li><details><summary><code>equals-new-object</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Comparison using the "!==" operator here is always true</span><span> [equals-new-object]
 
     example.js:1:24:
 </span><span class="color-dim">      1 │ foo = foo.filter(x =&gt; x </span><span class="color-green">!==</span><span class="color-dim"> [])
@@ -2196,12 +2196,12 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   object identity. You need to write code to compare the contents of the object instead. For
   example, use "Array.isArray(x) &amp;&amp; x.length === 0" instead of "x === []" to test for an empty
   array.</span></pre></details></li>
-<li><details><summary><code>html-comment-in-js</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Treating "&lt;!--" as the start of a legacy HTML single-line comment</span><span>
+<li><details><summary><code>html-comment-in-js</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Treating "&lt;!--" as the start of a legacy HTML single-line comment</span><span> [html-comment-in-js]
 
     example.js:1:0:
 </span><span class="color-dim">      1 │ </span><span class="color-green">&lt;!--</span><span class="color-dim"> comment --&gt;
         ╵ </span><span class="color-green">~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>impossible-typeof</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The "typeof" operator will never evaluate to "null"</span><span>
+<li><details><summary><code>impossible-typeof</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The "typeof" operator will never evaluate to "null"</span><span> [impossible-typeof]
 
     example.js:1:32:
 </span><span class="color-dim">      1 │ foo = foo.map(x =&gt; typeof x !== </span><span class="color-green">"null"</span><span class="color-dim">)
@@ -2209,22 +2209,22 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 
   The expression "typeof x" actually evaluates to "object" in JavaScript, not "null". You need to
   use "x === null" to test for null.</span></pre></details></li>
-<li><details><summary><code>indirect-require</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Indirect calls to "require" will not be bundled</span><span>
+<li><details><summary><code>indirect-require</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Indirect calls to "require" will not be bundled</span><span> [indirect-require]
 
     example.js:1:8:
 </span><span class="color-dim">      1 │ let r = </span><span class="color-green">require</span><span class="color-dim">, fs = r("fs")
         ╵         </span><span class="color-green">~~~~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>private-name-will-throw</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Writing to getter-only property "#foo" will throw</span><span>
+<li><details><summary><code>private-name-will-throw</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Writing to getter-only property "#foo" will throw</span><span> [private-name-will-throw]
 
     example.js:1:39:
 </span><span class="color-dim">      1 │ class Foo { get #foo() {} bar() { this.</span><span class="color-green">#foo</span><span class="color-dim">++ } }
         ╵                                        </span><span class="color-green">~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>semicolon-after-return</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The following expression is not returned because of an automatically-inserted semicolon</span><span>
+<li><details><summary><code>semicolon-after-return</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The following expression is not returned because of an automatically-inserted semicolon</span><span> [semicolon-after-return]
 
     example.js:1:6:
 </span><span class="color-dim">      1 │ return</span><span class="color-green"></span><span class="color-dim">
         ╵       </span><span class="color-green">^</span><span></span></pre></details></li>
-<li><details><summary><code>suspicious-boolean-not</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Suspicious use of the "!" operator inside the "in" operator</span><span>
+<li><details><summary><code>suspicious-boolean-not</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Suspicious use of the "!" operator inside the "in" operator</span><span> [suspicious-boolean-not]
 
     example.js:1:4:
 </span><span class="color-dim">      1 │ if (</span><span class="color-green">!foo</span><span class="color-dim"> in bar) {
@@ -2233,7 +2233,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 
   The code "!x in y" is parsed as "(!x) in y". You need to insert parentheses to get "!(x in y)"
   instead.</span></pre></details></li>
-<li><details><summary><code>this-is-undefined-in-esm</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Top-level "this" will be replaced with undefined since this file is an ECMAScript module</span><span>
+<li><details><summary><code>this-is-undefined-in-esm</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Top-level "this" will be replaced with undefined since this file is an ECMAScript module</span><span> [this-is-undefined-in-esm]
 
     example.js:1:0:
 </span><span class="color-dim">      1 │ </span><span class="color-green">this</span><span class="color-dim">.foo = 1; export let bar = 2
@@ -2245,17 +2245,17 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     example.js:1:14:
 </span><span class="color-dim">      1 │ this.foo = 1; </span><span class="color-green">export</span><span class="color-dim"> let bar = 2
         ╵               </span><span class="color-green">~~~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>unsupported-dynamic-import</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">This "import" expression will not be bundled because the argument is not a string literal</span><span>
+<li><details><summary><code>unsupported-dynamic-import</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">This "import" expression will not be bundled because the argument is not a string literal</span><span> [unsupported-dynamic-import]
 
     example.js:1:0:
 </span><span class="color-dim">      1 │ </span><span class="color-green">import</span><span class="color-dim">(foo)
         ╵ </span><span class="color-green">~~~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>unsupported-jsx-comment</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Invalid JSX factory: 123</span><span>
+<li><details><summary><code>unsupported-jsx-comment</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Invalid JSX factory: 123</span><span> [unsupported-jsx-comment]
 
     example.jsx:1:8:
 </span><span class="color-dim">      1 │ // @jsx </span><span class="color-green">123</span><span class="color-dim">
         ╵         </span><span class="color-green">~~~</span><span></span></pre></details></li>
-<li><details><summary><code>unsupported-regexp</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The regular expression flag "d" is not available in the configured target environment ("chrome50")</span><span>
+<li><details><summary><code>unsupported-regexp</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The regular expression flag "d" is not available in the configured target environment ("chrome50")</span><span> [unsupported-regexp]
 
     example.js:1:3:
 </span><span class="color-dim">      1 │ /./</span><span class="color-green">d</span><span class="color-dim">
@@ -2264,7 +2264,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   This regular expression literal has been converted to a "new RegExp()" constructor to avoid
   generating code with a syntax error. However, you will need to include a polyfill for "RegExp" for
   your code to have the correct behavior at run-time.</span></pre></details></li>
-<li><details><summary><code>unsupported-require-call</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">This call to "require" will not be bundled because the argument is not a string literal</span><span>
+<li><details><summary><code>unsupported-require-call</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">This call to "require" will not be bundled because the argument is not a string literal</span><span> [unsupported-require-call]
 
     example.js:1:0:
 </span><span class="color-dim">      1 │ </span><span class="color-green">require</span><span class="color-dim">(foo)
@@ -2276,12 +2276,12 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 <li>
 <strong>CSS:</strong>
 <ul>
-<li><details><summary><code>css-syntax-error</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Expected identifier but found "]"</span><span>
+<li><details><summary><code>css-syntax-error</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Expected identifier but found "]"</span><span> [css-syntax-error]
 
     example.css:1:4:
 </span><span class="color-dim">      1 │ div[</span><span class="color-green">]</span><span class="color-dim"> {
         ╵     </span><span class="color-green">^</span><span></span></pre></details></li>
-<li><details><summary><code>invalid-@charset</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"@charset" must be the first rule in the file</span><span>
+<li><details><summary><code>invalid-@charset</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"@charset" must be the first rule in the file</span><span> [invalid-@charset]
 
     example.css:1:19:
 </span><span class="color-dim">      1 │ div { color: red } </span><span class="color-green">@charset</span><span class="color-dim"> "UTF-8";
@@ -2292,7 +2292,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     example.css:1:0:
 </span><span class="color-dim">      1 │ </span><span class="color-green"></span><span class="color-dim">div { color: red } @charset "UTF-8";
         ╵ </span><span class="color-green">^</span><span></span></pre></details></li>
-<li><details><summary><code>invalid-@import</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">All "@import" rules must come first</span><span>
+<li><details><summary><code>invalid-@import</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">All "@import" rules must come first</span><span> [invalid-@import]
 
     example.css:1:19:
 </span><span class="color-dim">      1 │ div { color: red } </span><span class="color-green">@import</span><span class="color-dim"> "foo.css";
@@ -2303,43 +2303,43 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     example.css:1:0:
 </span><span class="color-dim">      1 │ </span><span class="color-green"></span><span class="color-dim">div { color: red } @import "foo.css";
         ╵ </span><span class="color-green">^</span><span></span></pre></details></li>
-<li><details><summary><code>invalid-@nest</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">CSS nesting syntax cannot be used outside of a style rule</span><span>
+<li><details><summary><code>invalid-@nest</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">CSS nesting syntax cannot be used outside of a style rule</span><span> [invalid-@nest]
 
     example.css:1:0:
 </span><span class="color-dim">      1 │ </span><span class="color-green">&amp;</span><span class="color-dim"> div {
         ╵ </span><span class="color-green">^</span><span></span></pre></details></li>
-<li><details><summary><code>invalid-@layer</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"initial" cannot be used as a layer name</span><span>
+<li><details><summary><code>invalid-@layer</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"initial" cannot be used as a layer name</span><span> [invalid-@layer]
 
     example.css:1:7:
 </span><span class="color-dim">      1 │ @layer </span><span class="color-green">initial</span><span class="color-dim"> {
         ╵        </span><span class="color-green">~~~~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>invalid-calc</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"-" can only be used as an infix operator, not a prefix operator</span><span>
+<li><details><summary><code>invalid-calc</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"-" can only be used as an infix operator, not a prefix operator</span><span> [invalid-calc]
 
     example.css:1:20:
 </span><span class="color-dim">      1 │ div { z-index: calc(</span><span class="color-green">-</span><span class="color-dim">(1+2)); }
         ╵                     </span><span class="color-green">^</span><span>
 
-</span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The "+" operator only works if there is whitespace on both sides</span><span>
+</span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">The "+" operator only works if there is whitespace on both sides</span><span> [invalid-calc]
 
     example.css:1:23:
 </span><span class="color-dim">      1 │ div { z-index: calc(-(1</span><span class="color-green">+</span><span class="color-dim">2)); }
         ╵                        </span><span class="color-green">^</span><span></span></pre></details></li>
-<li><details><summary><code>js-comment-in-css</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Comments in CSS use "/* ... */" instead of "//"</span><span>
+<li><details><summary><code>js-comment-in-css</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Comments in CSS use "/* ... */" instead of "//"</span><span> [js-comment-in-css]
 
     example.css:1:0:
 </span><span class="color-dim">      1 │ </span><span class="color-green">//</span><span class="color-dim"> comment
         ╵ </span><span class="color-green">~~</span><span></span></pre></details></li>
-<li><details><summary><code>unsupported-@charset</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"UTF-8" will be used instead of unsupported charset "ASCII"</span><span>
+<li><details><summary><code>unsupported-@charset</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"UTF-8" will be used instead of unsupported charset "ASCII"</span><span> [unsupported-@charset]
 
     example.css:1:9:
 </span><span class="color-dim">      1 │ @charset </span><span class="color-green">"ASCII"</span><span class="color-dim">;
         ╵          </span><span class="color-green">~~~~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>unsupported-@namespace</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"@namespace" rules are not supported</span><span>
+<li><details><summary><code>unsupported-@namespace</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"@namespace" rules are not supported</span><span> [unsupported-@namespace]
 
     example.css:1:0:
 </span><span class="color-dim">      1 │ </span><span class="color-green">@namespace</span><span class="color-dim"> "ns";
         ╵ </span><span class="color-green">~~~~~~~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>unsupported-css-property</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"widht" is not a known CSS property</span><span>
+<li><details><summary><code>unsupported-css-property</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">"widht" is not a known CSS property</span><span> [unsupported-css-property]
 
     example.css:1:6:
 </span><span class="color-dim">      1 │ div { </span><span class="color-green">widht</span><span class="color-dim">: 1px }
