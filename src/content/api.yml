@@ -4713,7 +4713,7 @@ body:
             <li><details><summary>`ambiguous-reexport`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': 'export * from "./a"; export * from "./b"', 'a.js': 'export let foo = 1', 'b.js': 'export let foo = 2' }, { bundle: true, logOverride: { 'ambiguous-reexport': 'warning' } }) }}</pre></details></li>
             <li><details><summary>`different-path-case`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': 'import "./foo.js"\nimport "./Foo.js"', 'foo.js': '' }, { bundle: true }) }}</pre></details></li>
             <li><details><summary>`ignored-bare-import`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': 'import "foo"', 'node_modules/foo/index.js': 'foo', 'node_modules/foo/package.json': '{\n  "sideEffects": false\n}' }, { bundle: true }) }}</pre></details></li>
-            <li><details><summary>`ignored-dynamic-import`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': 'import("foo").catch(e => {\n})' }, { bundle: true, logOverride: { 'ignored-dynamic-import': 'warning' }, logLevel: 'debug' }) }}</pre></details></li>
+            <li><details><summary>`ignored-dynamic-import`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': 'import("foo").catch(e => {\n})' }, { bundle: true, logOverride: { 'ignored-dynamic-import': 'warning' } }) }}</pre></details></li>
             <li><details><summary>`import-is-undefined`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': 'import { foo } from "./foo"', 'foo.js': 'let foo = 1' }, { bundle: true, logOverride: { 'import-is-undefined': 'warning' } }) }}</pre></details></li>
             <li><details><summary>`require-resolve-not-external`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': 'let foo = require.resolve("foo")' }, { bundle: true, format: 'cjs' }) }}</pre></details></li>
           </ul>
