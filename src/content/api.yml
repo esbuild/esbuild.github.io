@@ -103,6 +103,7 @@ body:
     - Sourcefile
     - Sourcemap
     - Sources content
+    - Supported
     - Target
     - Tree shaking
     - Tsconfig raw
@@ -220,6 +221,7 @@ body:
     - Sources content
     - Splitting
     - Stdin
+    - Supported
     - Target
     - Tree shaking
     - Tsconfig
@@ -2565,28 +2567,30 @@ body:
     - '`chrome`'
     - '`edge`'
     - '`firefox`'
+    - '`hermes`'
     - '`ie`'
     - '`ios`'
     - '`node`'
     - '`opera`'
+    - '`rhino`'
     - '`safari`'
 
   - p: >
       In addition, you can also specify JavaScript language versions such as
       `es2020`. The default target is `esnext` which means that by default,
       esbuild will assume all of the latest JavaScript and CSS features are
-      supported. Here is an example that uses all of the available target
-      environment names in esbuild. You don't need to specify all of them;
-      you can just specify the subset of target environments that your project
-      cares about. You can also be more precise about version numbers if you'd
-      like (e.g. `node12.19.0` instead of just `node12`):
+      supported. Here is an example that configures multiple target environments.
+      You don't need to specify all of them; you can just specify the subset
+      of target environments that your project cares about. You can also be more
+      precise about version numbers if you'd like (e.g. `node12.19.0` instead of
+      just `node12`):
 
   - example:
       in:
         app.js: '1 + 2'
 
       cli: |
-        esbuild app.js --target=es2020,chrome58,edge16,firefox57,ie11,ios10,node12,opera45,safari11
+        esbuild app.js --target=es2020,chrome58,edge16,firefox57,node12,safari11
 
       js: |
         require('esbuild').buildSync({
@@ -2596,10 +2600,7 @@ body:
             'chrome58',
             'edge16',
             'firefox57',
-            'ie11',
-            'ios10',
             'node12',
-            'opera45',
             'safari11',
           ],
           outfile: 'out.js',
@@ -2619,10 +2620,7 @@ body:
               {Name: api.EngineChrome, Version: "58"},
               {Name: api.EngineEdge, Version: "16"},
               {Name: api.EngineFirefox, Version: "57"},
-              {Name: api.EngineIE, Version: "11"},
-              {Name: api.EngineIOS, Version: "10"},
               {Name: api.EngineNode, Version: "12"},
-              {Name: api.EngineOpera, Version: "45"},
               {Name: api.EngineSafari, Version: "11"},
             },
             Write: true,
@@ -2647,6 +2645,11 @@ body:
       error where the unsupported syntax is used. This is often the case when
       targeting the `es5` language version, for example, since esbuild only
       supports transforming most newer JavaScript syntax features to `es6`.
+
+  - p: >
+      If you need to customize the set of supported syntax features at the
+      individual feature level in addition to or instead of what `target`
+      provides, you can do that with the [`supported`](#supported) setting.
 
   - h3: Watch
 
@@ -5925,6 +5928,162 @@ body:
             os.Exit(1)
           }
         }
+
+  - h3: Supported
+
+  - p: >
+      This setting lets you customize esbuild's set of unsupported syntax
+      features at the individual syntax feature level. For example, you can use
+      this to tell esbuild that [BigInts](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)
+      are not supported so that esbuild generates an error when you try to use
+      one. Usually this is configured for you when you use the [`target`](#target)
+      setting, which you should typically be using instead of this setting.
+      If the target is specified in addition to this setting, this setting will
+      override whatever is specified by the target.
+
+  - p: >
+      Here are some examples of why you might want to use this setting instead
+      of or in addition to setting the target:
+
+  - ul:
+    - >
+      <p>
+      JavaScript runtimes often do a quick implementation of newer syntax
+      features that is slower than the equivalent older JavaScript, and you
+      can get a speedup by telling esbuild to pretend this syntax feature isn't
+      supported. For example, [V8](https://v8.dev/) has a [long-standing performance bug regarding object spread](https://bugs.chromium.org/p/v8/issues/detail?id=11536)
+      that can be avoided by manually copying properties instead of using
+      object spread syntax. Right now esbuild hard-codes this optimization if
+      you set `target` to a V8-based runtime.
+      </p>
+
+    - >
+      <p>
+      There are many other JavaScript implementations in addition to the ones
+      that esbuild's `target` setting recognizes, and they may not support certain
+      features. If you are targeting such an implementation, you can use this setting
+      to configure esbuild with a custom syntax feature compatibility set without
+      needing to change esbuild itself. For example, [TypeScript's](https://www.typescriptlang.org/) JavaScript
+      parser may not support [arbitrary module namespace identifier names](https://github.com/microsoft/TypeScript/issues/40594)
+      so you may want to turn those off when targeting TypeScript's JavaScript
+      parser.
+      </p>
+
+    - >
+      <p>
+      You may be processing esbuild's output with another tool, and you may want
+      esbuild to transform certain features and the other tool to transform
+      certain other features. For example, if you are using esbuild to transform
+      files individually to ES5 but you are then feeding the output into [Webpack](https://webpack.js.org/)
+      for bundling, you may want to preserve `import()` expressions even though
+      they are a syntax error in ES5.
+      </p>
+
+  - p: >
+      If you want esbuild to consider a certain syntax feature to be unsupported,
+      you can specify that like this:
+
+  - example:
+      in:
+        app.js: ''
+
+      cli: |
+        esbuild app.js --supported:bigint=false
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          supported: {
+            'bigint': false,
+          },
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Supported: map[string]bool{
+              "bigint": false,
+            },
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Syntax features are specified using esbuild-specific feature names. The
+      full set of feature names is as follows:
+
+      <p>**JavaScript:**</p>
+      <ul>
+      <li>`arbitrary-module-namespace-names`</li>
+      <li>`array-spread`</li>
+      <li>`arrow`</li>
+      <li>`async-await`</li>
+      <li>`async-generator`</li>
+      <li>`bigint`</li>
+      <li>`class`</li>
+      <li>`class-field`</li>
+      <li>`class-private-accessor`</li>
+      <li>`class-private-brand-check`</li>
+      <li>`class-private-field`</li>
+      <li>`class-private-method`</li>
+      <li>`class-private-static-accessor`</li>
+      <li>`class-private-static-field`</li>
+      <li>`class-private-static-method`</li>
+      <li>`class-static-blocks`</li>
+      <li>`class-static-field`</li>
+      <li>`const-and-let`</li>
+      <li>`default-argument`</li>
+      <li>`destructuring`</li>
+      <li>`dynamic-import`</li>
+      <li>`exponent-operator`</li>
+      <li>`export-star-as`</li>
+      <li>`for-await`</li>
+      <li>`for-of`</li>
+      <li>`generator`</li>
+      <li>`hashbang`</li>
+      <li>`import-assertions`</li>
+      <li>`import-meta`</li>
+      <li>`logical-assignment`</li>
+      <li>`nested-rest-binding`</li>
+      <li>`new-target`</li>
+      <li>`node-colon-prefix-import`</li>
+      <li>`node-colon-prefix-require`</li>
+      <li>`nullish-coalescing`</li>
+      <li>`object-accessors`</li>
+      <li>`object-extensions`</li>
+      <li>`object-rest-spread`</li>
+      <li>`optional-catch-binding`</li>
+      <li>`optional-chain`</li>
+      <li>`regexp-dot-all-flag`</li>
+      <li>`regexp-lookbehind-assertions`</li>
+      <li>`regexp-match-indices`</li>
+      <li>`regexp-named-capture-groups`</li>
+      <li>`regexp-sticky-and-unicode-flags`</li>
+      <li>`regexp-unicode-property-escapes`</li>
+      <li>`rest-argument`</li>
+      <li>`template-literal`</li>
+      <li>`top-level-await`</li>
+      <li>`typeof-exotic-object-is-object`</li>
+      <li>`unicode-escapes`</li>
+      </ul>
+
+      <p>**CSS:**</p>
+      <ul>
+      <li>`hex-rgba`</li>
+      <li>`rebecca-purple`</li>
+      <li>`modern-rgb-hsl`</li>
+      <li>`inset-property`</li>
+      <li>`nesting`</li>
+      </ul>
 
   - h3: Tree shaking
 
