@@ -409,6 +409,30 @@ body:
       child process is still running.
 
   - p: >
+      If you would like to use esbuild's WebAssembly implementation instead of
+      esbuild's native implementation with Deno, you can do that by importing
+      `wasm.js` instead of `mod.js` like this:
+
+  - pre.js: |
+      import * as esbuild from 'https://deno.land/x/esbuild@vCURRENT_ESBUILD_VERSION/wasm.js'
+      const ts = 'let test: boolean = true'
+      const result = await esbuild.transform(ts, { loader: 'ts' })
+      console.log('result:', result)
+
+  - p: >
+      Using WebAssembly instead of native means you do not need to specify Deno's
+      `--allow-run` permission, and WebAssembly the only option in situations where
+      the file system is unavailable such as with [Deno Deploy](https://deno.com/deploy).
+      However, keep in mind that the WebAssembly version of esbuild is a lot
+      slower than the native version. Another thing to know about WebAssembly
+      is that Deno currently has a bug where process termination is unnecessarily
+      delayed until all loaded WebAssembly modules are fully optimized, which
+      can take many seconds. You may want to manually call `Deno.exit(0)` after
+      your code is done if you are writing a short-lived script that uses
+      esbuild's WebAssembly implementation so that your code exits in a
+      reasonable timeframe.
+
+  - p: >
       **Why this is not recommended:**
       Deno is newer than node, less widely used, and supports fewer platforms
       than node, so node is recommended as the primary way to run esbuild.
