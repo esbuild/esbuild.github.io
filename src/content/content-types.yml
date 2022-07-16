@@ -328,10 +328,11 @@ body:
       code in the ESM format that has a `default` export is converted to the
       CommonJS format, and then that CommonJS code is imported into another
       module in ESM format, there are two different interpretations of what
-      should happen that are both widely-used (the [Babel](babeljs.io/) way
-      and the [Node](nodejs.org/) way). This is very unfortunate because it
-      causes endless compatibility headaches, especially since JavaScript
-      libraries are often authored in ESM and published as CommonJS.
+      should happen that are both widely-used (the [Babel](https://babeljs.io/)
+      way and the [Node](https://nodejs.org/) way). This is very unfortunate
+      because it causes endless compatibility headaches, especially since
+      JavaScript libraries are often authored in ESM and published as
+      CommonJS.
 
   - p: >
       When esbuild [bundles](/api/#bundle) code that does this, it has to
