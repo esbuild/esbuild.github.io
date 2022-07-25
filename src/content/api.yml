@@ -98,6 +98,7 @@ body:
     - Log override
     - Mangle props
     - Minify
+    - Platform
     - Pure
     - Source root
     - Sourcefile
