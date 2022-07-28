@@ -56,15 +56,15 @@ body:
       | [Nullish coalescing](https://github.com/tc39/proposal-nullish-coalescing)           | `es2020`                             | `a ?? b`                   |
       | [`import.meta`](https://github.com/tc39/proposal-import-meta)                       | `es2020`                             | `import.meta`              |
       | [Logical assignment operators](https://github.com/tc39/proposal-logical-assignment) | `es2021`                             | `a ??= b`                  |
-      | [Class instance fields](https://github.com/tc39/proposal-class-fields)              | `esnext`                             | `class { x }`              |
-      | [Static class fields](https://github.com/tc39/proposal-static-class-features)       | `esnext`                             | `class { static x }`       |
-      | [Private instance methods](https://github.com/tc39/proposal-private-methods)        | `esnext`                             | `class { #x() {} }`        |
-      | [Private instance fields](https://github.com/tc39/proposal-class-fields)            | `esnext`                             | `class { #x }`             |
-      | [Private static methods](https://github.com/tc39/proposal-static-class-features)    | `esnext`                             | `class { static #x() {} }` |
-      | [Private static fields](https://github.com/tc39/proposal-static-class-features)     | `esnext`                             | `class { static #x }`      |
-      | [Ergonomic brand checks](https://github.com/tc39/proposal-private-fields-in-in)     | `esnext`                             | `#x in y`                  |
+      | [Class instance fields](https://github.com/tc39/proposal-class-fields)              | `es2022`                             | `class { x }`              |
+      | [Static class fields](https://github.com/tc39/proposal-static-class-features)       | `es2022`                             | `class { static x }`       |
+      | [Private instance methods](https://github.com/tc39/proposal-private-methods)        | `es2022`                             | `class { #x() {} }`        |
+      | [Private instance fields](https://github.com/tc39/proposal-class-fields)            | `es2022`                             | `class { #x }`             |
+      | [Private static methods](https://github.com/tc39/proposal-static-class-features)    | `es2022`                             | `class { static #x() {} }` |
+      | [Private static fields](https://github.com/tc39/proposal-static-class-features)     | `es2022`                             | `class { static #x }`      |
+      | [Ergonomic brand checks](https://github.com/tc39/proposal-private-fields-in-in)     | `es2022`                             | `#x in y`                  |
+      | [Class static blocks](https://github.com/tc39/proposal-class-static-block)          | `es2022`                             | `class { static {} }`      |
       | [Import assertions](https://github.com/tc39/proposal-import-assertions)             | `esnext`                             | `import "x" assert {}`     |
-      | [Class static blocks](https://github.com/tc39/proposal-class-static-block)          | `esnext`                             | `class { static {} }`      |
 
   - p: >
       These syntax features are currently always passed through un-transformed:
@@ -75,9 +75,9 @@ body:
       | [Asynchronous iteration](https://github.com/tc39/proposal-async-iteration)                                             | `es2018`                             | `for await (let x of y) {}` |
       | [Async generators](https://github.com/tc39/proposal-async-iteration)                                                   | `es2018`                             | `async function* foo() {}`  |
       | [BigInt](https://github.com/tc39/proposal-bigint)                                                                      | `es2020`                             | `123n`                      |
+      | [Top-level await](https://github.com/tc39/proposal-top-level-await)                                                    | `es2022`                             | `await import(x)`           |
+      | [Arbitrary module namespace identifiers](https://github.com/bmeck/proposal-arbitrary-module-namespace-identifiers)     | `es2022`                             | `export {foo as 'f o o'}`   |
       | [Hashbang grammar](https://github.com/tc39/proposal-hashbang)                                                          | `esnext`                             | `#!/usr/bin/env node`       |
-      | [Top-level await](https://github.com/tc39/proposal-top-level-await)                                                    | `esnext`                             | `await import(x)`           |
-      | [Arbitrary module namespace identifiers](https://github.com/bmeck/proposal-arbitrary-module-namespace-identifiers)     | `esnext`                             | `export {foo as 'f o o'}`   |
 
   - p: >
       See also [the list of finished ECMAScript proposals](https://github.com/tc39/proposals/blob/master/finished-proposals.md)
