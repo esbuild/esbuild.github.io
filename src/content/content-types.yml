@@ -573,9 +573,13 @@ body:
     - >
       [`importsNotUsedAsValues`](https://www.typescriptlang.org/tsconfig#importsNotUsedAsValues)
     - >
+      [`jsx`](https://www.typescriptlang.org/tsconfig#jsx)
+    - >
       [`jsxFactory`](https://www.typescriptlang.org/tsconfig#jsxFactory)
     - >
       [`jsxFragmentFactory`](https://www.typescriptlang.org/tsconfig#jsxFragmentFactory)
+    - >
+      [`jsxImportSource`](https://www.typescriptlang.org/tsconfig#jsxImportSource)
     - >
       [`paths`](https://www.typescriptlang.org/tsconfig#paths)
     - >
@@ -696,39 +700,23 @@ body:
 
   - p: >
       If you would like to avoid having to manually `import` your JSX library
-      into each file, you can use esbuild's [inject](/api/#inject) feature to
-      automatically import it into every file. This feature is a general-purpose
-      polyfill mechanism that replaces references to global variables with an
-      export from the injected file. In this case we can use it to replace
-      references to the `React` variable with exports from the `react` package.
-
-  - p: >
-      First, create a file called <code>react-<wbr>shim.js</code> that
-      re-exports everything from the `react` package in an export called
-      `React`:
-
-  - pre.js: |
-      // react-shim.js
-      import * as React from 'react'
-      export { React }
-
-  - p: >
-      Then use esbuild's [inject feature](/api/#inject) to inject this into
-      each file:
+      into each file, you may be able to do this by setting esbuild's
+      [JSX](/api/#jsx) transform to `automatic`, which generates import
+      statements for you. Keep in mind that this also completely changes
+      how the JSX transform works, so it may break your code if you are
+      using a JSX library that's not React. Doing that looks like this:
 
   - example:
       in:
-        react-shim.js: 'export let React = {createElement() {}}'
-        app.jsx: 'console.log(<div/>)'
+        app.jsx: '<a/>'
 
       cli: |
-        esbuild app.jsx --bundle --inject:./react-shim.js --outfile=out.js
+        esbuild app.jsx --jsx=automatic
 
       js: |
         require('esbuild').buildSync({
           entryPoints: ['app.jsx'],
-          bundle: true,
-          inject: ['./react-shim.js'],
+          jsx: 'automatic',
           outfile: 'out.js',
         })
 
@@ -741,43 +729,14 @@ body:
         func main() {
           result := api.Build(api.BuildOptions{
             EntryPoints: []string{"app.jsx"},
-            Bundle:      true,
-            Inject:      []string{"./react-shim.js"},
+            JSXMode:     api.JSXModeAutomatic,
             Outfile:     "out.js",
-            Write:       true,
           })
 
           if len(result.Errors) > 0 {
             os.Exit(1)
           }
         }
-
-  - p: >
-      Since the inject feature is a general-purpose code injection mechanism,
-      it can be used with any JSX transform library, not just with React.
-
-  - p: >
-      **Important:**
-      The `export` statement is required. Do not remove it. The inject feature
-      injects an `import` statement to `react-shim.js` at the top of each file
-      that looks like this:
-
-  - pre.js: |
-      import { /* ... */ } from './react-shim.js'
-
-  - p: >
-      The set of imported names `/* ... */` is automatically generated from
-      the set of unbound references in the file (i.e. `React`) that are equal
-      to the name of an export of the injected file `react-shim.js`. If the
-      injected file doesn't export anything, then the set of imported names
-      stays empty and all unbound references all stay unbound. Code with
-      unbound references to `React` will crash at run-time if there is no
-      variable called `React` in the global scope. This is by design, and
-      happens because of to how ECMAScript modules work. Imports in one module
-      are local to that module and cannot be read from other modules unless
-      they have been exported by that module and imported into the other module.
-      Using `export` in `react-shim.js` with the local variable `React` allows
-      it to be imported into and used by other modules.
 
   - h3: Using JSX without React
 

@@ -88,8 +88,10 @@ body:
     - Global name
     - Ignore annotations
     - JSX
+    - JSX dev
     - JSX factory
     - JSX fragment
+    - JSX import source
     - Keep names
     - Legal comments
     - Loader
@@ -193,8 +195,10 @@ body:
     - Incremental
     - Inject
     - JSX
+    - JSX dev
     - JSX factory
     - JSX fragment
+    - JSX import source
     - Keep names
     - Legal comments
     - Loader
@@ -4185,9 +4189,62 @@ body:
   - h3: JSX
 
   - p: >
-      This option tells esbuild what to do about JSX syntax. You can either have
-      esbuild transform JSX to JS (the default) or preserve the JSX syntax in the
-      output. To preserve JSX syntax:
+      This option tells esbuild what to do about JSX syntax. Here are the available options:
+
+  - ul:
+    - >
+      `transform`
+      <p>
+      This tells esbuild to transform JSX to JS using a general-purpose
+      transform that's shared between many libraries that use JSX syntax.
+      Each JSX element is turned into a call to the [JSX factory](#jsx-factory)
+      function with the element's component (or with the [JSX fragment](#jsx-fragment)
+      for fragments) as the first argument. The second argument is an array of
+      props (or `null` if there are no props). Any child elements present
+      become additional arguments after the second argument.
+      </p>
+      <p>
+      If you want to configure this setting on a per-file basis, you can do
+      that by using a <code>// @jsxRuntime <wbr>classic</code> comment. This is
+      a convention from [Babel's JSX plugin](https://babeljs.io/docs/en/babel-preset-react/)
+      that esbuild follows.
+      </p>
+
+    - >
+      `preserve`
+      <p>
+      This preserves the JSX syntax in the output instead of transforming it
+      into function calls. JSX elements are treated as first-class syntax and
+      are still affected by other settings such as [minification](#minify) and
+      [property mangling](#mangle-props).
+      </p>
+      <p>
+      Note that this means the output files are no longer valid JavaScript code.
+      This feature is intended to be used when you want to transform the JSX
+      syntax in esbuild's output files by another tool after bundling.
+      </p>
+
+    - >
+      `automatic`
+      <p>
+      This transform was [introduced in React 17+](https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html)
+      and is very specific to React. It automatically generates `import`
+      statements from the [JSX import source](#jsx-import-source) and introduces
+      many special cases regarding how the syntax is handled. The details are too
+      complicated to describe here. For more information, please read
+      [React's documentation about their new JSX transform](https://github.com/reactjs/rfcs/blob/createlement-rfc/text/0000-create-element-changes.md).
+      If you want to enable the development mode version of this transform, you
+      need to additionally enable the [JSX dev](#jsx-dev) setting.
+      </p>
+      <p>
+      If you want to configure this setting on a per-file basis, you can do
+      that by using a <code>// @jsxRuntime <wbr>automatic</code> comment. This is
+      a convention from [Babel's JSX plugin](https://babeljs.io/docs/en/babel-preset-react/)
+      that esbuild follows.
+      </p>
+
+  - p: >
+      Here's an example of setting the JSX transform to `preserve`:
 
   - example:
       cli:
@@ -4226,12 +4283,63 @@ body:
           }
         }
 
+  - h3: JSX dev
+
   - p: >
-      Note that if you preserve JSX syntax, the output files are no longer valid
-      JavaScript code. This feature is intended to be used when you want to
-      transform the JSX syntax in esbuild's output files by another tool after
-      bundling, usually one with a different JSX-to-JS transform than the one
-      esbuild implements.
+      If the [JSX](#jsx) transform has been set to `automatic`, then enabling
+      this setting causes esbuild to automatically inject the file name and
+      source location into each JSX element. Your JSX library can then use
+      this information to help with debugging. If the JSX transform has been
+      set to something other than `automatic`, then this setting does nothing.
+      Here's an example of enabling this setting:
+
+  - example:
+      in:
+        app.jsx: '<a/>'
+
+      cli:
+        - $: |
+            echo '<a/>' | esbuild --loader=jsx --jsx=automatic
+        - expect: |
+            import { jsx } from "react/jsx-runtime";
+            /* @__PURE__ */ jsx("a", {});
+
+        - $: |
+            echo '<a/>' | esbuild --loader=jsx --jsx=automatic --jsx-dev
+        - expect: |
+            import { jsxDEV } from "react/jsx-dev-runtime";
+            /* @__PURE__ */ jsxDEV("a", {}, void 0, false, {
+              fileName: "<stdin>",
+              lineNumber: 1,
+              columnNumber: 1
+            }, this);
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.jsx'],
+          jsxDev: true,
+          jsx: 'automatic',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.jsx"},
+            JSXDev:      true,
+            JSXMode:     api.JSXModeAutomatic,
+            Outfile:     "out.js",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
 
   - h3: JSX factory
 
@@ -4302,6 +4410,11 @@ body:
         }
       }
 
+  - p: >
+      If you want to configure this on a per-file basis, you can do that by
+      using a <code>// @jsx <wbr>h</code> comment. Note that this setting
+      does not apply when the [JSX](#jsx) transform has been set to `automatic`.
+
   - h3: JSX fragment
 
   - p: >
@@ -4370,6 +4483,97 @@ body:
           "jsxFragmentFactory": "Fragment"
         }
       }
+
+  - p: >
+      If you want to configure this on a per-file basis, you can do that by
+      using a <code>// @jsxFrag <wbr>Fragment</code> comment. Note that this
+      setting does not apply when the [JSX](#jsx) transform has been set to
+      `automatic`.
+
+  - h3: JSX import source
+
+  - p: >
+      If the [JSX](#jsx) transform has been set to `automatic`, then setting
+      this lets you change which library esbuild uses to automatically import
+      its JSX helper functions from. Note that this only works with the JSX
+      transform that's [specific to React 17+](https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html).
+      If you set the JSX import source to `your-pkg`, then that package must
+      expose at least the following exports:
+
+  - pre.js: |
+      import { createElement } from "your-pkg"
+      import { Fragment, jsx, jsxs } from "your-pkg/jsx-runtime"
+      import { Fragment, jsxDEV } from "your-pkg/jsx-dev-runtime"
+
+  - p: >
+      The `/jsx-runtime` and `/jsx-dev-runtime` subpaths are hard-coded by
+      design and cannot be changed. The `jsx` and `jsxs` imports are used when
+      [JSX dev mode](#jsx-dev) is off and the `jsxDEV` import is used when
+      JSX dev mode is on. The meaning of these is described in
+      [React's documentation about their new JSX transform](https://github.com/reactjs/rfcs/blob/createlement-rfc/text/0000-create-element-changes.md).
+      The `createElement` import is used regardless of the JSX dev mode when an
+      element has a prop spread followed by a `key` prop, which looks like this:
+
+  - pre.jsx: |
+      return <div {...props} key={key} />
+
+  - p: >
+      Here's an example of setting the JSX import source to [`preact`](https://preactjs.com/):
+
+  - example:
+      in:
+        app.jsx: '<a/>'
+
+      cli: |
+        esbuild app.jsx --jsx-import-source=preact --jsx=automatic
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.jsx'],
+          jsxImportSource: 'preact',
+          jsx: 'automatic',
+          outfile: 'out.js',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints:     []string{"app.jsx"},
+            JSXImportSource: "preact",
+            JSXMode:         api.JSXModeAutomatic,
+            Outfile:         "out.js",
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Alternatively, if you are using TypeScript, you can just configure the
+      JSX import source for TypeScript by adding this to your `tsconfig.json`
+      file and esbuild should pick it up automatically without needing to be
+      configured:
+
+  - pre.json: |
+      {
+        "compilerOptions": {
+          "jsx": "react-jsx",
+          "jsxImportSource": "preact"
+        }
+      }
+
+  - p: >
+      And if you want to control this setting on the per-file basis, you can do
+      that with a <code>// @jsxImportSource <wbr>your-pkg</code> comment in each
+      file. You may also need to add a <code>// @jsxRuntime <wbr>automatic</code>
+      comment as well if the [JSX](#jsx) transform has not already been set by
+      other means, or if you want that to be set on a per-file basis as well.
 
   - h3: Keep names
 
