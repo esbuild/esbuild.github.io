@@ -670,7 +670,42 @@ body:
       You can also use the `*` wildcard character in an external path to mark
       all files matching that pattern as external. For example, you can use
       `*.png` to remove all `.png` files or `/images/*` to remove all paths
-      starting with `/images/`.
+      starting with `/images/`:
+
+  - example:
+      in:
+        app.js: 'import "/images/*"; import "*.png"'
+
+      cli: |
+        esbuild app.js --bundle "--external:*.png" "--external:/images/*"
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          outfile: 'out.js',
+          bundle: true,
+          external: ['*.png', '/images/*'],
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Outfile:     "out.js",
+            Bundle:      true,
+            Write:       true,
+            External:    []string{"*.png", "/images/*"},
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
 
   - p: >
       External paths are applied both before and after path resolution, which
