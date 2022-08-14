@@ -6671,6 +6671,14 @@ body:
           }
         }
 
+  - p: >
+      Note: If you are using [Yarn Plug'n'Play](https://yarnpkg.com/features/pnp/),
+      keep in mind that this working directory is used to search for Yarn's
+      manifest file. If you are running esbuild from an unrelated directory,
+      you will have to set this working directory to the directory containing
+      the manifest file (or one of its child directories) for the manifest
+      file to be found by esbuild.
+
   - h2: JS-specific details
 
   - p: >
