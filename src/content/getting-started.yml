@@ -350,10 +350,40 @@ body:
         </p>
 
   - p: >
+      You can also get into this situation on a macOS computer with an ARM
+      processor if you install esbuild using the ARM version of npm but then
+      try to run esbuild with the x86-64 version of node running inside of
+      [Rosetta](https://en.wikipedia.org/wiki/Rosetta_(software)). In that
+      case, an easy fix is to run your code using the ARM version of node
+      instead, which can be downloaded here: [https://nodejs.org/en/download/](https://nodejs.org/en/download/).
+
+  - p: >
       Another alternative is to [use the `esbuild-wasm` package instead](#wasm),
       which works the same way on all platforms. But it comes with a heavy
       performance cost and can sometimes be 10x slower than the `esbuild` package,
       so you may also not want to do that.
+
+  - h2#yarn-pnp: Using Yarn Plug'n'Play
+
+  - p: >
+      Yarn's [Plug'n'Play](https://yarnpkg.com/features/pnp/) package
+      installation strategy is supported natively by esbuild. To use it, make
+      sure you are running esbuild such that the [current working directory](/api/#working-directory)
+      contains Yarn's generated package manifest JavaScript file (either
+      `.pnp.cjs` or `.pnp.js`). If a Yarn Plug'n'Play package manifest is
+      detected, esbuild will automatically resolve package imports to paths
+      inside the `.zip` files in Yarn's package cache, and will automatically
+      extract these files on the fly during bundling.
+
+  - p: >
+      Because esbuild is written in Go, support for Yarn Plug'n'Play has been
+      completely re-implemented in Go instead of relying on Yarn's JavaScript
+      API. This allows Yarn Plug'n'Play package resolution to integrate well
+      with esbuild's fully parallelized bundling pipeline for maximum speed.
+      Note that Yarn's command-line interface adds a lot of unavoidable
+      performance overhead to every command. For maximum esbuild performance,
+      you may want to consider running esbuild without using Yarn's CLI (i.e.
+      not using `yarn esbuild`). This can result in esbuild running 10x faster.
 
   - h2: Other ways to install
 
