@@ -2875,6 +2875,15 @@ body:
       esbuild's [incremental build API](#incremental) and a file watcher library
       of your choice if you don't want to use a polling-based approach.
 
+  - p: >
+      If you are using the command-line, keep in mind that watch mode will be
+      terminated when esbuild's stdin is closed. This prevents esbuild from
+      accidentally outliving the parent process and unexpectedly continuing
+      to consume resources on the system. If you have a use case that requires
+      esbuild to continue to watch forever even when the parent process has
+      finished, you may use <code>--watch=<wbr>forever</code> instead of
+      `--watch`.
+
   - h3: Write
 
   - p: >
