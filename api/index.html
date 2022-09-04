@@ -1248,7 +1248,7 @@ esbuild.serve({
   time.Sleep(<span class="hljs-number">10</span> * time.Second)
   result.Stop()
   fmt.Printf(<span class="hljs-string">&quot;stopped watching\n&quot;</span>)
-}</pre><p>Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling system is designed to use relatively little CPU vs. a more traditional polling system that scans the whole directory tree at once. The file system is still scanned regularly but each scan only checks a random subset of your files, which means a change to a file will be picked up soon after the change is made but not necessarily instantly.</p><p>With the current heuristics, large projects should be completely scanned around every 2 seconds so in the worst case it could take up to 2 seconds for a change to be noticed. However, after a change has been noticed the change's path goes on a short list of recently changed paths which are checked on every scan, so further changes to recently changed files should be noticed almost instantly.</p><p>Note that it is still possible to implement watch mode yourself using esbuild's <a href="#incremental">incremental build API</a> and a file watcher library of your choice if you don't want to use a polling-based approach.</p><h3 id="write"><a class="permalink" href="#write">#</a>Write</h3><p><i>Supported by: <a href="#build-api">Build</a></i></p><p>The build API call can either write to the file system directly or return the files that would have been written as in-memory buffers. By default the CLI and JavaScript APIs write to the file system and the Go API doesn't. To use the in-memory buffers:</p><div class="switcher">
+}</pre><p>Watch mode in esbuild is implemented using polling instead of OS-specific file system APIs for portability. The polling system is designed to use relatively little CPU vs. a more traditional polling system that scans the whole directory tree at once. The file system is still scanned regularly but each scan only checks a random subset of your files, which means a change to a file will be picked up soon after the change is made but not necessarily instantly.</p><p>With the current heuristics, large projects should be completely scanned around every 2 seconds so in the worst case it could take up to 2 seconds for a change to be noticed. However, after a change has been noticed the change's path goes on a short list of recently changed paths which are checked on every scan, so further changes to recently changed files should be noticed almost instantly.</p><p>Note that it is still possible to implement watch mode yourself using esbuild's <a href="#incremental">incremental build API</a> and a file watcher library of your choice if you don't want to use a polling-based approach.</p><p>If you are using the command-line, keep in mind that watch mode will be terminated when esbuild's stdin is closed. This prevents esbuild from accidentally outliving the parent process and unexpectedly continuing to consume resources on the system. If you have a use case that requires esbuild to continue to watch forever even when the parent process has finished, you may use <code>--watch=<wbr>forever</code> instead of <code>--watch</code>.</p><h3 id="write"><a class="permalink" href="#write">#</a>Write</h3><p><i>Supported by: <a href="#build-api">Build</a></i></p><p>The build API call can either write to the file system directly or return the files that would have been written as in-memory buffers. By default the CLI and JavaScript APIs write to the file system and the Go API doesn't. To use the in-memory buffers:</p><div class="switcher">
 <a href="javascript:void 0" class="js2">JS</a>
 <a href="javascript:void 0" class="go2">Go</a>
       </div>
@@ -2507,12 +2507,24 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
 
     example.js.map:2:18:
 </span><span class="color-dim">      2 │   "mappings": "aAA</span><span class="color-green">F</span><span class="color-dim">A,UAAU;;"
-        ╵                   </span><span class="color-green">^</span><span></span></pre></details></li>
+        ╵                   </span><span class="color-green">^</span><span>
+
+  The source map "example.js.map" was referenced by the file "example.js" here:
+
+    example.js:1:21:
+</span><span class="color-dim">      1 │ //# sourceMappingURL=</span><span class="color-green">example.js.map</span><span class="color-dim">
+        ╵                      </span><span class="color-green">~~~~~~~~~~~~~~</span><span></span></pre></details></li>
 <li><details><summary><code>sections-in-source-map</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Source maps with "sections" are not supported</span><span> [sections-in-source-map]
 
     example.js.map:2:2:
 </span><span class="color-dim">      2 │   </span><span class="color-green">"sections"</span><span class="color-dim">: []
-        ╵   </span><span class="color-green">~~~~~~~~~~</span><span></span></pre></details></li>
+        ╵   </span><span class="color-green">~~~~~~~~~~</span><span>
+
+  The source map "example.js.map" was referenced by the file "example.js" here:
+
+    example.js:1:21:
+</span><span class="color-dim">      1 │ //# sourceMappingURL=</span><span class="color-green">example.js.map</span><span class="color-dim">
+        ╵                      </span><span class="color-green">~~~~~~~~~~~~~~</span><span></span></pre></details></li>
 <li><details><summary><code>missing-source-map</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span style="font-weight:bold">Cannot read file ".": is a directory</span><span> [missing-source-map]
 
     example.js:1:21:
