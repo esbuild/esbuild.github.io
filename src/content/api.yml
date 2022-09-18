@@ -92,6 +92,7 @@ body:
     - JSX factory
     - JSX fragment
     - JSX import source
+    - JSX side effects
     - Keep names
     - Legal comments
     - Loader
@@ -199,6 +200,7 @@ body:
     - JSX factory
     - JSX fragment
     - JSX import source
+    - JSX side effects
     - Keep names
     - Legal comments
     - Loader
@@ -4618,6 +4620,50 @@ body:
       file. You may also need to add a <code>// @jsxRuntime <wbr>automatic</code>
       comment as well if the [JSX](#jsx) transform has not already been set by
       other means, or if you want that to be set on a per-file basis as well.
+
+  - h3: JSX side effects
+
+  - p: >
+      By default esbuild assumes that JSX expressions are side-effect free,
+      which means they are annoated with [`/* @__PURE__ */` comments](#pure) and
+      are removed during bundling when they are unused. This follows the common
+      use of JSX for virtual DOM and applies to the vast majority of JSX libraries.
+      However, some people have written JSX libraries that don't have this property
+      (specifically JSX expressions can have arbitrary side effects and can't be
+      removed when unused). If you are using such a library, you can use this
+      setting to tell esbuild that JSX expressions have side effects:
+
+  - example:
+      in:
+        app.jsx: '<a/>'
+
+      cli: |
+        esbuild app.jsx --jsx-side-effects
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.jsx'],
+          outfile: 'out.js',
+          jsxSideEffects: true,
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints:    []string{"app.jsx"},
+            Outfile:        "out.js",
+            JSXSideEffects: true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
 
   - h3: Keep names
 
