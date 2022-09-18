@@ -4933,7 +4933,7 @@ body:
             <li><details><summary>`private-name-will-throw`</summary><pre>{{ FORMAT_MESSAGES('class Foo { get #foo() {} bar() { this.#foo++ } }', { sourcefile: 'example.js' }) }}</pre></details></li>
             <li><details><summary>`semicolon-after-return`</summary><pre>{{ FORMAT_MESSAGES('return\nx', { sourcefile: 'example.js' }) }}</pre></details></li>
             <li><details><summary>`suspicious-boolean-not`</summary><pre>{{ FORMAT_MESSAGES('if (!foo in bar) {\n}', { sourcefile: 'example.js' }) }}</pre></details></li>
-            <li><details><summary>`this-is-undefined-in-esm`</summary><pre>{{ FORMAT_MESSAGES('this.foo = 1; export let bar = 2', { sourcefile: 'example.js', bundle: true }) }}</pre></details></li>
+            <li><details><summary>`this-is-undefined-in-esm`</summary><pre>{{ FORMAT_MESSAGES('this.foo = 1; export let bar = 2', { sourcefile: 'example.js', bundle: true, logOverride: { 'this-is-undefined-in-esm': 'warning' } }) }}</pre></details></li>
             <li><details><summary>`unsupported-dynamic-import`</summary><pre>{{ FORMAT_MESSAGES('import(foo)', { sourcefile: 'example.js', bundle: true, logOverride: { 'unsupported-dynamic-import': 'warning' } }) }}</pre></details></li>
             <li><details><summary>`unsupported-jsx-comment`</summary><pre>{{ FORMAT_MESSAGES('// @jsx 123', { sourcefile: 'example.jsx', loader: 'jsx' }) }}</pre></details></li>
             <li><details><summary>`unsupported-regexp`</summary><pre>{{ FORMAT_MESSAGES('/./d', { sourcefile: 'example.js', target: 'chrome50', logOverride: { 'unsupported-regexp': 'warning' } }) }}</pre></details></li>
