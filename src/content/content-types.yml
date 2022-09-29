@@ -917,6 +917,16 @@ body:
         </head>
       </html>
 
+  - p: >
+      If the generated output names are not straightforward (for example if you
+      have added `[hash]` to the [entry names](/api/#entry-names) setting and
+      the output file names have content hashes) then you will likely want to
+      look up the generated output names in the [metafile](/api/#metafile). To
+      do this, first find the JS file by looking for the output with the
+      matching `entryPoint` property. This file goes in the `<script>` tag. The
+      associated CSS file can then be found using the `cssBundle` property.
+      This file goes in the `<link>` tag.
+
   - h3#css-caveats: CSS caveats
 
   - p: >

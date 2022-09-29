@@ -5567,6 +5567,7 @@ body:
             }[]
             exports: string[]
             entryPoint?: string
+            cssBundle?: string
           }
         }
       }
