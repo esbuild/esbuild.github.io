@@ -2909,6 +2909,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
       }[]
       <span class="hljs-attr">exports</span>: <span class="hljs-built_in">string</span>[]
       entryPoint?: <span class="hljs-built_in">string</span>
+      cssBundle?: <span class="hljs-built_in">string</span>
     }
   }
 }</pre><h3 id="node-paths"><a class="permalink" href="#node-paths">#</a>Node paths</h3><p><i>Supported by: <a href="#build-api">Build</a></i></p><p>Node's module resolution algorithm supports an environment variable called <a href="https://nodejs.org/api/modules.html#modules_loading_from_the_global_folders"><code>NODE_PATH</code></a> that contains a list of global directories to use when resolving import paths. These paths are searched for packages in addition to the <code>node_modules</code> directories in all parent directories. You can pass this list of directories to esbuild using an environment variable with the CLI and using an array with the JS and Go APIs:</p><div class="switcher">
