@@ -560,13 +560,13 @@ body:
         settings.js: '1 + 2'
 
       cli: |
-        esbuild out1=home.js out2=settings.js --bundle --outdir=out
+        esbuild out1=home.ts out2=settings.ts --bundle --outdir=out
 
       js: |
         require('esbuild').buildSync({
           entryPoints: {
-            out1: 'home.js',
-            out2: 'settings.js',
+            out1: 'home.ts',
+            out2: 'settings.ts',
           },
           bundle: true,
           write: true,
@@ -583,10 +583,10 @@ body:
           result := api.Build(api.BuildOptions{
             EntryPointsAdvanced: []api.EntryPoint{{
               OutputPath: "out1",
-              InputPath:  "home.js",
+              InputPath:  "home.ts",
             }, {
               OutputPath: "out2",
-              InputPath:  "settings.js",
+              InputPath:  "settings.ts",
             }},
             Bundle: true,
             Write:  true,
