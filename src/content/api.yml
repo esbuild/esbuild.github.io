@@ -2616,6 +2616,7 @@ body:
     - '`opera`'
     - '`rhino`'
     - '`safari`'
+    - '`deno`'
 
   - p: >
       In addition, you can also specify JavaScript language versions such as
