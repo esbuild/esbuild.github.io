@@ -556,8 +556,8 @@ body:
 
   - example:
       in:
-        home.js: '1 + 2'
-        settings.js: '1 + 2'
+        home.ts: '1 + 2'
+        settings.ts: '1 + 2'
 
       cli: |
         esbuild out1=home.ts out2=settings.ts --bundle --outdir=out
@@ -2607,6 +2607,7 @@ body:
 
   - ul:
     - '`chrome`'
+    - '`deno`'
     - '`edge`'
     - '`firefox`'
     - '`hermes`'
@@ -2616,7 +2617,6 @@ body:
     - '`opera`'
     - '`rhino`'
     - '`safari`'
-    - '`deno`'
 
   - p: >
       In addition, you can also specify JavaScript language versions such as
