@@ -29,11 +29,13 @@ async function checkCommon(kind, text, value, callback) {
     await fs.mkdir(testDir, { recursive: true })
     await fs.writeFile(path.join(testDir, 'package.json'), '{}')
 
-    if (value.in) {
-      for (let name in value.in) {
-        const absPath = path.join(testDir, name)
-        await fs.mkdir(path.dirname(absPath), { recursive: true })
-        await fs.writeFile(absPath, value.in[name])
+    const writeFiles = async () => {
+      if (value.in) {
+        for (let name in value.in) {
+          const absPath = path.join(testDir, name)
+          await fs.mkdir(path.dirname(absPath), { recursive: true })
+          await fs.writeFile(absPath, value.in[name])
+        }
       }
     }
 
@@ -44,7 +46,7 @@ async function checkCommon(kind, text, value, callback) {
       }
     }
 
-    if (!await callback({ testDir })) {
+    if (!await callback({ testDir, writeFiles })) {
       return false
     }
   } catch (e) {
@@ -60,8 +62,9 @@ async function checkCommon(kind, text, value, callback) {
 }
 
 async function checkCli(text, value) {
-  return await checkCommon('cli', text, value, async ({ testDir }) => {
+  return await checkCommon('cli', text, value, async ({ testDir, writeFiles }) => {
     await execAsync(`npm i --prefer-offline esbuild@${version}`, { cwd: testDir, stdio: 'pipe' })
+    await writeFiles()
 
     if (!Array.isArray(value.cli)) {
       await execAsync(value.cli, {
@@ -115,8 +118,9 @@ async function checkCli(text, value) {
 }
 
 async function checkJs(text, value) {
-  return await checkCommon('js', text, value, async ({ testDir }) => {
+  return await checkCommon('js', text, value, async ({ testDir, writeFiles }) => {
     await execAsync(`npm i --prefer-offline esbuild@${version}`, { cwd: testDir, stdio: 'pipe' })
+    await writeFiles()
 
     if (!Array.isArray(value.js)) {
       const mainPath = path.join(testDir, 'main.js')
@@ -157,7 +161,9 @@ async function checkJs(text, value) {
 }
 
 async function checkGo(text, value) {
-  return await checkCommon('go', text, value, async ({ testDir }) => {
+  return await checkCommon('go', text, value, async ({ testDir, writeFiles }) => {
+    await writeFiles()
+
     await fs.writeFile(path.join(testDir, 'go.mod'), `
       module main
       go 1.16

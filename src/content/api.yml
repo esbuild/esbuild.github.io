@@ -175,6 +175,7 @@ body:
       take the following options:
 
   - available-options:
+    - Alias
     - Allow overwrite
     - Analyze
     - Asset names
@@ -237,6 +238,65 @@ body:
     - Write
 
   - h2: Simple options
+
+  - h3: Alias
+
+  - p: >
+      This feature lets you substitute one package for another when bundling.
+      The example below substitutes the package `oldpkg` with the package
+      `newpkg`:
+
+  - example:
+      in:
+        app.js: 'import "oldpkg/foo"'
+        node_modules/newpkg/foo.js: 'works'
+
+      cli: |
+        esbuild app.js --bundle --alias:oldpkg=newpkg
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          write: true,
+          alias: {
+            'oldpkg': 'newpkg',
+          },
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Write:       true,
+            Alias: map[string]string{
+              "oldpkg": "newpkg",
+            },
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      These new substitutions happen first before all of esbuild's other path
+      resolution logic. One use case for this feature is replacing a node-only
+      package with a browser-friendly package in third-party code that you
+      don't control.
+
+  - p: >
+      Note that when an import path is substituted using an alias, the resulting
+      import path is resolved in the working directory instead of in the directory
+      containing the source file with the import path. If needed, the working
+      directory that esbuild uses can be set with the [working directory](#working-directory)
+      feature.
 
   - h3: Bundle
 
@@ -6687,20 +6747,24 @@ body:
 
   - p: >
       This API option lets you specify the working directory to use for the
-      build. It normally defaults to the [current working directory](https://en.wikipedia.org/wiki/Working_directory)
+      build. It normally defaults to the current [working directory](https://en.wikipedia.org/wiki/Working_directory)
       of the process you are using to call esbuild's API. The working directory
       is used by esbuild for a few different things including resolving relative
       paths given as API options to absolute paths and pretty-printing absolute
-      paths as relative paths in log messages. Here is how to override it:
+      paths as relative paths in log messages. Here is how to customize esbuild's
+      working directory:
 
   - example:
       in:
         file.js: 'export let foo = 123'
 
+      cli: |
+        cd "/custom/working/directory"
+
       js: |
         require('esbuild').buildSync({
           entryPoints: ['file.js'],
-          absWorkingDir: process.cwd(),
+          absWorkingDir: '/custom/working/directory',
           outfile: 'out.js',
         })
 
@@ -6708,18 +6772,11 @@ body:
         package main
 
         import "github.com/evanw/esbuild/pkg/api"
-        import "log"
-        import "os"
 
         func main() {
-          cwd, err := os.Getwd()
-          if err != nil {
-            log.Fatal(err)
-          }
-
           result := api.Build(api.BuildOptions{
             EntryPoints:   []string{"file.js"},
-            AbsWorkingDir: cwd,
+            AbsWorkingDir: "/custom/working/directory",
             Outfile:       "out.js",
           })
 
