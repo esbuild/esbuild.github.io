@@ -6756,15 +6756,15 @@ body:
 
   - example:
       in:
-        file.js: 'export let foo = 123'
+        /var/tmp/custom/working/directory/file.js: 'export let foo = 123'
 
       cli: |
-        cd "/custom/working/directory"
+        cd "/var/tmp/custom/working/directory"
 
       js: |
         require('esbuild').buildSync({
           entryPoints: ['file.js'],
-          absWorkingDir: '/custom/working/directory',
+          absWorkingDir: '/var/tmp/custom/working/directory',
           outfile: 'out.js',
         })
 
@@ -6772,11 +6772,12 @@ body:
         package main
 
         import "github.com/evanw/esbuild/pkg/api"
+        import "os"
 
         func main() {
           result := api.Build(api.BuildOptions{
             EntryPoints:   []string{"file.js"},
-            AbsWorkingDir: "/custom/working/directory",
+            AbsWorkingDir: "/var/tmp/custom/working/directory",
             Outfile:       "out.js",
           })
 

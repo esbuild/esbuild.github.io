@@ -32,7 +32,7 @@ async function checkCommon(kind, text, value, callback) {
     const writeFiles = async () => {
       if (value.in) {
         for (let name in value.in) {
-          const absPath = path.join(testDir, name)
+          const absPath = path.isAbsolute(name) ? name : path.join(testDir, name)
           await fs.mkdir(path.dirname(absPath), { recursive: true })
           await fs.writeFile(absPath, value.in[name])
         }
@@ -198,6 +198,9 @@ async function checkGo(text, value) {
 
 async function main() {
   child_process.execFileSync('rm', ['-fr', tempDir])
+
+  // Some tests use this directory
+  await fs.mkdir('/var/tmp/custom/working/directory', { recursive: true })
 
   const data = yaml.safeLoad(await fs.readFile(path.join(contentDir, 'index.yml'), 'utf8'))
   const pages = Object.entries(data)
