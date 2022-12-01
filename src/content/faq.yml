@@ -152,7 +152,7 @@ body:
   - p: >
       Each time reported is the best of three runs. I'm running esbuild with
       <code>--bundle <wbr>--minify <wbr>--sourcemap</code>. I used the
-      <a href="https://github.com/TrySound/rollup-plugin-terser"><code>rollup-<wbr>plugin-<wbr>terser</code></a>
+      <a href="https://github.com/rollup/plugins/tree/master/packages/terser"><code>@rollup/<wbr>plugin-<wbr>terser</code></a>
       plugin because Rollup itself doesn't support minification. Webpack 5 uses
       <code>--mode=<wbr>production <wbr>--devtool=<wbr>sourcemap</code>.
       Parcel 2 uses the default options. Absolute speed is based on the total
