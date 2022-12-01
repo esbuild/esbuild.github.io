@@ -2,12 +2,6 @@ title: Plugins
 body:
   - h1: Plugins
 
-  - warning: >
-      The plugin API is new and still experimental. It may change in the future
-      before version 1.0.0 of esbuild as new use cases are uncovered. You can
-      follow [the tracking issue](https://github.com/evanw/esbuild/issues/111)
-      for updates about this feature.
-
   - p: >
       The plugin API allows you to inject code into various parts of the build
       process. Unlike the rest of the API, it's not available from the command
