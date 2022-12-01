@@ -6794,6 +6794,101 @@ body:
       the manifest file (or one of its child directories) for the manifest
       file to be found by esbuild.
 
+  - h2: Format Messages API
+
+  - p: >
+      This API call can be used to format the log errors and warnings returned
+      by the [build](#build-api) and [transform](#transform-api) APIs as a
+      string using the same formatting that esbuild itself uses. This is useful
+      if you want to customize the way esbuild's logging works, such as processing
+      the log messages before they are printed or printing them to somewhere other
+      than to the console. Here's an example:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      js: |
+        const formatted = require('esbuild').formatMessagesSync([
+          {
+            text: 'This is an error',
+            location: {
+              file: 'app.js',
+              line: 10,
+              column: 4,
+              length: 3,
+              lineText: 'let foo = bar',
+            },
+          },
+        ], {
+          kind: 'error',
+          color: false,
+          terminalWidth: 100,
+        })
+
+        console.log(formatted.join('\n'))
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+        import "strings"
+
+        func main() {
+          formatted := api.FormatMessages([]api.Message{
+            {
+              Text: "This is an error",
+              Location: &api.Location{
+                File:     "app.js",
+                Line:     10,
+                Column:   4,
+                Length:   3,
+                LineText: "let foo = bar",
+              },
+            },
+          }, api.FormatMessagesOptions{
+            Kind:          api.ErrorMessage,
+            Color:         false,
+            TerminalWidth: 100,
+          })
+
+          fmt.Printf("%s", strings.Join(formatted, "\n"))
+        }
+
+  - h4: Options
+
+  - p: >
+      The following options can be provided to control the formatting:
+
+  - example:
+      js: |
+        export interface FormatMessagesOptions {
+          kind: 'error' | 'warning';
+          color?: boolean;
+          terminalWidth?: number;
+        }
+
+      go: |
+        type FormatMessagesOptions struct {
+          Kind          MessageKind
+          Color         bool
+          TerminalWidth int
+        }
+
+  - ul:
+    - >
+      `kind`
+      <p>Controls whether these log messages are printed as errors or warnings.</p>
+    - >
+      `color`
+      <p>If this is `true`, Unix-style terminal escape codes are included for
+      colored output.</p>
+    - >
+      `terminalWidth`
+      <p>Provide a positive value to wrap long lines so that they don't overflow
+      past the provided column width. Provide `0` to disable word wrapping.</p>
+
   - h2: JS-specific details
 
   - p: >
