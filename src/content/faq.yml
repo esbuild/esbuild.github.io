@@ -167,11 +167,11 @@ body:
       '[webpack 5](https://webpack.js.org/)': 15.96
 
   - p: >
-      This benchmark uses the [Rome](https://github.com/facebookexperimental/rome)
-      build tool to approximate a large TypeScript codebase. All code must be
-      combined into a single minified bundle with source maps and the resulting
-      bundle must work correctly. The benchmark can be run with `make bench-rome`
-      in the [esbuild repo](https://github.com/evanw/esbuild).
+      This benchmark uses the old [Rome](https://github.com/rome/tools) code base
+      (prior to their Rust rewrite) to approximate a large TypeScript codebase. All
+      code must be combined into a single minified bundle with source maps and the
+      resulting bundle must work correctly. The benchmark can be run with
+      `make bench-rome` in the [esbuild repo](https://github.com/evanw/esbuild).
 
   - table: |
       | Bundler   |    Time | Relative slowdown | Absolute speed | Output size |
