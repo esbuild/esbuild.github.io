@@ -6863,7 +6863,7 @@ body:
 
   - example:
       js: |
-        export interface FormatMessagesOptions {
+        interface FormatMessagesOptions {
           kind: 'error' | 'warning';
           color?: boolean;
           terminalWidth?: number;
