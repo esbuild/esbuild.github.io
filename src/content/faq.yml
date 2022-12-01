@@ -191,10 +191,13 @@ body:
       with 16gb of RAM and with [macOS Spotlight](https://en.wikipedia.org/wiki/Spotlight_(software)) disabled.
 
   - p: >
-      The results don't include Rollup because I couldn't get it to work. I
-      tried <a href="https://github.com/rollup/plugins/tree/master/packages/typescript"><code>@rollup/<wbr>plugin-<wbr>typescript</code></a>
-      and <a href="https://github.com/rollup/plugins/tree/master/packages/sucrase"><code>@rollup/<wbr>plugin-<wbr>sucrase</code></a>
-      but they both failed with build errors relating to TypeScript miscompilation.
+      The results don't include Rollup because I couldn't get it to work for
+      reasons relating to TypeScript compilation. I tried
+      <a href="https://github.com/rollup/plugins/tree/master/packages/typescript"><code>@rollup/<wbr>plugin-<wbr>typescript</code></a>
+      but you can't disable type checking, and I tried
+      <a href="https://github.com/rollup/plugins/tree/master/packages/sucrase"><code>@rollup/<wbr>plugin-<wbr>sucrase</code></a>
+      but there's no way to provide a `tsconfig.json` file (which is required
+      for correct path resolution).
 
   - h2: Upcoming roadmap
 
