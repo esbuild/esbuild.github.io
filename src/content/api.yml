@@ -6862,6 +6862,8 @@ body:
       The following options can be provided to control the formatting:
 
   - example:
+      noCheck: true
+
       js: |
         interface FormatMessagesOptions {
           kind: 'error' | 'warning';
