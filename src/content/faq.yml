@@ -129,10 +129,10 @@ body:
 
   - figcaption: JavaScript benchmark
   - benchmark:
-      '[esbuild](https://esbuild.github.io/)': 0.33
-      '[parcel 2](https://parceljs.org/)': 32.48
-      '[rollup](https://rollupjs.org/) + [terser](https://terser.org/)': 34.95
-      '[webpack 5](https://webpack.js.org/)': 41.53
+      '[esbuild](https://esbuild.github.io/)': 0.38
+      '[parcel 2](https://parceljs.org/)': 30.50
+      '[rollup](https://rollupjs.org/) + [terser](https://terser.org/)': 32.07
+      '[webpack 5](https://webpack.js.org/)': 39.70
 
   - p: >
       This benchmark approximates a large JavaScript codebase by duplicating
@@ -144,10 +144,10 @@ body:
   - table: |
       | Bundler         |    Time | Relative slowdown | Absolute speed | Output size |
       | :-------------- | ------: | ----------------: | -------------: | ----------: |
-      | esbuild         |   0.33s |                1x |  1658.9 kloc/s |      5.80mb |
-      | parcel 2        |  32.48s |               98x |    16.9 kloc/s |      5.87mb |
-      | rollup + terser |  34.95s |              106x |    15.7 kloc/s |      5.81mb |
-      | webpack 5       |  41.53s |              126x |    13.2 kloc/s |      5.84mb |
+      | esbuild         |   0.38s |                1x |  1440.6 kloc/s |      5.80mb |
+      | parcel 2        |  30.50s |               80x |    17.9 kloc/s |      5.87mb |
+      | rollup + terser |  32.07s |               84x |    17.1 kloc/s |      5.81mb |
+      | webpack 5       |  39.70s |              104x |    13.8 kloc/s |      5.84mb |
 
   - p: >
       Each time reported is the best of three runs. I'm running esbuild with
@@ -163,8 +163,8 @@ body:
   - figcaption: TypeScript benchmark
   - benchmark:
       '[esbuild](https://esbuild.github.io/)': 0.10
-      '[parcel 2](https://parceljs.org/)': 8.73
-      '[webpack 5](https://webpack.js.org/)': 18.89
+      '[parcel 2](https://parceljs.org/)': 8.18
+      '[webpack 5](https://webpack.js.org/)': 15.96
 
   - p: >
       This benchmark uses the [Rome](https://github.com/facebookexperimental/rome)
@@ -177,8 +177,8 @@ body:
       | Bundler   |    Time | Relative slowdown | Absolute speed | Output size |
       | :-------- | ------: | ----------------: | -------------: | ----------: |
       | esbuild   |   0.10s |                1x |  1318.4 kloc/s |      0.97mb |
-      | parcel 2  |   8.73s |               87x |    15.1 kloc/s |      0.97mb |
-      | webpack 5 |  18.89s |              189x |     7.0 kloc/s |      1.27mb |
+      | parcel 2  |   8.18s |               82x |    16.1 kloc/s |      0.97mb |
+      | webpack 5 |  15.96s |              160x |     8.3 kloc/s |      1.27mb |
 
   - p: >
       Each time reported is the best of three runs. I'm running esbuild with
