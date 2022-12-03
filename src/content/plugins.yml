@@ -1391,7 +1391,7 @@ body:
 
   - p: >
       When a plugin returns a result from an [on-resolve callback](#on-resolve),
-      the result completely replaces esbuilds built-in path resolution. This gives
+      the result completely replaces esbuild's built-in path resolution. This gives
       the plugin complete control over how path resolution works, but it means
       that the plugin may have to reimplement some of the behavior that esbuild
       already has built-in if it wants to have similar behavior. For example,
