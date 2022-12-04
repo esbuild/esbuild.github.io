@@ -6640,9 +6640,9 @@ body:
       While the fact that `/* @__PURE__ */` only works on call expressions
       can sometimes make code more verbose, a big benefit of this syntax is
       that it's portable across many other tools in the JavaScript ecosystem
-      including the popular [UglifyJS](github.com/mishoo/uglifyjs) and
-      [Terser](github.com/terser/terser) JavaScript minifiers (which are
-      used by other major tools including [Webpack](github.com/webpack/webpack)
+      including the popular [UglifyJS](https://github.com/mishoo/uglifyjs) and
+      [Terser](https://github.com/terser/terser) JavaScript minifiers (which are
+      used by other major tools including [Webpack](https://github.com/webpack/webpack)
       and [Parcel](https://github.com/parcel-bundler/parcel)).
 
   - p: >

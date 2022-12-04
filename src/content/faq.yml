@@ -291,7 +291,7 @@ body:
       Even though esbuild's version is not yet 1.0.0, effort is still made to
       keep the API stable. Patch versions are intended for backwards-compatible
       changes and minor versions are intended for backwards-incompatible changes
-      (as [recommended by npm](https://docs.npmjs.com/misc/semver)). If you
+      (as [recommended by npm](https://docs.npmjs.com/about-semantic-versioning)). If you
       plan to use esbuild for something real, you should either pin the exact
       version (maximum safety) or pin the major and minor versions (only accept
       backwards-compatible upgrades).

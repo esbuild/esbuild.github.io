@@ -31,7 +31,7 @@ body:
   - h2: Using plugins
   - p: >
       An esbuild plugin is an object with a `name` and a `setup` function. They
-      are passed in an array to the [build API](/api/#build) call. The `setup`
+      are passed in an array to the [build API](/api/#build-api) call. The `setup`
       function is run once for each build API call.
 
   - p: >
