@@ -5,7 +5,7 @@ index:
     - blockquote: An extremely fast JavaScript bundler
 
     - benchmark.animated:
-        '[esbuild](https://esbuild.github.io/)': 0.38
+        '[esbuild](https://esbuild.github.io/)': 0.37
         '[parcel 2](https://parceljs.org/)': 30.50
         '[rollup](https://rollupjs.org/) + [terser](https://terser.org/)': 32.07
         '[webpack 5](https://webpack.js.org/)': 39.70
