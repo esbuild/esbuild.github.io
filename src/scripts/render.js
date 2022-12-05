@@ -149,7 +149,7 @@ function generateNav(key) {
   return nav.join('')
 }
 
-function renderBenchmarkSVG(entries) {
+function renderBenchmarkSVG(entries, { dark }) {
   let times = Object.entries(entries)
   let max = 0
   for (let [_, time] of times) {
@@ -168,19 +168,11 @@ function renderBenchmarkSVG(entries) {
   let height = topMargin + topHeight + bottomHeight
   let horizontalScale = (rightWidth - 100) / max
   let horizontalStep = max > 90 ? 30 : max > 30 ? 10 : 5
+  let textFill = dark ? ' fill="#C9D1D9"' : ''
   let svg = []
 
   // Begin chart
   svg.push(`<svg width="${width}" height="${height}" fill="black" font-family="sans-serif" font-size="13px" xmlns="http://www.w3.org/2000/svg">`)
-
-  // Github colors in dark mode for the readme
-  svg.push(`  <style>`)
-  svg.push(`    @media (prefers-color-scheme: dark) {`)
-  svg.push(`      #bg { fill: #0D1116; }`)
-  svg.push(`      text { fill: #C9D1D9; }`)
-  svg.push(`    }`)
-  svg.push(`  </style>`)
-  svg.push(`  <rect id="bg" width="${width}" height="${height}" fill="#FFFFFF"/>`)
 
   // Horizontal axis bars
   for (let i = 0; i * horizontalScale < rightWidth; i += horizontalStep) {
@@ -199,15 +191,15 @@ function renderBenchmarkSVG(entries) {
     let bold = i === 0 ? ' font-weight="bold"' : ''
     let label = stripTagsFromMarkdown(name)
     svg.push(`  <rect x="${leftWidth}" y="${barY}" width="${w}" height="${barH}" fill="#FFCF00"/>`)
-    svg.push(`  <text x="${leftWidth - labelMargin}" y="${y + h / 2}" text-anchor="end" dominant-baseline="middle"${bold}>${label}</text>`)
-    svg.push(`  <text x="${leftWidth + labelMargin + w}" y="${y + h / 2}" dominant-baseline="middle"${bold}>${escapeHTML(time.toFixed(2))}s</text>`)
+    svg.push(`  <text x="${leftWidth - labelMargin}" y="${y + h / 2}" text-anchor="end" dominant-baseline="middle"${bold}${textFill}>${label}</text>`)
+    svg.push(`  <text x="${leftWidth + labelMargin + w}" y="${y + h / 2}" dominant-baseline="middle"${bold}${textFill}>${escapeHTML(time.toFixed(2))}s</text>`)
   }
 
   // Horizontal labels
   for (let i = 0; i * horizontalScale < rightWidth; i += horizontalStep) {
     let x = leftWidth + i * horizontalScale
     let y = topMargin + topHeight + labelMargin / 2
-    svg.push(`  <text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="hanging">${escapeHTML(i + 's')}</text>`)
+    svg.push(`  <text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="hanging"${textFill}>${escapeHTML(i + 's')}</text>`)
   }
 
   // End chart
@@ -500,8 +492,10 @@ async function generateMain(key, main) {
 
     if (tag === 'benchmark' || tag === 'benchmark.animated') {
       if (key === 'index') {
-        const svg = renderBenchmarkSVG(value);
-        fs.writeFileSync(path.join(repoDir, 'benchmark.svg'), svg);
+        const svgLight = renderBenchmarkSVG(value, { dark: false });
+        const svgDark = renderBenchmarkSVG(value, { dark: true });
+        fs.writeFileSync(path.join(repoDir, 'benchmark-light.svg'), svgLight);
+        fs.writeFileSync(path.join(repoDir, 'benchmark-dark.svg'), svgDark);
       }
 
       return renderBenchmark(value, {

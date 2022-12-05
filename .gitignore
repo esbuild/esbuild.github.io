@@ -1,5 +1,6 @@
 .DS_Store
-/benchmark.svg
+/benchmark-light.svg
+/benchmark-dark.svg
 /node_modules/
 /out/
 /temp/
