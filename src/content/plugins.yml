@@ -1414,7 +1414,10 @@ body:
           name: 'example',
           setup(build) {
             build.onResolve({ filter: /^example$/ }, async () => {
-              const result = await build.resolve('./foo', { resolveDir: './bar' })
+              const result = await build.resolve('./foo', {
+                kind: 'import-statement',
+                resolveDir: './bar',
+              })
               if (result.errors.length > 0) {
                 return { errors: result.errors }
               }
@@ -1441,7 +1444,10 @@ body:
           Setup: func(build api.PluginBuild) {
             build.OnResolve(api.OnResolveOptions{Filter: `^example$`},
               func(api.OnResolveArgs) (api.OnResolveResult, error) {
-                result := build.Resolve("./foo", api.ResolveOptions{ResolveDir: "./bar"})
+                result := build.Resolve("./foo", api.ResolveOptions{
+                  Kind:       api.ResolveJSImportStatement,
+                  ResolveDir: "./bar",
+                })
                 if len(result.Errors) > 0 {
                   return api.OnResolveResult{Errors: result.Errors}, nil
                 }
@@ -1530,10 +1536,10 @@ body:
 
       js: |
         interface ResolveOptions {
+          kind: ResolveKind;
           importer?: string;
           namespace?: string;
           resolveDir?: string;
-          kind?: ResolveKind;
           pluginData?: any;
         }
 
@@ -1548,10 +1554,10 @@ body:
 
       go: |
         type ResolveOptions struct {
+          Kind       ResolveKind
           Importer   string
           Namespace  string
           ResolveDir string
-          Kind       ResolveKind
           PluginData interface{}
         }
 
@@ -1566,6 +1572,17 @@ body:
         )
 
   - ul:
+    - >
+      `kind`
+      <p>
+      This tells esbuild how the path was imported, which can affect path
+      resolution. For example, [node's path resolution rules](https://nodejs.org/api/packages.html#conditional-exports)
+      say that paths imported using `'require-call'` should respect [conditional
+      package imports](/api/#conditions) in the `"require"` section in `package.json` while paths
+      imported using `'import-statement'` should respect conditional package
+      imports in the `"import"` section instead.
+      </p>
+
     - >
       `importer`
       <p>
@@ -1591,17 +1608,6 @@ body:
       path resolution to be able to find a given file, even for non-relative
       package paths (since esbuild needs to know where the `node_modules`
       directory is).
-      </p>
-
-    - >
-      `kind`
-      <p>
-      This tells esbuild how the path was imported, which can affect path
-      resolution. For example, [node's path resolution rules](https://nodejs.org/api/packages.html#conditional-exports)
-      say that paths imported using `'require-call'` should respect [conditional
-      package imports](/api/#conditions) in the `"require"` section in `package.json` while paths
-      imported using `'import-statement'` should respect conditional package
-      imports in the `"import"` section instead.
       </p>
 
     - >

@@ -80,8 +80,8 @@ body:
       | [Hashbang grammar](https://github.com/tc39/proposal-hashbang)                                                          | `esnext`                             | `#!/usr/bin/env node`       |
 
   - p: >
-      See also [the list of finished ECMAScript proposals](https://github.com/tc39/proposals/blob/master/finished-proposals.md)
-      and [the list of active ECMAScript proposals](https://github.com/tc39/proposals/blob/master/README.md).
+      See also [the list of finished ECMAScript proposals](https://github.com/tc39/proposals/blob/main/finished-proposals.md)
+      and [the list of active ECMAScript proposals](https://github.com/tc39/proposals/blob/main/README.md).
       Note that while transforming code containing top-level await is
       supported, bundling code containing top-level await is only supported
       when the [output format](/api/#format) is set to [`esm`](/api/#format-esm).
@@ -729,7 +729,7 @@ body:
         func main() {
           result := api.Build(api.BuildOptions{
             EntryPoints: []string{"app.jsx"},
-            JSXMode:     api.JSXModeAutomatic,
+            JSX:         api.JSXAutomatic,
             Outfile:     "out.js",
           })
 
@@ -1176,10 +1176,17 @@ body:
 
   - p: >
       The data URL includes a best guess at the MIME type based on the file
-      extension and/or the file contents, and will look something like this:
+      extension and/or the file contents, and will look something like this
+      for binary data:
 
   - pre: |
       data:image/png;base64,iVBORw0KGgo=
+
+  - p: >
+      ...or like this for textual data:
+
+  - pre: |
+      data:image/svg+xml,<svg></svg>%0A
 
   - p: >
       Note that this loader is not enabled by default. You will need to

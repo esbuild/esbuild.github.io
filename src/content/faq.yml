@@ -339,12 +339,12 @@ body:
       do not publish malicious code and I take supply chain security very seriously.
 
   - p: >
-      Virtually all of esbuild's code is first-party code except for [one dependency](https://github.com/evanw/esbuild/blob/master/go.mod)
+      Virtually all of esbuild's code is first-party code except for [one dependency](https://github.com/evanw/esbuild/blob/main/go.mod)
       on Google's set of supplemental Go packages. My development work is done
       on different machine that is isolated from the one I use to publish builds.
       I have done additional work to ensure that esbuild's published builds are
       completely reproducible and after every release, published builds are
-      [automatically compared](https://github.com/evanw/esbuild/blob/master/.github/workflows/validate.yml)
+      [automatically compared](https://github.com/evanw/esbuild/blob/main/.github/workflows/validate.yml)
       to ones locally-built in an unrelated environment to ensure that they are
       bitwise identical (i.e. that the Go compiler itself has not been compromised).
       You can also build esbuild from source yourself and compare your build artifacts

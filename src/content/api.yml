@@ -15,7 +15,7 @@ body:
   - p: >
       If you are using JavaScript be sure to check out the
       [JS-specific details](#js-specific-details) section below. You may also
-      find the [TypeScript type definitions](https://github.com/evanw/esbuild/blob/master/lib/shared/types.ts)
+      find the [TypeScript type definitions](https://github.com/evanw/esbuild/blob/main/lib/shared/types.ts)
       for esbuild helpful as a reference. If you are using Go be sure to check
       out the automatically generated [Go documentation](https://pkg.go.dev/github.com/evanw/esbuild/pkg/api).
 
@@ -1832,12 +1832,27 @@ body:
       </p>
     - >
       <p>
+      If no custom [conditions](#conditions) are configured, the Webpack-specific
+      `module` condition is also included. The `module` condition is used by
+      package authors to provide a tree-shakable ESM alternative to a CommonJS
+      file without creating a [dual package hazard](https://nodejs.org/api/packages.html#dual-package-hazard).
+      </p>
+    - >
+      <p>
       When using the [build API](#build-api), all <code>process.<wbr>env.<wbr>NODE_ENV</code>
       expressions are automatically [defined](#define) to `"production"` if all
       [minification](#minify) options are enabled and `"development"` otherwise.
       This only happens if `process`, `process.env`, and `process.env.NODE_ENV`
       are not already defined. This substitution is necessary to avoid React-based
       code crashing instantly (since `process` is a node API, not a web API).
+      </p>
+    - >
+      <p>
+      The character sequence `</script>` will be escaped in JavaScript code and
+      the character sequence `</style>` will be escaped in CSS code. This is
+      done in case you inline esbuild's output directly into an HTML file. This
+      can be disabled with esbuild's [supported](#supported) feature by setting
+      `inline-script` (for JavaScript) and/or `inline-style` (for CSS) to `false`.
       </p>
 
   - p: >
@@ -1876,6 +1891,13 @@ body:
       The [conditions](#conditions) setting automatically includes the `node`
       condition. This changes how the `exports` field in `package.json` files
       is interpreted to prefer node-specific code.
+      </p>
+    - >
+      <p>
+      If no custom [conditions](#conditions) are configured, the Webpack-specific
+      `module` condition is also included. The `module` condition is used by
+      package authors to provide a tree-shakable ESM alternative to a CommonJS
+      file without creating a [dual package hazard](https://nodejs.org/api/packages.html#dual-package-hazard).
       </p>
 
   - p: >
@@ -3064,10 +3086,10 @@ body:
         - expect: |
             ...
 
-              out.js                                                                    27.4kb  100.0%
-               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   70.2%
-               ├ node_modules/react/cjs/react.production.min.js                          5.9kb   21.5%
-               ├ node_modules/object-assign/index.js                                     962b     3.4%
+              out.js                                                                    26.8kb  100.0%
+               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   71.7%
+               ├ node_modules/react/cjs/react.production.min.js                          5.9kb   22.0%
+               ├ node_modules/object-assign/index.js                                     962b     3.5%
                ├ example.jsx                                                             137b     0.5%
                ├ node_modules/react-dom/server.browser.js                                 50b     0.2%
                └ node_modules/react/index.js                                              50b     0.2%
@@ -3139,14 +3161,14 @@ body:
         - expect: |
             ...
 
-              out.js ─────────────────────────────────────────────────────────────────── 27.4kb ─ 100.0%
-               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 70.2%
+              out.js ─────────────────────────────────────────────────────────────────── 26.8kb ─ 100.0%
+               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 71.7%
                │  └ node_modules/react-dom/server.browser.js
                │     └ example.jsx
-               ├ node_modules/react/cjs/react.production.min.js ───────────────────────── 5.9kb ── 21.5%
+               ├ node_modules/react/cjs/react.production.min.js ───────────────────────── 5.9kb ── 22.0%
                │  └ node_modules/react/index.js
                │     └ example.jsx
-               ├ node_modules/object-assign/index.js ──────────────────────────────────── 962b ──── 3.4%
+               ├ node_modules/object-assign/index.js ──────────────────────────────────── 962b ──── 3.5%
                │  └ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js
                │     └ node_modules/react-dom/server.browser.js
                │        └ example.jsx
@@ -4381,7 +4403,7 @@ body:
 
         func main() {
           result := api.Transform("<div/>", api.TransformOptions{
-            JSXMode: api.JSXModePreserve,
+            JSXMode: api.JSXPreserve,
             Loader:  api.LoaderJSX,
           })
 
@@ -4439,7 +4461,7 @@ body:
           result := api.Build(api.BuildOptions{
             EntryPoints: []string{"app.jsx"},
             JSXDev:      true,
-            JSXMode:     api.JSXModeAutomatic,
+            JSX:         api.JSXAutomatic,
             Outfile:     "out.js",
           })
 
@@ -4652,7 +4674,7 @@ body:
           result := api.Build(api.BuildOptions{
             EntryPoints:     []string{"app.jsx"},
             JSXImportSource: "preact",
-            JSXMode:         api.JSXModeAutomatic,
+            JSX:             api.JSXAutomatic,
             Outfile:         "out.js",
           })
 
@@ -4813,8 +4835,7 @@ body:
       <p>`external`<br>Move all legal comments to a `.LEGAL.txt` file but to not link to them.</p>
 
   - p: >
-      The default behavior is `eof` when [bundle](#bundle) is enabled and
-      `inline` otherwise. Setting the legal comment mode looks like this:
+      The default behavior is `none`. Setting the legal comment mode looks like this:
 
   - example:
       in:
@@ -4851,7 +4872,7 @@ body:
       comment must appear in a context where multiple statements or rules
       are allowed such as in the top-level scope or in a statement or rule
       block. So comments inside expressions or at the declaration level are
-      not considered license comments.
+      not considered legal comments.
 
   - h3: Log level
 
@@ -5722,7 +5743,7 @@ body:
             EntryPoints: []string{"app.js"},
             Bundle:      true,
             Outdir:      "dist",
-            OutExtensions: map[string]string{
+            OutExtension: map[string]string{
               ".js": ".mjs",
             },
             Write: true,
@@ -6386,7 +6407,6 @@ body:
       <li>`async-await`</li>
       <li>`async-generator`</li>
       <li>`bigint`</li>
-      <li>`class`</li>
       <li>`class-field`</li>
       <li>`class-private-accessor`</li>
       <li>`class-private-brand-check`</li>
@@ -6397,6 +6417,7 @@ body:
       <li>`class-private-static-method`</li>
       <li>`class-static-blocks`</li>
       <li>`class-static-field`</li>
+      <li>`class`</li>
       <li>`const-and-let`</li>
       <li>`default-argument`</li>
       <li>`destructuring`</li>
@@ -6409,6 +6430,7 @@ body:
       <li>`hashbang`</li>
       <li>`import-assertions`</li>
       <li>`import-meta`</li>
+      <li>`inline-script`</li>
       <li>`logical-assignment`</li>
       <li>`nested-rest-binding`</li>
       <li>`new-target`</li>
@@ -6436,10 +6458,11 @@ body:
       <p>**CSS:**</p>
       <ul>
       <li>`hex-rgba`</li>
-      <li>`rebecca-purple`</li>
-      <li>`modern-rgb-hsl`</li>
+      <li>`inline-style`</li>
       <li>`inset-property`</li>
+      <li>`modern-rgb-hsl`</li>
       <li>`nesting`</li>
+      <li>`rebecca-purple`</li>
       </ul>
 
   - h3: Tree shaking
