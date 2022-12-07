@@ -590,7 +590,10 @@ changed either.
   <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;example&#x27;</span>,
   <span class="hljs-function"><span class="hljs-title">setup</span>(<span class="hljs-params">build</span>)</span> {
     build.onResolve({ <span class="hljs-attr">filter</span>: <span class="hljs-regexp">/^example$/</span> }, <span class="hljs-keyword">async</span> () =&gt; {
-      <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> build.resolve(<span class="hljs-string">&#x27;./foo&#x27;</span>, { <span class="hljs-attr">resolveDir</span>: <span class="hljs-string">&#x27;./bar&#x27;</span> })
+      <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> build.resolve(<span class="hljs-string">&#x27;./foo&#x27;</span>, {
+        <span class="hljs-attr">kind</span>: <span class="hljs-string">&#x27;import-statement&#x27;</span>,
+        <span class="hljs-attr">resolveDir</span>: <span class="hljs-string">&#x27;./bar&#x27;</span>,
+      })
       <span class="hljs-keyword">if</span> (result.errors.length &gt; <span class="hljs-number">0</span>) {
         <span class="hljs-keyword">return</span> { <span class="hljs-attr">errors</span>: result.errors }
       }
@@ -615,7 +618,10 @@ changed either.
   Setup: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(build api.PluginBuild)</span></span> {
     build.OnResolve(api.OnResolveOptions{Filter: <span class="hljs-string">`^example$`</span>},
       <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(api.OnResolveArgs)</span> <span class="hljs-params">(api.OnResolveResult, error)</span></span> {
-        result := build.Resolve(<span class="hljs-string">&quot;./foo&quot;</span>, api.ResolveOptions{ResolveDir: <span class="hljs-string">&quot;./bar&quot;</span>})
+        result := build.Resolve(<span class="hljs-string">&quot;./foo&quot;</span>, api.ResolveOptions{
+          Kind:       api.ResolveJSImportStatement,
+          ResolveDir: <span class="hljs-string">&quot;./bar&quot;</span>,
+        })
         <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
           <span class="hljs-keyword">return</span> api.OnResolveResult{Errors: result.Errors}, <span class="hljs-literal">nil</span>
         }
@@ -641,10 +647,10 @@ changed either.
 <a href="javascript:void 0" class="go2">Go</a>
       </div>
 <pre class="switchable js2">interface ResolveOptions {
+  <span class="hljs-attr">kind</span>: ResolveKind;
   importer?: string;
   namespace?: string;
   resolveDir?: string;
-  kind?: ResolveKind;
   pluginData?: any;
 }
 
@@ -657,10 +663,10 @@ type ResolveKind =
   | <span class="hljs-string">&#x27;import-rule&#x27;</span>
   | <span class="hljs-string">&#x27;url-token&#x27;</span></pre>
 <pre class="switchable go2"><span class="hljs-keyword">type</span> ResolveOptions <span class="hljs-keyword">struct</span> {
+  Kind       ResolveKind
   Importer   <span class="hljs-keyword">string</span>
   Namespace  <span class="hljs-keyword">string</span>
   ResolveDir <span class="hljs-keyword">string</span>
-  Kind       ResolveKind
   PluginData <span class="hljs-keyword">interface</span>{}
 }
 
@@ -672,7 +678,7 @@ type ResolveKind =
   ResolveJSRequireResolve  ResolveKind
   ResolveCSSImportRule     ResolveKind
   ResolveCSSURLToken       ResolveKind
-)</pre><ul><li><code>importer</code> <p> If set, this is interpreted as the path of the module containing this import to be resolved. This affects plugins with <code>onResolve</code> callbacks that check the <code>importer</code> value. </p></li><li><code>namespace</code> <p> If set, this is interpreted as the namespace of the module containing this import to be resolved. This affects plugins with <code>onResolve</code> callbacks that check the <code>namespace</code> value. You can read more about namespaces <a href="#namespaces">here</a>. </p></li><li><code>resolveDir</code> <p> This is the file system directory to use when resolving an import path to a real path on the file system. This must be set for esbuild's built-in path resolution to be able to find a given file, even for non-relative package paths (since esbuild needs to know where the <code>node_modules</code> directory is). </p></li><li><code>kind</code> <p> This tells esbuild how the path was imported, which can affect path resolution. For example, <a href="https://nodejs.org/api/packages.html#conditional-exports">node's path resolution rules</a> say that paths imported using <code>'require-call'</code> should respect <a href="/api/#conditions">conditional package imports</a> in the <code>&quot;require&quot;</code> section in <code>package.json</code> while paths imported using <code>'import-statement'</code> should respect conditional package imports in the <code>&quot;import&quot;</code> section instead. </p></li><li><code>pluginData</code> <p> This property can be used to pass custom data to whatever <a href="#on-resolve">on-resolve callbacks</a> match this import path. The meaning of this data is left entirely up to you. </p></li></ul><h3 id="resolve-results"><a class="permalink" href="#resolve-results">#</a>Resolve results</h3><p>The <code>resolve</code> function returns an object that's very similar to what plugins can <a href="#on-resolve-results">return from an <code>onResolve</code> callback</a>. It has the following properties:</p><div class="switcher">
+)</pre><ul><li><code>kind</code> <p> This tells esbuild how the path was imported, which can affect path resolution. For example, <a href="https://nodejs.org/api/packages.html#conditional-exports">node's path resolution rules</a> say that paths imported using <code>'require-call'</code> should respect <a href="/api/#conditions">conditional package imports</a> in the <code>&quot;require&quot;</code> section in <code>package.json</code> while paths imported using <code>'import-statement'</code> should respect conditional package imports in the <code>&quot;import&quot;</code> section instead. </p></li><li><code>importer</code> <p> If set, this is interpreted as the path of the module containing this import to be resolved. This affects plugins with <code>onResolve</code> callbacks that check the <code>importer</code> value. </p></li><li><code>namespace</code> <p> If set, this is interpreted as the namespace of the module containing this import to be resolved. This affects plugins with <code>onResolve</code> callbacks that check the <code>namespace</code> value. You can read more about namespaces <a href="#namespaces">here</a>. </p></li><li><code>resolveDir</code> <p> This is the file system directory to use when resolving an import path to a real path on the file system. This must be set for esbuild's built-in path resolution to be able to find a given file, even for non-relative package paths (since esbuild needs to know where the <code>node_modules</code> directory is). </p></li><li><code>pluginData</code> <p> This property can be used to pass custom data to whatever <a href="#on-resolve">on-resolve callbacks</a> match this import path. The meaning of this data is left entirely up to you. </p></li></ul><h3 id="resolve-results"><a class="permalink" href="#resolve-results">#</a>Resolve results</h3><p>The <code>resolve</code> function returns an object that's very similar to what plugins can <a href="#on-resolve-results">return from an <code>onResolve</code> callback</a>. It has the following properties:</p><div class="switcher">
 <a href="javascript:void 0" class="js2">JS</a>
 <a href="javascript:void 0" class="go2">Go</a>
       </div>
