@@ -4403,8 +4403,8 @@ body:
 
         func main() {
           result := api.Transform("<div/>", api.TransformOptions{
-            JSXMode: api.JSXPreserve,
-            Loader:  api.LoaderJSX,
+            JSX:    api.JSXPreserve,
+            Loader: api.LoaderJSX,
           })
 
           if len(result.Errors) == 0 {
