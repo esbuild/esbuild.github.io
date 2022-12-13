@@ -217,6 +217,7 @@ body:
     - Outbase
     - Outdir
     - Outfile
+    - Packages
     - Platform
     - Preserve symlinks
     - Public path
@@ -1753,6 +1754,62 @@ body:
             os.Exit(1)
           }
         }
+
+  - h3: Packages
+
+  - p: >
+      Use this setting to exclude all of your package's dependencies from the bundle.
+      This is useful when [bundling for node](/getting-started/#bundling-for-node)
+      because many npm packages use node-specific features that esbuild doesn't
+      support while bundling (such as `__dirname`, `import.meta.url`, `fs.readFileSync`,
+      and `*.node` native binary modules). Using it looks like this:
+
+  - example:
+      in:
+        app.js: 'import "pkg"'
+
+      cli: |
+        esbuild app.js --bundle --packages=external
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          packages: 'external',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Packages:    api.PackagesExternal,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Enabling this automatically marks all import paths that look like npm
+      packages (i.e. that don't start with a `.` or `..` path component and
+      that aren't absolute paths) as external. It has the same effect as
+      manually passing each dependency to [external](#external) but is more
+      concise. If you want to customize which of your dependencies are
+      external and which ones aren't, then you should be using
+      [external](#external) instead of this setting.
+
+  - p: >
+      Note that this setting only has an effect when [bundling](#bundle) is
+      enabled. Also note that marking an import path as external happens after
+      the import path is rewritten by any configured [aliases](#alias), so the
+      alias feature still has an effect when this setting is used.
 
   - h3: Platform
 
@@ -5133,7 +5190,7 @@ body:
   - p: >
       When you import a package in node, the `main` field in that package's
       `package.json` file determines which file is imported (along with
-      [a lot of other rules](https://nodejs.org/api/modules.html#modules_all_together)).
+      [a lot of other rules](https://nodejs.org/api/modules.html#all-together)).
       Major JavaScript bundlers including esbuild let you specify additional
       `package.json` fields to try when resolving a package. There are at least
       three such fields commonly in use:

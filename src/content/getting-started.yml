@@ -267,21 +267,22 @@ body:
       are many node-specific features that esbuild doesn't support while
       bundling such as `__dirname`, `import.meta.url`, `fs.readFileSync`,
       and `*.node` native binary modules. You can exclude all of your
-      dependencies from the bundle by marking them as [external](/api/#external):
+      dependencies from the bundle by setting [packages](/api/#packages)
+      to external:
 
   - example:
       in:
         app.jsx: '<div/>'
 
       cli: |
-        esbuild app.jsx --bundle --platform=node --external:./node_modules/*
+        esbuild app.jsx --bundle --platform=node --packages=external
 
       js: |
         require('esbuild').buildSync({
           entryPoints: ['app.jsx'],
           bundle: true,
           platform: 'node',
-          external: ['./node_modules/*'],
+          packages: 'external',
           outfile: 'out.js',
         })
 
@@ -296,7 +297,7 @@ body:
             EntryPoints: []string{"app.jsx"},
             Bundle:      true,
             Platform:    api.PlatformNode,
-            External:    []string{"./node_modules/*"},
+            Packages:    api.PackagesExternal,
             Write:       true,
           })
 
