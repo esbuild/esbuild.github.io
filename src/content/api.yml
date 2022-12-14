@@ -5682,13 +5682,14 @@ body:
       interface):
 
   - pre.ts: |
-      interface Metadata {
+      interface Metafile {
         inputs: {
           [path: string]: {
             bytes: number
             imports: {
               path: string
               kind: string
+              external?: boolean
             }[]
           }
         }
@@ -5703,6 +5704,7 @@ body:
             imports: {
               path: string
               kind: string
+              external?: boolean
             }[]
             exports: string[]
             entryPoint?: string
