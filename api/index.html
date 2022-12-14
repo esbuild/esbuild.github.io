@@ -2943,13 +2943,14 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
   }
 
   ioutil.WriteFile(<span class="hljs-string">&quot;meta.json&quot;</span>, []<span class="hljs-keyword">byte</span>(result.Metafile), <span class="hljs-number">0644</span>)
-}</pre><p>This data can then be analyzed by other tools. For example, <a href="https://www.bundle-buddy.com/esbuild">bundle buddy</a> can consume esbuild's metadata format and generates a treemap visualization of the modules in your bundle and how much space each one takes up.</p><p>The metadata JSON format looks like this (described using a TypeScript interface):</p><pre><span class="hljs-keyword">interface</span> Metadata {
+}</pre><p>This data can then be analyzed by other tools. For example, <a href="https://www.bundle-buddy.com/esbuild">bundle buddy</a> can consume esbuild's metadata format and generates a treemap visualization of the modules in your bundle and how much space each one takes up.</p><p>The metadata JSON format looks like this (described using a TypeScript interface):</p><pre><span class="hljs-keyword">interface</span> Metafile {
   <span class="hljs-attr">inputs</span>: {
     [path: <span class="hljs-built_in">string</span>]: {
       <span class="hljs-attr">bytes</span>: <span class="hljs-built_in">number</span>
       <span class="hljs-attr">imports</span>: {
         <span class="hljs-attr">path</span>: <span class="hljs-built_in">string</span>
         <span class="hljs-attr">kind</span>: <span class="hljs-built_in">string</span>
+        external?: <span class="hljs-built_in">boolean</span>
       }[]
     }
   }
@@ -2964,6 +2965,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
       <span class="hljs-attr">imports</span>: {
         <span class="hljs-attr">path</span>: <span class="hljs-built_in">string</span>
         <span class="hljs-attr">kind</span>: <span class="hljs-built_in">string</span>
+        external?: <span class="hljs-built_in">boolean</span>
       }[]
       <span class="hljs-attr">exports</span>: <span class="hljs-built_in">string</span>[]
       entryPoint?: <span class="hljs-built_in">string</span>
