@@ -1385,3 +1385,56 @@ body:
       default value of the [asset names](/api/#asset-names) setting), and how
       the [import assertion](https://v8.dev/features/import-assertions) for JSON
       has been kept so the runtime will be able to load the JSON file.
+
+  - h2: Empty file
+  - p: 'Loader: `empty`'
+
+  - p: >
+      This loader tells tells esbuild to pretend that a file is empty. It can be
+      a helpful way to remove content from your bundle in certain situations.
+      For example, you can configure `.css` files to load with `empty` to prevent
+      esbuild from bundling CSS files that are imported into JavaScript files:
+
+  - example:
+      in:
+        app.js: |
+          import './styles.css'
+        styles.css: |
+          .should-not-be-bundled {
+            color: red;
+          }
+
+      cli: |
+        esbuild app.js --bundle --loader:.css=empty
+
+      js: |
+        require('esbuild').buildSync({
+          entryPoints: ['app.js'],
+          bundle: true,
+          loader: { '.css': 'empty' },
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            Bundle:      true,
+            Loader: map[string]api.Loader{
+              ".css": api.LoaderEmpty,
+            },
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      This loader also lets you remove imported assets from CSS files. For example,
+      you can configure `.png` files to load with `empty` so that references to
+      `.png` files in CSS code such as `url(image.png)` are replaced with `url()`.
