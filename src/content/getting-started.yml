@@ -540,6 +540,7 @@ body:
       const ts = 'let test: boolean = true'
       const result = await esbuild.transform(ts, { loader: 'ts' })
       console.log('result:', result)
+      esbuild.stop()
 
   - p: >
       Using WebAssembly instead of native means you do not need to specify Deno's
