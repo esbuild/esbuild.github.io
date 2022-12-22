@@ -1875,11 +1875,13 @@ body:
     - >
       <p>
       The [main fields](#main-fields) setting is set to <code>browser,<wbr>module,<wbr>main</code>
-      but with some additional special behavior. If a package supports `module`
-      and `main` but not `browser` then `main` is used instead of `module` if
-      that package is ever imported using `require()`. This behavior improves
-      compatibility with CommonJS modules that export a function by assigning
-      it to `module.exports`.
+      but with some additional special behavior: if a package provides `module`
+      and `main` entry points but not a `browser` entry point then `main` is
+      used instead of `module` if that package is ever imported using `require()`.
+      This behavior improves compatibility with CommonJS modules that export a
+      function by assigning it to `module.exports`. If you want to disable this
+      additional special behavior, you can explicitly set the [main fields](#main-fields)
+      setting to <code>browser,<wbr>module,<wbr>main</code>.
       </p>
     - >
       <p>
@@ -1893,6 +1895,8 @@ body:
       `module` condition is also included. The `module` condition is used by
       package authors to provide a tree-shakable ESM alternative to a CommonJS
       file without creating a [dual package hazard](https://nodejs.org/api/packages.html#dual-package-hazard).
+      You can prevent the `module` condition from being included by explicitly
+      configuring some custom conditions (even an empty list).
       </p>
     - >
       <p>
@@ -1955,6 +1959,8 @@ body:
       `module` condition is also included. The `module` condition is used by
       package authors to provide a tree-shakable ESM alternative to a CommonJS
       file without creating a [dual package hazard](https://nodejs.org/api/packages.html#dual-package-hazard).
+      You can prevent the `module` condition from being included by explicitly
+      configuring some custom conditions (even an empty list).
       </p>
 
   - p: >
@@ -3784,32 +3790,54 @@ body:
       `default`
       <p>
       This condition is always active. It is intended to come last and lets you
-      provide a fallback for when no other condition applies.
+      provide a fallback for when no other condition applies. This condition is
+      also active when you run your code natively in node.
       </p>
     - >
       `import`
       <p>
       This condition is only active when the import path is from an ESM `import`
       statement or `import()` expression. It can be used to provide ESM-specific
-      code.
+      code. This condition is also active when you run your code natively in node
+      (but only in an ESM context).
       </p>
     - >
       `require`
       <p>
       This condition is only active when the import path is from a CommonJS
-      `require()` call. It can be used to provide CommonJS-specific code.
+      `require()` call. It can be used to provide CommonJS-specific code. This
+      condition is also active when you run your code natively in node (but only
+      in a CommonJS context).
       </p>
     - >
       `browser`
       <p>
       This condition is only active when esbuild's [platform](#platform) setting
-      is set to `browser`. It can be used to provide browser-specific code.
+      is set to `browser`. It can be used to provide browser-specific code. This
+      condition is not active when you run your code natively in node.
       </p>
     - >
       `node`
       <p>
       This condition is only active when esbuild's [platform](#platform) setting
-      is set to `node`. It can be used to provide node-specific code.
+      is set to `node`. It can be used to provide node-specific code. This
+      condition is also active when you run your code natively in node.
+      </p>
+
+  - p: >
+      The following condition is also automatically included when the [platform](#platform)
+      is set to either `browser` or `node` and no custom conditions are
+      configured. If there are any custom conditions configured (even an empty
+      list) then this condition will no longer be automatically included:
+
+  - ul:
+    - >
+      `module`
+      <p>
+      This condition can be used to tell esbuild to pick the ESM variant for a
+      given import path to provide better tree-shaking when bundling. This
+      condition is not active when you run your code natively in node. It is
+      specific to bundlers, and originated from Webpack.
       </p>
 
   - p: >
@@ -3818,10 +3846,25 @@ body:
       that can cause bugs due to duplicate copies of your code's state in
       addition to bloating the resulting bundle. This is commonly known as the
       [dual package hazard](https://nodejs.org/docs/latest/api/packages.html#packages_dual_package_hazard).
-      The primary way of avoiding this is to put all of your code in the
-      `require` condition and have the `import` condition just be a light
-      wrapper that calls `require` on your package and re-exports the package
-      using ESM syntax.
+
+  - p: >
+      One way of avoiding the dual package hazard that works both for bundlers
+      and when running natively in node is to put all of your code in the
+      `require` condition as CommonJS and have the `import` condition just be a
+      light ESM wrapper that calls `require` on your package and re-exports the
+      package using ESM syntax. This approach doesn't provide good tree-shaking,
+      however, as esbuild doesn't tree-shake CommonJS modules.
+
+  - p: >
+      Another way of avoiding a dual package hazard is to use the bundler-specific
+      `module` condition to direct bundlers to always load the ESM version of your
+      package while letting node always fall back to the CommonJS version of
+      your package. Both `import` and `module` are intended to be used with ESM
+      but unlike `import`, the `module` condition is always active even if the
+      import path was loaded using a `require` call. This works well with bundlers
+      because bundlers support loading ESM using `require`, but it's not something
+      that can work with node because node deliberately doesn't implement loading
+      ESM using `require`.
 
   - h3: Drop
 
@@ -5241,10 +5284,9 @@ body:
 
   - p: >
       The default main fields depend on the current [platform](#platform)
-      setting and are essentially <code>browser,<wbr>module,<wbr>main</code>
-      for the browser and <code>main,<wbr>module</code> for node. These
-      defaults should be the most widely compatible with the existing package
-      ecosystem. But you can customize them like this if you want to:
+      setting. These defaults should be the most widely compatible with the
+      existing package ecosystem. But you can customize them like this if you
+      want to:
 
   - example:
       in:
@@ -5280,12 +5322,15 @@ body:
           }
         }
 
+  - h4#main-fields-for-package-authors: For package authors
+
   - p: >
-      For package authors: If you want to author a package that uses the
-      `browser` field in combination with the `module` field to fill out all
-      four entries in the full CommonJS-vs-ESM and browser-vs-node compatibility
-      matrix, you want to use the expanded form of the `browser` field that is a
-      map instead of just a string:
+      If you want to author a package that uses the `browser` field in
+      combination with the `module` field, then you'll probably want to fill
+      out **_all four entries_** in the full CommonJS-vs-ESM and
+      browser-vs-node compatibility matrix. For that you'll need to use the
+      expanded form of the `browser` field that is a map instead of just a
+      string:
 
   - pre.json: >
       {
@@ -5296,6 +5341,25 @@ body:
           "./node-esm.js": "./browser-esm.js"
         }
       }
+
+  - p: >
+      The `main` field is expected to be CommonJS while the `module` field is
+      expected to be ESM. The decision about which module format to use is
+      independent from the decision about whether to use a browser-specific
+      or node-specific variant. If you omit one of these four entries, then you
+      risk the wrong variant being chosen. For example, if you omit the entry
+      for the CommonJS browser build, then the CommonJS node build could be
+      chosen instead.
+
+  - p: >
+      Note that using `main`, `module`, and `browser` is the old way of doing
+      this. There is also a newer way to do this that you may prefer to use
+      instead: the [`exports` field](#how-conditions-work) in `package.json`.
+      It provides a different set of trade-offs. For example, it gives you more
+      precise control over imports for all sub-paths in your package (while
+      `main` fields only give you control over the entry point), but it may
+      cause your package to be imported multiple times depending on how you
+      configure it.
 
   - h3: Mangle props
 
