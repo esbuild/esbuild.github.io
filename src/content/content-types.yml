@@ -13,8 +13,7 @@ body:
   - p: >
       This loader is enabled by default for `.js`, `.cjs`, and `.mjs` files.
       The `.cjs` extension is used by node for CommonJS modules and the `.mjs`
-      extension is used by node for ECMAScript modules, although esbuild
-      doesn't make a distinction between the two.
+      extension is used by node for ECMAScript modules.
 
   - p: >
       Note that by default, esbuild's output will take advantage of all modern

@@ -1936,7 +1936,7 @@ body:
 
   - p: >
       _This example demonstrates: working with binary data, creating
-      virtual; modules using import statements, re-using the same path with
+      virtual modules using import statements, re-using the same path with
       different namespaces._
 
   - p: >
