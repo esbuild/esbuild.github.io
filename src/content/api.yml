@@ -1962,6 +1962,22 @@ body:
       You can prevent the `module` condition from being included by explicitly
       configuring some custom conditions (even an empty list).
       </p>
+    - >
+      <p>
+      When the [format](#format) is set to `cjs` but the entry point is ESM,
+      esbuild will add special annotations for any named exports to enable
+      importing those named exports using ESM syntax from the resulting
+      CommonJS file. Node's documentation has more information about
+      [node's detection of CommonJS named exports](https://nodejs.org/api/esm.html#commonjs-namespaces).
+      </p>
+    - >
+      <p>
+      The [`binary`](/content-types/#binary) loader will make use of node's
+      built-in [`Buffer.from`](https://nodejs.org/api/buffer.html#static-method-bufferfromstring-encoding)
+      API to decode the base64 data embedded in the bundle into a `Uint8Array`.
+      This is faster than what esbuild can do otherwise since it's implemented
+      by node in native code.
+      </p>
 
   - p: >
       When the platform is set to `neutral`:
