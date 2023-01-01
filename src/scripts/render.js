@@ -146,6 +146,7 @@ function generateNav(key) {
     }
   }
 
+  nav.push(`<li><a href="/analyze/">Bundle Size Analyzer</a></li>`)
   return nav.join('')
 }
 
@@ -556,6 +557,10 @@ async function generateMain(key, main) {
 
     if (tag === 'warning') {
       return `<div class="warning">${md.renderInline(value.trim())}</div>`
+    }
+
+    if (tag === 'info') {
+      return `<div class="info">${md.renderInline(value.trim())}</div>`
     }
 
     return `<${tag}>${await formatMessagesInText(md.renderInline(value.trim()))}</${tag}>`

@@ -299,6 +299,187 @@ body:
       directory that esbuild uses can be set with the [working directory](#working-directory)
       feature.
 
+  - h3: Analyze
+
+  - info: >
+      If you're looking for an interactive visualization, try esbuild's
+      [Bundle Size Analyzer](/analyze/) instead. You can upload your esbuild
+      [metafile](#metafile) to see a bundle size breakdown.
+
+  - p: >
+      Using the analyze feature generates an easy-to-read report about the contents of your bundle:
+
+  - example:
+      install:
+        react: '17.0.2'
+        react-dom: '17.0.2'
+
+      in:
+        example.jsx: |
+          import * as React from 'react'
+          import * as Server from 'react-dom/server'
+
+          let Greet = () => <h1>Hello, world!</h1>
+          console.log(Server.renderToString(<Greet />))
+
+      cli:
+        - $: |
+            esbuild --bundle example.jsx --outfile=out.js --minify --analyze
+
+        - expect: |
+            ...
+
+              out.js                                                                    27.6kb  100.0%
+               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   69.8%
+               ├ node_modules/react/cjs/react.production.min.js                          5.9kb   21.4%
+               ├ node_modules/object-assign/index.js                                     962b     3.4%
+               ├ example.jsx                                                             137b     0.5%
+               ├ node_modules/react-dom/server.browser.js                                 50b     0.2%
+               └ node_modules/react/index.js                                              50b     0.2%
+
+      js: |
+        (async () => {
+          let esbuild = require('esbuild')
+
+          let result = await esbuild.build({
+            entryPoints: ['example.jsx'],
+            outfile: 'out.js',
+            minify: true,
+            metafile: true,
+          })
+
+          let text = await esbuild.analyzeMetafile(result.metafile)
+          console.log(text)
+        })()
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "fmt"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints:       []string{"example.jsx"},
+            Outfile:           "out.js",
+            MinifyWhitespace:  true,
+            MinifyIdentifiers: true,
+            MinifySyntax:      true,
+            Metafile:          true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+
+          text := api.AnalyzeMetafile(result.Metafile, api.AnalyzeMetafileOptions{})
+          fmt.Printf("%s", text)
+        }
+
+  - p: >
+      The information shows which input files ended up in each output file as
+      well as the percentage of the output file they ended up taking up. If you
+      would like additional information, you can enable the "verbose" mode.
+      This currently shows the import path from the entry point to each input
+      file which tells you why a given input file is being included in the bundle:
+
+  - example:
+      install:
+        react: '17.0.2'
+        react-dom: '17.0.2'
+
+      in:
+        example.jsx: |
+          import * as React from 'react'
+          import * as Server from 'react-dom/server'
+
+          let Greet = () => <h1>Hello, world!</h1>
+          console.log(Server.renderToString(<Greet />))
+
+      cli:
+        - $: |
+            esbuild --bundle example.jsx --outfile=out.js --minify --analyze=verbose
+
+        - expect: |
+            ...
+
+              out.js ─────────────────────────────────────────────────────────────────── 27.6kb ─ 100.0%
+               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 69.8%
+               │  └ node_modules/react-dom/server.browser.js
+               │     └ example.jsx
+               ├ node_modules/react/cjs/react.production.min.js ───────────────────────── 5.9kb ── 21.4%
+               │  └ node_modules/react/index.js
+               │     └ example.jsx
+               ├ node_modules/object-assign/index.js ──────────────────────────────────── 962b ──── 3.4%
+               │  └ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js
+               │     └ node_modules/react-dom/server.browser.js
+               │        └ example.jsx
+               ├ example.jsx ──────────────────────────────────────────────────────────── 137b ──── 0.5%
+               ├ node_modules/react-dom/server.browser.js ──────────────────────────────── 50b ──── 0.2%
+               │  └ example.jsx
+               └ node_modules/react/index.js ───────────────────────────────────────────── 50b ──── 0.2%
+                  └ example.jsx
+
+      js: |
+        (async () => {
+          let esbuild = require('esbuild')
+
+          let result = await esbuild.build({
+            entryPoints: ['example.jsx'],
+            outfile: 'out.js',
+            minify: true,
+            metafile: true,
+          })
+
+          let text = await esbuild.analyzeMetafile(result.metafile, {
+            verbose: true,
+          })
+          console.log(text)
+        })()
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "fmt"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints:       []string{"example.jsx"},
+            Outfile:           "out.js",
+            MinifyWhitespace:  true,
+            MinifyIdentifiers: true,
+            MinifySyntax:      true,
+            Metafile:          true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+
+          text := api.AnalyzeMetafile(result.Metafile, api.AnalyzeMetafileOptions{
+            Verbose: true,
+          })
+          fmt.Printf("%s", text)
+        }
+
+  - p: >
+      This analysis is just a visualization of the information that can be found
+      in the [metafile](#metafile). If this analysis doesn't exactly suit your
+      needs, you are welcome to build your own visualization using the information
+      in the metafile.
+
+  - p: >
+      Note that this formatted analysis summary is intended for humans, not
+      machines. The specific formatting may change over time which will likely
+      break any tools that try to parse it. You should not write a tool to parse
+      this data. You should be using the information in the [JSON metadata file](#metafile)
+      instead. Everything in this visualization is derived from the JSON metadata
+      so you are not losing out on any information by not parsing esbuild's
+      formatted analysis summary.
+
   - h3: Bundle
 
   - p: >
@@ -3140,182 +3321,6 @@ body:
           }
         }
 
-  - h3: Analyze
-
-  - p: >
-      Using the analyze feature generates an easy-to-read report about the contents of your bundle:
-
-  - example:
-      install:
-        react: '17.0.2'
-        react-dom: '17.0.2'
-
-      in:
-        example.jsx: |
-          import * as React from 'react'
-          import * as Server from 'react-dom/server'
-
-          let Greet = () => <h1>Hello, world!</h1>
-          console.log(Server.renderToString(<Greet />))
-
-      cli:
-        - $: |
-            esbuild --bundle example.jsx --outfile=out.js --minify --analyze
-
-        - expect: |
-            ...
-
-              out.js                                                                    27.6kb  100.0%
-               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   69.8%
-               ├ node_modules/react/cjs/react.production.min.js                          5.9kb   21.4%
-               ├ node_modules/object-assign/index.js                                     962b     3.4%
-               ├ example.jsx                                                             137b     0.5%
-               ├ node_modules/react-dom/server.browser.js                                 50b     0.2%
-               └ node_modules/react/index.js                                              50b     0.2%
-
-      js: |
-        (async () => {
-          let esbuild = require('esbuild')
-
-          let result = await esbuild.build({
-            entryPoints: ['example.jsx'],
-            outfile: 'out.js',
-            minify: true,
-            metafile: true,
-          })
-
-          let text = await esbuild.analyzeMetafile(result.metafile)
-          console.log(text)
-        })()
-
-      go: |
-        package main
-
-        import "github.com/evanw/esbuild/pkg/api"
-        import "fmt"
-        import "os"
-
-        func main() {
-          result := api.Build(api.BuildOptions{
-            EntryPoints:       []string{"example.jsx"},
-            Outfile:           "out.js",
-            MinifyWhitespace:  true,
-            MinifyIdentifiers: true,
-            MinifySyntax:      true,
-            Metafile:          true,
-          })
-
-          if len(result.Errors) > 0 {
-            os.Exit(1)
-          }
-
-          text := api.AnalyzeMetafile(result.Metafile, api.AnalyzeMetafileOptions{})
-          fmt.Printf("%s", text)
-        }
-
-  - p: >
-      The information shows which input files ended up in each output file as
-      well as the percentage of the output file they ended up taking up. If you
-      would like additional information, you can enable the "verbose" mode.
-      This currently shows the import path from the entry point to each input
-      file which tells you why a given input file is being included in the bundle:
-
-  - example:
-      install:
-        react: '17.0.2'
-        react-dom: '17.0.2'
-
-      in:
-        example.jsx: |
-          import * as React from 'react'
-          import * as Server from 'react-dom/server'
-
-          let Greet = () => <h1>Hello, world!</h1>
-          console.log(Server.renderToString(<Greet />))
-
-      cli:
-        - $: |
-            esbuild --bundle example.jsx --outfile=out.js --minify --analyze=verbose
-
-        - expect: |
-            ...
-
-              out.js ─────────────────────────────────────────────────────────────────── 27.6kb ─ 100.0%
-               ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 69.8%
-               │  └ node_modules/react-dom/server.browser.js
-               │     └ example.jsx
-               ├ node_modules/react/cjs/react.production.min.js ───────────────────────── 5.9kb ── 21.4%
-               │  └ node_modules/react/index.js
-               │     └ example.jsx
-               ├ node_modules/object-assign/index.js ──────────────────────────────────── 962b ──── 3.4%
-               │  └ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js
-               │     └ node_modules/react-dom/server.browser.js
-               │        └ example.jsx
-               ├ example.jsx ──────────────────────────────────────────────────────────── 137b ──── 0.5%
-               ├ node_modules/react-dom/server.browser.js ──────────────────────────────── 50b ──── 0.2%
-               │  └ example.jsx
-               └ node_modules/react/index.js ───────────────────────────────────────────── 50b ──── 0.2%
-                  └ example.jsx
-
-      js: |
-        (async () => {
-          let esbuild = require('esbuild')
-
-          let result = await esbuild.build({
-            entryPoints: ['example.jsx'],
-            outfile: 'out.js',
-            minify: true,
-            metafile: true,
-          })
-
-          let text = await esbuild.analyzeMetafile(result.metafile, {
-            verbose: true,
-          })
-          console.log(text)
-        })()
-
-      go: |
-        package main
-
-        import "github.com/evanw/esbuild/pkg/api"
-        import "fmt"
-        import "os"
-
-        func main() {
-          result := api.Build(api.BuildOptions{
-            EntryPoints:       []string{"example.jsx"},
-            Outfile:           "out.js",
-            MinifyWhitespace:  true,
-            MinifyIdentifiers: true,
-            MinifySyntax:      true,
-            Metafile:          true,
-          })
-
-          if len(result.Errors) > 0 {
-            os.Exit(1)
-          }
-
-          text := api.AnalyzeMetafile(result.Metafile, api.AnalyzeMetafileOptions{
-            Verbose: true,
-          })
-          fmt.Printf("%s", text)
-        }
-
-  - p: >
-      This analysis is just a visualization of the information that can be found
-      in the [metafile](#metafile). If this analysis doesn't exactly suit your
-      needs, you are welcome to build your own visualization using the information
-      in the metafile.
-
-  - p: >
-      Note that this formatted analysis summary is intended for humans, not
-      machines. The specific formatting may change over time which will likely
-      break any tools that try to parse it. You should not write a tool to parse
-      this data. You should be using the information in the [JSON metadata file](#metafile)
-      instead. Everything in this visualization is derived from the JSON metadata
-      so you are not losing out on any information by not parsing esbuild's
-      formatted analysis summary.
-
   - h3: Asset names
 
   - p: >
@@ -5752,10 +5757,10 @@ body:
         }
 
   - p: >
-      This data can then be analyzed by other tools. For example,
-      [bundle buddy](https://www.bundle-buddy.com/esbuild) can consume esbuild's
-      metadata format and generates a treemap visualization of the modules in
-      your bundle and how much space each one takes up.
+      This data can then be analyzed by other tools. For an interactive
+      visualization, you can use esbuild's own [Bundle Size Analyzer](/analyze/).
+      For a quick textual analysis, you can use esbuild's build-in [analyze](#analyze)
+      feature. Or you can write your own analysis which uses this information.
 
   - p: >
       The metadata JSON format looks like this (described using a TypeScript
@@ -5770,6 +5775,7 @@ body:
               path: string
               kind: string
               external?: boolean
+              original?: string
             }[]
           }
         }

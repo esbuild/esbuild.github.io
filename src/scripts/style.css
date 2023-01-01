@@ -16,7 +16,7 @@ body:not([data-theme=dark]) {
   --svg: #444;
   --td: #ddd;
   --tr: #f7f7f7;
-  --warn: #222;
+  --warn-info: #222;
 }
 
 /* Theme: dark (JS triggered) */
@@ -37,7 +37,7 @@ body[data-theme=dark] {
   --svg: #aaa;
   --td: #333;
   --tr: #151515;
-  --warn: #ddd;
+  --warn-info: #ddd;
 }
 
 /* Theme: dark (JS disabled) */
@@ -59,7 +59,7 @@ body[data-theme=dark] {
     --svg: #aaa;
     --td: #333;
     --tr: #151515;
-    --warn: #ddd;
+    --warn-info: #ddd;
   }
 }
 
@@ -309,6 +309,20 @@ p {
   content: '!';
   font: bold 43px/43px serif;
   margin-left: -30px;
+  display: block;
+  float: left;
+}
+
+.info {
+  border: 1px solid var(--fg-on);
+  border-radius: 10px;
+  padding: 20px 20px 20px 60px;
+}
+
+.info:before {
+  content: 'ⓘ';
+  font: bold 43px/43px serif;
+  margin-left: -43px;
   display: block;
   float: left;
 }
@@ -745,8 +759,9 @@ tr:hover {
   background: var(--tr);
 }
 
-.warning {
-  color: var(--warn);
+.warning,
+.info {
+  color: var(--warn-info);
 }
 
 .dl:after {

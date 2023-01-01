@@ -1,0 +1,20 @@
+#summaryPanel table {
+  border-collapse: collapse;
+  margin: auto;
+}
+
+#summaryPanel td:first-child {
+  text-align: right;
+}
+
+#summaryPanel h2 {
+  font-size: 30px;
+  line-height: 1em;
+  color: var(--fg-on);
+  margin: 0;
+}
+
+#summaryPanel .symbol {
+  font-size: 30px;
+  padding: 0 30px;
+}

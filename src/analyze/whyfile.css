@@ -1,0 +1,121 @@
+#whyFile {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding: 50px;
+  background: rgba(0, 0, 0, 0.6);
+  overflow-y: auto;
+}
+
+#whyFile .dialog {
+  position: relative;
+  margin: 0 auto;
+  padding: 50px;
+  max-width: 1000px;
+  background: var(--bg);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+  border-radius: 20px;
+}
+
+#whyFile .dialog:focus {
+  outline: none;
+}
+
+#whyFile .closeButton {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50px;
+  text-decoration: none;
+  font-size: 30px;
+  line-height: 50px;
+  text-align: center;
+  color: var(--fg);
+}
+
+#whyFile .closeButton:hover {
+  font-size: 35px;
+  color: var(--fg-on);
+}
+
+#whyFile .closeButton:active {
+  font-size: 30px;
+}
+
+#whyFile h2 {
+  border-bottom: 2px solid #FFCF00;
+  padding-bottom: 4px;
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.2em;
+  color: var(--fg-on);
+}
+
+#whyFile .outputFile {
+  position: relative;
+  border: 1px solid rgba(127, 127, 127, 0.5);
+  padding: 10px;
+  padding-top: 30px;
+  border-radius: 10px;
+  white-space: pre-wrap;
+  margin-top: 10px;
+
+  /* Give lines a little more space so <code> elements have a gap */
+  line-height: 22px;
+}
+
+#whyFile .outputPath {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: rgba(127, 127, 127, 0.1);
+  border-right: 1px solid rgba(127, 127, 127, 0.5);
+  border-bottom: 1px solid rgba(127, 127, 127, 0.5);
+  border-top-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 5px 10px;
+}
+
+#whyFile pre {
+  padding: 0 0 0 30px;
+}
+
+#whyFile .comment {
+  color: var(--pre-dim);
+}
+
+#whyFile .keyword {
+  color: var(--fg-on);
+}
+
+#whyFile .string {
+  color: var(--pre-val);
+}
+
+#whyFile .arrow,
+#whyFile .longArrow {
+  position: relative;
+}
+
+#whyFile .arrow:after,
+#whyFile .longArrow:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 30px;
+  background: var(--fg);
+  opacity: 0.5;
+}
+
+#whyFile .arrow:after {
+  height: 40px;
+  mask-image: url('data:image/svg+xml,<svg width="30" height="40" xmlns="http://www.w3.org/2000/svg"><path d="M16.5 26L20.5 35L23 25.5L16.5 26Z"/><path d="M5 7C15 7 19 15 20 30" fill="none" stroke="black"/></svg>');
+}
+
+#whyFile .longArrow:after {
+  height: 90px;
+  mask-image: url('data:image/svg+xml,<svg width="30" height="90" xmlns="http://www.w3.org/2000/svg"><path d="M17 76L20 85L23 76H17Z"/><path d="M5 7C15 7 20 25 20 80" fill="none" stroke="black"/></svg>');
+}

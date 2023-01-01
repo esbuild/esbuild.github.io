@@ -1,0 +1,36 @@
+#warningsPanel {
+  max-width: 1000px;
+  margin: auto;
+}
+
+#warningsPanel .expand {
+  margin-top: 20px;
+  text-align: center;
+}
+
+#warningsPanel .content {
+  display: none;
+}
+
+#warningsPanel .warning {
+  margin: 30px 0;
+  white-space: pre-wrap;
+  color: var(--fg-on);
+}
+
+#warningsPanel ul {
+  color: var(--fg);
+  margin: 5px 0 0 0;
+}
+
+#warningsPanel .dim {
+  opacity: 0.5;
+}
+
+#warningsPanel pre a {
+  text-decoration: none;
+}
+
+#warningsPanel pre a:hover {
+  text-decoration: underline;
+}
