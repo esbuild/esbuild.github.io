@@ -326,8 +326,7 @@ body:
         - $: |
             esbuild --bundle example.jsx --outfile=out.js --minify --analyze
 
-        - expect: |
-            ...
+        - expect: |2
 
               out.js                                                                    27.6kb  100.0%
                ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   69.8%
@@ -336,6 +335,8 @@ body:
                ├ example.jsx                                                             137b     0.5%
                ├ node_modules/react-dom/server.browser.js                                 50b     0.2%
                └ node_modules/react/index.js                                              50b     0.2%
+
+            ...
 
       js: |
         (async () => {
@@ -401,8 +402,7 @@ body:
         - $: |
             esbuild --bundle example.jsx --outfile=out.js --minify --analyze=verbose
 
-        - expect: |
-            ...
+        - expect: |2
 
               out.js ─────────────────────────────────────────────────────────────────── 27.6kb ─ 100.0%
                ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 69.8%
@@ -420,6 +420,8 @@ body:
                │  └ example.jsx
                └ node_modules/react/index.js ───────────────────────────────────────────── 50b ──── 0.2%
                   └ example.jsx
+
+            ...
 
       js: |
         (async () => {

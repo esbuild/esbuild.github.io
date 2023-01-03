@@ -103,6 +103,13 @@ async function checkCli(text, value) {
             let stderrTail = stderr.slice(Math.max(0, stderr.length - expect.length))
             if (stderrTail !== expect) assert.strictEqual(stdoutTail + stderrTail, expect)
           }
+        } else if (item.expect.endsWith('...\n')) {
+          let expect = item.expect.slice(0, -4)
+          let stdoutHead = stdout.slice(0, Math.min(stdout.length, expect.length))
+          if (stdoutHead !== expect) {
+            let stderrHead = stderr.slice(0, Math.min(stderr.length, expect.length))
+            if (stderrHead !== expect) assert.strictEqual(stdoutHead + stderrHead, expect)
+          }
         } else {
           assert.strictEqual(stdout, item.expect)
         }
