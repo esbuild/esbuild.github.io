@@ -2816,6 +2816,12 @@ body:
       of the transform API only supports the `inline` mode because the output is
       written to stdout so generating multiple output files is not possible.
 
+  - p: >
+      If you want to "peek under the hood" to see what a source map does (or to
+      debug problems with your source map), you can upload the relevant output
+      file and the associated source map here:
+      [Source Map Visualization](https://evanw.github.io/source-map-visualization/).
+
   - h4: Using source maps
 
   - p: >
