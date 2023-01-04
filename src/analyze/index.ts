@@ -68,6 +68,20 @@ export let finishLoading = (json: string): void => {
   useChart(localStorageGetItem('chart') === 'flame' ? CHART.FLAME : CHART.SUNBURST)
 }
 
+let loadFromHash = () => {
+  try {
+    let json = atob(location.hash.slice(1))
+    finishLoading(json)
+  } catch (e) {
+    // Clear out invalid hash
+    if (location.hash !== '') {
+      try {
+        history.replaceState({}, '', location.pathname);
+      } catch (e) {}
+    }
+  }
+}
+
 let bodyDataset = document.body.dataset
 let updateTheme = () => {
   // Keep the dark/light mode theme up to date with the rest of the site
@@ -81,3 +95,5 @@ window.addEventListener('storage', updateTheme)
 document.getElementById('loadExample')!.onclick = () => {
   fetch('example-metafile.json').then(r => r.text()).then(finishLoading)
 }
+
+if (location.hash) loadFromHash()
