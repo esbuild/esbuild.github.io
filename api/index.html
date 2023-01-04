@@ -89,15 +89,15 @@
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
       </div>
-<pre class="switchable cli3"><span class="repl-in">esbuild --bundle example.jsx --outfile=out.js --minify --analyze</span><span class="repl-out">...
-
-  out.js                                                                    27.6kb  100.0%
+<pre class="switchable cli3"><span class="repl-in">esbuild --bundle example.jsx --outfile=out.js --minify --analyze</span><span class="repl-out">out.js                                                                    27.6kb  100.0%
    ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   69.8%
    ├ node_modules/react/cjs/react.production.min.js                          5.9kb   21.4%
    ├ node_modules/object-assign/index.js                                     962b     3.4%
    ├ example.jsx                                                             137b     0.5%
    ├ node_modules/react-dom/server.browser.js                                 50b     0.2%
-   └ node_modules/react/index.js                                              50b     0.2%</span></pre>
+   └ node_modules/react/index.js                                              50b     0.2%
+
+...</span></pre>
 <pre class="switchable js3">(<span class="hljs-keyword">async</span> () =&gt; {
   <span class="hljs-keyword">let</span> esbuild = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>)
 
@@ -138,9 +138,7 @@
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
       </div>
-<pre class="switchable cli3"><span class="repl-in">esbuild --bundle example.jsx --outfile=out.js --minify --analyze=verbose</span><span class="repl-out">...
-
-  out.js ─────────────────────────────────────────────────────────────────── 27.6kb ─ 100.0%
+<pre class="switchable cli3"><span class="repl-in">esbuild --bundle example.jsx --outfile=out.js --minify --analyze=verbose</span><span class="repl-out">out.js ─────────────────────────────────────────────────────────────────── 27.6kb ─ 100.0%
    ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 69.8%
    │  └ node_modules/react-dom/server.browser.js
    │     └ example.jsx
@@ -155,7 +153,9 @@
    ├ node_modules/react-dom/server.browser.js ──────────────────────────────── 50b ──── 0.2%
    │  └ example.jsx
    └ node_modules/react/index.js ───────────────────────────────────────────── 50b ──── 0.2%
-      └ example.jsx</span></pre>
+      └ example.jsx
+
+...</span></pre>
 <pre class="switchable js3">(<span class="hljs-keyword">async</span> () =&gt; {
   <span class="hljs-keyword">let</span> esbuild = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>)
 
