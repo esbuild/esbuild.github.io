@@ -1,11 +1,11 @@
 import './flame.css'
 import { Metafile } from './metafile'
+import { generateDirectoryColorMapping } from './color'
 import { isWhyFileVisible, showWhyFile } from './whyfile'
 import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from './tree'
 import {
   bytesToText,
   commonPrefixFinder,
-  hueAngleToColor,
   isMac,
   isSourceMapPath,
   setDarkModeListener,
@@ -23,8 +23,9 @@ enum CONSTANTS {
   ZOOMED_OUT_WIDTH = 1000,
 }
 
-interface ColorNode extends TreeNodeInProgress {
-  cssColor_?: string
+enum FLAGS {
+  OUTPUT = 1,
+  HOVER = 2,
 }
 
 interface TreeNode {
@@ -33,7 +34,6 @@ interface TreeNode {
   sizeText_: string
   bytesInOutput_: number
   sortedChildren_: TreeNode[]
-  cssColor_: string
 }
 
 interface Tree {
@@ -41,40 +41,7 @@ interface Tree {
   maxDepth_: number
 }
 
-let generateColorMapping = (metafile: Metafile): ColorNode => {
-  let inputs = metafile.inputs
-  let root: ColorNode = { name_: '', inputPath_: '', bytesInOutput_: 0, children_: {} }
-
-  let assignColors = (node: ColorNode, prefix: string[], startAngle: number, sweepAngle: number): void => {
-    let totalBytes = node.bytesInOutput_
-    let children = node.children_
-    let sorted: ColorNode[] = []
-
-    for (let file in children) sorted.push(children[file])
-    sorted.sort(orderChildrenBySize)
-
-    prefix.push(node.name_)
-    node.cssColor_ = hueAngleToColor(startAngle + sweepAngle / 2)
-
-    for (let child of sorted) {
-      let childSweepAngle = child.bytesInOutput_ / totalBytes * sweepAngle
-      assignColors(child, prefix, startAngle, childSweepAngle)
-      startAngle += childSweepAngle
-    }
-
-    prefix.pop()
-  }
-
-  for (let i in inputs) {
-    accumulatePath(root, stripDisabledPathPrefix(i), inputs[i].bytes)
-  }
-
-  assignColors(root, [], 0, Math.PI * 2)
-  return root
-}
-
 let analyzeDirectoryTree = (metafile: Metafile): Tree => {
-  let colors = generateColorMapping(metafile)
   let outputs = metafile.outputs
   let totalBytes = 0
   let maxDepth = 0
@@ -85,23 +52,18 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
     return ' – ' + bytesToText(bytesInOutput)
   }
 
-  let sortChildren = (node: TreeNodeInProgress, isOutput: boolean, color: ColorNode): TreeNode => {
+  let sortChildren = (node: TreeNodeInProgress): TreeNode => {
     let children = node.children_
     let sorted: TreeNode[] = []
-
     for (let file in children) {
-      let childColor = color.children_[file]
-      if (childColor) sorted.push(sortChildren(children[file], false, childColor))
+      sorted.push(sortChildren(children[file]))
     }
-
-    sorted.sort(orderChildrenBySize)
     return {
       name_: node.name_,
       inputPath_: node.inputPath_,
       sizeText_: sizeText(node.bytesInOutput_),
       bytesInOutput_: node.bytesInOutput_,
-      sortedChildren_: sorted,
-      cssColor_: isOutput ? '' : color.cssColor_!,
+      sortedChildren_: sorted.sort(orderChildrenBySize),
     }
   }
 
@@ -129,7 +91,7 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
 
     node.bytesInOutput_ = bytes
     totalBytes += bytes
-    nodes.push(sortChildren(node, true, colors))
+    nodes.push(sortChildren(node))
   }
 
   // Unwrap common nested directories
@@ -167,7 +129,6 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
         inputPath_: '',
         sizeText_: sizeText(node.bytesInOutput_ - childBytes),
         bytesInOutput_: node.bytesInOutput_ - childBytes,
-        cssColor_: '#ddd',
         sortedChildren_: [],
       })
     }
@@ -181,13 +142,13 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
       sizeText_: '',
       bytesInOutput_: totalBytes,
       sortedChildren_: nodes,
-      cssColor_: '',
     },
     maxDepth_: maxDepth + 1,
   }
 }
 
 export let createFlame = (metafile: Metafile): HTMLDivElement => {
+  let colorMapping = generateDirectoryColorMapping(metafile)
   let tree = analyzeDirectoryTree(metafile)
   let totalBytes = tree.root_.bytesInOutput_
   let viewportMin = 0
@@ -261,7 +222,7 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
   // rectangles all merging together into a solid color. So we enforce a
   // minimum rectangle width of 2px and we also skip drawing rectangles that
   // have a right edge less than 1.5px from the previous right edge.
-  let drawNode = (node: TreeNode, y: number, startBytes: number, prevRightEdge: number, hover: boolean): number => {
+  let drawNode = (node: TreeNode, y: number, startBytes: number, prevRightEdge: number, flags: FLAGS): number => {
     let scale = zoomedOutWidth / (viewportMax - viewportMin)
     let x = zoomedOutMin + (startBytes - viewportMin) * scale
     let w = node.bytesInOutput_ * scale
@@ -273,9 +234,15 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     let textX = (x > 0 ? x : 0) + CONSTANTS.TEXT_INDENT
     let textY = y + CONSTANTS.ROW_HEIGHT / 2
     let textW = w + x - textX
-    let fillColor = node.cssColor_
+    let fillColor = node.inputPath_ ? colorMapping[node.inputPath_] : '#DDD'
     let textColor = 'black'
-    if (!fillColor) {
+    let sizeTextX = 0
+    let sizeTextW = 0
+    let childRightEdge = -Infinity
+    let text: string
+    let textWidth: number
+
+    if (flags & FLAGS.OUTPUT) {
       textColor = fgOnColor
       c.font = 'bold ' + cssFont
       currentWidthCache = boldWidthCache
@@ -283,18 +250,16 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     } else {
       c.fillStyle = fillColor
       c.fillRect(x, y, rectW, CONSTANTS.ROW_HEIGHT)
-      if (hover || (hoveredNode && node.inputPath_ === hoveredNode.inputPath_)) {
+      if ((flags & FLAGS.HOVER) || (hoveredNode && node.inputPath_ === hoveredNode.inputPath_)) {
         c.fillStyle = 'rgba(255, 255, 255, 0.5)'
         c.fillRect(x, y, rectW, CONSTANTS.ROW_HEIGHT)
-        hover = true
+        flags |= FLAGS.HOVER
       }
     }
 
-    let sizeTextX = 0
-    let sizeTextW = 0
     if (textW > ellipsisWidth) {
-      let text = node.name_
-      let textWidth = c.measureText(text).width
+      text = node.name_
+      textWidth = c.measureText(text).width
       c.fillStyle = textColor
       if (textW < textWidth) {
         c.fillText(textOverflowEllipsis(text, textW), textX, textY)
@@ -305,28 +270,27 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
       }
     }
 
-    if (!fillColor) {
+    if (flags & FLAGS.OUTPUT) {
       c.font = cssFont
       currentWidthCache = normalWidthCache
       ellipsisWidth = 3 * charCodeWidth(currentWidthCache, CONSTANTS.DOT_CHAR_CODE)
     }
 
     if (sizeTextW > ellipsisWidth) {
-      let sizeText = node.sizeText_
-      let sizeTextWidth = c.measureText(sizeText).width
-      if (sizeTextW < sizeTextWidth) sizeText = textOverflowEllipsis(sizeText, sizeTextW)
+      text = node.sizeText_
+      textWidth = c.measureText(text).width
+      if (sizeTextW < textWidth) text = textOverflowEllipsis(text, sizeTextW)
       c.globalAlpha = 0.5
-      c.fillText(sizeText, sizeTextX, textY)
+      c.fillText(text, sizeTextX, textY)
       c.globalAlpha = 1
     }
 
-    let childRightEdge = -Infinity
     for (let child of node.sortedChildren_) {
-      childRightEdge = drawNode(child, y + CONSTANTS.ROW_HEIGHT, startBytes, childRightEdge, hover)
+      childRightEdge = drawNode(child, y + CONSTANTS.ROW_HEIGHT, startBytes, childRightEdge, flags & ~FLAGS.OUTPUT)
       startBytes += child.bytesInOutput_
     }
 
-    if (fillColor) {
+    if (!(flags & FLAGS.OUTPUT)) {
       c.strokeStyle = '#222'
       c.strokeRect(x, y, rectW, CONSTANTS.ROW_HEIGHT)
     }
@@ -346,7 +310,7 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     let startBytes = 0
     let rightEdge = -Infinity
     for (let child of tree.root_.sortedChildren_) {
-      rightEdge = drawNode(child, 0, startBytes, rightEdge, false)
+      rightEdge = drawNode(child, 0, startBytes, rightEdge, FLAGS.OUTPUT)
       startBytes += child.bytesInOutput_
     }
   }

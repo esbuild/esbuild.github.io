@@ -1,10 +1,10 @@
 import './sunburst.css'
 import { Metafile } from './metafile'
 import { showWhyFile } from './whyfile'
+import { generateDirectoryColorMapping } from './color'
 import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from './tree'
 import {
   bytesToText,
-  hueAngleToColor,
   isSourceMapPath,
   lastInteractionWasKeyboard,
   now,
@@ -30,7 +30,6 @@ interface TreeNode {
   inputPath_: string
   bytesInOutput_: number
   sortedChildren_: TreeNode[]
-  cssColor_: string
   parent_: TreeNode | null
 }
 
@@ -55,36 +54,24 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
   let sortChildren = (node: TreeNodeInProgress): TreeNode => {
     let children = node.children_
     let sorted: TreeNode[] = []
-
     for (let file in children) {
       sorted.push(sortChildren(children[file]))
     }
-
-    sorted.sort(orderChildrenBySize)
     return {
       inputPath_: node.inputPath_,
       bytesInOutput_: node.bytesInOutput_,
-      sortedChildren_: sorted,
-      cssColor_: '',
+      sortedChildren_: sorted.sort(orderChildrenBySize),
       parent_: null,
     }
   }
 
-  let setColorsAndParents = (node: TreeNode, depth: number, startAngle: number, sweepAngle: number): number => {
-    let totalBytes = node.bytesInOutput_
-    let bytesSoFar = 0
+  let setParents = (node: TreeNode, depth: number): number => {
     let maxDepth = 0
-
-    node.cssColor_ = hueAngleToColor(startAngle + sweepAngle / 2)
-    node.parent_ = null
-
     for (let child of node.sortedChildren_) {
-      let childDepth = setColorsAndParents(child, depth + 1, startAngle + sweepAngle * bytesSoFar / totalBytes, sweepAngle * child.bytesInOutput_ / totalBytes)
+      let childDepth = setParents(child, depth + 1)
       child.parent_ = node
-      bytesSoFar += child.bytesInOutput_
       if (childDepth > maxDepth) maxDepth = childDepth
     }
-
     return maxDepth + 1
   }
 
@@ -113,11 +100,9 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
     finalRoot = finalRoot.sortedChildren_[0]
   }
 
-  let maxDepth = setColorsAndParents(finalRoot, 0, 0, Math.PI * 2)
-
   return {
     root_: finalRoot,
-    maxDepth_: maxDepth,
+    maxDepth_: setParents(finalRoot, 0),
   }
 }
 
@@ -153,6 +138,7 @@ let computeRadius = (depth: number): number => {
 }
 
 export let createSunburst = (metafile: Metafile): HTMLDivElement => {
+  let colorMapping = generateDirectoryColorMapping(metafile)
   let componentEl = document.createElement('div')
   let mainEl = document.createElement('main')
   let tree = analyzeDirectoryTree(metafile)
@@ -214,7 +200,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
 
       // Handle the fill
       if (flags & FLAGS.FILL) {
-        c.fillStyle = node.cssColor_
+        c.fillStyle = colorMapping[node.inputPath_]
         c.beginPath()
         c.arc(centerX, centerY, innerRadius, startAngle, startAngle + clampedSweepAngle, false)
         c.arc(centerX, centerY, outerRadius, startAngle + clampedSweepAngle, startAngle, true)
@@ -569,7 +555,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
 
         let barEl = document.createElement('div')
         barEl.className = child.bytesInOutput_ > 0 ? 'bar' : 'bar empty'
-        barEl.style.background = child.cssColor_
+        barEl.style.background = colorMapping[child.inputPath_]
         barEl.style.width = 100 * child.bytesInOutput_ / maxBytesInOutput + '%'
         sizeEl.appendChild(barEl)
 
