@@ -1,10 +1,10 @@
 import './flame.css'
 import { Metafile } from './metafile'
 import { isWhyFileVisible, showWhyFile } from './whyfile'
+import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from './tree'
 import {
   bytesToText,
   commonPrefixFinder,
-  hasOwnProperty,
   hueAngleToColor,
   isMac,
   isSourceMapPath,
@@ -21,13 +21,6 @@ enum CONSTANTS {
   TEXT_INDENT = 5,
   DOT_CHAR_CODE = 46,
   ZOOMED_OUT_WIDTH = 1000,
-}
-
-interface TreeNodeInProgress {
-  name_: string
-  inputPath_: string
-  bytes_: number
-  children_: Record<string, TreeNodeInProgress>
 }
 
 interface ColorNode extends TreeNodeInProgress {
@@ -48,60 +41,23 @@ interface Tree {
   maxDepth_: number
 }
 
-let orderChildrenInProgressBySize = (a: ColorNode, b: ColorNode): number => {
-  return b.bytes_ - a.bytes_ || +(a.name_ > b.name_) - +(a.name_ < b.name_)
-}
-
-let orderChildrenBySize = (a: TreeNode, b: TreeNode): number => {
-  return b.bytesInOutput_ - a.bytesInOutput_ || +(a.name_ > b.name_) - +(a.name_ < b.name_)
-}
-
-let accumulatePath = (root: TreeNodeInProgress, path: string, bytesInOutput: number): number => {
-  let parts = path.split('/')
-  let parent = root
-  let inputPath = ''
-  root.bytes_ += bytesInOutput
-
-  for (let part of parts) {
-    let children = parent.children_
-    let child = children[part]
-    inputPath += part
-
-    if (!hasOwnProperty.call(children, part)) {
-      child = {
-        name_: part,
-        inputPath_: inputPath,
-        bytes_: 0,
-        children_: {},
-      }
-      children[part] = child
-    }
-
-    child.bytes_ += bytesInOutput
-    inputPath += '/'
-    parent = child
-  }
-
-  return parts.length
-}
-
 let generateColorMapping = (metafile: Metafile): ColorNode => {
   let inputs = metafile.inputs
-  let root: ColorNode = { name_: '', inputPath_: '', bytes_: 0, children_: {} }
+  let root: ColorNode = { name_: '', inputPath_: '', bytesInOutput_: 0, children_: {} }
 
   let assignColors = (node: ColorNode, prefix: string[], startAngle: number, sweepAngle: number): void => {
-    let totalBytes = node.bytes_
+    let totalBytes = node.bytesInOutput_
     let children = node.children_
     let sorted: ColorNode[] = []
 
     for (let file in children) sorted.push(children[file])
-    sorted.sort(orderChildrenInProgressBySize)
+    sorted.sort(orderChildrenBySize)
 
     prefix.push(node.name_)
     node.cssColor_ = hueAngleToColor(startAngle + sweepAngle / 2)
 
     for (let child of sorted) {
-      let childSweepAngle = child.bytes_ / totalBytes * sweepAngle
+      let childSweepAngle = child.bytesInOutput_ / totalBytes * sweepAngle
       assignColors(child, prefix, startAngle, childSweepAngle)
       startAngle += childSweepAngle
     }
@@ -140,10 +96,10 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
 
     sorted.sort(orderChildrenBySize)
     return {
-      name_: isOutput || !sorted.length ? node.name_ : node.name_ + '/',
+      name_: node.name_,
       inputPath_: node.inputPath_,
-      sizeText_: sizeText(node.bytes_),
-      bytesInOutput_: node.bytes_,
+      sizeText_: sizeText(node.bytesInOutput_),
+      bytesInOutput_: node.bytesInOutput_,
       sortedChildren_: sorted,
       cssColor_: isOutput ? '' : color.cssColor_!,
     }
@@ -160,7 +116,7 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
     if (isSourceMapPath(o)) continue
 
     let name = commonPrefix ? o.split('/').slice(commonPrefix.length).join('/') : o
-    let node: TreeNodeInProgress = { name_: name, inputPath_: '', bytes_: 0, children_: {} }
+    let node: TreeNodeInProgress = { name_: name, inputPath_: '', bytesInOutput_: 0, children_: {} }
     let output = outputs[o]
     let inputs = output.inputs
     let bytes = output.bytes
@@ -171,7 +127,7 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
       if (depth > maxDepth) maxDepth = depth
     }
 
-    node.bytes_ = bytes
+    node.bytesInOutput_ = bytes
     totalBytes += bytes
     nodes.push(sortChildren(node, true, colors))
   }
@@ -493,7 +449,7 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
 
     // Show a tooltip for hovered nodes
     if (node) {
-      let tooltip = node.inputPath_ + (node.sortedChildren_.length > 0 ? '/' : '')
+      let tooltip = node.inputPath_
       let nameSplit = tooltip.length - node.name_.length
       tooltip = textToHTML(tooltip.slice(0, nameSplit)) + '<b>' + textToHTML(tooltip.slice(nameSplit)) + '</b>'
       tooltip += ' – ' + textToHTML(bytesToText(node.bytesInOutput_))
