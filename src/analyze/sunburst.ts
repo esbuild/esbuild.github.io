@@ -117,9 +117,8 @@ let narrowSlice = (root: TreeNode, node: TreeNode, slice: Slice): void => {
   if (root === node) return
 
   let parent = node.parent_!
-  let totalBytes = parent.bytesInOutput_
+  let totalBytes = parent.bytesInOutput_ || 1 // Don't divide by 0
   let bytesSoFar = 0
-  let outerRadius = computeRadius(slice.depth_ + 1)
   narrowSlice(root, parent, slice)
 
   for (let child of parent.sortedChildren_) {
@@ -388,7 +387,8 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
         } else {
           tooltip = '<b>' + textToHTML(tooltip) + '</b>'
         }
-        tooltip += ' – ' + textToHTML(bytesToText(node.bytesInOutput_))
+        if (colorMode === COLOR.FORMAT) tooltip += textToHTML(formatColorToText(cssBackgroundForInputPath(node.inputPath_), ' – '))
+        else tooltip += ' – ' + textToHTML(bytesToText(node.bytesInOutput_))
         showTooltip(e.pageX, e.pageY + 20, tooltip)
         canvas.style.cursor = 'pointer'
       } else {
@@ -567,7 +567,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
 
         let bytesEl = document.createElement('div')
         bytesEl.className = 'last'
-        bytesEl.textContent = colorMode === COLOR.FORMAT ? formatColorToText(bgColor) : size
+        bytesEl.textContent = colorMode === COLOR.FORMAT ? formatColorToText(bgColor, '') : size
         barEl.appendChild(bytesEl)
 
         // Use a link so we get keyboard support

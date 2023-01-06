@@ -2,7 +2,7 @@ import './flame.css'
 import { Metafile } from './metafile'
 import { isWhyFileVisible, showWhyFile } from './whyfile'
 import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from './tree'
-import { canvasFillStyleForInputPath, COLOR, colorLegendEl, formatColorToText, otherColor, setAfterColorMappingUpdate } from './color'
+import { canvasFillStyleForInputPath, COLOR, colorLegendEl, cssBackgroundForInputPath, formatColorToText, otherColor, setAfterColorMappingUpdate } from './color'
 import { colorMode } from './index'
 import {
   bytesToText,
@@ -285,7 +285,7 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
 
     // Typeset the node size
     if (typesetX + ellipsisWidth < typesetW) {
-      sizeText = colorMode === COLOR.FORMAT ? ' – ' + formatColorToText(fillColor) : node.sizeText_
+      sizeText = colorMode === COLOR.FORMAT ? formatColorToText(fillColor, ' – ') : node.sizeText_
       measuredW = c.measureText(sizeText).width
       if (typesetX + measuredW > typesetW) {
         sizeText = textOverflowEllipsis(sizeText, typesetW - typesetX)
@@ -427,7 +427,8 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
       let tooltip = node.inputPath_
       let nameSplit = tooltip.length - node.name_.length
       tooltip = textToHTML(tooltip.slice(0, nameSplit)) + '<b>' + textToHTML(tooltip.slice(nameSplit)) + '</b>'
-      tooltip += ' – ' + textToHTML(bytesToText(node.bytesInOutput_))
+      if (colorMode === COLOR.FORMAT) tooltip += textToHTML(formatColorToText(cssBackgroundForInputPath(node.inputPath_), ' – '))
+      else tooltip += ' – ' + textToHTML(bytesToText(node.bytesInOutput_))
       showTooltip(e.pageX, e.pageY + 20, tooltip)
     } else {
       hideTooltip()

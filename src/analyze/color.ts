@@ -38,7 +38,7 @@ let afterColorMappingUpdate: (() => void) | null = null
 export let setAfterColorMappingUpdate = (callback: () => void) => afterColorMappingUpdate = callback
 
 export let canvasFillStyleForInputPath = (c: CanvasRenderingContext2D, inputPath: string, originX: number, originY: number, scale: number): string | CanvasPattern => {
-  let color = colorMapping[inputPath]
+  let color = colorMapping[inputPath] || otherColor
   if (color instanceof Array) {
     let ratio = window.devicePixelRatio || 1
     if (previousPatternContext !== c || previousPatternRatio !== ratio || previousPatternScale !== scale) {
@@ -111,7 +111,7 @@ export let canvasFillStyleForInputPath = (c: CanvasRenderingContext2D, inputPath
 }
 
 export let cssBackgroundForInputPath = (inputPath: string): string => {
-  let color = colorMapping[inputPath]
+  let color = colorMapping[inputPath] || otherColor
   if (color instanceof Array) {
     return `url('`
       + `data:image/svg+xml,`
@@ -193,11 +193,11 @@ let colorForFormats = (formats: FORMATS): Color => {
   return bothColor
 }
 
-export let formatColorToText = (color: string | CanvasPattern): string => {
+export let formatColorToText = (color: string | CanvasPattern, prefix: string): string => {
   if (color === otherColor) return ''
-  if (color === esmColor) return 'ESM'
-  if (color === cjsColor) return 'CJS'
-  return 'ESM & CJS'
+  if (color === esmColor) return prefix + 'ESM'
+  if (color === cjsColor) return prefix + 'CJS'
+  return prefix + 'ESM & CJS'
 }
 
 let assignColorsByFormat = (colorMapping: ColorMapping, node: TreeNodeInProgress): FORMATS => {
