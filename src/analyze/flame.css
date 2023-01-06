@@ -8,3 +8,8 @@
   left: -50px;
   top: 0;
 }
+
+#flamePanel section {
+  margin-top: 30px;
+  min-height: 500px;
+}

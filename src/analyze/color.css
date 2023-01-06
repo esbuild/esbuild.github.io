@@ -1,0 +1,21 @@
+#colorLegend {
+  padding-left: 1.6em;
+  line-height: 1.1em;
+}
+
+#colorLegend .chit {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1.1em;
+  height: 1.1em;
+  margin-left: -1.6em;
+  margin-right: 0.5em;
+  border: 1px solid #222;
+  box-sizing: border-box;
+}
+
+#colorLegend small {
+  display: block;
+  opacity: 0.5;
+  margin-bottom: 1em;
+}

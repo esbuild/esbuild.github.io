@@ -1,8 +1,9 @@
 import './flame.css'
 import { Metafile } from './metafile'
-import { generateDirectoryColorMapping } from './color'
 import { isWhyFileVisible, showWhyFile } from './whyfile'
 import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from './tree'
+import { canvasFillStyleForInputPath, COLOR, colorLegendEl, formatColorToText, otherColor, setAfterColorMappingUpdate } from './color'
+import { colorMode } from './index'
 import {
   bytesToText,
   commonPrefixFinder,
@@ -107,6 +108,7 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
     }
     if (prefix === undefined) break
 
+    // Remove one level
     for (let node of nodes) {
       let children = node.sortedChildren_
       if (children.length) {
@@ -115,6 +117,7 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
         node.sortedChildren_ = children
       }
     }
+    maxDepth--
   }
 
   // Add entries for the remaining space in each chunk
@@ -148,7 +151,6 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
 }
 
 export let createFlame = (metafile: Metafile): HTMLDivElement => {
-  let colorMapping = generateDirectoryColorMapping(metafile)
   let tree = analyzeDirectoryTree(metafile)
   let totalBytes = tree.root_.bytesInOutput_
   let viewportMin = 0
@@ -161,13 +163,13 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
   let height = 0
   let zoomedOutMin = 0
   let zoomedOutWidth = 0
+  let stripeScaleAdjust = 1
   let animationFrame: number | null = null
   let hoveredNode: TreeNode | null = null
   let fgOnColor = ''
-  let cssFont = ''
+  let normalFont = '14px sans-serif', boldWidthCache: Record<number, number> = {}
+  let boldFont = 'bold ' + normalFont, normalWidthCache: Record<number, number> = {}
   let ellipsisWidth = 0
-  let normalWidthCache: Record<number, number> = {}
-  let boldWidthCache: Record<number, number> = {}
   let currentWidthCache: Record<number, number> = normalWidthCache
 
   let changeHoveredNode = (node: TreeNode | null): void => {
@@ -197,9 +199,10 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     if (zoomedOutMin < 0) zoomedOutMin = 0
     if (zoomedOutWidth > width) zoomedOutWidth = width
     zoomedOutWidth -= zoomedOutMin
+    stripeScaleAdjust = totalBytes / zoomedOutWidth
     canvas.style.width = width + 'px'
     canvas.style.height = height + 'px'
-    componentEl.style.height = height + 500 + 'px'
+    mainEl.style.height = height + 'px'
     canvas.width = Math.round(width * ratio)
     canvas.height = Math.round(height * ratio)
     c.scale(ratio, ratio)
@@ -230,69 +233,78 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     if (rightEdge < prevRightEdge + 1.5) return prevRightEdge
     if (x + w < 0 || x > width) return rightEdge
 
-    let rectW = w < 2 ? 2 : w
+    let rectWidth = w < 2 ? 2 : w
     let textX = (x > 0 ? x : 0) + CONSTANTS.TEXT_INDENT
     let textY = y + CONSTANTS.ROW_HEIGHT / 2
-    let textW = w + x - textX
-    let fillColor = node.inputPath_ ? colorMapping[node.inputPath_] : '#DDD'
+    let nameText = ''
+    let sizeText = ''
+    let measuredW: number
+    let typesetX = 0
+    let typesetW = w + x - textX
+    let fillColor = node.inputPath_ ? canvasFillStyleForInputPath(c, node.inputPath_, zoomedOutMin - viewportMin * scale, CONSTANTS.ROW_HEIGHT, scale * stripeScaleAdjust) : otherColor
     let textColor = 'black'
-    let sizeTextX = 0
-    let sizeTextW = 0
     let childRightEdge = -Infinity
-    let text: string
-    let textWidth: number
 
     if (flags & FLAGS.OUTPUT) {
       textColor = fgOnColor
-      c.font = 'bold ' + cssFont
+      c.font = boldFont
       currentWidthCache = boldWidthCache
       ellipsisWidth = 3 * charCodeWidth(currentWidthCache, CONSTANTS.DOT_CHAR_CODE)
     } else {
       c.fillStyle = fillColor
-      c.fillRect(x, y, rectW, CONSTANTS.ROW_HEIGHT)
+      c.fillRect(x, y, rectWidth, CONSTANTS.ROW_HEIGHT)
+
+      // Draw the hover highlight
       if ((flags & FLAGS.HOVER) || (hoveredNode && node.inputPath_ === hoveredNode.inputPath_)) {
-        c.fillStyle = 'rgba(255, 255, 255, 0.5)'
-        c.fillRect(x, y, rectW, CONSTANTS.ROW_HEIGHT)
+        c.fillStyle = 'rgba(255, 255, 255, 0.3)'
+        c.fillRect(x, y, rectWidth, CONSTANTS.ROW_HEIGHT)
         flags |= FLAGS.HOVER
       }
     }
 
-    if (textW > ellipsisWidth) {
-      text = node.name_
-      textWidth = c.measureText(text).width
-      c.fillStyle = textColor
-      if (textW < textWidth) {
-        c.fillText(textOverflowEllipsis(text, textW), textX, textY)
+    // Typeset the node name
+    if (ellipsisWidth < typesetW) {
+      nameText = node.name_
+      measuredW = c.measureText(nameText).width
+      if (measuredW <= typesetW) {
+        typesetX += measuredW
       } else {
-        c.fillText(text, textX, textY)
-        sizeTextX = textX + textWidth
-        sizeTextW = textW - textWidth
+        nameText = textOverflowEllipsis(nameText, typesetW)
+        typesetX = typesetW
       }
+      c.fillStyle = textColor
+      c.fillText(nameText, textX, textY)
     }
 
+    // Switch to the size font
     if (flags & FLAGS.OUTPUT) {
-      c.font = cssFont
+      c.font = normalFont
       currentWidthCache = normalWidthCache
       ellipsisWidth = 3 * charCodeWidth(currentWidthCache, CONSTANTS.DOT_CHAR_CODE)
     }
 
-    if (sizeTextW > ellipsisWidth) {
-      text = node.sizeText_
-      textWidth = c.measureText(text).width
-      if (sizeTextW < textWidth) text = textOverflowEllipsis(text, sizeTextW)
+    // Typeset the node size
+    if (typesetX + ellipsisWidth < typesetW) {
+      sizeText = colorMode === COLOR.FORMAT ? ' – ' + formatColorToText(fillColor) : node.sizeText_
+      measuredW = c.measureText(sizeText).width
+      if (typesetX + measuredW > typesetW) {
+        sizeText = textOverflowEllipsis(sizeText, typesetW - typesetX)
+      }
       c.globalAlpha = 0.5
-      c.fillText(text, sizeTextX, textY)
+      c.fillText(sizeText, textX + typesetX, textY)
       c.globalAlpha = 1
     }
 
+    // Draw the children
     for (let child of node.sortedChildren_) {
       childRightEdge = drawNode(child, y + CONSTANTS.ROW_HEIGHT, startBytes, childRightEdge, flags & ~FLAGS.OUTPUT)
       startBytes += child.bytesInOutput_
     }
 
+    // Draw the outline
     if (!(flags & FLAGS.OUTPUT)) {
       c.strokeStyle = '#222'
-      c.strokeRect(x, y, rectW, CONSTANTS.ROW_HEIGHT)
+      c.strokeRect(x, y, rectWidth, CONSTANTS.ROW_HEIGHT)
     }
 
     return rightEdge
@@ -300,15 +312,14 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
 
   let draw = (): void => {
     let bodyStyle = getComputedStyle(document.body)
+    let startBytes = 0
+    let rightEdge = -Infinity
+
     animationFrame = null
     fgOnColor = bodyStyle.getPropertyValue('--fg-on')
     c.clearRect(0, 0, width, height)
-
-    cssFont = '14px sans-serif'
     c.textBaseline = 'middle'
 
-    let startBytes = 0
-    let rightEdge = -Infinity
     for (let child of tree.root_.sortedChildren_) {
       rightEdge = drawNode(child, 0, startBytes, rightEdge, FLAGS.OUTPUT)
       startBytes += child.bytesInOutput_
@@ -423,12 +434,19 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     }
   }
 
+  let didDrag = false
+
   canvas.onmousedown = e => {
+    didDrag = false
+
     if (e.button !== 2) {
       let oldX = e.pageX
 
       let move = (e: MouseEvent): void => {
-        modifyViewport(oldX - e.pageX, 0, null)
+        let deltaX = e.pageX - oldX
+        if (!didDrag && Math.abs(deltaX) < 3) return
+        didDrag = true
+        modifyViewport(-deltaX, 0, null)
         oldX = e.pageX
       }
 
@@ -452,6 +470,9 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
   }
 
   canvas.onclick = e => {
+    // Don't trigger on mouse up after a drag
+    if (didDrag) return
+
     let node = hitTestNode(e)
     changeHoveredNode(node)
 
@@ -479,6 +500,7 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
   resize()
   Promise.resolve().then(resize) // Resize once the element is in the DOM
   setDarkModeListener(draw)
+  setAfterColorMappingUpdate(draw)
   setResizeEventListener(resize)
 
   componentEl.id = 'flamePanel'
@@ -494,5 +516,9 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
   mainEl.appendChild(canvas)
   componentEl.appendChild(mainEl)
   componentEl.appendChild(tooltipEl)
+
+  let sectionEl = document.createElement('section')
+  sectionEl.appendChild(colorLegendEl)
+  componentEl.appendChild(sectionEl)
   return componentEl
 }

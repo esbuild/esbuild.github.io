@@ -1,8 +1,9 @@
 import './sunburst.css'
 import { Metafile } from './metafile'
 import { showWhyFile } from './whyfile'
-import { generateDirectoryColorMapping } from './color'
 import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from './tree'
+import { canvasFillStyleForInputPath, COLOR, colorLegendEl, formatColorToText, cssBackgroundForInputPath, setAfterColorMappingUpdate } from './color'
+import { colorMode } from './index'
 import {
   bytesToText,
   isSourceMapPath,
@@ -138,7 +139,6 @@ let computeRadius = (depth: number): number => {
 }
 
 export let createSunburst = (metafile: Metafile): HTMLDivElement => {
-  let colorMapping = generateDirectoryColorMapping(metafile)
   let componentEl = document.createElement('div')
   let mainEl = document.createElement('main')
   let tree = analyzeDirectoryTree(metafile)
@@ -161,7 +161,8 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
     }
   }
 
-  let startSunburst = (): () => void => {
+  let startSunburst = (): [() => void, () => void] => {
+    let leftEl = document.createElement('div')
     let canvas = document.createElement('canvas')
     let c = canvas.getContext('2d')!
 
@@ -200,13 +201,13 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
 
       // Handle the fill
       if (flags & FLAGS.FILL) {
-        c.fillStyle = colorMapping[node.inputPath_]
+        c.fillStyle = canvasFillStyleForInputPath(c, node.inputPath_, centerX, centerY, 1)
         c.beginPath()
         c.arc(centerX, centerY, innerRadius, startAngle, startAngle + clampedSweepAngle, false)
         c.arc(centerX, centerY, outerRadius, startAngle + clampedSweepAngle, startAngle, true)
         c.fill()
         if (hoveredNode && (flags & FLAGS.HOVER || node.parent_ === hoveredNode)) {
-          c.fillStyle = 'rgba(255, 255, 255, 0.5)'
+          c.fillStyle = 'rgba(255, 255, 255, 0.3)'
           c.fill()
         }
       }
@@ -424,11 +425,15 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
       }
     }
 
+    leftEl.className = 'left'
+    leftEl.appendChild(canvas)
+    leftEl.appendChild(colorLegendEl)
+
     tooltipEl.className = 'tooltip'
     mainEl.appendChild(tooltipEl)
-    mainEl.appendChild(canvas)
+    mainEl.appendChild(leftEl)
 
-    return () => {
+    return [draw, () => {
       if (previousHoveredNode !== hoveredNode) {
         previousHoveredNode = hoveredNode
         if (!hoveredNode) {
@@ -483,10 +488,10 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
       sourceStartAngle = animatedStartAngle
       sourceSweepAngle = animatedSweepAngle
       targetNode = currentNode
-    }
+    }]
   }
 
-  let startDetails = (): () => void => {
+  let startDetails = (): [() => void, () => void] => {
     let detailsEl = document.createElement('div')
 
     let regenerate = (): void => {
@@ -554,14 +559,15 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
         rowEl.appendChild(sizeEl)
 
         let barEl = document.createElement('div')
-        barEl.className = child.bytesInOutput_ > 0 ? 'bar' : 'bar empty'
-        barEl.style.background = colorMapping[child.inputPath_]
+        let bgColor = cssBackgroundForInputPath(child.inputPath_)
+        barEl.className = child.bytesInOutput_ ? 'bar' : 'bar empty'
+        barEl.style.background = bgColor
         barEl.style.width = 100 * child.bytesInOutput_ / maxBytesInOutput + '%'
         sizeEl.appendChild(barEl)
 
         let bytesEl = document.createElement('div')
-        bytesEl.className = 'bytes'
-        bytesEl.textContent = size
+        bytesEl.className = 'last'
+        bytesEl.textContent = colorMode === COLOR.FORMAT ? formatColorToText(bgColor) : size
         barEl.appendChild(bytesEl)
 
         // Use a link so we get keyboard support
@@ -635,7 +641,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
     mainEl.appendChild(detailsEl)
     regenerate()
 
-    return () => {
+    return [regenerate, () => {
       if (previousNode !== currentNode) {
         previousNode = currentNode
         regenerate()
@@ -658,11 +664,16 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
           }
         }
       }
-    }
+    }]
   }
 
-  let updateSunburst = startSunburst()
-  let updateDetails = startDetails()
+  let [redrawSunburst, updateSunburst] = startSunburst()
+  let [regenerateDetails, updateDetails] = startDetails()
+
+  setAfterColorMappingUpdate(() => {
+    redrawSunburst()
+    regenerateDetails()
+  })
 
   componentEl.id = 'sunburstPanel'
   componentEl.innerHTML = ''

@@ -139,6 +139,7 @@ export let showWhyFile = (metafile: Metafile, path: string, bytesInOutput: numbe
     + '<p>'
     + 'Original size: <b>' + textToHTML(bytesToText(input.bytes)) + '</b>'
     + (bytesInOutput === null ? '' : '<br>Bundled size: <b>' + textToHTML(bytesToText(bytesInOutput)) + '</b>')
+    + (input.format === 'esm' ? '<br>Module format: <b>ESM</b>' : input.format === 'cjs' ? '<br>Module format: <b>CommonJS</b>' : '')
     + '</p>'
 
   tryToExplainWhyFileIsInBundle(dialogEl, cachedInfo, path)
