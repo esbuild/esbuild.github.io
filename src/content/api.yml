@@ -5785,6 +5785,7 @@ body:
               external?: boolean
               original?: string
             }[]
+            format?: string
           }
         }
         outputs: {
