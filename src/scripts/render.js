@@ -56,8 +56,14 @@ for (let i = 0; i < pages.length; i++) {
   })
 }
 
+let disableLinkValidator = false
+
 function stripTagsFromMarkdown(markdown) {
-  return md.renderInline(markdown.trim()).replace(/<[^>]*>/g, '')
+  const old = disableLinkValidator
+  disableLinkValidator = true
+  const result = md.renderInline(markdown.trim()).replace(/<[^>]*>/g, '')
+  disableLinkValidator = old
+  return result
 }
 
 function toID(text) {
@@ -569,8 +575,72 @@ async function generateMain(key, main) {
   return (await Promise.all(main.body.map(handler))).join('')
 }
 
+function validateLinkInPage(page, hash) {
+  for (let { tag, value } of page.body) {
+    let cssID = ''
+
+    // Strip off a trailing CSS id
+    if (tag.includes('#')) {
+      let i = tag.indexOf('#')
+      cssID = tag.slice(i + 1)
+      tag = tag.slice(0, i)
+    }
+
+    if (/^h[234]$/.test(tag)) {
+      if (tag === 'h2') h2 = toID(value)
+      const id = toID(cssID || value)
+      if (id === hash) return true
+    }
+  }
+
+  return false
+}
+
 async function main() {
+  // Make sure there aren't any dead links
+  let currentPageForLinkValidator
+  md.core.ruler.after('inline', 'validate_links', state => {
+    if (disableLinkValidator) return
+
+    // For each block
+    for (const block of state.tokens) {
+      if (block.type !== 'inline') continue
+
+      // For each inline
+      nextInline: for (const inline of block.children) {
+        if (inline.type !== 'link_open') continue
+        const href = inline.attrGet('href')
+
+        // Handle special cases
+        if (href === '/analyze/') continue
+
+        // Check cross-page links
+        if (href.startsWith('/')) {
+          const [path, hash = ''] = href.split('#')
+          for (const [key, page] of pages) {
+            if (path === `/${key}/`) {
+              if (hash === '' || validateLinkInPage(page, hash)) continue nextInline
+              break
+            }
+          }
+          throw new Error(`Dead link: "${href}"`)
+        }
+
+        // Check in-page links
+        if (href.startsWith('#')) {
+          const [currentKey, currentPage] = currentPageForLinkValidator
+          if (validateLinkInPage(currentPage, href.slice(1))) continue nextInline
+          throw new Error(`Dead link "${href}" on page "${currentKey}"`)
+        }
+      }
+    }
+
+    return false
+  })
+
   for (let [key, page] of pages) {
+    currentPageForLinkValidator = [key, page]
+
     let dir = outDir
     if (key !== 'index') {
       dir = path.join(dir, key)
