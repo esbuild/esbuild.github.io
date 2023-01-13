@@ -6485,8 +6485,7 @@ body:
       can get a speedup by telling esbuild to pretend this syntax feature isn't
       supported. For example, [V8](https://v8.dev/) has a [long-standing performance bug regarding object spread](https://bugs.chromium.org/p/v8/issues/detail?id=11536)
       that can be avoided by manually copying properties instead of using
-      object spread syntax. Right now esbuild hard-codes this optimization if
-      you set `target` to a V8-based runtime.
+      object spread syntax.
       </p>
 
     - >
