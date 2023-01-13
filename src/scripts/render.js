@@ -463,6 +463,8 @@ async function generateMain(key, main) {
       let elements = []
       if (value.cli) elements.push(['cli', 'CLI'])
       if (value.js) elements.push(['js', 'JS'])
+      if (value.cjs) elements.push(['cjs', 'JS'])
+      if (value.mjs) elements.push(['mjs', 'JS'])
       if (value.go) elements.push(['go', 'Go'])
       if (value.unix) elements.push(['unix', 'Unix'])
       if (value.windows) elements.push(['windows', 'Windows'])

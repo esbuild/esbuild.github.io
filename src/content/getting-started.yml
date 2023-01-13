@@ -114,12 +114,14 @@ body:
       in:
         app.jsx: '<div/>'
 
-      js: |
-        require('esbuild').build({
+      mjs: |
+        import { build } from 'esbuild'
+
+        await build({
           entryPoints: ['app.jsx'],
           bundle: true,
           outfile: 'out.js',
-        }).catch(() => process.exit(1))
+        })
 
   - p: >
       The `build` function runs the esbuild executable in a child process and
