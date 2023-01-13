@@ -601,6 +601,7 @@ async function main() {
   let currentPageForLinkValidator
   md.core.ruler.after('inline', 'validate_links', state => {
     if (disableLinkValidator) return
+    const [currentKey, currentPage] = currentPageForLinkValidator
 
     // For each block
     for (const block of state.tokens) {
@@ -623,12 +624,11 @@ async function main() {
               break
             }
           }
-          throw new Error(`Dead link: "${href}"`)
+          throw new Error(`Dead link "${href}" on page "${currentKey}"`)
         }
 
         // Check in-page links
         if (href.startsWith('#')) {
-          const [currentKey, currentPage] = currentPageForLinkValidator
           if (validateLinkInPage(currentPage, href.slice(1))) continue nextInline
           throw new Error(`Dead link "${href}" on page "${currentKey}"`)
         }
