@@ -483,6 +483,13 @@ body:
       forever for existing esbuild versions (packages published to npm are
       immutable).
 
+  - p: >
+      <footer>
+      <sup>1</sup> This operating system is not on [node's list of supported platforms](https://nodejs.org/api/process.html#process_process_platform)
+      <br>
+      <sup>2</sup> This architecture is not on [node's list of supported architectures](https://nodejs.org/api/process.html#processarch)
+      </footer>
+
   - h3#wasm: Install the WASM version
 
   - p: >
@@ -600,10 +607,3 @@ body:
       can be unergonomic for complex use cases and which does not support [plugins](/plugins/).
       You will need to write JavaScript or Go code and use [esbuild's API](/api/)
       to use plugins.
-
-  - p: >
-      <footer>
-      <sup>1</sup> This operating system is not on [node's list of supported platforms](https://nodejs.org/api/process.html#process_process_platform)
-      <br>
-      <sup>2</sup> This architecture is not on [node's list of supported architectures](https://nodejs.org/api/process.html#processarch)
-      </footer>
