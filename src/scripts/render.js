@@ -468,12 +468,13 @@ async function generateMain(key, main) {
       if (value.go) elements.push(['go', 'Go'])
       if (value.unix) elements.push(['unix', 'Unix'])
       if (value.windows) elements.push(['windows', 'Windows'])
+      let className = kind => (kind.includes('js') ? 'js' : kind) + elements.length
       if (elements.length === 1) {
         let [kind] = elements[0]
-        return `<pre class="${kind + elements.length}">${renderExample(kind, value[kind])}</pre>`
+        return `<pre class="${className(kind)}">${renderExample(kind, value[kind])}</pre>`
       }
-      let switcherContent = elements.map(([kind, name]) => `<a href="javascript:void 0" class="${kind + elements.length}">${name}</a>`)
-      let exampleContent = elements.map(([kind]) => `<pre class="switchable ${kind + elements.length}">${renderExample(kind, value[kind])}</pre>`)
+      let switcherContent = elements.map(([kind, name]) => `<a href="javascript:void 0" class="${className(kind)}">${name}</a>`)
+      let exampleContent = elements.map(([kind]) => `<pre class="switchable ${className(kind)}">${renderExample(kind, value[kind])}</pre>`)
       return `<div class="switcher">\n${switcherContent.join('\n')}\n      </div>\n${exampleContent.join('\n')}`
     }
 
