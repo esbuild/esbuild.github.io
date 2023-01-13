@@ -71,6 +71,11 @@ a {
   color: inherit;
 }
 
+b,
+strong {
+  color: var(--fg-on);
+}
+
 footer {
   font-size: 80%;
   line-height: 140%;
