@@ -618,6 +618,22 @@ body.has-js {
   font-size: 16px;
 }
 
+.available-options {
+  margin-top: 50px;
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: row;
+}
+
+.option-group {
+  padding-right: 20px;
+}
+
+.option-group ul {
+  margin: 0;
+  padding: 0 0 0 20px;
+}
+
 @media (min-width: 800px) {
 
   body,
@@ -684,6 +700,10 @@ body.has-js {
 
   .switcher {
     margin-right: 30px;
+  }
+
+  .available-options {
+    justify-content: center;
   }
 }
 

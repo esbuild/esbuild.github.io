@@ -88,25 +88,23 @@ function generateNav(key) {
     let root = { k, title: page.title, h2s }
     structure.push(root)
 
-    if (k !== 'faq' || k === key) {
-      let h3s
-      for (let { tag, value } of page.body) {
-        let cssID
+    let h3s
+    for (let { tag, value } of page.body) {
+      let cssID
 
-        // Strip off a trailing CSS id
-        if (tag.includes('#')) {
-          let i = tag.indexOf('#')
-          cssID = tag.slice(i + 1)
-          tag = tag.slice(0, i)
-        }
+      // Strip off a trailing CSS id
+      if (tag.includes('#')) {
+        let i = tag.indexOf('#')
+        cssID = tag.slice(i + 1)
+        tag = tag.slice(0, i)
+      }
 
-        if (tag === 'h2') {
-          h3s = []
-          h2 = { cssID: cssID || toID(value), value, h3s }
-          h2s.push(h2)
-        } else if (tag === 'h3' && k === key) {
-          h3s.push({ cssID: cssID || toID(value), value })
-        }
+      if (tag === 'h2') {
+        h3s = []
+        h2 = { cssID: cssID || toID(value), value, h3s }
+        h2s.push(h2)
+      } else if (tag === 'h3' && k === key) {
+        h3s.push({ cssID: cssID || toID(value), value })
       }
     }
   }
@@ -338,18 +336,18 @@ function renderExample(kind, value) {
     let lines = []
     for (let item of value) {
       if (item.$) {
-        let html = hljs.highlight(hljsLang, item.$.trim()).value
+        let html = hljs.highlight(hljsLang, item.$).value
         html = html.replace(/CURRENT_ESBUILD_VERSION/g, CURRENT_ESBUILD_VERSION)
         lines.push(`<span class="repl-in">${html}</span>`)
       } else if (item.expect) {
-        lines.push(`<span class="repl-out">${escapeHTML(item.expect.trim())}</span>`)
+        lines.push(`<span class="repl-out">${escapeHTML(item.expect)}</span>`)
       } else {
         throw new Error('Internal error')
       }
     }
     return lines.join('')
   }
-  return hljs.highlight(hljsLang, value.trim()).value
+  return hljs.highlight(hljsLang, value).value
 }
 
 // Format the example log messages automatically so they are kept up to date
@@ -446,7 +444,7 @@ async function formatMessagesInText(text) {
 async function generateMain(key, main) {
   let apiCallsForOption = {}
   let benchmarkCount = 0
-  let h2 = null
+  let h3 = null
 
   const handler = async ({ tag, value }) => {
     let cssID = ''
@@ -479,15 +477,15 @@ async function generateMain(key, main) {
     }
 
     if (/^h[234]$/.test(tag)) {
-      if (tag === 'h2') h2 = toID(value)
+      if (tag === 'h3') h3 = toID(value)
       let html = `<${tag} id="${escapeAttribute(toID(cssID || value))}">` +
         `<a class="permalink" href="#${escapeAttribute(toID(cssID || value))}">#</a>` +
         `${md.renderInline(value)}</${tag}>`
       let calls = apiCallsForOption[value]
       if (calls) {
         html += `<p><i>Supported by: ${calls.map(call => {
-          return `<a href="#${escapeAttribute(call)}">${call[0].toUpperCase() + call.slice(1).replace('-api', '')}</a>`
-        }).join(' | ')}</i></p>`
+          return `<a href="#${escapeAttribute(call)}">${call[0].toUpperCase() + call.slice(1)}</a>`
+        }).join(' and ')}</i></p>`
       }
       return html
     }
@@ -538,19 +536,48 @@ async function generateMain(key, main) {
           if (t === 'h2') targetH2 = v
           else if (t === 'h3' && v === name) break
         }
-        (apiCallsForOption[name] || (apiCallsForOption[name] = [])).push(h2)
+        (apiCallsForOption[name] || (apiCallsForOption[name] = [])).push(h3)
         sections[targetH2].push(name)
       }
-      let lines = []
+
+      const groups = [];
       for (let h2 in sections) {
         if (sections[h2].length === 0) continue
-        lines.push(`<p>${escapeHTML(h2)}:</p>`);
-        lines.push(`<ul>`);
+        const group = [];
+        group.push(`<b>${escapeHTML(h2)}:</b>`);
+        group.push(`<ul>`);
         for (let item of sections[h2]) {
-          lines.push(`<li><a href="#${escapeAttribute(toID(item))}">${escapeHTML(item)}</a></li>`);
+          group.push(`<li><a href="#${escapeAttribute(toID(item))}">${escapeHTML(item)}</a></li>`);
         }
-        lines.push(`</ul>`);
+        group.push(`</ul>`);
+        group.push(`<br>`);
+        groups.push(group);
       }
+
+      // Take some statistics
+      let totalLineCount = 0;
+      for (const group of groups) totalLineCount += group.length;
+      const averageLineCount = totalLineCount / groups.length;
+      const lineCountLimit = averageLineCount * Math.ceil(totalLineCount / 50);
+
+      // Attempt to pack things in a bit more
+      for (let i = 1; i < groups.length;) {
+        if (groups[i - 1].length + groups[i].length < lineCountLimit) {
+          groups[i - 1].push(...groups[i]);
+          groups.splice(i, 1);
+        } else {
+          i++;
+        }
+      }
+
+      let lines = [];
+      lines.push(`<div class="available-options">`);
+      for (const group of groups) {
+        lines.push(`<div class="option-group">`);
+        lines.push(...group);
+        lines.push(`</div>`);
+      }
+      lines.push(`</div>`);
       return lines.join('')
     }
 

@@ -137,6 +137,7 @@ async function checkJs(text, value, extension) {
       return true
     }
 
+    let didImport = false
     let js = ''
 
     for (let i = 0; i < items.length; i++) {
@@ -151,8 +152,18 @@ async function checkJs(text, value, extension) {
       }
 
       else if (item.expect) {
-        js += `require('assert').strictEqual(
-          require('util').inspect($, { sorted: true, breakLength: 40 }),
+        if (!didImport) {
+          didImport = true
+          if (extension === 'mjs') {
+            js += `import assert from 'node:assert';\n`
+            js += `import util from 'node:util';\n`
+          } else {
+            js += `const assert = require('assert');\n`
+            js += `const util = require('util');\n`
+          }
+        }
+        js += `assert.strictEqual(
+          util.inspect($, { sorted: true, breakLength: 40 }),
           ${JSON.stringify(item.expect.trim())});\n`
       }
 
