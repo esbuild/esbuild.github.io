@@ -1,6 +1,7 @@
 (() => {
   var doc = document
   var body = doc.body
+  var docElem = doc.documentElement
   var bodyDataset = body.dataset
   var getElementById = doc.getElementById.bind(doc)
   var os = navigator.platform === 'Win32' ? 'windows' : 'unix'
@@ -24,25 +25,25 @@
       var target = e.target.className
 
       if (/^(cli|js|go)[23]$/.test(target)) {
-        var before = e.target.offsetTop - body.scrollTop
+        var before = e.target.offsetTop - docElem.scrollTop
 
         for (var i = target === 'cli3' ? 3 : 2; i <= 3; i++) {
           bodyDataset['mode' + i] = target.slice(0, -1)
           localStorage.setItem('mode' + i, target.slice(0, -1))
         }
 
-        var after = e.target.offsetTop - body.scrollTop
-        body.scrollTop += after - before
+        var after = e.target.offsetTop - docElem.scrollTop
+        docElem.scrollTop += after - before
       }
 
       if (/^(unix|windows)2$/.test(target)) {
-        var before = e.target.offsetTop - body.scrollTop
+        var before = e.target.offsetTop - docElem.scrollTop
 
         bodyDataset['os2'] = target.slice(0, -1)
         localStorage.setItem('os2', target.slice(0, -1))
 
-        var after = e.target.offsetTop - body.scrollTop
-        body.scrollTop += after - before
+        var after = e.target.offsetTop - docElem.scrollTop
+        docElem.scrollTop += after - before
       }
     }
   })
