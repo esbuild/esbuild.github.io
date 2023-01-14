@@ -1,5 +1,6 @@
 import './index.css'
 import './import'
+import './live-reload'
 import { Metafile, metafileHasFormat } from './metafile'
 import { showSummary } from './summary'
 import { createSunburst } from './sunburst'

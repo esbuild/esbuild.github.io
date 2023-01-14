@@ -34,7 +34,7 @@ body {
   margin: 50px;
   font: 16px/20px sans-serif;
   background: var(--bg);
-  color: var(--fg)
+  color: var(--fg);
 }
 
 #startPanel {
