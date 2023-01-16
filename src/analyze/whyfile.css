@@ -112,10 +112,14 @@
 
 #whyFile .arrow:after {
   height: 40px;
-  mask-image: url('data:image/svg+xml,<svg width="30" height="40" xmlns="http://www.w3.org/2000/svg"><path d="M16.5 26L20.5 35L23 25.5L16.5 26Z"/><path d="M5 7C15 7 19 15 20 30" fill="none" stroke="black"/></svg>');
+  --icon: url('data:image/svg+xml,<svg width="30" height="40" xmlns="http://www.w3.org/2000/svg"><path d="M16.5 26L20.5 35L23 25.5L16.5 26Z"/><path d="M5 7C15 7 19 15 20 30" fill="none" stroke="black"/></svg>');
+  mask-image: var(--icon);
+  -webkit-mask-image: var(--icon);
 }
 
 #whyFile .longArrow:after {
   height: 90px;
-  mask-image: url('data:image/svg+xml,<svg width="30" height="90" xmlns="http://www.w3.org/2000/svg"><path d="M17 76L20 85L23 76H17Z"/><path d="M5 7C15 7 20 25 20 80" fill="none" stroke="black"/></svg>');
+  --icon: url('data:image/svg+xml,<svg width="30" height="90" xmlns="http://www.w3.org/2000/svg"><path d="M17 76L20 85L23 76H17Z"/><path d="M5 7C15 7 20 25 20 80" fill="none" stroke="black"/></svg>');
+  mask-image: var(--icon);
+  -webkit-mask-image: var(--icon);
 }
