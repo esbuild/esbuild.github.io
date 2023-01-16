@@ -225,6 +225,7 @@ body:
     - Asset names
     - Banner
     - Bundle
+    - Cancel
     - Charset
     - Chunk names
     - Color
@@ -601,6 +602,84 @@ body:
       emulation is out of scope and will not be implemented in esbuild. If you
       really need to bundle code that does this, you will likely need to use
       another bundler instead of esbuild.
+
+  - h3: Cancel
+
+  - p: >
+      If you are using [rebuild](#rebuild) to manually invoke incremental
+      builds, you may want to use this cancel API to end the current build
+      early so that you can start a new one. You can do that like this:
+
+  - example:
+      noCheck: true
+
+      cli: |
+        # The CLI does not have an API for "cancel"
+
+      mjs: |
+        import * as esbuild from 'esbuild'
+        import process from 'node:process'
+
+        let ctx = await esbuild.context({
+          entryPoints: ['app.ts'],
+          bundle: true,
+          outdir: 'www',
+          logLevel: 'info',
+        })
+
+        // Whenever we get some data over stdin
+        process.stdin.on('data', async () => {
+          try {
+            // Cancel the already-running build
+            await ctx.cancel()
+
+            // Then start a new build
+            console.log('build:', await ctx.rebuild())
+          } catch (err) {
+            console.error(err)
+          }
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          ctx, err := api.Context(api.BuildOptions{
+            EntryPoints: []string{"app.ts"},
+            Bundle:      true,
+            Outdir:      "www",
+            LogLevel:    api.LogLevelInfo,
+          })
+          if err != nil {
+            os.Exit(1)
+          }
+
+          // Whenever we get some data over stdin
+          buf := make([]byte, 100)
+          for {
+            if n, err := os.Stdin.Read(buf); err != nil || n == 0 {
+              break
+            }
+            go func() {
+              // Cancel the already-running build
+              ctx.Cancel()
+
+              // Then start a new build
+              result := ctx.Rebuild()
+              fmt.Fprintf(os.Stderr, "build: %v\n", result)
+            }()
+          }
+        }
+
+  - p: >
+      Make sure to wait until the cancel operation is done before starting a
+      new build (i.e. `await` the returned promise when using JavaScript),
+      otherwise the next [rebuild](#rebuild) will give you the just-canceled
+      build that still hasn't ended yet. Note that plugin [on-end callbacks](/plugins/#on-end)
+      will still be run regardless of whether or not the build was canceled.
 
   - h3: Live reload
 
