@@ -489,8 +489,9 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     let deltaY = e.deltaY
     let isZoom = e.ctrlKey || e.metaKey
 
-    // If we're zooming or panning sideways, then don't let the user interact with the page itself
-    if (isZoom || Math.abs(deltaX) > Math.abs(deltaY)) {
+    // If we're zooming or panning sideways, then don't let the user interact
+    // with the page itself. Note that this has to be ">=" not ">" for Chrome.
+    if (isZoom || Math.abs(deltaX) >= Math.abs(deltaY)) {
       e.preventDefault()
     }
 
