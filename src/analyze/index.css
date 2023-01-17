@@ -1,4 +1,4 @@
-body:not([data-theme=dark]) {
+html:not([data-theme=dark]) {
   --bg: #fff;
   --fg-on: #000;
   --fg: #222;
@@ -8,7 +8,8 @@ body:not([data-theme=dark]) {
   --bar-min-width: 1px;
 }
 
-body[data-theme=dark] {
+html[data-theme=dark] {
+  color-scheme: dark;
   --bg: #191919;
   --fg-on: #ddd;
   --fg: #aaa;
@@ -19,7 +20,8 @@ body[data-theme=dark] {
 }
 
 @media (prefers-color-scheme: dark) {
-  body:not([data-theme=light]) {
+  html:not([data-theme=light]) {
+    color-scheme: dark;
     --bg: #191919;
     --fg-on: #ddd;
     --fg: #aaa;

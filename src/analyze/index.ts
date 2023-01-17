@@ -81,10 +81,10 @@ export let finishLoading = (json: string): void => {
   useColor(COLOR.DIRECTORY)
 }
 
-let bodyDataset = document.body.dataset
+let docElemDataset = document.documentElement.dataset
 let updateTheme = () => {
   // Keep the dark/light mode theme up to date with the rest of the site
-  bodyDataset.theme = localStorageGetItem('theme') + ''
+  docElemDataset.theme = localStorageGetItem('theme') + ''
   if (darkModeListener) darkModeListener()
 }
 
