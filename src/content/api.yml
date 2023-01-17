@@ -1867,10 +1867,10 @@ body:
         import * as esbuild from 'esbuild'
 
         await esbuild.build({
-          entryPoints: {
-            out1: 'home.ts',
-            out2: 'settings.ts',
-          },
+          entryPoints: [
+            { out: 'out1', in: 'home.ts'},
+            { out: 'out2', in: 'settings.ts'},
+          ],
           bundle: true,
           write: true,
           outdir: 'out',
