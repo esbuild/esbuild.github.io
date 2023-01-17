@@ -1343,6 +1343,43 @@ body:
       setting on the [initial options](#build-options) and the build graph will
       be returned as the `metafile` property on the build result object.
 
+  - h2#on-dispose: On-dispose callbacks
+
+  - p: >
+      Register an on-dispose callback to perform cleanup when the plugin is no
+      longer used. It will be called after every `build()` call regardless of
+      whether the build failed or not, as well as after the first `dispose()`
+      call on a given build context. Here's how to add an on-dispose callback:
+
+  - example:
+      mjs: |
+        let examplePlugin = {
+          name: 'example',
+          setup(build) {
+            build.onDispose(() => {
+              console.log('This plugin is no longer used')
+            })
+          },
+        }
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        var examplePlugin = api.Plugin{
+          Name: "example",
+          Setup: func(build api.PluginBuild) {
+            build.OnDispose(func() {
+              fmt.Println("This plugin is no longer used")
+            })
+          },
+        }
+
+        func main() {
+        }
+
   - h2#build-options: Accessing build options
 
   - p: >
