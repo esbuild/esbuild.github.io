@@ -2664,7 +2664,8 @@ body:
       <p>`external`<br>Move all legal comments to a `.LEGAL.txt` file but to not link to them.</p>
 
   - p: >
-      The default behavior is `none`. Setting the legal comment mode looks like this:
+      The default behavior is `eof` when [bundling](#bundle) is enabled and `inline` otherwise.
+      Setting the legal comment mode looks like this:
 
   - example:
       in:
