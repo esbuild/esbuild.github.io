@@ -2433,7 +2433,7 @@ fs.writeFileSync(<span class="hljs-string">&#x27;app.js&#x27;</span>, <span clas
   <span class="hljs-attr">&quot;scripts&quot;</span>: {
     <span class="hljs-attr">&quot;build&quot;</span>: <span class="hljs-string">&quot;esbuild --define:process.env.NODE_ENV=\\\&quot;production\\\&quot; app.js&quot;</span>
   }
-}</pre><p>If you still run into cross-platform quote escaping issues with different shells, you will probably want to switch to using the <a href="/api/">JavaScript API</a> instead. There you can use regular JavaScript syntax to eliminate cross-platform differences.</p><h3 id="drop"><a class="permalink" href="#drop">#</a>Drop</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>This tells esbuild to edit your source code before building to drop certain constructs. There are currently two possible things that can be dropped:</p><ul><li><code>debugger</code> <p> Passing this flag causes all <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger"><code>debugger</code> statements</a> to be removed from the output. This is similar to the <code>drop_debugger: true</code> flag available in the popular <a href="https://github.com/mishoo/UglifyJS">UglifyJS</a> and <a href="https://github.com/terser/terser">Terser</a> JavaScript minifiers. </p> <p> JavaScript's <code>debugger</code> statements cause the active debugger to treat the statement as an automatically-configured breakpoint. Code containing this statement will automatically be paused when the debugger is open. If no debugger is open, the statement does nothing. Dropping these statements from your code just prevents the debugger from automatically stopping when your code runs. </p> <p> You can drop <code>debugger</code> statements like this: </p></li></ul><div class="switcher">
+}</pre><p>If you still run into cross-platform quote escaping issues with different shells, you will probably want to switch to using the <a href="/api/">JavaScript API</a> instead. There you can use regular JavaScript syntax to eliminate cross-platform differences.</p><p>If you're looking for a more advanced form of the define feature that can replace an expression with something other than a constant (e.g. replacing a global variable with a shim), you may be able to use the similar <a href="#inject">inject</a> feature to do that.</p><h3 id="drop"><a class="permalink" href="#drop">#</a>Drop</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>This tells esbuild to edit your source code before building to drop certain constructs. There are currently two possible things that can be dropped:</p><ul><li><code>debugger</code> <p> Passing this flag causes all <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger"><code>debugger</code> statements</a> to be removed from the output. This is similar to the <code>drop_debugger: true</code> flag available in the popular <a href="https://github.com/mishoo/UglifyJS">UglifyJS</a> and <a href="https://github.com/terser/terser">Terser</a> JavaScript minifiers. </p> <p> JavaScript's <code>debugger</code> statements cause the active debugger to treat the statement as an automatically-configured breakpoint. Code containing this statement will automatically be paused when the debugger is open. If no debugger is open, the statement does nothing. Dropping these statements from your code just prevents the debugger from automatically stopping when your code runs. </p> <p> You can drop <code>debugger</code> statements like this: </p></li></ul><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -2523,23 +2523,21 @@ fs.writeFileSync(<span class="hljs-string">&#x27;app.js&#x27;</span>, <span clas
     os.Exit(<span class="hljs-number">1</span>)
   }
 }
-</pre><p>Enabling this means esbuild will no longer respect <code>/* @__PURE__ */</code> comments or the <code>sideEffects</code> field. It will still do automatic <a href="#tree-shaking">tree shaking</a> of unused imports, however, since that doesn't rely on annotations from developers. Ideally this flag is only a temporary workaround. You should report these issues to the maintainer of the package to get them fixed since they indicate a problem with the package and they will likely trip up other people too.</p><h3 id="inject"><a class="permalink" href="#inject">#</a>Inject</h3><p><i>Supported by: <a href="#build">Build</a></i></p><p>This option allows you to automatically replace a global variable with an import from another file. This can be a useful tool for adapting code that you don't control to a new environment. For example, assume you have a file called <code>process-shim.js</code> that exports a variable named <code>process</code>:</p><pre><span class="hljs-comment">// process-shim.js</span>
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> process = {
-  <span class="hljs-attr">cwd</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-string">&#x27;&#x27;</span>
-}</pre><pre><span class="hljs-comment">// entry.js</span>
-<span class="hljs-built_in">console</span>.log(process.cwd())</pre><p>This is intended to replace uses of node's <code>process.cwd()</code> function to prevent packages that call it from crashing when run in the browser. You can use the inject feature to replace all uses of the global identifier <code>process</code> with an import to that file:</p><div class="switcher">
+</pre><p>Enabling this means esbuild will no longer respect <code>/* @__PURE__ */</code> comments or the <code>sideEffects</code> field. It will still do automatic <a href="#tree-shaking">tree shaking</a> of unused imports, however, since that doesn't rely on annotations from developers. Ideally this flag is only a temporary workaround. You should report these issues to the maintainer of the package to get them fixed since they indicate a problem with the package and they will likely trip up other people too.</p><h3 id="inject"><a class="permalink" href="#inject">#</a>Inject</h3><p><i>Supported by: <a href="#build">Build</a></i></p><p>This option allows you to automatically replace a global variable with an import from another file. This can be a useful tool for adapting code that you don't control to a new environment. For example, assume you have a file called <code>process-cwd-shim.js</code> that exports a shim using the export name <code>process.cwd</code>:</p><pre><span class="hljs-comment">// process-cwd-shim.js</span>
+<span class="hljs-keyword">let</span> processCwdShim = <span class="hljs-function">() =&gt;</span> <span class="hljs-string">&#x27;&#x27;</span>
+<span class="hljs-keyword">export</span> { processCwdShim <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;process.cwd&#x27;</span> }</pre><pre><span class="hljs-comment">// entry.js</span>
+<span class="hljs-built_in">console</span>.log(process.cwd())</pre><p>This is intended to replace uses of node's <code>process.cwd()</code> function to prevent packages that call it from crashing when run in the browser. You can use the inject feature to replace all references to the global property <code>process.cwd</code> with an import from that file:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
       </div>
-<pre class="switchable cli3">esbuild entry.js --bundle --inject:./process-shim.js --outfile=out.js
+<pre class="switchable cli3">esbuild entry.js --inject:./process-cwd-shim.js --outfile=out.js
 </pre>
 <pre class="switchable js3"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;esbuild&#x27;</span>
 
 <span class="hljs-keyword">await</span> esbuild.build({
   <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;entry.js&#x27;</span>],
-  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
-  <span class="hljs-attr">inject</span>: [<span class="hljs-string">&#x27;./process-shim.js&#x27;</span>],
+  <span class="hljs-attr">inject</span>: [<span class="hljs-string">&#x27;./process-cwd-shim.js&#x27;</span>],
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
 })
 </pre>
@@ -2551,8 +2549,7 @@ fs.writeFileSync(<span class="hljs-string">&#x27;app.js&#x27;</span>, <span clas
 <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
   result := api.Build(api.BuildOptions{
     EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;entry.js&quot;</span>},
-    Bundle:      <span class="hljs-literal">true</span>,
-    Inject:      []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;./process-shim.js&quot;</span>},
+    Inject:      []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;./process-cwd-shim.js&quot;</span>},
     Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
     Write:       <span class="hljs-literal">true</span>,
   })
@@ -2562,54 +2559,12 @@ fs.writeFileSync(<span class="hljs-string">&#x27;app.js&#x27;</span>, <span clas
   }
 }
 </pre><p>That results in something like this:</p><pre><span class="hljs-comment">// out.js</span>
-<span class="hljs-keyword">let</span> process = {<span class="hljs-attr">cwd</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-string">&quot;&quot;</span>};
-<span class="hljs-built_in">console</span>.log(process.cwd());</pre><h4 id="using-inject-with-define"><a class="permalink" href="#using-inject-with-define">#</a>Using inject with <a href="#define">define</a></h4><p>You can also combine this with the <a href="#define">define</a> feature to be more selective about what you import. For example:</p><pre><span class="hljs-comment">// process-shim.js</span>
-<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dummy_process_cwd</span>(<span class="hljs-params"></span>) </span>{
-  <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;&#x27;</span>
-}</pre><pre><span class="hljs-comment">// entry.js</span>
-<span class="hljs-built_in">console</span>.log(process.cwd())</pre><p>You can map <code>process.cwd</code> to <code>dummy_process_cwd</code> with the <a href="#define">define</a> feature, then inject <code>dummy_process_cwd</code> from <code>process-shim.js</code> with the inject feature:</p><div class="switcher">
-<a href="javascript:void 0" class="cli3">CLI</a>
-<a href="javascript:void 0" class="js3">JS</a>
-<a href="javascript:void 0" class="go3">Go</a>
-      </div>
-<pre class="switchable cli3">esbuild entry.js --bundle --define:process.cwd=dummy_process_cwd --inject:./process-shim.js --outfile=out.js
-</pre>
-<pre class="switchable js3"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;esbuild&#x27;</span>
-
-<span class="hljs-keyword">await</span> esbuild.build({
-  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;entry.js&#x27;</span>],
-  <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
-  <span class="hljs-attr">define</span>: { <span class="hljs-string">&#x27;process.cwd&#x27;</span>: <span class="hljs-string">&#x27;dummy_process_cwd&#x27;</span> },
-  <span class="hljs-attr">inject</span>: [<span class="hljs-string">&#x27;./process-shim.js&#x27;</span>],
-  <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
-})
-</pre>
-<pre class="switchable go3"><span class="hljs-keyword">package</span> main
-
-<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
-<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-  result := api.Build(api.BuildOptions{
-    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;entry.js&quot;</span>},
-    Bundle:      <span class="hljs-literal">true</span>,
-    Define: <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">string</span>{
-      <span class="hljs-string">&quot;process.cwd&quot;</span>: <span class="hljs-string">&quot;dummy_process_cwd&quot;</span>,
-    },
-    Inject:  []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;./process-shim.js&quot;</span>},
-    Outfile: <span class="hljs-string">&quot;out.js&quot;</span>,
-    Write:   <span class="hljs-literal">true</span>,
-  })
-
-  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
-    os.Exit(<span class="hljs-number">1</span>)
-  }
-}
-</pre><p>That results in the following output:</p><pre><span class="hljs-comment">// out.js</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dummy_process_cwd</span>(<span class="hljs-params"></span>) </span>{
-  <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span>;
-}
-<span class="hljs-built_in">console</span>.log(dummy_process_cwd());</pre><h4 id="auto-import-for-jsx"><a class="permalink" href="#auto-import-for-jsx">#</a>Auto-import for <a href="/content-types/#jsx">JSX</a></h4><p>You can use the inject feature to automatically provide the implementation for JSX expressions. For example, you can auto-import the <code>react</code> package to provide functions such as <code>React.createElement</code>. See the <a href="/content-types/#auto-import-for-jsx">JSX documentation</a> for details.</p><h4 id="injecting-files-without-imports"><a class="permalink" href="#injecting-files-without-imports">#</a>Injecting files without imports</h4><p>You can also use this feature with files that have no exports. In that case the injected file just comes first before the rest of the output as if every input file contained <code>import <wbr>&quot;./file.js&quot;</code>. Because of the way ECMAScript modules work, this injection is still &quot;hygienic&quot; in that symbols with the same name in different files are renamed so they don't collide with each other.</p><h4 id="conditionally-injecting-a-file"><a class="permalink" href="#conditionally-injecting-a-file">#</a>Conditionally injecting a file</h4><p>If you want to <em>conditionally</em> import a file only if the export is actually used, you should mark the injected file as not having side effects by putting it in a package and adding <code>&quot;sideEffects&quot;: <wbr>false</code> in that package's <code>package.json</code> file. This setting is a <a href="https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free">convention from Webpack</a> that esbuild respects for any imported file, not just files used with inject.</p><h3 id="keep-names"><a class="permalink" href="#keep-names">#</a>Keep names</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>In JavaScript the <code>name</code> property on functions and classes defaults to a nearby identifier in the source code. These syntax forms all set the <code>name</code> property of the function to <code>&quot;fn&quot;</code>:</p><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fn</span>(<span class="hljs-params"></span>) </span>{}
+<span class="hljs-keyword">var</span> processCwdShim = <span class="hljs-function">() =&gt;</span> <span class="hljs-string">&quot;&quot;</span>;
+<span class="hljs-built_in">console</span>.log(processCwdShim());</pre><p>You can think of the inject feature as similar to the <a href="#define">define</a> feature, except it replaces an expression with an import to a file instead of with a constant, and the expression to replace is specified using an export name in a file instead of using an inline string in esbuild's API.</p><h4 id="auto-import-for-jsx"><a class="permalink" href="#auto-import-for-jsx">#</a>Auto-import for <a href="/content-types/#jsx">JSX</a></h4><p>React (the library for which JSX syntax was originally created) has a mode they call <code>automatic</code> where you don't have to <code>import</code> anything to use JSX syntax. Instead, the JSX-to-JS transformer will automatically import the correct JSX factory function for you. You can enable <code>automatic</code> JSX mode with esbuild's <a href="#jsx"><code>jsx</code></a> setting. If you want auto-import for JSX and you are using a sufficiently new version of React, then you should be using the <code>automatic</code> JSX mode.</p><p>However, setting <code>jsx</code> to <code>automatic</code> unfortunately also means you are using a highly React-specific JSX transform instead of the default general-purpose JSX transform. This means writing a JSX factory function is more complicated, and it also means that the <code>automatic</code> mode doesn't work with libraries that expect to be used with the standard JSX transform (including older versions of React).</p><p>You can use esbuild's inject feature to automatically import the <a href="#jsx-factory">factory</a> and <a href="#jsx-fragment">fragment</a> for JSX expressions when the JSX transform is not set to <code>automatic</code>. Here's an example file that can be injected to do this:</p><pre><span class="hljs-keyword">const</span> { createElement, Fragment } = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;react&#x27;</span>)
+<span class="hljs-keyword">export</span> {
+  createElement <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;React.createElement&#x27;</span>,
+  Fragment <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;React.Fragment&#x27;</span>,
+}</pre><p>This code uses the React library as an example, but you can use this approach with any other JSX library as well with appropriate changes.</p><h4 id="injecting-files-without-imports"><a class="permalink" href="#injecting-files-without-imports">#</a>Injecting files without imports</h4><p>You can also use this feature with files that have no exports. In that case the injected file just comes first before the rest of the output as if every input file contained <code>import <wbr>&quot;./file.js&quot;</code>. Because of the way ECMAScript modules work, this injection is still &quot;hygienic&quot; in that symbols with the same name in different files are renamed so they don't collide with each other.</p><h4 id="conditionally-injecting-a-file"><a class="permalink" href="#conditionally-injecting-a-file">#</a>Conditionally injecting a file</h4><p>If you want to <em>conditionally</em> import a file only if the export is actually used, you should mark the injected file as not having side effects by putting it in a package and adding <code>&quot;sideEffects&quot;: <wbr>false</code> in that package's <code>package.json</code> file. This setting is a <a href="https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free">convention from Webpack</a> that esbuild respects for any imported file, not just files used with inject.</p><h3 id="keep-names"><a class="permalink" href="#keep-names">#</a>Keep names</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>In JavaScript the <code>name</code> property on functions and classes defaults to a nearby identifier in the source code. These syntax forms all set the <code>name</code> property of the function to <code>&quot;fn&quot;</code>:</p><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fn</span>(<span class="hljs-params"></span>) </span>{}
 <span class="hljs-keyword">let</span> fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{};
 fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{};
 <span class="hljs-keyword">let</span> [fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{}] = [];
