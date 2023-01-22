@@ -5108,6 +5108,12 @@ body:
       instead. There you can use regular JavaScript syntax to eliminate
       cross-platform differences.
 
+  - p: >
+      If you're looking for a more advanced form of the define feature that can
+      replace an expression with something other than a constant (e.g. replacing
+      a global variable with a shim), you may be able to use the similar
+      [inject](#inject) feature to do that.
+
   - h3: Drop
 
   - p: >
@@ -5319,13 +5325,13 @@ body:
       This option allows you to automatically replace a global variable with an
       import from another file. This can be a useful tool for adapting code that
       you don't control to a new environment. For example, assume you have a
-      file called `process-shim.js` that exports a variable named `process`:
+      file called `process-cwd-shim.js` that exports a shim using the export
+      name `process.cwd`:
 
   - pre.js: |
-      // process-shim.js
-      export let process = {
-        cwd: () => ''
-      }
+      // process-cwd-shim.js
+      let processCwdShim = () => ''
+      export { processCwdShim as 'process.cwd' }
 
   - pre.js: |
       // entry.js
@@ -5334,24 +5340,25 @@ body:
   - p: >
       This is intended to replace uses of node's `process.cwd()` function to
       prevent packages that call it from crashing when run in the browser.
-      You can use the inject feature to replace all uses of the global identifier
-      `process` with an import to that file:
+      You can use the inject feature to replace all references to the global
+      property `process.cwd` with an import from that file:
 
   - example:
       in:
-        process-shim.js: 'export let process = { cwd: () => "" }'
+        process-cwd-shim.js: |
+          let processCwdShim = () => ''
+          export { processCwdShim as 'process.cwd' }
         entry.js: 'console.log(process.cwd())'
 
       cli: |
-        esbuild entry.js --bundle --inject:./process-shim.js --outfile=out.js
+        esbuild entry.js --inject:./process-cwd-shim.js --outfile=out.js
 
       mjs: |
         import * as esbuild from 'esbuild'
 
         await esbuild.build({
           entryPoints: ['entry.js'],
-          bundle: true,
-          inject: ['./process-shim.js'],
+          inject: ['./process-cwd-shim.js'],
           outfile: 'out.js',
         })
 
@@ -5364,8 +5371,7 @@ body:
         func main() {
           result := api.Build(api.BuildOptions{
             EntryPoints: []string{"entry.js"},
-            Bundle:      true,
-            Inject:      []string{"./process-shim.js"},
+            Inject:      []string{"./process-cwd-shim.js"},
             Outfile:     "out.js",
             Write:       true,
           })
@@ -5380,89 +5386,50 @@ body:
 
   - pre.js: |
       // out.js
-      let process = {cwd: () => ""};
-      console.log(process.cwd());
-
-  - h4: Using inject with [define](#define)
+      var processCwdShim = () => "";
+      console.log(processCwdShim());
 
   - p: >
-      You can also combine this with the [define](#define) feature to be more
-      selective about what you import. For example:
-
-  - pre.js: |
-      // process-shim.js
-      export function dummy_process_cwd() {
-        return ''
-      }
-
-  - pre.js: |
-      // entry.js
-      console.log(process.cwd())
-
-  - p: >
-      You can map `process.cwd` to `dummy_process_cwd` with the [define](#define)
-      feature, then inject `dummy_process_cwd` from `process-shim.js` with the
-      inject feature:
-
-  - example:
-      in:
-        process-shim.js: 'export function dummy_process_cwd() { return "" }'
-        entry.js: 'console.log(process.cwd())'
-
-      cli: |
-        esbuild entry.js --bundle --define:process.cwd=dummy_process_cwd --inject:./process-shim.js --outfile=out.js
-
-      mjs: |
-        import * as esbuild from 'esbuild'
-
-        await esbuild.build({
-          entryPoints: ['entry.js'],
-          bundle: true,
-          define: { 'process.cwd': 'dummy_process_cwd' },
-          inject: ['./process-shim.js'],
-          outfile: 'out.js',
-        })
-
-      go: |
-        package main
-
-        import "github.com/evanw/esbuild/pkg/api"
-        import "os"
-
-        func main() {
-          result := api.Build(api.BuildOptions{
-            EntryPoints: []string{"entry.js"},
-            Bundle:      true,
-            Define: map[string]string{
-              "process.cwd": "dummy_process_cwd",
-            },
-            Inject:  []string{"./process-shim.js"},
-            Outfile: "out.js",
-            Write:   true,
-          })
-
-          if len(result.Errors) > 0 {
-            os.Exit(1)
-          }
-        }
-
-  - p: >
-      That results in the following output:
-
-  - pre.js: |
-      // out.js
-      function dummy_process_cwd() {
-        return "";
-      }
-      console.log(dummy_process_cwd());
+      You can think of the inject feature as similar to the [define](#define)
+      feature, except it replaces an expression with an import to a file instead
+      of with a constant, and the expression to replace is specified using an
+      export name in a file instead of using an inline string in esbuild's API.
 
   - h4: Auto-import for [JSX](/content-types/#jsx)
 
   - p: >
-      You can use the inject feature to automatically provide the implementation
-      for JSX expressions. For example, you can auto-import the `react` package
-      to provide functions such as `React.createElement`. See the
-      [JSX documentation](/content-types/#auto-import-for-jsx) for details.
+      React (the library for which JSX syntax was originally created) has a
+      mode they call `automatic` where you don't have to `import` anything to
+      use JSX syntax. Instead, the JSX-to-JS transformer will automatically
+      import the correct JSX factory function for you. You can enable
+      `automatic` JSX mode with esbuild's [`jsx`](#jsx) setting. If you want
+      auto-import for JSX and you are using a sufficiently new version of
+      React, then you should be using the `automatic` JSX mode.
+
+  - p: >
+      However, setting `jsx` to `automatic` unfortunately also means you are
+      using a highly React-specific JSX transform instead of the default
+      general-purpose JSX transform. This means writing a JSX factory function
+      is more complicated, and it also means that the `automatic` mode doesn't
+      work with libraries that expect to be used with the standard JSX transform
+      (including older versions of React).
+
+  - p: >
+      You can use esbuild's inject feature to automatically import the [factory](#jsx-factory)
+      and [fragment](#jsx-fragment) for JSX expressions when the JSX transform
+      is not set to `automatic`. Here's an example file that can be injected
+      to do this:
+
+  - pre.js: |
+      const { createElement, Fragment } = require('react')
+      export {
+        createElement as 'React.createElement',
+        Fragment as 'React.Fragment',
+      }
+
+  - p: >
+      This code uses the React library as an example, but you can use this
+      approach with any other JSX library as well with appropriate changes.
 
   - h4: Injecting files without imports
 
