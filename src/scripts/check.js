@@ -124,21 +124,23 @@ async function checkCli(text, value) {
   })
 }
 
-async function checkJs(text, value) {
+async function checkJs(text, value, extension) {
   return await checkCommon('js', text, value, async ({ testDir, writeFiles }) => {
     await execAsync(`npm i --prefer-offline esbuild@${version}`, { cwd: testDir, stdio: 'pipe' })
     await writeFiles()
 
-    if (!Array.isArray(value.js)) {
-      const mainPath = path.join(testDir, 'main.js')
-      await fs.writeFile(mainPath, value.js)
+    const items = value[extension]
+    if (!Array.isArray(items)) {
+      const mainPath = path.join(testDir, 'main.' + extension)
+      await fs.writeFile(mainPath, items)
       await execFileAsync('node', [mainPath], { cwd: testDir, stdio: 'pipe' })
       return true
     }
 
+    let didImport = false
     let js = ''
 
-    for (let items = value.js, i = 0; i < items.length; i++) {
+    for (let i = 0; i < items.length; i++) {
       let item = items[i];
 
       if (item.$) {
@@ -150,8 +152,18 @@ async function checkJs(text, value) {
       }
 
       else if (item.expect) {
-        js += `require('assert').strictEqual(
-          require('util').inspect($, { sorted: true, breakLength: 40 }),
+        if (!didImport) {
+          didImport = true
+          if (extension === 'mjs') {
+            js += `import assert from 'node:assert';\n`
+            js += `import util from 'node:util';\n`
+          } else {
+            js += `const assert = require('assert');\n`
+            js += `const util = require('util');\n`
+          }
+        }
+        js += `assert.strictEqual(
+          util.inspect($, { sorted: true, breakLength: 40 }),
           ${JSON.stringify(item.expect.trim())});\n`
       }
 
@@ -160,7 +172,7 @@ async function checkJs(text, value) {
       }
     }
 
-    const mainPath = path.join(testDir, 'main.js')
+    const mainPath = path.join(testDir, 'main.' + extension)
     await fs.writeFile(mainPath, js)
     await execFileAsync('node', [mainPath], { cwd: testDir, stdio: 'pipe' })
     return true
@@ -254,7 +266,9 @@ async function main() {
       if (process.argv[2] && !text.includes(process.argv[2])) continue
       times[text] = 1
       if (value.cli) callbacks.push(() => checkCli(text, value))
-      if (value.js) callbacks.push(() => checkJs(text, value))
+      if (value.js) callbacks.push(() => checkJs(text, value, 'js'))
+      if (value.cjs) callbacks.push(() => checkJs(text, value, 'cjs'))
+      if (value.mjs) callbacks.push(() => checkJs(text, value, 'mjs'))
       if (value.go) callbacks.push(() => checkGo(text, value))
     }
   }

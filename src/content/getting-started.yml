@@ -108,31 +108,30 @@ body:
       However, using the command-line interface can become unwieldy if you
       need to pass many options to esbuild. For more sophisticated uses
       you will likely want to write a build script in JavaScript using
-      esbuild's JavaScript API. That might look something like this:
+      esbuild's JavaScript API. That might look something like this (note that
+      this code must be saved in a file with the `.mjs` extension because it
+      uses the `import` keyword):
 
   - example:
       in:
         app.jsx: '<div/>'
 
-      js: |
-        require('esbuild').build({
+      mjs: |
+        import * as esbuild from 'esbuild'
+
+        await esbuild.build({
           entryPoints: ['app.jsx'],
           bundle: true,
           outfile: 'out.js',
-        }).catch(() => process.exit(1))
+        })
 
   - p: >
       The `build` function runs the esbuild executable in a child process and
-      returns a promise that resolves when the build is complete. The code above
-      doesn't print out the captured exception because any error messages in
-      the exception will also be printed to the console by default (although
-      you can change the [log level](/api/#log-level) to turn that off if you'd like).
-
-  - p: >
-      Although there is also a `buildSync` API that is not asynchronous, the
-      asynchronous API is better for build scripts because [plugins](/plugins/)
-      only work with the asynchronous API. You can read more about the
-      configuration options for the build API in the [API documentation](/api/#build-api).
+      returns a promise that resolves when the build is complete. There is also
+      a `buildSync` API that is not asynchronous, but the asynchronous API is
+      better for build scripts because [plugins](/plugins/) only work with the
+      asynchronous API. You can read more about the configuration options for
+      the build API in the [API documentation](/api/#build).
 
   - h2: Bundling for the browser
 
@@ -153,8 +152,10 @@ body:
       cli: |
         esbuild app.jsx --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16
 
-      js: |
-        require('esbuild').buildSync({
+      mjs: |
+        import * as esbuild from 'esbuild'
+
+        await esbuild.build({
           entryPoints: ['app.jsx'],
           bundle: true,
           minify: true,
@@ -231,8 +232,10 @@ body:
       cli: |
         esbuild app.js --bundle --platform=node --target=node10.4
 
-      js: |
-        require('esbuild').buildSync({
+      mjs: |
+        import * as esbuild from 'esbuild'
+
+        await esbuild.build({
           entryPoints: ['app.js'],
           bundle: true,
           platform: 'node',
@@ -483,6 +486,13 @@ body:
       forever for existing esbuild versions (packages published to npm are
       immutable).
 
+  - p: >
+      <footer>
+      <sup>1</sup> This operating system is not on [node's list of supported platforms](https://nodejs.org/api/process.html#process_process_platform)
+      <br>
+      <sup>2</sup> This architecture is not on [node's list of supported architectures](https://nodejs.org/api/process.html#processarch)
+      </footer>
+
   - h3#wasm: Install the WASM version
 
   - p: >
@@ -504,9 +514,9 @@ body:
       excludes some features such as the local file server. You should only
       use the WebAssembly package like this if there is no other option, such
       as when you want to use esbuild on an unsupported platform. The WebAssembly
-      package is primarily intended to only be used [in the browser](/api/#running-in-the-browser).
+      package is primarily intended to only be used [in the browser](/api/#browser).
 
-  - h3#deno: Use Deno instead of node
+  - h3#deno: Deno instead of node
 
   - p: >
       There is also basic support for the [Deno](https://deno.land) JavaScript
@@ -519,8 +529,8 @@ body:
 
   - pre.js: |
       import * as esbuild from 'https://deno.land/x/esbuild@vCURRENT_ESBUILD_VERSION/mod.js'
-      const ts = 'let test: boolean = true'
-      const result = await esbuild.transform(ts, { loader: 'ts' })
+      let ts = 'let test: boolean = true'
+      let result = await esbuild.transform(ts, { loader: 'ts' })
       console.log('result:', result)
       esbuild.stop()
 
@@ -537,8 +547,8 @@ body:
 
   - pre.js: |
       import * as esbuild from 'https://deno.land/x/esbuild@vCURRENT_ESBUILD_VERSION/wasm.js'
-      const ts = 'let test: boolean = true'
-      const result = await esbuild.transform(ts, { loader: 'ts' })
+      let ts = 'let test: boolean = true'
+      let result = await esbuild.transform(ts, { loader: 'ts' })
       console.log('result:', result)
       esbuild.stop()
 
@@ -600,10 +610,3 @@ body:
       can be unergonomic for complex use cases and which does not support [plugins](/plugins/).
       You will need to write JavaScript or Go code and use [esbuild's API](/api/)
       to use plugins.
-
-  - p: >
-      <footer>
-      <sup>1</sup> This operating system is not on [node's list of supported platforms](https://nodejs.org/api/process.html#process_process_platform)
-      <br>
-      <sup>2</sup> This architecture is not on [node's list of supported architectures](https://nodejs.org/api/process.html#processarch)
-      </footer>

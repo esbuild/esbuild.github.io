@@ -1,10 +1,11 @@
 import './sunburst.css'
 import { Metafile } from './metafile'
 import { showWhyFile } from './whyfile'
+import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from './tree'
+import { canvasFillStyleForInputPath, COLOR, colorLegendEl, formatColorToText, cssBackgroundForInputPath, setAfterColorMappingUpdate } from './color'
+import { colorMode } from './index'
 import {
   bytesToText,
-  hasOwnProperty,
-  hueAngleToColor,
   isSourceMapPath,
   lastInteractionWasKeyboard,
   now,
@@ -26,17 +27,10 @@ enum FLAGS {
   HOVER = 8,
 }
 
-interface TreeNodeInProgress {
-  inputPath_: string
-  bytesInOutput_: number
-  children_: Record<string, TreeNodeInProgress>
-}
-
 interface TreeNode {
   inputPath_: string
   bytesInOutput_: number
   sortedChildren_: TreeNode[]
-  cssColor_: string
   parent_: TreeNode | null
 }
 
@@ -53,76 +47,38 @@ let isParentOf = (parent: TreeNode, child: TreeNode | null): boolean => {
   return false
 }
 
-let orderChildrenBySize = (a: TreeNode, b: TreeNode): number => {
-  return b.bytesInOutput_ - a.bytesInOutput_ || +(a.inputPath_ > b.inputPath_) - +(a.inputPath_ < b.inputPath_)
-}
-
 let analyzeDirectoryTree = (metafile: Metafile): Tree => {
-  let accumulatePath = (path: string, bytesInOutput: number): void => {
-    let parent = root
-    root.bytesInOutput_ += bytesInOutput
-
-    for (let part of path.split('/')) {
-      let children = parent.children_
-      let child = children[part]
-
-      if (!hasOwnProperty.call(children, part)) {
-        child = {
-          inputPath_: parent.inputPath_ + '/' + part,
-          bytesInOutput_: 0,
-          children_: {},
-        }
-        children[part] = child
-      }
-
-      child.bytesInOutput_ += bytesInOutput
-      parent = child
-    }
-  }
-
   let inputs = metafile.inputs
   let outputs = metafile.outputs
-  let root: TreeNodeInProgress = { inputPath_: '', bytesInOutput_: 0, children_: {} }
+  let root: TreeNodeInProgress = { name_: '', inputPath_: '', bytesInOutput_: 0, children_: {} }
 
   let sortChildren = (node: TreeNodeInProgress): TreeNode => {
     let children = node.children_
     let sorted: TreeNode[] = []
-
     for (let file in children) {
       sorted.push(sortChildren(children[file]))
     }
-
-    sorted.sort(orderChildrenBySize)
     return {
       inputPath_: node.inputPath_,
       bytesInOutput_: node.bytesInOutput_,
-      sortedChildren_: sorted,
-      cssColor_: '',
+      sortedChildren_: sorted.sort(orderChildrenBySize),
       parent_: null,
     }
   }
 
-  let setColorsAndParents = (node: TreeNode, depth: number, startAngle: number, sweepAngle: number): number => {
-    let totalBytes = node.bytesInOutput_
-    let bytesSoFar = 0
+  let setParents = (node: TreeNode, depth: number): number => {
     let maxDepth = 0
-
-    node.cssColor_ = hueAngleToColor(startAngle + sweepAngle / 2)
-    node.parent_ = null
-
     for (let child of node.sortedChildren_) {
-      let childDepth = setColorsAndParents(child, depth + 1, startAngle + sweepAngle * bytesSoFar / totalBytes, sweepAngle * child.bytesInOutput_ / totalBytes)
+      let childDepth = setParents(child, depth + 1)
       child.parent_ = node
-      bytesSoFar += child.bytesInOutput_
       if (childDepth > maxDepth) maxDepth = childDepth
     }
-
     return maxDepth + 1
   }
 
   // Include the inputs with size 0 so we can see when something has been tree-shaken
   for (let i in inputs) {
-    accumulatePath(stripDisabledPathPrefix(i), 0)
+    accumulatePath(root, stripDisabledPathPrefix(i), 0)
   }
 
   // For each output file
@@ -134,7 +90,7 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
 
     // Accumulate the input files that contributed to this output file
     for (let i in inputs) {
-      accumulatePath(stripDisabledPathPrefix(i), inputs[i].bytesInOutput)
+      accumulatePath(root, stripDisabledPathPrefix(i), inputs[i].bytesInOutput)
     }
   }
 
@@ -145,11 +101,9 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
     finalRoot = finalRoot.sortedChildren_[0]
   }
 
-  let maxDepth = setColorsAndParents(finalRoot, 0, 0, Math.PI * 2)
-
   return {
     root_: finalRoot,
-    maxDepth_: maxDepth,
+    maxDepth_: setParents(finalRoot, 0),
   }
 }
 
@@ -163,9 +117,8 @@ let narrowSlice = (root: TreeNode, node: TreeNode, slice: Slice): void => {
   if (root === node) return
 
   let parent = node.parent_!
-  let totalBytes = parent.bytesInOutput_
+  let totalBytes = parent.bytesInOutput_ || 1 // Don't divide by 0
   let bytesSoFar = 0
-  let outerRadius = computeRadius(slice.depth_ + 1)
   narrowSlice(root, parent, slice)
 
   for (let child of parent.sortedChildren_) {
@@ -207,7 +160,8 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
     }
   }
 
-  let startSunburst = (): () => void => {
+  let startSunburst = (): [() => void, () => void] => {
+    let leftEl = document.createElement('div')
     let canvas = document.createElement('canvas')
     let c = canvas.getContext('2d')!
 
@@ -246,13 +200,13 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
 
       // Handle the fill
       if (flags & FLAGS.FILL) {
-        c.fillStyle = node.cssColor_
+        c.fillStyle = canvasFillStyleForInputPath(c, node.inputPath_, centerX, centerY, 1)
         c.beginPath()
         c.arc(centerX, centerY, innerRadius, startAngle, startAngle + clampedSweepAngle, false)
         c.arc(centerX, centerY, outerRadius, startAngle + clampedSweepAngle, startAngle, true)
         c.fill()
         if (hoveredNode && (flags & FLAGS.HOVER || node.parent_ === hoveredNode)) {
-          c.fillStyle = 'rgba(255, 255, 255, 0.5)'
+          c.fillStyle = 'rgba(255, 255, 255, 0.3)'
           c.fill()
         }
       }
@@ -426,15 +380,15 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
 
       // Show a tooltip for hovered nodes
       if (node && node !== animatedNode.parent_) {
-        let root = tree.root_.inputPath_.length + 1
-        let tooltip = node.inputPath_ + (node.sortedChildren_.length > 0 ? '/' : '')
+        let tooltip = node.inputPath_
         if (node.parent_) {
-          let i = node.parent_.inputPath_.length + 1
-          tooltip = textToHTML(tooltip.slice(root, i)) + '<b>' + textToHTML(tooltip.slice(i)) + '</b>'
+          let i = node.parent_.inputPath_.length
+          tooltip = textToHTML(tooltip.slice(0, i)) + '<b>' + textToHTML(tooltip.slice(i)) + '</b>'
         } else {
-          tooltip = '<b>' + textToHTML(tooltip.slice(root)) + '</b>'
+          tooltip = '<b>' + textToHTML(tooltip) + '</b>'
         }
-        tooltip += ' – ' + textToHTML(bytesToText(node.bytesInOutput_))
+        if (colorMode === COLOR.FORMAT) tooltip += textToHTML(formatColorToText(cssBackgroundForInputPath(node.inputPath_), ' – '))
+        else tooltip += ' – ' + textToHTML(bytesToText(node.bytesInOutput_))
         showTooltip(e.pageX, e.pageY + 20, tooltip)
         canvas.style.cursor = 'pointer'
       } else {
@@ -467,15 +421,19 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
         historyStack = stack
       } else {
         e.preventDefault() // Prevent the browser from removing the focus on the dialog
-        showWhyFile(metafile, node.inputPath_.slice(1), node.bytesInOutput_)
+        showWhyFile(metafile, node.inputPath_, node.bytesInOutput_)
       }
     }
 
+    leftEl.className = 'left'
+    leftEl.appendChild(canvas)
+    leftEl.appendChild(colorLegendEl)
+
     tooltipEl.className = 'tooltip'
     mainEl.appendChild(tooltipEl)
-    mainEl.appendChild(canvas)
+    mainEl.appendChild(leftEl)
 
-    return () => {
+    return [draw, () => {
       if (previousHoveredNode !== hoveredNode) {
         previousHoveredNode = hoveredNode
         if (!hoveredNode) {
@@ -530,10 +488,10 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
       sourceStartAngle = animatedStartAngle
       sourceSweepAngle = animatedSweepAngle
       targetNode = currentNode
-    }
+    }]
   }
 
-  let startDetails = (): () => void => {
+  let startDetails = (): [() => void, () => void] => {
     let detailsEl = document.createElement('div')
 
     let regenerate = (): void => {
@@ -552,7 +510,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
       generatedRows.length = 0
 
       // Provide a link to the parent directory
-      {
+      if (parent) {
         let rowEl = document.createElement('a')
         rowEl.className = 'row'
         rowEl.tabIndex = 0
@@ -568,19 +526,12 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
 
         // Use a link so we get keyboard support
         rowEl.href = 'javascript:void 0'
-        if (parent) {
-          nameEl.textContent = '../'
-          rowEl.onclick = () => {
-            changeCurrentNode(parent!)
-            if (lastInteractionWasKeyboard && generatedRows.length > 0) {
-              generatedRows[0].focus()
-            }
+        nameEl.textContent = '../'
+        rowEl.onclick = () => {
+          changeCurrentNode(parent!)
+          if (lastInteractionWasKeyboard && generatedRows.length > 0) {
+            generatedRows[0].focus()
           }
-        } else {
-          // Provide an empty row so that pressing enter to traverse "../"
-          // repeatedly ends up being a no-op when we reach the top level.
-          // We don't want users to accidentally re-descend down the tree.
-          rowEl.tabIndex = -1
         }
         rowEl.onfocus = rowEl.onmouseover = () => changeHoveredNode(parent)
         rowEl.onblur = rowEl.onmouseout = () => changeHoveredNode(null)
@@ -589,9 +540,8 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
       }
 
       for (let child of children) {
-        let name = child.parent_ ? child.inputPath_.slice(child.parent_.inputPath_.length + 1) : ''
+        let name = child.inputPath_.slice(currentNode.inputPath_.length)
         let size = bytesToText(child.bytesInOutput_)
-        if (child.sortedChildren_.length > 0) name += '/'
 
         let rowEl = document.createElement('a')
         rowEl.className = 'row'
@@ -609,14 +559,15 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
         rowEl.appendChild(sizeEl)
 
         let barEl = document.createElement('div')
-        barEl.className = child.bytesInOutput_ > 0 ? 'bar' : 'bar empty'
-        barEl.style.background = child.cssColor_
+        let bgColor = cssBackgroundForInputPath(child.inputPath_)
+        barEl.className = child.bytesInOutput_ ? 'bar' : 'bar empty'
+        barEl.style.background = bgColor
         barEl.style.width = 100 * child.bytesInOutput_ / maxBytesInOutput + '%'
         sizeEl.appendChild(barEl)
 
         let bytesEl = document.createElement('div')
-        bytesEl.className = 'bytes'
-        bytesEl.textContent = size
+        bytesEl.className = 'last'
+        bytesEl.textContent = colorMode === COLOR.FORMAT ? formatColorToText(bgColor, '') : size
         barEl.appendChild(bytesEl)
 
         // Use a link so we get keyboard support
@@ -629,7 +580,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
               generatedRows[0].focus()
             }
           } else {
-            showWhyFile(metafile, child.inputPath_.slice(1), child.bytesInOutput_)
+            showWhyFile(metafile, child.inputPath_, child.bytesInOutput_)
           }
         }
         rowEl.onfocus = rowEl.onmouseover = () => changeHoveredNode(child)
@@ -647,9 +598,9 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
       directoryEl.appendChild(segmentsEl)
 
       for (let node: TreeNode | null = currentNode; node; node = node.parent_) {
-        let text = node.inputPath_ + '/'
+        let text = node.inputPath_ || '/'
         let nodeEl = document.createElement('a')
-        if (node.parent_) text = text.slice(node.parent_.inputPath_.length + 1)
+        if (node.parent_) text = text.slice(node.parent_.inputPath_.length)
         nodeEl.textContent = text
         if (node !== currentNode) {
           nodeEl.href = 'javascript:void 0'
@@ -663,6 +614,16 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
           }
         }
         segmentsEl.insertBefore(nodeEl, segmentsEl.firstChild)
+
+        // If a user repeatedly presses enter when focusing "../" to traverse
+        // up to the top level, focus this top-level element. We don't want
+        // to focus the first row because then enter will re-descend down the
+        // tree. But use a tab index of -1 so this never gets focus naturally.
+        if (currentNode == tree.root_) {
+          nodeEl.tabIndex = -1
+          generatedNodes.unshift(currentNode)
+          generatedRows.unshift(nodeEl)
+        }
       }
 
       detailsEl.innerHTML = ''
@@ -680,7 +641,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
     mainEl.appendChild(detailsEl)
     regenerate()
 
-    return () => {
+    return [regenerate, () => {
       if (previousNode !== currentNode) {
         previousNode = currentNode
         regenerate()
@@ -703,11 +664,16 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
           }
         }
       }
-    }
+    }]
   }
 
-  let updateSunburst = startSunburst()
-  let updateDetails = startDetails()
+  let [redrawSunburst, updateSunburst] = startSunburst()
+  let [regenerateDetails, updateDetails] = startDetails()
+
+  setAfterColorMappingUpdate(() => {
+    redrawSunburst()
+    regenerateDetails()
+  })
 
   componentEl.id = 'sunburstPanel'
   componentEl.innerHTML = ''

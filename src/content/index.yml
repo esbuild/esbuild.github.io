@@ -1,8 +1,8 @@
 index:
-  title: An extremely fast JavaScript bundler
+  title: An extremely fast bundler for the web
   body:
     - h1: esbuild
-    - blockquote: An extremely fast JavaScript bundler
+    - blockquote: An extremely fast bundler for the web
 
     - benchmark.animated:
         '[esbuild](https://esbuild.github.io/)': 0.37
@@ -25,13 +25,11 @@ index:
     - p: 'Major features:'
     - ul:
       - 'Extreme speed without needing a cache'
-      - 'ES6 and CommonJS modules'
-      - 'Tree shaking of ES6 modules'
-      - 'An [API](/api/) for JavaScript and Go'
-      - '[TypeScript](/content-types/#typescript) and [JSX](/content-types/#jsx) syntax'
-      - '[Source maps](/api/#sourcemap)'
-      - '[Minification](/api/#minify)'
-      - '[Plugins](/plugins/)'
+      - '[JavaScript](/content-types/#javascript), [CSS](/content-types/#css), [TypeScript](/content-types/#typescript), and [JSX](/content-types/#jsx) built-in'
+      - 'A straightforward [API](/api/) for CLI, JS, and Go'
+      - 'Bundles ESM and CommonJS modules'
+      - 'Tree shaking, [minification](/api/#minify), and [source maps](/api/#sourcemap)'
+      - '[Local server](/api/#serve), [watch mode](/api/#watch), and [plugins](/plugins/)'
 
     - p: >
         Check out the [getting started](/getting-started/) instructions if you

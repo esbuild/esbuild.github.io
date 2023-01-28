@@ -1,11 +1,13 @@
 import './index.css'
 import './import'
-import { Metafile } from './metafile'
+import './live-reload'
+import { Metafile, metafileHasFormat } from './metafile'
 import { showSummary } from './summary'
 import { createSunburst } from './sunburst'
 import { createFlame } from './flame'
 import { hideWhyFile } from './whyfile'
 import { showWarningsPanel } from './warnings'
+import { COLOR, updateColorMapping } from './color'
 import {
   darkModeListener,
   localStorageGetItem,
@@ -23,7 +25,8 @@ let resultsPanel = document.getElementById('resultsPanel') as HTMLDivElement
 let chartPanel = document.getElementById('chartPanel') as HTMLDivElement
 let useSunburst = document.getElementById('useSunburst') as HTMLAnchorElement
 let useFlame = document.getElementById('useFlame') as HTMLAnchorElement
-let chart = CHART.NONE
+let chartMode = CHART.NONE
+export let colorMode = COLOR.NONE
 
 let isPlainObject = (value: any): boolean => {
   return typeof value === 'object' && value !== null && !(value instanceof Array)
@@ -31,24 +34,32 @@ let isPlainObject = (value: any): boolean => {
 
 export let finishLoading = (json: string): void => {
   let metafile: Metafile = JSON.parse(json)
+  let hasFormat = metafileHasFormat(metafile)
 
   let useChart = (use: CHART): void => {
-    if (chart !== use) {
-      if (chart === CHART.SUNBURST) useSunburst.classList.remove('active')
-      else if (chart === CHART.FLAME) useFlame.classList.remove('active')
+    if (chartMode !== use) {
+      if (chartMode === CHART.SUNBURST) useSunburst.classList.remove('active')
+      else if (chartMode === CHART.FLAME) useFlame.classList.remove('active')
 
-      chart = use
+      chartMode = use
       chartPanel.innerHTML = ''
 
-      if (chart === CHART.SUNBURST) {
+      if (chartMode === CHART.SUNBURST) {
         chartPanel.appendChild(createSunburst(metafile))
         useSunburst.classList.add('active')
         localStorageSetItem('chart', 'sunburst')
-      } else if (chart === CHART.FLAME) {
+      } else if (chartMode === CHART.FLAME) {
         chartPanel.appendChild(createFlame(metafile))
         useFlame.classList.add('active')
         localStorageSetItem('chart', 'flame')
       }
+    }
+  }
+
+  let useColor = (use: COLOR): void => {
+    if (colorMode !== use) {
+      colorMode = use
+      updateColorMapping(metafile, colorMode)
     }
   }
 
@@ -61,11 +72,13 @@ export let finishLoading = (json: string): void => {
   useSunburst.onclick = () => useChart(CHART.SUNBURST)
   useFlame.onclick = () => useChart(CHART.FLAME)
 
-  chart = CHART.NONE
-  showSummary(metafile)
+  chartMode = CHART.NONE
+  colorMode = COLOR.NONE
+  showSummary(metafile, () => useColor(colorMode === COLOR.DIRECTORY ? COLOR.FORMAT : COLOR.DIRECTORY))
   showWarningsPanel(metafile)
   hideWhyFile()
   useChart(localStorageGetItem('chart') === 'flame' ? CHART.FLAME : CHART.SUNBURST)
+  useColor(COLOR.DIRECTORY)
 }
 
 let loadFromHash = () => {
@@ -82,10 +95,10 @@ let loadFromHash = () => {
   }
 }
 
-let bodyDataset = document.body.dataset
+let docElemDataset = document.documentElement.dataset
 let updateTheme = () => {
   // Keep the dark/light mode theme up to date with the rest of the site
-  bodyDataset.theme = localStorageGetItem('theme') + ''
+  docElemDataset.theme = localStorageGetItem('theme') + ''
   if (darkModeListener) darkModeListener()
 }
 

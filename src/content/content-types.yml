@@ -457,17 +457,22 @@ body:
       converted to JavaScript (a non-exhaustive list):
 
   - table: |
-      | Syntax feature          | Example                    | Notes |
-      |-------------------------|----------------------------|-------|
-      | Namespaces              | `namespace Foo {}`         | |
-      | Enums                   | `enum Foo { A, B }`        | |
-      | Const enums             | `const enum Foo { A, B }`  | |
-      | Generic type parameters | `<T>(a: T): T => a`        | Not available with the `tsx` loader |
-      | JSX with types          | `<Element<T>/>`            | |
-      | Type casts              | `a as B` and `<B>a`        | |
-      | Type imports            | `import {Type} from 'foo'` | Handled by removing all unused imports |
-      | Type exports            | `export {Type} from 'foo'` | Handled by ignoring missing exports in TypeScript files |
-      | Experimental decorators | `@sealed class Foo {}`     | The `emitDecoratorMetadata` flag is not supported |
+      | Syntax feature            | Example                    | Notes |
+      |---------------------------|----------------------------|-------|
+      | Namespaces                | `namespace Foo {}`         | |
+      | Enums                     | `enum Foo { A, B }`        | |
+      | Const enums               | `const enum Foo { A, B }`  | |
+      | Generic type parameters   | `<T>(a: T): T => a`        | Must write `<T,>(`... with the `tsx` loader |
+      | JSX with types            | `<Element<T>/>`            | |
+      | Type casts                | `a as B` and `<B>a`        | |
+      | Type imports              | `import {Type} from 'foo'` | Handled by removing all unused imports |
+      | Type exports              | `export {Type} from 'foo'` | Handled by ignoring missing exports in TypeScript files |
+      | Experimental decorators   | `@sealed class Foo {}`     | The [`emitDecoratorMetadata`](https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata) flag is not supported |
+      | Instantiation expressions | `Array<number>`            | TypeScript 4.7+ |
+      | `extends` on `infer`      | `infer A extends B`        | TypeScript 4.7+ |
+      | Variance annotations      | `type A<out B> = () => B`  | TypeScript 4.7+ |
+      | The `satisfies` operator  | `a satisfies T`            | TypeScript 4.9+ |
+      | `const` type parameters   | `class Foo<const T> {}`    | TypeScript 5.0+ |
 
   - h3: TypeScript caveats
 

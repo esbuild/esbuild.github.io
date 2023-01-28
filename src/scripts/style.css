@@ -1,6 +1,6 @@
 /* Theme: light */
 
-body:not([data-theme=dark]) {
+html:not([data-theme=dark]) {
   --bg-grad: rgba(255, 255, 255, 0) 0%, #fff 25%, #fff 75%, rgba(255, 255, 255, 0) 100%;
   --bg: #fff;
   --dark: none;
@@ -21,7 +21,8 @@ body:not([data-theme=dark]) {
 
 /* Theme: dark (JS triggered) */
 
-body[data-theme=dark] {
+html[data-theme=dark] {
+  color-scheme: dark;
   --bg-grad: rgba(25, 25, 25, 0) 0%, #191919 25%, #191919 75%, rgba(25, 25, 25, 0) 100%;
   --bg: #191919;
   --dark: block;
@@ -43,7 +44,8 @@ body[data-theme=dark] {
 /* Theme: dark (JS disabled) */
 
 @media (prefers-color-scheme: dark) {
-  body:not([data-theme=light]) {
+  html:not([data-theme=light]) {
+    color-scheme: dark;
     --bg-grad: rgba(25, 25, 25, 0) 0%, #191919 25%, #191919 75%, rgba(25, 25, 25, 0) 100%;
     --bg: #191919;
     --dark: block;
@@ -69,6 +71,11 @@ body {
 
 a {
   color: inherit;
+}
+
+b,
+strong {
+  color: var(--fg-on);
 }
 
 footer {
@@ -613,6 +620,22 @@ body.has-js {
   font-size: 16px;
 }
 
+.available-options {
+  margin-top: 50px;
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: row;
+}
+
+.option-group {
+  padding-right: 20px;
+}
+
+.option-group ul {
+  margin: 0;
+  padding: 0 0 0 20px;
+}
+
 @media (min-width: 800px) {
 
   body,
@@ -679,6 +702,10 @@ body.has-js {
 
   .switcher {
     margin-right: 30px;
+  }
+
+  .available-options {
+    justify-content: center;
   }
 }
 

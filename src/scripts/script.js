@@ -1,6 +1,8 @@
 (() => {
   var doc = document
   var body = doc.body
+  var docElem = doc.documentElement
+  var docElemDataset = docElem.dataset
   var bodyDataset = body.dataset
   var getElementById = doc.getElementById.bind(doc)
   var os = navigator.platform === 'Win32' ? 'windows' : 'unix'
@@ -9,12 +11,12 @@
     bodyDataset.mode3 = localStorage.getItem('mode3') || 'cli'
     bodyDataset.mode2 = localStorage.getItem('mode2') || 'js'
     bodyDataset.os2 = localStorage.getItem('os2') || os
-    bodyDataset.theme = localStorage.getItem('theme')
+    docElemDataset.theme = localStorage.getItem('theme')
   } catch (e) {
     bodyDataset.mode3 = 'cli'
     bodyDataset.mode2 = 'js'
     bodyDataset.os2 = os
-    bodyDataset.theme = null
+    docElemDataset.theme = null
   }
 
   body.classList.add('has-js')
@@ -24,25 +26,25 @@
       var target = e.target.className
 
       if (/^(cli|js|go)[23]$/.test(target)) {
-        var before = e.target.offsetTop - body.scrollTop
+        var before = e.target.offsetTop - docElem.scrollTop
 
         for (var i = target === 'cli3' ? 3 : 2; i <= 3; i++) {
           bodyDataset['mode' + i] = target.slice(0, -1)
           localStorage.setItem('mode' + i, target.slice(0, -1))
         }
 
-        var after = e.target.offsetTop - body.scrollTop
-        body.scrollTop += after - before
+        var after = e.target.offsetTop - docElem.scrollTop
+        docElem.scrollTop += after - before
       }
 
       if (/^(unix|windows)2$/.test(target)) {
-        var before = e.target.offsetTop - body.scrollTop
+        var before = e.target.offsetTop - docElem.scrollTop
 
         bodyDataset['os2'] = target.slice(0, -1)
         localStorage.setItem('os2', target.slice(0, -1))
 
-        var after = e.target.offsetTop - body.scrollTop
-        body.scrollTop += after - before
+        var after = e.target.offsetTop - docElem.scrollTop
+        docElem.scrollTop += after - before
       }
     }
   })
@@ -111,23 +113,23 @@
 
     function updateTheme(theme) {
       localStorage.setItem('theme', theme)
-      bodyDataset.theme = theme
+      docElemDataset.theme = theme
     }
 
     // Handle updates from other tabs
     addEventListener('storage', () => {
-      bodyDataset.theme = localStorage.getItem('theme')
+      docElemDataset.theme = localStorage.getItem('theme')
     })
 
     getElementById('theme').addEventListener('click', function () {
       var theme = inverseSystemTheme()
-      updateTheme(bodyDataset.theme === theme ? null : theme)
+      updateTheme(docElemDataset.theme === theme ? null : theme)
     })
 
     var darkMedia = matchMedia('(prefers-color-scheme: dark)')
 
     function onDarkModeChange() {
-      if (bodyDataset.theme !== inverseSystemTheme()) {
+      if (docElemDataset.theme !== inverseSystemTheme()) {
         updateTheme(null)
       }
     }

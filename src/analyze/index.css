@@ -1,4 +1,4 @@
-body:not([data-theme=dark]) {
+html:not([data-theme=dark]) {
   --bg: #fff;
   --fg-on: #000;
   --fg: #222;
@@ -8,7 +8,8 @@ body:not([data-theme=dark]) {
   --bar-min-width: 1px;
 }
 
-body[data-theme=dark] {
+html[data-theme=dark] {
+  color-scheme: dark;
   --bg: #191919;
   --fg-on: #ddd;
   --fg: #aaa;
@@ -19,7 +20,8 @@ body[data-theme=dark] {
 }
 
 @media (prefers-color-scheme: dark) {
-  body:not([data-theme=light]) {
+  html:not([data-theme=light]) {
+    color-scheme: dark;
     --bg: #191919;
     --fg-on: #ddd;
     --fg: #aaa;
@@ -34,7 +36,7 @@ body {
   margin: 50px;
   font: 16px/20px sans-serif;
   background: var(--bg);
-  color: var(--fg)
+  color: var(--fg);
 }
 
 #startPanel {
@@ -129,27 +131,48 @@ button:active {
   background: rgba(0, 0, 0, 0.2);
 }
 
-hr {
-  margin: 50px 0;
-  border: 1px solid #FFCF00;
+#settingsPanel {
+  text-align: center;
 }
 
-#chartSwitcher {
+#settingsPanel .chartSwitcher {
+  position: relative;
+  margin: 50px 0;
   display: flex;
   justify-content: center;
 }
 
-#chartSwitcher a {
+#settingsPanel .chartSwitcher:after {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0.5em;
+  content: '';
+  display: block;
+  border: 1px solid #FFCF00;
+  z-index: -1;
+}
+
+#settingsPanel .chartSwitcher span {
+  background: var(--bg);
+  padding: 0 1em;
+  border-left: 2px solid #FFCF00;
+}
+
+#settingsPanel .chartSwitcher span:first-child {
+  border: none;
+}
+
+#settingsPanel a {
   text-decoration: none;
-  margin: 0 15px;
   color: var(--fg);
 }
 
-#chartSwitcher a:hover {
+#settingsPanel a:hover {
   text-decoration: underline;
 }
 
-#chartSwitcher a.active {
+#settingsPanel a.active {
   font-weight: bold;
   color: var(--fg-on);
 }

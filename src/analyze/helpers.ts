@@ -3,7 +3,7 @@ export let indexOf = Array.prototype.indexOf
 
 let numberFormat: Intl.NumberFormat | undefined
 let isSourceMap = /\.\w+\.map$/
-let disabledPrefix = /^\(disabled\):/
+let disabledPathPrefix = /^\(disabled\):/
 
 export let isMac = navigator.platform.indexOf('Mac') >= 0
 
@@ -31,8 +31,12 @@ export let isSourceMapPath = (path: string): boolean => {
   return isSourceMap.test(path)
 }
 
+export let isDisabledPath = (path: string): boolean => {
+  return disabledPathPrefix.test(path)
+}
+
 export let stripDisabledPathPrefix = (path: string): string => {
-  return path.replace(disabledPrefix, '')
+  return path.replace(disabledPathPrefix, '')
 }
 
 export let formatInteger = (value: number): string => {
