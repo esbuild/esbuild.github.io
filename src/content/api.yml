@@ -7523,13 +7523,13 @@ body:
             <li><details><summary>`css-syntax-error`</summary><pre>{{ FORMAT_MESSAGES('div[] {\n}', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`invalid-@charset`</summary><pre>{{ FORMAT_MESSAGES('div { color: red } @charset "UTF-8";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`invalid-@import`</summary><pre>{{ FORMAT_MESSAGES('div { color: red } @import "foo.css";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
-            <li><details><summary>`invalid-@nest`</summary><pre>{{ FORMAT_MESSAGES('& div {\n}', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`invalid-@layer`</summary><pre>{{ FORMAT_MESSAGES('@layer initial {\n}', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`invalid-calc`</summary><pre>{{ FORMAT_MESSAGES('div { z-index: calc(-(1+2)); }', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`js-comment-in-css`</summary><pre>{{ FORMAT_MESSAGES('// comment', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`unsupported-@charset`</summary><pre>{{ FORMAT_MESSAGES('@charset "ASCII";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`unsupported-@namespace`</summary><pre>{{ FORMAT_MESSAGES('@namespace "ns";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`unsupported-css-property`</summary><pre>{{ FORMAT_MESSAGES('div { widht: 1px }', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
+            <li><details><summary>`unsupported-css-nesting`</summary><pre>{{ FORMAT_MESSAGES('div {\n&:hover {\n}\n}', { sourcefile: 'example.css', loader: 'css', target: 'chrome50' }) }}</pre></details></li>
           </ul>
           <br>
         </li>
