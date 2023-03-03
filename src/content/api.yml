@@ -42,7 +42,7 @@ body:
   - h2: Overview
 
   - p: >
-      The two most commenly-used esbuild APIs are [build](#build) and [transform](#transform).
+      The two most commonly-used esbuild APIs are [build](#build) and [transform](#transform).
       Each is described below at a high level, followed by documentation
       for each individual API option.
 
