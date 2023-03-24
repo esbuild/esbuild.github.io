@@ -370,3 +370,36 @@ body:
 
     - >
       Use another build tool instead of esbuild
+
+  - h2: Minified newlines
+
+  - p: >
+      People are sometimes surprised that esbuild's minifier typically changes
+      the character escape sequence `\n` within JavaScript strings into a
+      newline character in a template literal. But this is intentional.
+      **This is not a bug with esbuild**. The job of a minifier is to generate as
+      compact an output as possible that's equivalent to the input. The character
+      escape sequence `\n` is two bytes long while a newline character is one
+      byte long.
+
+  - p: >
+      For example, this code is 21 bytes long:
+
+  - pre.js: |
+      var text="a\nb\nc\n";
+
+  - p: >
+      While this code is 18 bytes long:
+
+  - pre.js: |
+      var text=`a
+      b
+      c
+      `;
+
+  - p: >
+      So the second code is fully minified while the first one isn't. Minifying
+      code does not mean putting it all on one line. Instead, minifying code
+      means generating equivalent code that uses as few bytes as possible. In
+      JavaScript, an untagged template literal is equivalent to a string literal,
+      so esbuild is doing the correct thing here.
