@@ -6032,7 +6032,7 @@ body:
   - p: >
       The JavaScript minification algorithm in esbuild usually generates output
       that is very close to the minified output size of industry-standard
-      JavaScript minification tools. [This benchmark](https://github.com/privatenumber/minification-benchmarks/tree/cd3e5acb8d38da5f86426d44ac95974812559683#readme)
+      JavaScript minification tools. [This benchmark](https://github.com/privatenumber/minification-benchmarks#readme)
       has an example comparison of output sizes between different minifiers.
       While esbuild is not the optimal JavaScript minifier in all cases (and
       doesn't try to be), it strives to generate minified output within a few
