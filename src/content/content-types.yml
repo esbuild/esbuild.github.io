@@ -884,6 +884,12 @@ body:
       Then esbuild will avoid using CSS features that are too modern for those
       browsers.
 
+  - p: >
+      The new [CSS nesting syntax](https://www.w3.org/TR/css-nesting-1/) is
+      supported. To transform nested CSS into non-nested CSS for older browsers,
+      make sure to specify those older browsers using esbuild's
+      [target](/api/#target) setting.
+
   - h3#css-from-js: Import from JavaScript
 
   - p: >
