@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf8">
+  <title>esbuild - Try in the browser</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="index.css">
+  <meta property="og:title" content="esbuild - Try in the browser" />
+  <meta property="og:type" content="website" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <section>
+    <h1 id="logo">
+      <a href="/">esbuild</a>
+    </h1>
+    <div id="versionPicker">
+      <label>
+        Version
+        <select></select>
+      </label>
+    </div>
+    <div id="modeSwitcher">
+      <a tabindex="1" href="javascript:void 0" class="active">Transform</a>
+      or
+      <a tabindex="2" href="javascript:void 0">Build</a>
+      <sup>
+        <a tabindex="2" href="/api/#overview" target="_blank">[?]</a>
+      </sup>
+    </div>
+  </section>
+  <section>
+    <div id="panels">
+      <div id="transformPanel">
+        <div id="transformOptions" class="hasLabel">
+          <textarea spellcheck="false" autocapitalize="off" autocomplete="off"
+            placeholder="e.g. --minify or { minify: true }"></textarea>
+        </div>
+        <div id="transformInput" class="hasLabel">
+          <textarea spellcheck="false" autocapitalize="off" autocomplete="off"
+            placeholder="(enter your code here)"></textarea>
+        </div>
+      </div>
+      <div id="buildPanel">
+        <div id="buildOptions" class="hasLabel">
+          <textarea spellcheck="false" autocapitalize="off" autocomplete="off"
+            placeholder="e.g. --minify or { minify: true }"></textarea>
+        </div>
+        <div id="buildInputs">
+          <a id="addInput" href="javascript:void 0"></a>
+        </div>
+      </div>
+      <div id="outputPanel">
+        <div id="outputResult"></div>
+        <noscript>
+          <div class="problem">
+            &#x274C; This page requires JavaScript.
+            Please enable JavaScript and reload the page.
+          </div>
+        </noscript>
+      </div>
+    </div>
+  </section>
+  <script src="index.js" type="module"></script>
+</body>
+
+</html>

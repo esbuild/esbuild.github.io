@@ -110,6 +110,7 @@ function generateNav(key) {
   }
 
   let nav = []
+  nav.push(`<li><a href="/try/">Try in the browser</a></li>`)
 
   for (let { k, title, h2s } of structure) {
     let target = k === key ? '' : `/${escapeAttribute(k)}/`
@@ -412,7 +413,7 @@ async function formatMessagesInText(text) {
     // Interpret the terminal color escape codes
     result = '<span>' + result.replace(/\033\[([^m]*)m/g, (_, escape) => {
       switch (escape) {
-        case '1': return '</span><span style="font-weight:bold">'
+        case '1': return '</span><span class="color-bold">'
         case '31': return '</span><span class="color-red">'
         case '32': return '</span><span class="color-green">'
         case '33': return '</span><span class="color-yellow">'

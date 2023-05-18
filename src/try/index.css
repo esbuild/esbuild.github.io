@@ -1,0 +1,416 @@
+html {
+  --code-font: 13px/18px Menlo, monospace;
+}
+
+html:not([data-theme=dark]) {
+  --bg: #fff;
+  --fg-on: #000;
+  --fg: #222;
+}
+
+html[data-theme=dark] {
+  color-scheme: dark;
+  --bg: #191919;
+  --fg-on: #ddd;
+  --fg: #aaa;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme=light]) {
+    color-scheme: dark;
+    --bg: #191919;
+    --fg-on: #ddd;
+    --fg: #aaa;
+  }
+}
+
+body {
+  margin: 0;
+  font: 16px/20px sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+a {
+  color: inherit;
+}
+
+section {
+  padding: 25px 50px;
+}
+
+section:first-child {
+  padding-bottom: 0;
+}
+
+.problem {
+  color: #e24834;
+}
+
+#panels {
+  display: flex;
+  width: 100%;
+}
+
+#panels>* {
+  width: 50%;
+  margin-right: 25px;
+}
+
+#panels>:last-child {
+  margin-right: 0;
+  padding-left: 25px;
+  border-left: 2px solid #FFCF00;
+}
+
+@media (max-width: 800px) {
+  section {
+    padding: 25px;
+  }
+
+  #panels {
+    display: block;
+  }
+
+  #panels>*,
+  #panels>:last-child {
+    width: 100%;
+    margin: 0;
+  }
+
+  #panels>:last-child {
+    border-left: none;
+    border-top: 2px solid #FFCF00;
+    padding: 25px 0 0 0;
+  }
+}
+
+textarea {
+  margin: 0;
+  box-sizing: border-box;
+  width: 100%;
+  resize: none;
+  padding: 8px;
+  border: none;
+  color: var(--fg);
+  background: rgba(127, 127, 127, 0.1);
+  border-radius: 5px;
+  font: var(--code-font);
+  margin-bottom: 25px;
+
+  /* This is the height of a single line, to avoid popping */
+  height: 35px;
+
+  /* This is necessary to be able to style textareas on iOS */
+  appearance: none;
+}
+
+textarea:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--fg);
+  color: var(--fg-on);
+}
+
+#logo {
+  background-image: url(/favicon.svg);
+  background-position: 0 center;
+  background-size: 40px;
+  padding-left: 55px;
+  background-repeat: no-repeat;
+  font-size: 40px;
+  line-height: 40px;
+  color: var(--fg-on);
+  margin: 0;
+  float: left;
+}
+
+#logo a {
+  text-decoration: none;
+}
+
+#logo a:hover {
+  text-decoration: underline;
+}
+
+#modeSwitcher {
+  line-height: 40px;
+  white-space: nowrap;
+  margin-left: 230px;
+}
+
+@media (max-width: 600px) {
+  #modeSwitcher {
+    display: block;
+    text-align: center;
+    margin: 50px 0 0 0;
+    line-height: 20px;
+  }
+}
+
+#modeSwitcher a {
+  margin: 0 4px;
+  text-decoration: none;
+}
+
+#modeSwitcher a:not(.active):hover {
+  text-decoration: underline;
+}
+
+#modeSwitcher .active {
+  font-weight: bold;
+  color: var(--fg-on);
+  border-bottom: 2px solid #FFCF00;
+}
+
+#modeSwitcher sup {
+  position: relative;
+  top: -4px;
+  vertical-align: top;
+  font-size: 0.7em;
+}
+
+#modeSwitcher sup a {
+  margin: 0;
+}
+
+#versionPicker {
+  height: 40px;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  float: right;
+}
+
+.hasLabel:after {
+  display: block;
+  position: absolute;
+  right: 8px;
+  top: 5px;
+  font: var(--code-font);
+  opacity: 0.5;
+  font-weight: bold;
+}
+
+#transformOptions:after,
+#buildOptions:after {
+  content: 'OPTIONS';
+}
+
+#transformInput:after,
+.buildInput .hasLabel:after {
+  content: 'INPUT';
+}
+
+#transformOutput:after,
+.buildOutput:after {
+  content: 'OUTPUT';
+}
+
+#sourceMap:after {
+  content: 'SOURCE MAP';
+}
+
+#mangleCache:after {
+  content: 'MANGLE CACHE';
+}
+
+#legalComments:after {
+  content: 'LEGAL COMMENTS';
+}
+
+#metafile:after {
+  content: 'METAFILE';
+}
+
+.hasLabel {
+  position: relative;
+}
+
+#buildPanel {
+  display: none;
+}
+
+#outputStatus {
+  opacity: 0.5;
+  margin-bottom: 25px;
+}
+
+#stderrLog {
+  white-space: pre-wrap;
+  font: var(--code-font);
+}
+
+.buildInput {
+  position: relative;
+}
+
+.buildInput input {
+  width: 100%;
+  box-sizing: border-box;
+  background: none;
+  border: none;
+  font: var(--code-font);
+  font-weight: bold;
+  padding: 0 8px;
+  line-height: 18px;
+  margin: 0 0 4px 0;
+}
+
+.buildInput input:focus {
+  outline: none;
+  color: var(--fg-on);
+}
+
+.buildInput.entryPoint input {
+  color: #58A549;
+}
+
+.buildInput .entryToggle {
+  text-decoration: none;
+  position: absolute;
+  right: 100%;
+  top: 0;
+  margin-right: -8px;
+  font: var(--code-font);
+  font-size: 1em;
+  line-height: 18px;
+  padding: 0 4px;
+  opacity: 0.5;
+}
+
+.buildInput .entryToggle:after {
+  content: '➤';
+}
+
+.buildInput.entryPoint .entryToggle,
+.buildInput.entryPoint .entryToggle:hover {
+  color: #58A549;
+  opacity: 1;
+}
+
+.buildInput.entryPoint .entryToggle:before,
+.buildInput .entryToggle:hover:before {
+  content: 'entry\0Apoint';
+  font-size: 10px;
+  line-height: 13px;
+  position: absolute;
+  top: -5px;
+  right: 100%;
+  white-space: pre;
+}
+
+@media (max-width: 800px) {
+
+  .buildInput.entryPoint .entryToggle:before,
+  .buildInput .entryToggle:hover:before {
+    content: 'entry point';
+    left: -5px;
+    top: -15px;
+  }
+}
+
+.buildInput.duplicate input {
+  color: #e24834;
+}
+
+.buildInput.duplicate .entryToggle:not(:hover) {
+  color: #e24834;
+  opacity: 1;
+}
+
+.buildInput.duplicate .entryToggle:not(:hover):after {
+  content: '!';
+}
+
+.buildInput .remove {
+  text-decoration: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  font: var(--code-font);
+  font-size: 1em;
+  line-height: 18px;
+  padding: 0 6px;
+  opacity: 0.5;
+}
+
+.buildInput .remove:hover,
+.buildInput .remove:focus {
+  opacity: 1;
+  color: #e24834;
+}
+
+.buildInput .remove:hover:before,
+.buildInput .remove:focus:before {
+  content: 'remove ';
+  font-size: 11px;
+  line-height: 18px;
+  vertical-align: top;
+}
+
+#addInput {
+  text-decoration: none;
+  font: var(--code-font);
+  font-weight: bold;
+  opacity: 0.5;
+  display: inline-block;
+  margin-bottom: 25px;
+}
+
+#addInput:hover,
+#addInput:focus {
+  opacity: 1;
+}
+
+.outputPath {
+  font: var(--code-font);
+  font-weight: bold;
+  padding: 0 8px;
+  line-height: 18px;
+  margin-bottom: 4px;
+  color: var(--fg-on);
+}
+
+/******************************************************************************/
+
+.color-bold {
+  font-weight: bold;
+  color: var(--fg-on);
+}
+
+.bg-red {
+  background: #e24834;
+}
+
+.color-red {
+  color: #e24834;
+}
+
+.bg-yellow {
+  background: #F2D42D;
+}
+
+.color-yellow {
+  color: #F2D42D;
+}
+
+.color-green {
+  color: #58A549;
+}
+
+.color-black {
+  color: #000;
+}
+
+.color-white {
+  color: #fff;
+}
+
+.color-dim {
+  color: #777;
+}
+
+.color-magenta {
+  color: #8E69C9;
+}

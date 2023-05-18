@@ -414,6 +414,11 @@ body[data-os2=windows] pre.windows2 {
   display: none;
 }
 
+.color-bold {
+  font-weight: bold;
+  color: var(--fg-on);
+}
+
 .bg-red {
   background: #e24834;
 }
