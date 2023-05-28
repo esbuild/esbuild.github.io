@@ -372,6 +372,16 @@ textarea:focus {
   color: var(--fg-on);
 }
 
+#slowWarning {
+  display: none;
+  color: #CC9C00;
+  margin-bottom: 25px;
+  white-space: pre;
+  flex-wrap: wrap;
+  justify-content: center;
+  line-height: 22px;
+}
+
 /******************************************************************************/
 
 .color-bold {

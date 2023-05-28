@@ -3,6 +3,14 @@
 import { resetFileSystem, stderrSinceReset } from './fs'
 import { IPCRequest, IPCResponse } from './ipc'
 
+// Add a WebAssembly shim for when WebAssembly isn't supported. This is the
+// case when using Safari with Apple's Lockdown Mode enabled, for example.
+import { WebAssembly as WASM } from 'polywasm/index.min.js'
+if (!globalThis.WebAssembly) {
+  (globalThis as any).WebAssembly = WASM
+  postMessage({ status_: 'slow' })
+}
+
 declare const esbuild: any
 
 interface API {

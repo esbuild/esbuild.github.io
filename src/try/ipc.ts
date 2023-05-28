@@ -92,6 +92,12 @@ async function reloadWorker(version: string): Promise<Worker> {
     return await new Promise<Worker>((resolve, reject) => {
       const worker = new Worker(url)
       worker.onmessage = e => {
+        if (e.data.status_ === 'slow') {
+          const slowEl = document.getElementById('slowWarning')!
+          slowEl.innerHTML = '<span>⚠️ Processing is slow because </span><span>WebAssembly is disabled ⚠️</span>'
+          slowEl.style.display = 'flex'
+          return
+        }
         worker.onmessage = null
         if (e.data.status_ === 'success') {
           resolve(worker)
