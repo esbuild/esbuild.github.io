@@ -82,12 +82,14 @@ async function reloadWorker(version: string): Promise<Worker> {
     const [major, minor, patch] = version.split('.').map(x => +x)
     const min = major === 0 && (minor < 8 || (minor === 8 && patch < 33)) ? '' : '.min'
 
+    const polywasm = /^\?polywasm=([01])$/.exec(location.search)?.[1]
     const [workerJS, esbuildJS, esbuildWASM] = await Promise.all([
       workerText,
       packageFetch(`esbuild-wasm@${version}/lib/browser${min}.js`).then(r => r.text()),
       packageFetch(`esbuild-wasm@${version}/esbuild.wasm`).then(r => r.arrayBuffer()),
     ])
-    const url = URL.createObjectURL(new Blob([esbuildJS, '\n', workerJS], { type: 'application/javascript' }))
+    const parts = [esbuildJS, `\nvar polywasm=${polywasm};`, workerJS]
+    const url = URL.createObjectURL(new Blob(parts, { type: 'application/javascript' }))
 
     return await new Promise<Worker>((resolve, reject) => {
       const worker = new Worker(url)

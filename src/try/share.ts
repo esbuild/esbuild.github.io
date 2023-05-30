@@ -69,16 +69,17 @@ export function tryToSaveStateToHash(): void {
   }
 
   // Try to save our state to the URL hash
+  const reset = location.pathname + location.search
   try {
     const hash = parts ? '#' + btoa(parts.join('\0')).replace(/=+$/, '') : ''
     if (location.hash !== hash) {
-      history.replaceState({}, '', hash || location.pathname)
+      history.replaceState({}, '', hash || reset)
     }
   } catch (e) {
     // Push an empty hash instead if it's too big for a URL
     if (location.hash !== '') {
       try {
-        history.replaceState({}, '', location.pathname)
+        history.replaceState({}, '', reset)
       } catch (e) {
       }
     }

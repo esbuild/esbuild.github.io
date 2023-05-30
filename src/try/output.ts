@@ -15,6 +15,7 @@ const mangleCacheEl = document.createElement('textarea')
 const metafileEl = document.createElement('textarea')
 const sourceMapEl = document.createElement('textarea')
 const buildOutputEls: HTMLTextAreaElement[] = []
+let loadingFailure = false
 
 disableAnnoyingBehaviors(transformOutputEl, true)
 disableAnnoyingBehaviors(legalCommentsEl, true)
@@ -149,10 +150,13 @@ export function updateBuildOutput({ outputFiles_, metafile_, mangleCache_, stder
 }
 
 export function showLoadingMessage(version: string | null): void {
-  outputResultEl.innerHTML = `<span id="outputStatus">Loading ${version ? 'version ' + version : ''}...</span>`
+  if (version) loadingFailure = false
+  if (loadingFailure) return
+  outputResultEl.innerHTML = `<span id="outputStatus">Loading${version ? ' version ' + version : ''}...</span>`
 }
 
 export function showLoadingFailure(error: string): void {
+  loadingFailure = true
   outputResultEl.innerHTML = ''
   const div = document.createElement('div')
   div.className = 'problem'

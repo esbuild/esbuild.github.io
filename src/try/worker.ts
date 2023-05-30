@@ -1,17 +1,18 @@
 // This file is the entry point for the child web worker
 
+declare const polywasm: 0 | 1 | undefined
+declare const esbuild: any
+
 import { resetFileSystem, stderrSinceReset } from './fs'
 import { IPCRequest, IPCResponse } from './ipc'
 
 // Add a WebAssembly shim for when WebAssembly isn't supported. This is the
 // case when using Safari with Apple's Lockdown Mode enabled, for example.
 import { WebAssembly as WASM } from 'polywasm/index.min.js'
-if (!globalThis.WebAssembly) {
+if (polywasm === 1 || (!globalThis.WebAssembly && polywasm !== 0)) {
   (globalThis as any).WebAssembly = WASM
   postMessage({ status_: 'slow' })
 }
-
-declare const esbuild: any
 
 interface API {
   transform(input: string, options: any): Promise<any>
