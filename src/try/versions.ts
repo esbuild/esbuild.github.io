@@ -43,13 +43,20 @@ export async function tryToSetCurrentVersion(version: string): Promise<void> {
 }
 
 async function tryToFetchVersions(): Promise<string[]> {
+  const controller = new AbortController
+  const timeout = setTimeout(() => controller.abort('Timeout'), 5000)
+
   // This is probably faster than the registry because it returns less data
   try {
     const url = 'https://data.jsdelivr.com/v1/package/npm/esbuild-wasm'
-    const versions = (await fetch(url).then(r => r.json())).versions
-    if (versions && versions.length) {
-      console.log(`Loaded ${versions.length} versions from ${url}`)
-      return versions
+    const response = await fetch(url, { signal: controller.signal })
+    if (response && response.ok) {
+      clearTimeout(timeout)
+      const versions = (await response.json()).versions
+      if (versions && versions.length) {
+        console.log(`Loaded ${versions.length} versions from ${url}`)
+        return versions
+      }
     }
   } catch (err) {
     console.error(err)
