@@ -24,8 +24,11 @@ disableAnnoyingBehaviors(metafileEl, true)
 disableAnnoyingBehaviors(sourceMapEl, true)
 
 export function resetHeight(el: HTMLTextAreaElement): void {
+  // Temporarily pad the body out by the old height so the body doesn't scroll back up
+  document.body.style.paddingBottom = el.clientHeight + 'px'
   el.style.height = '0'
   el.style.height = el.scrollHeight + 1 + 'px'
+  document.body.style.paddingBottom = '0'
 }
 
 export function disableAnnoyingBehaviors(el: HTMLTextAreaElement | HTMLInputElement, readOnly = false): void {
