@@ -192,6 +192,19 @@ textarea:focus {
   font-weight: bold;
 }
 
+.sourceMapLink {
+  margin: -25px 0 25px 0;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.sourceMapLink:hover {
+  opacity: 1;
+}
+
 #transformOptions:after,
 #buildOptions:after {
   content: 'OPTIONS';

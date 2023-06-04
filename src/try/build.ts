@@ -5,6 +5,7 @@ import { Mode } from './mode'
 import { parseOptions } from './options'
 import { disableAnnoyingBehaviors, prettyPrintErrorAsStderr, resetHeight, updateBuildOutput } from './output'
 import { tryToSaveStateToHash } from './share'
+import { generateSourceMapLink, toggleInlineSourceMapLink } from './sourcemap'
 
 export interface BuildInput {
   isEntryPoint_: boolean
@@ -130,6 +131,36 @@ function updateAddInputText(): void {
 }
 
 function addBlock(isEntryPoint = false, path = '', content = ''): Block {
+  const updateSourceMapLink = (): void => {
+    const path = pathEl.value
+
+    // Source maps get a visualization link
+    if (path.endsWith('.map')) {
+      let json: any
+      try {
+        json = JSON.parse(contentEl.value)
+      } catch {
+      }
+      if (json && typeof json === 'object') {
+        sourceMapLinkEl = generateSourceMapLink(() => {
+          let code = ''
+          for (const block of blocks) {
+            if (path === block.pathEl_.value + '.map') {
+              code = block.contentEl_.value
+              break
+            }
+          }
+          return [code, JSON.stringify(json)]
+        })
+        parentEl.append(sourceMapLinkEl)
+        return
+      }
+    }
+
+    // Code with an inline source map gets a visualization link
+    sourceMapLinkEl = toggleInlineSourceMapLink(parentEl, contentEl.value, sourceMapLinkEl)
+  }
+
   const parentEl = document.createElement('div')
   const entryEl = document.createElement('a')
   const removeEl = document.createElement('a')
@@ -141,6 +172,7 @@ function addBlock(isEntryPoint = false, path = '', content = ''): Block {
     pathEl_: pathEl,
     contentEl_: contentEl,
   }
+  let sourceMapLinkEl: HTMLAnchorElement | undefined
 
   disableAnnoyingBehaviors(pathEl)
   disableAnnoyingBehaviors(contentEl)
@@ -162,6 +194,7 @@ function addBlock(isEntryPoint = false, path = '', content = ''): Block {
   inputsEl.insertBefore(parentEl, addInputEl)
 
   pathEl.oninput = () => {
+    updateSourceMapLink()
     updateAddInputText()
     runBuild()
   }
@@ -176,6 +209,7 @@ function addBlock(isEntryPoint = false, path = '', content = ''): Block {
   }
 
   contentEl.oninput = () => {
+    updateSourceMapLink()
     resetHeight(contentEl)
     runBuild()
   }
@@ -195,6 +229,7 @@ function addBlock(isEntryPoint = false, path = '', content = ''): Block {
   }
 
   blocks.push(block)
+  updateSourceMapLink()
   updateAddInputText()
   resetHeight(contentEl)
   return block

@@ -2,6 +2,7 @@
 
 import { BuildResponse, TransformResponse } from './ipc'
 import { Mode, currentMode } from './mode'
+import { generateSourceMapLink, toggleInlineSourceMapLink } from './sourcemap'
 
 export interface OutputFile {
   path: string
@@ -15,6 +16,7 @@ const mangleCacheEl = document.createElement('textarea')
 const metafileEl = document.createElement('textarea')
 const sourceMapEl = document.createElement('textarea')
 const buildOutputEls: HTMLTextAreaElement[] = []
+let sourceMapLinkEl: HTMLAnchorElement | undefined
 let loadingFailure = false
 
 disableAnnoyingBehaviors(transformOutputEl, true)
@@ -93,7 +95,21 @@ export function updateTransformOutput({ code_, map_, mangleCache_, legalComments
   outputResultEl.innerHTML = ''
 
   appendTextarea(transformOutputEl, 'transformOutput', code_)
-  if (map_) appendTextarea(sourceMapEl, 'sourceMap', map_)
+
+  if (map_) {
+    appendTextarea(sourceMapEl, 'sourceMap', map_)
+
+    // Source maps get a visualization link
+    if (sourceMapLinkEl) sourceMapLinkEl.remove()
+    sourceMapLinkEl = generateSourceMapLink(() => [code_ || '', JSON.stringify(JSON.parse(map_))])
+    sourceMapEl.parentElement!.append(sourceMapLinkEl)
+  }
+
+  // Code with an inline source map gets a visualization link
+  else {
+    sourceMapLinkEl = toggleInlineSourceMapLink(transformOutputEl.parentElement!, code_ || '', sourceMapLinkEl)
+  }
+
   if (mangleCache_) appendTextarea(mangleCacheEl, 'transformMangleCache', JSON.stringify(mangleCache_, null, 2))
   appendTextarea(legalCommentsEl, 'legalComments', legalComments_)
 
@@ -117,6 +133,9 @@ export function updateBuildOutput({ outputFiles_, metafile_, mangleCache_, stder
   buildOutputEls.length = 0
 
   if (outputFiles_) {
+    // Sort generated source maps after the file they apply to
+    outputFiles_.sort((a, b) => +(a.path > b.path) - +(a.path < b.path))
+
     for (const file of outputFiles_) {
       const div = document.createElement('div')
       const outputPath = document.createElement('div')
@@ -128,6 +147,25 @@ export function updateBuildOutput({ outputFiles_, metafile_, mangleCache_, stder
       disableAnnoyingBehaviors(textarea)
       div.className = 'buildOutput hasLabel'
       div.append(textarea)
+
+      // Source maps get a visualization link
+      if (file.path.endsWith('.map')) {
+        for (const codeFile of outputFiles_) {
+          if (file.path === codeFile.path + '.map') {
+            div.append(generateSourceMapLink(() => [
+              codeFile.text,
+              JSON.stringify(JSON.parse(file.text)), // Make the JSON slightly smaller
+            ]))
+            break
+          }
+        }
+      }
+
+      // Code with an inline source map gets a visualization link
+      else {
+        toggleInlineSourceMapLink(div, file.text, undefined)
+      }
+
       outputResultEl.append(outputPath, div)
       buildOutputEls.push(textarea)
       resetHeight(textarea)
