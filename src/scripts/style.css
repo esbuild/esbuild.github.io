@@ -348,6 +348,7 @@ td,
 th {
   padding: 7px 10px;
   white-space: nowrap;
+  vertical-align: top;
 }
 
 /* ---------- Code ---------- */

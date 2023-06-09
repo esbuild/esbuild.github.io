@@ -467,7 +467,7 @@ body:
       | Type casts                | `a as B` and `<B>a`        | |
       | Type imports              | `import {Type} from 'foo'` | Handled by removing all unused imports |
       | Type exports              | `export {Type} from 'foo'` | Handled by ignoring missing exports in TypeScript files |
-      | Experimental decorators   | `@sealed class Foo {}`     | The [`emitDecoratorMetadata`](https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata) flag is not supported |
+      | Experimental decorators   | `@sealed class Foo {}`     | Requires [`experimentalDecorators`](https://www.typescriptlang.org/tsconfig#experimentalDecorators), <br>does not support [`emitDecoratorMetadata`](https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata) |
       | Instantiation expressions | `Array<number>`            | TypeScript 4.7+ |
       | `extends` on `infer`      | `infer A extends B`        | TypeScript 4.7+ |
       | Variance annotations      | `type A<out B> = () => B`  | TypeScript 4.7+ |
@@ -569,45 +569,133 @@ body:
 
   - ul:
     - >
-      [`alwaysStrict`](https://www.typescriptlang.org/tsconfig#alwaysStrict)
-    - >
-      [`baseUrl`](https://www.typescriptlang.org/tsconfig#baseUrl)
-    - >
-      [`extends`](https://www.typescriptlang.org/tsconfig#extends)
-    - >
-      [`importsNotUsedAsValues`](https://www.typescriptlang.org/tsconfig#importsNotUsedAsValues)
-    - >
-      [`jsx`](https://www.typescriptlang.org/tsconfig#jsx)
-    - >
-      [`jsxFactory`](https://www.typescriptlang.org/tsconfig#jsxFactory)
-    - >
-      [`jsxFragmentFactory`](https://www.typescriptlang.org/tsconfig#jsxFragmentFactory)
-    - >
-      [`jsxImportSource`](https://www.typescriptlang.org/tsconfig#jsxImportSource)
-    - >
-      [`paths`](https://www.typescriptlang.org/tsconfig#paths)
-    - >
-      [`preserveValueImports`](https://www.typescriptlang.org/tsconfig/#preserveValueImports)
+      [`experimentalDecorators`](https://www.typescriptlang.org/tsconfig#experimentalDecorators)
+      <p>
+      This option enables the transformation of decorator syntax in TypeScript
+      files. The transformation follows the outdated decorator design that
+      TypeScript itself follows when `experimentalDecorators` is enabled.
+      </p>
+      <p>
+      Note that there is an updated design for decorators that is being added to
+      JavaScript, as well as to TypeScript when `experimentalDecorators` is
+      disabled. This is not something that esbuild implements yet, so esbuild
+      will currently not transform decorators when `experimentalDecorators` is
+      disabled.
+      </p>
+
     - >
       [`target`](https://www.typescriptlang.org/tsconfig#target)
-    - >
+      <br>
       [`useDefineForClassFields`](https://www.typescriptlang.org/tsconfig#useDefineForClassFields)
       <p>
-      Note: TypeScript silently shipped a breaking change in version 4.3.2 where
-      if the `useDefineForClassFields` option is not specified, it defaults to
-      `true` if you specify <code>target: <wbr>"ESNext"</code> (and later on
-      also <code>target: <wbr>"ES2022"</code> or newer). Before version 4.3.2,
-      the `useDefineForClassFields` option always defaulted to `false`.
-      The latest version of esbuild has been updated to reflect the behavior
-      of TypeScript version 4.3.2. If you need the old behavior, make sure to
-      specify <code>useDefineForClassFields: <wbr>false</code> in addition to <code>target: <wbr>"ESNext"</code>.
-      See TypeScript PR [#42663](https://github.com/microsoft/TypeScript/pull/42663) for more information.
+      These options control whether class fields in TypeScript files are compiled
+      with "define" semantics or "assign" semantics:
+      </p>
+      <ul>
+        <li><p>
+        <b>Define semantics</b> (esbuild's default behavior): TypeScript class
+        fields behave like normal JavaScript class fields. Field initializers
+        do not trigger setters on the base class. You should write all new code
+        this way going forward.
+        </p></li>
+        <li><p>
+        <b>Assign semantics</b> (which you have to explicitly enable): esbuild
+        emulates TypeScript's legacy class field behavior. Field initializers
+        will trigger base class setters. This may be needed to get legacy code
+        to run.
+        </p></li>
+      </ul>
+      <p>
+      The way to disable define semantics (and therefore enable assign semantics)
+      with esbuild is the same way you disable it with TypeScript: by setting
+      `useDefineForClassFields` to `false` in your `tsconfig.json` file.
+      </p>
+      <p>
+      For compatibility with TypeScript, esbuild also copies TypeScript's behavior
+      where when `useDefineForClassFields` is not specified, it defaults to
+      `false` when `tsconfig.json` contains a `target` that is earlier than
+      `ES2022`. But I recommend setting `useDefineForClassFields` explicitly
+      if you need it instead of relying on this default value coming from the
+      value of the `target` setting. Note that the `target` setting in
+      `tsconfig.json` is only used by esbuild for determining the default value
+      of `useDefineForClassFields`. It does *not* affect esbuild's own
+      [`target`](/api/#target) setting, even though they have the same name.
+      </p>
+
+    - >
+      [`baseUrl`](https://www.typescriptlang.org/tsconfig#baseUrl)
+      <br>
+      [`paths`](https://www.typescriptlang.org/tsconfig#paths)
+      <p>
+      These options affect esbuild's resolution of `import`/`require` paths to
+      files on the file system. You can use it to define package aliases and to
+      rewrite import paths in other ways. Note that using esbuild for import
+      path transformation requires [`bundling`](/api/#bundle) to be enabled, as
+      esbuild's path resolution only happens during bundling. Also note that
+      esbuild also has a native [`alias`](/api/#alias) feature which you may
+      want to use instead.
+      </p>
+
+    - >
+      [`jsx`](https://www.typescriptlang.org/tsconfig#jsx)
+      <br>
+      [`jsxFactory`](https://www.typescriptlang.org/tsconfig#jsxFactory)
+      <br>
+      [`jsxFragmentFactory`](https://www.typescriptlang.org/tsconfig#jsxFragmentFactory)
+      <br>
+      [`jsxImportSource`](https://www.typescriptlang.org/tsconfig#jsxImportSource)
+      <p>
+      These options affect esbuild's transformation of JSX syntax into JavaScript.
+      They are equivalent to esbuild's native options for these settings:
+      [`jsx`](/api/#jsx),
+      [`jsxFactory`](/api/#jsx-factory),
+      [`jsxFragment`](/api/#jsx-fragment), and
+      [`jsxImportSource`](/api/#jsx-import-source).
+      </p>
+
+    - >
+      [`alwaysStrict`](https://www.typescriptlang.org/tsconfig#alwaysStrict)
+      <br>
+      [`strict`](https://www.typescriptlang.org/tsconfig#strict)
+      <p>
+      If either of these options are enabled, esbuild will consider all code in
+      all TypeScript files to be in [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode)
+      and will prefix generated code with `"use strict"` unless the output
+      [`format`](/api/#format) is set to [`esm`](/api/#format-esm) (since all
+      ESM files are automatically in strict mode).
+      </p>
+
+    - >
+      [`verbatimModuleSyntax`](https://www.typescriptlang.org/tsconfig/#verbatimModuleSyntax)
+      <br>
+      [`importsNotUsedAsValues`](https://www.typescriptlang.org/tsconfig#importsNotUsedAsValues)
+      <br>
+      [`preserveValueImports`](https://www.typescriptlang.org/tsconfig/#preserveValueImports)
+      <p>
+      By default, the TypeScript compiler will delete unused imports when
+      converting TypeScript to JavaScript. That way imports which turn out to
+      be type-only imports accidentally don't cause an error at run-time. This
+      behavior is also implemented by esbuild.
+      </p>
+      <p>
+      These options allow you to disable this behavior and preserve unused
+      imports, which can be useful if for example the imported file has useful
+      side-effects. You should use `verbatimModuleSyntax` for this, as that
+      replaces the older `importsNotUsedAsValues` and `preserveValueImports`
+      settings (which TypeScript has now deprecated).
+      </p>
+
+    - >
+      [`extends`](https://www.typescriptlang.org/tsconfig#extends)
+      <p>
+      This option allows you to split up your `tsconfig.json` file across
+      multiple files. This value can be a string for single inheritance or an
+      array for multiple inheritance (new in TypeScript 5.0+).
       </p>
 
   - p: >
-      All other fields will be ignored. Note that import path
-      transformation requires [`bundling`](/api/#bundle) to be enabled,
-      since path resolution only happens during bundling.
+      All other `tsconfig.json` fields (i.e. those that aren't in the above
+      list) will be ignored.
 
   - h4#ts-vs-tsx: You cannot use the `tsx` loader for `*.ts` files
   - p: >
