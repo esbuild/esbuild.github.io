@@ -281,6 +281,7 @@ body:
     - Target
     - Tree shaking
     - Tsconfig
+    - Tsconfig raw
     - Watch
     - Working directory
     - Write
@@ -1583,11 +1584,13 @@ body:
   - p: >
       This option can be used to pass your `tsconfig.json` file to the
       [transform](#transform) API, which doesn't access the file system.
-      Using it looks like this:
+      It can also be used to pass the contents of your `tsconfig.json`
+      file to the [build](#build) API inline without writing it to a
+      file. Using it looks like this:
 
   - example:
       cli: |
-          echo 'class Foo { foo }' | esbuild --loader=ts --tsconfig-raw='{"compilerOptions":{"useDefineForClassFields":true}}'
+          echo 'class Foo { foo }' | esbuild --loader=ts --tsconfig-raw='{"compilerOptions":{"useDefineForClassFields":false}}'
 
       mjs: |
         import * as esbuild from 'esbuild'
@@ -1597,7 +1600,7 @@ body:
           loader: 'ts',
           tsconfigRaw: `{
             "compilerOptions": {
-              "useDefineForClassFields": true,
+              "useDefineForClassFields": false,
             },
           }`,
         })
@@ -1616,7 +1619,7 @@ body:
             Loader: api.LoaderTS,
             TsconfigRaw: `{
               "compilerOptions": {
-                "useDefineForClassFields": true,
+                "useDefineForClassFields": false,
               },
             }`,
           })
