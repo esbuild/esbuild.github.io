@@ -79,7 +79,7 @@ function prettyPrintLocationAsStderr({ file_, line_, column_, length_, lineText_
   return result
 }
 
-function appendTextarea(textarea: HTMLTextAreaElement, id: string, text: string | undefined): void {
+function appendTextarea(textarea: HTMLTextAreaElement, id: string, text: string | undefined): HTMLDivElement | undefined {
   if (text !== undefined) {
     const div = document.createElement('div')
     textarea.textContent = text.replace(/\n$/, '')
@@ -88,6 +88,7 @@ function appendTextarea(textarea: HTMLTextAreaElement, id: string, text: string 
     div.append(textarea)
     outputResultEl.append(div)
     resetHeight(textarea)
+    return div
   }
 }
 
@@ -187,7 +188,21 @@ export function updateBuildOutput({ outputFiles_, metafile_, mangleCache_, stder
   }
 
   if (mangleCache_) appendTextarea(mangleCacheEl, 'mangleCache', JSON.stringify(mangleCache_, null, 2))
-  if (metafile_) appendTextarea(metafileEl, 'metafile', JSON.stringify(metafile_, null, 2))
+  if (metafile_) {
+    const div = appendTextarea(metafileEl, 'metafile', JSON.stringify(metafile_, null, 2))!
+
+    // The metafile gets an analyze link
+    const a = document.createElement('a')
+    a.className = 'underLink'
+    a.href = 'javascript:void 0'
+    a.target = '_blank'
+    a.textContent = 'Analyze this metafile'
+    a.onclick = () => {
+      a.href = '/analyze/#' + btoa(JSON.stringify(metafile_))
+      setTimeout(() => a.href = 'javascript:void 0')
+    }
+    div.append(a)
+  }
 }
 
 export function showLoadingMessage(version: string | null): void {

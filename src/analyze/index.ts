@@ -81,20 +81,6 @@ export let finishLoading = (json: string): void => {
   useColor(COLOR.DIRECTORY)
 }
 
-let loadFromHash = () => {
-  try {
-    let json = atob(location.hash.slice(1))
-    finishLoading(json)
-  } catch (e) {
-    // Clear out invalid hash
-    if (location.hash !== '') {
-      try {
-        history.replaceState({}, '', location.pathname);
-      } catch (e) {}
-    }
-  }
-}
-
 let docElemDataset = document.documentElement.dataset
 let updateTheme = () => {
   // Keep the dark/light mode theme up to date with the rest of the site
@@ -109,4 +95,16 @@ document.getElementById('loadExample')!.onclick = () => {
   fetch('example-metafile.json').then(r => r.text()).then(finishLoading)
 }
 
-if (location.hash) loadFromHash()
+if (location.hash !== '') {
+  // Load from the hash if it's present
+  try {
+    finishLoading(atob(location.hash.slice(1)))
+  } catch (e) {
+  }
+
+  // Clear out the hash afterward
+  try {
+    history.replaceState({}, '', location.pathname)
+  } catch (e) {
+  }
+}

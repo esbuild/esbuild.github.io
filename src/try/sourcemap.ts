@@ -4,7 +4,7 @@
 // correct name at the time of the click).
 export function generateSourceMapLink(callback: () => [code: string, map: string]): HTMLAnchorElement {
   const a = document.createElement('a')
-  a.className = 'sourceMapLink'
+  a.className = 'underLink'
   a.href = 'javascript:void 0'
   a.target = '_blank'
   a.textContent = 'Visualize this source map'

@@ -192,7 +192,7 @@ textarea:focus {
   font-weight: bold;
 }
 
-.sourceMapLink {
+.underLink {
   margin: -25px 0 25px 0;
   position: absolute;
   top: 100%;
@@ -201,7 +201,7 @@ textarea:focus {
   opacity: 0.5;
 }
 
-.sourceMapLink:hover {
+.underLink:hover {
   opacity: 1;
 }
 
