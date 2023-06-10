@@ -190,6 +190,7 @@ textarea:focus {
   font: var(--code-font);
   opacity: 0.5;
   font-weight: bold;
+  pointer-events: none;
 }
 
 .underLink {
