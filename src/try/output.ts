@@ -66,15 +66,42 @@ export interface Location {
 }
 
 function prettyPrintLocationAsStderr({ file_, line_, column_, length_, lineText_, suggestion_ }: Location): string {
+  const maxWidth = 80
+  const n = lineText_.length
   let last = length_ < 2 ? '^' : '~'.repeat(length_)
   let result = `\n\n    ${file_}:${line_}:${column_}:\n`
+
+  if (n > maxWidth) {
+    // Try to center the error
+    const sliceStart = Math.max(0, Math.min((column_ * 2 + length_ - maxWidth) >> 1, column_ - maxWidth / 5, n - maxWidth))
+
+    // Slice the line
+    let slicedLine = lineText_.slice(sliceStart, sliceStart + maxWidth)
+    column_ = Math.max(0, column_ - sliceStart)
+    length_ = Math.min(length_, slicedLine.length - column_)
+
+    // Truncate the ends with "..."
+    if (slicedLine.length > 3 && sliceStart > 0) {
+      slicedLine = '...' + slicedLine.slice(3)
+      column_ = Math.max(column_, 3)
+    }
+    if (slicedLine.length > 3 && sliceStart + maxWidth < n) {
+      slicedLine = slicedLine.slice(0, slicedLine.length - 3) + '...'
+      length_ = Math.max(0, Math.min(length_, slicedLine.length - 3 - column_))
+    }
+
+    lineText_ = slicedLine
+  }
+
   result += `\x1B[37m${line_.toString().padStart(7)} │ ${lineText_.slice(0, column_)}` +
     `\x1B[32m${lineText_.slice(column_, column_ + length_)}` +
     `\x1B[37m${lineText_.slice(column_ + length_)}\n`
+
   if (suggestion_) {
     result += `        │ ${' '.repeat(column_)}\x1B[32m${last}\x1B[37m\n`
     last = suggestion_
   }
+
   result += `        ╵ ${' '.repeat(column_)}\x1B[32m${last}\x1B[0m\n`
   return result
 }

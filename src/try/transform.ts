@@ -8,6 +8,7 @@ import { tryToSaveStateToHash } from './share'
 import { toggleInlineSourceMapLink } from './sourcemap'
 
 const optionsEl = document.querySelector('#transformOptions textarea') as HTMLTextAreaElement
+const optionsSwitcherEl = document.querySelector('#transformOptions .underLink') as HTMLDivElement
 const inputEl = document.querySelector('#transformInput textarea') as HTMLTextAreaElement
 let sourceMapLinkEl: HTMLAnchorElement | undefined
 
@@ -40,7 +41,7 @@ export function runTransform(): void {
     sendIPC({
       command_: 'transform',
       input_: input,
-      options_: parseOptions(optionsEl.value, Mode.Transform),
+      options_: parseOptions(optionsEl.value, Mode.Transform, optionsSwitcherEl),
     }).then(result => {
       updateTransformOutput(result)
     }, () => {

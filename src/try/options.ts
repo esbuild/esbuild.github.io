@@ -31,39 +31,95 @@ interface Token {
   value_: any
 }
 
-export function parseOptions(input: string, mode: Mode): Record<string, any> {
+export function parseOptions(input: string, mode: Mode, switcherEl: HTMLDivElement | undefined): Record<string, any> {
   const trimmed = input.trimStart()
-  if (!trimmed) return {}
-  if (/^{|^\/[*/]/.test(trimmed)) return parseOptionsAsLooseJSON(input)
+  const isJSON = /^{|^\/[*/]/.test(trimmed)
+  let options: Record<string, any>
 
-  const toRegExp = (key: string): void => {
-    if (options[key] !== undefined) {
+  if (!trimmed) {
+    if (switcherEl) switcherEl.innerHTML = ''
+    return {}
+  }
+
+  if (isJSON) {
+    options = parseOptionsAsLooseJSON(input)
+  } else {
+    const toRegExp = (key: string): void => {
+      if (options[key] !== undefined) {
+        try {
+          options[key] = new RegExp(options[key] + '')
+        } catch (err) {
+          key = key.replace(/[A-Z]/g, x => '-' + x.toLowerCase())
+          throw new Error(`Invalid regular expression for "--${key}=": ${err.message}`)
+        }
+      }
+    }
+
+    const splitOnComma = (key: string): void => {
+      if (options[key] !== undefined) {
+        options[key] = (options[key] + '').split(',')
+      }
+    }
+
+    options = parseOptionsAsShellArgs(input, mode)
+
+    // These need to be regular expressions, not strings or booleans
+    toRegExp('mangleProps')
+    toRegExp('reserveProps')
+
+    // These need to be arrays, not comma-separated strings or booleans
+    splitOnComma('resolveExtensions')
+    splitOnComma('mainFields')
+    splitOnComma('conditions')
+    splitOnComma('target')
+
+    // Map entries for "supported" must be booleans, not strings (but map
+    // entries for other maps such as "define" or "banner" must be strings,
+    // so only do this for "supported")
+    const supported = options['supported']
+    if (typeof supported === 'object' && supported !== null) {
+      for (const key in supported) {
+        if (supported[key] === 'true') supported[key] = true
+        else if (supported[key] === 'false') supported[key] = false
+      }
+    }
+
+    // Parsing this makes it more readable when printing it as JSON
+    if (options['tsconfigRaw'] !== undefined) {
       try {
-        options[key] = new RegExp(options[key] + '')
-      } catch (err) {
-        key = key.replace(/[A-Z]/g, x => '-' + x.toLowerCase())
-        throw new Error(`Invalid regular expression for "--${key}=": ${err.message}`)
+        options['tsconfigRaw'] = JSON.parse(options['tsconfigRaw'])
+      } catch {
       }
     }
   }
 
-  const splitOnComma = (key: string): void => {
-    if (options[key] !== undefined) {
-      options[key] = (options[key] + '').split(',')
+  // Optionally provide a way to switch between the two types of options
+  if (switcherEl) {
+    let args: string | undefined
+    const a = document.createElement('a')
+    a.href = 'javascript:void 0'
+    switcherEl.innerHTML = ''
+    if (isJSON) {
+      try {
+        args = printOptionsAsShellArgs(options)
+        a.textContent = 'Switch to CLI syntax'
+      } catch {
+        // Not every JSON5 object is representable as CLI options, but that's ok
+      }
+    } else {
+      args = printOptionsAsLooseJSON(options)
+      a.textContent = 'Switch to JS syntax'
+    }
+    if (args !== undefined) {
+      a.onclick = () => {
+        const textareaEl = switcherEl.parentElement!.querySelector('textarea')!
+        switcherEl.innerHTML = ''
+        textareaEl.value = args!
+        textareaEl.dispatchEvent(new Event('input'))
+      }
+      switcherEl.append(a)
     }
   }
-
-  const options = parseOptionsAsShellArgs(input, mode)
-
-  // These need to be regular expressions, not strings or booleans
-  toRegExp('mangleProps')
-  toRegExp('reserveProps')
-
-  // These need to be arrays, not comma-separated strings or booleans
-  splitOnComma('resolveExtensions')
-  splitOnComma('mainFields')
-  splitOnComma('conditions')
-  splitOnComma('target')
 
   return options
 }
@@ -172,7 +228,7 @@ function parseOptionsAsShellArgs(input: string, mode: Mode): Record<string, any>
     })
   }
 
-  const entryPoints: string[] = []
+  const entryPoints: (string | { in: string, out: string })[] = []
   const output: Record<string, any> = Object.create(null)
 
   const kebabCaseToCamelCase = (text: string, arg: Omit<Arg, 'text_'>): string => {
@@ -184,9 +240,10 @@ function parseOptionsAsShellArgs(input: string, mode: Mode): Record<string, any>
 
   // Convert CLI-style options to JS-style options
   for (const { text_: text, ...arg } of args) {
+    const equals = text.indexOf('=')
+
     if (text.startsWith('--')) {
       const colon = text.indexOf(':')
-      const equals = text.indexOf('=')
 
       // Array element
       if (colon >= 0 && equals < 0) {
@@ -229,7 +286,9 @@ function parseOptionsAsShellArgs(input: string, mode: Mode): Record<string, any>
 
     // Entry point
     else {
-      entryPoints.push(text)
+      // Assign now to set "entryPoints" here in the property iteration order
+      output['entryPoints'] = entryPoints
+      entryPoints.push(equals < 0 ? text : { in: text.slice(equals + 1), out: text.slice(0, equals) })
     }
   }
 
@@ -418,15 +477,22 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
   const parseExpression = (): any => {
     if (token.kind_ as number === Kind.OpenBrace) {
       const object: Record<string, any> = Object.create(null)
+      const originals: Record<string, Token> = Object.create(null)
       while (true) {
         nextToken()
         if (token.kind_ === Kind.CloseBrace) break
         if (token.kind_ !== Kind.String && token.kind_ !== Kind.Identifier) throwUnexpectedToken()
+        const original = originals[token.value_]
+        if (original) {
+          throwRichError(input, `Duplicate key ${JSON.stringify(token.value_)} in object literal`, token.line_, token.column_, token.text_.length,
+            `The original key ${JSON.stringify(token.value_)} is here:`, original.line_, original.column_, original.text_.length)
+        }
         const key = token
         nextToken()
         if (token.kind_ !== Kind.Colon) throwExpectedAfter(key, ':', 'property ' + JSON.stringify(key.value_))
         nextToken()
         object[key.value_] = parseExpression()
+        originals[key.value_] = key
         const beforeComma = token
         nextToken()
         if (token.kind_ as number === Kind.CloseBrace) break
@@ -515,4 +581,104 @@ function throwNoClosingQuoteError(
   throwRichError(input,
     `Failed to find the closing ${kind} quote`, closeLine, closeColumn, 0,
     `The opening ${kind} quote is here:`, openLine, openColumn, 1, quote)
+}
+
+export function printOptionsAsShellArgs(options: Record<string, any>): string {
+  const quoteForShell = (text: string): string => {
+    if (!/[ \t\n\\'"]/.test(text)) return text
+    return '"' + text.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'
+  }
+
+  const camelCaseToKabobCase = (text: string): string => {
+    return text.replace(/[A-Z]/g, x => '-' + x.toLowerCase())
+  }
+
+  const args: string[] = []
+
+  for (const key in options) {
+    const kabobKey = camelCaseToKabobCase(key)
+    const it = options[key]
+    const type = typeof it
+
+    if (type === 'string' || type === 'boolean' || type === 'number' || it === null) {
+      args.push(it === true ? '--' + kabobKey : `--${kabobKey}=${it}`)
+    }
+
+    else if (Array.isArray(it)) {
+      if (key === 'resolveExtensions' || key === 'mainFields' || key === 'conditions' || key === 'target') {
+        args.push(`--${kabobKey}=${it}`)
+      } else {
+        for (const x of it) {
+          args.push(
+            key === 'entryPoints' ? typeof x === 'object' && x !== null && typeof x.in === 'string' && typeof x.out === 'string' ? `${x.out}=${x.in}` : x :
+              `--${kabobKey}:${x}`)
+        }
+      }
+    }
+
+    else if (it instanceof RegExp) {
+      args.push(`--${kabobKey}=${it.source}`)
+    }
+
+    else if (key === 'tsconfigRaw') {
+      args.push(`--${kabobKey}=${JSON.stringify(it)}`)
+    }
+
+    else if (type === 'object' && key !== 'mangleCache' && key !== 'stdin') {
+      for (const prop in it) {
+        args.push(`--${kabobKey}:${prop}=${it[prop]}`)
+      }
+    }
+
+    else {
+      throw new Error('Not representable')
+    }
+  }
+
+  return args.map(quoteForShell).join(' ')
+}
+
+export function printOptionsAsLooseJSON(options: Record<string, any>): string {
+  const printForJSON5 = (it: any, indent: string, allowNewline = true): string => {
+    const type = typeof it
+
+    if (type === 'string') {
+      const text = it.replace(/\\/g, '\\\\').replace(/\n/g, '\\n')
+      const single = text.split('\'')
+      const double = text.split('"')
+      return double.length < single.length ? '"' + double.join('\\"') + '"' : '\'' + single.join("\\'") + '\''
+    }
+
+    if (type === 'boolean' || type === 'number' || it instanceof RegExp) {
+      return it + ''
+    }
+
+    const nextIndent = indent + '  '
+    if (Array.isArray(it)) {
+      // Format "entryPoints" on one line unless the extended "{ in, out }"
+      // syntax is used. And in that case, format on multiple lines but format
+      // each "{ in, out }" object on one line.
+      const oneLine = it.every(x => typeof x === 'string')
+      let result = '['
+      for (const value of it) {
+        result += result === '[' ? oneLine ? '' : '\n' + nextIndent : oneLine ? ', ' : nextIndent
+        result += printForJSON5(value, nextIndent, false)
+        if (!oneLine) result += ',\n'
+      }
+      if (result !== '[' && !oneLine) result += indent
+      return result + ']'
+    }
+
+    let result = '{'
+    for (const key in it) {
+      const value = it[key]
+      result += result === '{' ? allowNewline ? '\n' + nextIndent : ' ' : allowNewline ? nextIndent : ', '
+      result += `${/^[A-Za-z$_][A-Za-z0-9$_]*$/.test(key) ? key : printForJSON5(key, '')}: ${printForJSON5(value, nextIndent)}`
+      if (allowNewline) result += ',\n'
+    }
+    if (result !== '{') result += allowNewline ? indent : ' '
+    return result + '}'
+  }
+
+  return printForJSON5(options, '')
 }

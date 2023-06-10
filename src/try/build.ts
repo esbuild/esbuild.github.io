@@ -20,6 +20,7 @@ interface Block {
 }
 
 const optionsEl = document.querySelector('#buildOptions textarea') as HTMLTextAreaElement
+const optionsSwitcherEl = document.querySelector('#buildOptions .underLink') as HTMLDivElement
 const addInputEl = document.getElementById('addInput') as HTMLAnchorElement
 const inputsEl = document.getElementById('buildInputs') as HTMLDivElement
 const blocks: Block[] = []
@@ -65,7 +66,7 @@ export function runBuild(): void {
   tryToSaveStateToHash()
 
   try {
-    const options = parseOptions(optionsEl.value, Mode.Build)
+    const options = parseOptions(optionsEl.value, Mode.Build, optionsSwitcherEl)
     const entryPoints = Array.isArray(options.entryPoints) ? options.entryPoints : options.entryPoints = []
     const input: Record<string, string> = Object.create(null)
     const duplicates: Record<string, Block[]> = Object.create(null)
