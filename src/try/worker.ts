@@ -1,6 +1,6 @@
 // This file is the entry point for the child web worker
 
-declare const polywasm: 0 | 1 | undefined
+declare const polywasm: 0 | 1 | null
 declare const esbuild: any
 
 import { resetFileSystem, stderrSinceReset } from './fs'
@@ -49,27 +49,29 @@ interface Location {
 }
 
 // Do the setup in an async function to capture errors thrown (e.g. "WebAssembly" doesn't exist)
-const setup = async ([version, wasm]: [string, ArrayBuffer]): Promise<API> => {
-  const [major, minor, patch] = version.split('.').map(x => +x)
-
-  // Versions 0.5.20 to 0.8.34 have a bug where "worker" doesn't work. This
-  // means that the "build" API is broken (because we can't inject our file
-  // system shim) but the "transform" API still works, so we still allow
-  // these buggy versions.
-  const hasBugWithWorker = major === 0 && (
-    (minor === 5 && patch >= 20) ||
-    (minor >= 6 && minor <= 7) ||
-    (minor === 8 && patch <= 34)
-  )
-
+const setup = async ([version, wasm]: [string | null, ArrayBuffer]): Promise<API> => {
   const options: Record<string, any> = {
     // This uses "wasmURL" instead of "wasmModule" because "wasmModule" was added in version 0.14.32
     wasmURL: URL.createObjectURL(new Blob([wasm], { type: 'application/wasm' })),
   }
 
   // Avoid triggering an esbuild bug that causes all output to be empty
-  if (!hasBugWithWorker) {
-    options.worker = false
+  if (version) {
+    const [major, minor, patch] = version.split('.').map(x => +x)
+
+    // Versions 0.5.20 to 0.8.34 have a bug where "worker" doesn't work. This
+    // means that the "build" API is broken (because we can't inject our file
+    // system shim) but the "transform" API still works, so we still allow
+    // these buggy versions.
+    const hasBugWithWorker = major === 0 && (
+      (minor === 5 && patch >= 20) ||
+      (minor >= 6 && minor <= 7) ||
+      (minor === 8 && patch <= 34)
+    )
+
+    if (!hasBugWithWorker) {
+      options.worker = false
+    }
   }
 
   // Use the "startService" API before version 0.9.0

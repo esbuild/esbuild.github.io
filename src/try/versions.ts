@@ -3,7 +3,9 @@
 const versionsPromise = tryToFetchVersions()
 const versionPickerEl = document.querySelector('#versionPicker select') as HTMLSelectElement
 const loading = document.createElement('option')
-let reloadWorker: (version: string) => Promise<Worker>
+
+export type ReloadWorker = (version: string | null) => Promise<Worker>
+let reloadWorker: ReloadWorker
 
 loading.textContent = 'Loading...'
 versionPickerEl.append(loading)
@@ -29,16 +31,23 @@ export function tryToGetCurrentVersion(): string | null {
   return versionPickerEl.disabled || versionPickerEl.selectedIndex < 0 ? null : versionPickerEl.value
 }
 
-export function setReloadWorkerCallback(callback: (version: string) => Promise<Worker>): void {
+export function setReloadWorkerCallback(callback: ReloadWorker): void {
   reloadWorker = callback
 }
 
-export async function tryToSetCurrentVersion(version: string): Promise<void> {
-  const versions = await versionsPromise
-  const index = version === 'latest' && versions.length ? 0 : versions.indexOf(version)
-  if (index >= 0 && versionPickerEl.selectedIndex !== index) {
-    versionPickerEl.selectedIndex = index
-    await reloadWorker(versions[index])
+export async function tryToSetCurrentVersion(version: string | null): Promise<void> {
+  if (version === null) {
+    if (versionPickerEl.selectedIndex !== -1) {
+      versionPickerEl.selectedIndex = -1
+      await reloadWorker(null)
+    }
+  } else {
+    const versions = await versionsPromise
+    const index = version === 'latest' && versions.length ? 0 : versions.indexOf(version)
+    if (index >= 0 && versionPickerEl.selectedIndex !== index) {
+      versionPickerEl.selectedIndex = index
+      await reloadWorker(versions[index])
+    }
   }
 }
 

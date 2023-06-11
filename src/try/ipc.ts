@@ -5,6 +5,21 @@ import { afterConfigChange } from './mode'
 import { OutputFile, showLoadingFailure, showLoadingMessage } from './output'
 import { setReloadWorkerCallback } from './versions'
 
+// Behavior modifications via URL parameters:
+//
+//   ?polywasm=0
+//     Force-disable the WebAssembly shim (for demonstration purposes)
+//
+//   ?polywasm=1
+//     Force-enable the WebAssembly shim (for demonstration purposes)
+//
+//   ?pkgurl=http%3A%2F%2Flocalhost%3A8080
+//     Load the "esbuild-wasm" package from "http://localhost:8080" (for local development)
+//
+const params = new URLSearchParams(location.search)
+const polywasmParam = params.get('polywasm')
+export const pkgurlParam = params.get('pkgurl')
+
 export type IPCRequest = TransformRequest | BuildRequest
 export type IPCResponse = TransformResponse & BuildResponse
 
@@ -75,8 +90,11 @@ async function packageFetch(subpath: string): Promise<Response> {
   return fetch(`https://unpkg.com/${subpath}`)
 }
 
-async function reloadWorker(version: string): Promise<Worker> {
+async function reloadWorker(version: string | null): Promise<Worker> {
   let loadingFailure: string | undefined
+  let promiseJS: Promise<Response>
+  let promiseWASM: Promise<Response>
+
   showLoadingMessage(version)
 
   try {
@@ -85,15 +103,29 @@ async function reloadWorker(version: string): Promise<Worker> {
     activeTask = null
     pendingTask = null
 
-    // "browser.min.js" was added in version 0.8.33
-    const [major, minor, patch] = version.split('.').map(x => +x)
-    const min = major === 0 && (minor < 8 || (minor === 8 && patch < 33)) ? '' : '.min'
+    if (version === null) {
+      promiseJS = fetch(new URL(`lib/browser.min.js`, pkgurlParam!))
+      promiseWASM = fetch(new URL(`esbuild.wasm`, pkgurlParam!))
+    }
 
-    const polywasm = /^\?polywasm=([01])$/.exec(location.search)?.[1]
+    else {
+      // "browser.min.js" was added in version 0.8.33
+      const [major, minor, patch] = version.split('.').map(x => +x)
+      const min = major === 0 && (minor < 8 || (minor === 8 && patch < 33)) ? '' : '.min'
+
+      promiseJS = packageFetch(`esbuild-wasm@${version}/lib/browser${min}.js`)
+      promiseWASM = packageFetch(`esbuild-wasm@${version}/esbuild.wasm`)
+    }
+
+    const ensureOK = (promise: Promise<Response>) => promise.then(r => {
+      if (!r.ok) throw `${r.status} ${r.statusText}: ${r.url}`
+      return r
+    })
+    const polywasm = polywasmParam === '0' || polywasmParam === '1' ? polywasmParam : null
     const [workerJS, esbuildJS, esbuildWASM] = await Promise.all([
       workerText,
-      packageFetch(`esbuild-wasm@${version}/lib/browser${min}.js`).then(r => r.text()),
-      packageFetch(`esbuild-wasm@${version}/esbuild.wasm`).then(r => r.arrayBuffer()),
+      ensureOK(promiseJS).then(r => r.text()),
+      ensureOK(promiseWASM).then(r => r.arrayBuffer()),
     ])
     const parts = [esbuildJS, `\nvar polywasm=${polywasm};`, workerJS]
     const url = URL.createObjectURL(new Blob(parts, { type: 'application/javascript' }))
