@@ -72,6 +72,9 @@ const setup = async ([version, wasm]: [string | null, ArrayBuffer]): Promise<API
     if (!hasBugWithWorker) {
       options.worker = false
     }
+  } else {
+    // Assume the package from "pkgurl" doesn't have this old bug
+    options.worker = false
   }
 
   // Use the "startService" API before version 0.9.0
