@@ -4,7 +4,9 @@ const versionsPromise = tryToFetchVersions()
 const versionPickerEl = document.querySelector('#versionPicker select') as HTMLSelectElement
 const loading = document.createElement('option')
 
-export type ReloadWorker = (version: string | null) => Promise<Worker>
+export type Semver = `${number}.${number}.${number}`
+export type Version = 'pkgurl' | Semver
+export type ReloadWorker = (version: Version) => Promise<Worker>
 let reloadWorker: ReloadWorker
 
 loading.textContent = 'Loading...'
@@ -21,29 +23,29 @@ versionsPromise.then(result => {
     option.textContent = version
     versionPickerEl.append(option)
   }
-  versionPickerEl.onchange = () => reloadWorker(versionPickerEl.value)
+  versionPickerEl.onchange = () => reloadWorker(versionPickerEl.value as Semver)
   versionPickerEl.selectedIndex = -1
 }, () => {
   loading.textContent = '❌ Loading failed!'
 })
 
-export function tryToGetCurrentVersion(): string | null {
-  return versionPickerEl.disabled || versionPickerEl.selectedIndex < 0 ? null : versionPickerEl.value
+export function tryToGetCurrentVersion(): Version | null {
+  return versionPickerEl.disabled ? null : versionPickerEl.selectedIndex < 0 ? 'pkgurl' : versionPickerEl.value as Semver
 }
 
 export function setReloadWorkerCallback(callback: ReloadWorker): void {
   reloadWorker = callback
 }
 
-export async function tryToSetCurrentVersion(version: string | null): Promise<void> {
-  if (version === null) {
+export async function tryToSetCurrentVersion(version: Version | 'latest'): Promise<void> {
+  if (version === 'pkgurl') {
     if (versionPickerEl.selectedIndex !== -1) {
       versionPickerEl.selectedIndex = -1
-      await reloadWorker(null)
+      await reloadWorker('pkgurl')
     }
   } else {
     const versions = await versionsPromise
-    const index = version === 'latest' && versions.length ? 0 : versions.indexOf(version)
+    const index = version === 'latest' ? versions.length ? 0 : -1 : versions.indexOf(version)
     if (index >= 0 && versionPickerEl.selectedIndex !== index) {
       versionPickerEl.selectedIndex = index
       await reloadWorker(versions[index])
@@ -51,7 +53,7 @@ export async function tryToSetCurrentVersion(version: string | null): Promise<vo
   }
 }
 
-async function tryToFetchVersions(): Promise<string[]> {
+async function tryToFetchVersions(): Promise<Semver[]> {
   const controller = new AbortController
   const timeout = setTimeout(() => controller.abort('Timeout'), 5000)
 

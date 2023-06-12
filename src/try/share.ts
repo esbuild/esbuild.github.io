@@ -3,7 +3,7 @@
 import { BuildInput, getBuildState, setBuildState } from './build'
 import { Mode, currentMode, setMode } from './mode'
 import { getTransformState, setTransformState } from './transform'
-import { tryToGetCurrentVersion, tryToSetCurrentVersion } from './versions'
+import { Version, tryToGetCurrentVersion, tryToSetCurrentVersion } from './versions'
 
 const enum Tag {
   Transform = 't',
@@ -18,7 +18,7 @@ export function loadStateFromHash(): boolean {
   if (parts[0] === Tag.Transform && parts.length === 4) {
     setMode(Mode.Transform)
     setTransformState(parts[2], parts[3])
-    tryToSetCurrentVersion(parts[1])
+    tryToSetCurrentVersion(parts[1] as Version)
     return true
   }
 
@@ -34,14 +34,14 @@ export function loadStateFromHash(): boolean {
     }
     setMode(Mode.Build)
     setBuildState(parts[2], inputs)
-    tryToSetCurrentVersion(parts[1])
+    tryToSetCurrentVersion(parts[1] as Version)
     return true
   }
 
   // Clear out an invalid hash and reset the UI
   if (location.hash !== '') {
     try {
-      history.replaceState({}, '', location.pathname)
+      history.replaceState({}, '', location.pathname + location.search)
     } catch (e) {
     }
   }

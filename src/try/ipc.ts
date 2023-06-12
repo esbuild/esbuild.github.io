@@ -3,7 +3,7 @@
 
 import { afterConfigChange } from './mode'
 import { OutputFile, showLoadingFailure, showLoadingMessage } from './output'
-import { setReloadWorkerCallback } from './versions'
+import { Version, setReloadWorkerCallback } from './versions'
 
 // Behavior modifications via URL parameters:
 //
@@ -90,12 +90,12 @@ async function packageFetch(subpath: string): Promise<Response> {
   return fetch(`https://unpkg.com/${subpath}`)
 }
 
-async function reloadWorker(version: string | null): Promise<Worker> {
+async function reloadWorker(version: Version): Promise<Worker> {
   let loadingFailure: string | undefined
   let promiseJS: Promise<Response>
   let promiseWASM: Promise<Response>
 
-  showLoadingMessage(version)
+  showLoadingMessage(version === 'pkgurl' ? null : version)
 
   try {
     if (activeTask) activeTask.abort_()
@@ -103,7 +103,7 @@ async function reloadWorker(version: string | null): Promise<Worker> {
     activeTask = null
     pendingTask = null
 
-    if (version === null) {
+    if (version === 'pkgurl') {
       promiseJS = fetch(new URL(`lib/browser.min.js`, pkgurlParam!))
       promiseWASM = fetch(new URL(`esbuild.wasm`, pkgurlParam!))
     }
