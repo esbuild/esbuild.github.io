@@ -122,6 +122,11 @@
       <td><code>esnext</code></td>
       <td><code>import &quot;x&quot; assert {}</code></td>
       </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-decorators#class-auto-accessors">Auto-accessors</a></td>
+      <td><code>esnext</code></td>
+      <td><code>class { accessor x }</code></td>
+      </tr>
       </tbody>
       </table><p>These syntax features are currently always passed through un-transformed:</p><table>
       <thead>
@@ -156,6 +161,11 @@
       <td><a href="https://github.com/tc39/proposal-hashbang">Hashbang grammar</a></td>
       <td><code>esnext</code></td>
       <td><code>#!/usr/bin/env node</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://github.com/tc39/proposal-decorators">Decorators</a></td>
+      <td><code>esnext</code></td>
+      <td><code>@foo class Bar {}</code></td>
       </tr>
       </tbody>
       </table><p>See also <a href="https://github.com/tc39/proposals/blob/main/finished-proposals.md">the list of finished ECMAScript proposals</a> and <a href="https://github.com/tc39/proposals/blob/main/README.md">the list of active ECMAScript proposals</a>. Note that while transforming code containing top-level await is supported, bundling code containing top-level await is only supported when the <a href="/api/#format">output format</a> is set to <a href="/api/#format-esm"><code>esm</code></a>.</p><h3 id="javascript-caveats"><a class="permalink" href="#javascript-caveats">#</a>JavaScript caveats</h3><p>You should keep the following things in mind when using JavaScript with esbuild:</p><h4 id="es5"><a class="permalink" href="#es5">#</a>ES5 is not supported well</h4><p>Transforming ES6+ syntax to ES5 is not supported yet. However, if you're using esbuild to transform ES5 code, you should still set the <a href="/api/#target">target</a> to <code>es5</code>. This prevents esbuild from introducing ES6 syntax into your ES5 code. For example, without this flag the object literal <code>{x: x}</code> will become <code>{x}</code> and the string <code>&quot;a\nb&quot;</code> will become a multi-line template literal when minifying. Both of these substitutions are done because the resulting code is shorter, but the substitutions will not be performed if the <a href="/api/#target">target</a> is <code>es5</code>.</p><h4 id="private-member-performance"><a class="permalink" href="#private-member-performance">#</a>Private member performance</h4><p>The private member transform (for the <code>#name</code> syntax) uses <code>WeakMap</code> and <code>WeakSet</code> to preserve the privacy properties of this feature. This is similar to the corresponding transforms in the Babel and TypeScript compilers. Most modern JavaScript engines (V8, JavaScriptCore, and SpiderMonkey but not ChakraCore) may not have good performance characteristics for large <code>WeakMap</code> and <code>WeakSet</code> objects.</p><p>Creating many instances of classes with private fields or private methods with this syntax transform active may cause a lot of overhead for the garbage collector. This is because modern engines (other than ChakraCore) store weak values in an actual map object instead of as hidden properties on the keys themselves, and large map objects can cause performance issues with garbage collection. See <a href="https://github.com/tc39/ecma262/issues/1657#issuecomment-518916579">this reference</a> for more information.</p><h4 id="real-esm-imports"><a class="permalink" href="#real-esm-imports">#</a>Imports follow ECMAScript module behavior</h4><p>You might try to modify global state before importing a module which needs that global state and expect it to work. However, JavaScript (and therefore esbuild) effectively &quot;hoists&quot; all <code>import</code> statements to the top of the file, so doing this won't work:</p><pre><span class="hljs-built_in">window</span>.foo = {}
