@@ -65,6 +65,7 @@ body:
       | [Ergonomic brand checks](https://github.com/tc39/proposal-private-fields-in-in)     | `es2022`                             | `#x in y`                   |
       | [Class static blocks](https://github.com/tc39/proposal-class-static-block)          | `es2022`                             | `class { static {} }`       |
       | [Import assertions](https://github.com/tc39/proposal-import-assertions)             | `esnext`                             | `import "x" assert {}`      |
+      | [Auto-accessors](https://github.com/tc39/proposal-decorators#class-auto-accessors)  | `esnext`                             | `class { accessor x }`      |
 
   - p: >
       These syntax features are currently always passed through un-transformed:
@@ -77,6 +78,7 @@ body:
       | [Top-level await](https://github.com/tc39/proposal-top-level-await)                                                    | `es2022`                             | `await import(x)`           |
       | [Arbitrary module namespace identifiers](https://github.com/bmeck/proposal-arbitrary-module-namespace-identifiers)     | `es2022`                             | `export {foo as 'f o o'}`   |
       | [Hashbang grammar](https://github.com/tc39/proposal-hashbang)                                                          | `esnext`                             | `#!/usr/bin/env node`       |
+      | [Decorators](https://github.com/tc39/proposal-decorators)                                                              | `esnext`                             | `@foo class Bar {}`         |
 
   - p: >
       See also [the list of finished ECMAScript proposals](https://github.com/tc39/proposals/blob/main/finished-proposals.md)
