@@ -55,6 +55,17 @@ export function parseOptions(input: string, mode: Mode, switcherEl: HTMLDivEleme
       }
     }
 
+    const toNumber = (key: string): void => {
+      if (options[key] !== undefined) {
+        try {
+          options[key] = +options[key]
+        } catch (err) {
+          key = key.replace(/[A-Z]/g, x => '-' + x.toLowerCase())
+          throw new Error(`Invalid number for "--${key}=": ${err.message}`)
+        }
+      }
+    }
+
     const splitOnComma = (key: string): void => {
       if (options[key] !== undefined) {
         options[key] = (options[key] + '').split(',')
@@ -62,6 +73,10 @@ export function parseOptions(input: string, mode: Mode, switcherEl: HTMLDivEleme
     }
 
     options = parseOptionsAsShellArgs(input, mode)
+
+    // These need to be numbers, not strings or booleans
+    toNumber('logLimit')
+    toNumber('lineLimit')
 
     // These need to be regular expressions, not strings or booleans
     toRegExp('mangleProps')
