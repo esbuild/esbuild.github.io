@@ -249,6 +249,7 @@ body:
     - JSX side effects
     - Keep names
     - Legal comments
+    - Line limit
     - Live reload
     - Loader
     - Log level
@@ -357,6 +358,7 @@ body:
     - JSX side effects
     - Keep names
     - Legal comments
+    - Line limit
     - Loader
     - Log level
     - Log limit
@@ -2708,6 +2710,60 @@ body:
       are allowed such as in the top-level scope or in a statement or rule
       block. So comments inside expressions or at the declaration level are
       not considered legal comments.
+
+  - h3: Line limit
+
+  - p: >
+      This setting is a way to prevent esbuild from generating output files
+      with really long lines, which can help editing performance in
+      poorly-implemented text editors. Set this to a positive integer to tell
+      esbuild to end a given line soon after it passes that number of bytes.
+      For example, this wraps long lines soon after they pass ~80 characters:
+
+  - example:
+      in:
+        app.ts: '1 + 2'
+
+      cli: |
+        esbuild app.ts --line-limit=80
+
+      mjs: |
+        import * as esbuild from 'esbuild'
+
+        await esbuild.build({
+          entryPoints: ['app.ts'],
+          lineLimit: 80,
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.ts"},
+            LineLimit:   80,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Lines are truncated after they pass the limit instead of before because
+      it's simpler to check when the limit is passed then to predict when the
+      limit is about to be passed, and because it's faster to avoid backing up
+      and rewriting things when generating an output file. So the limit is only
+      approximate.
+
+  - p: >
+      This setting applies to both JavaScript and CSS, and works even when
+      minification is disabled. Note that turning this setting on will make
+      your files bigger, as the extra newlines take up additional space in
+      the file (even after gzip compression).
 
   - h3: Splitting
 
