@@ -117,11 +117,11 @@ function generateNav(key) {
 
     if (h2s.length > 0) {
       nav.push(`<li>`)
-      nav.push(`<a href="/${escapeAttribute(k)}/">${escapeHTML(title)}</a>`)
+      nav.push(`<a href="/${escapeAttribute(k)}/">${md.renderInline(title)}</a>`)
       nav.push(`<ul class="h2">`)
 
       for (let { cssID, value, h3s } of h2s) {
-        let a = `<a href="${target}#${escapeAttribute(cssID)}">${escapeHTML(value)}</a>`
+        let a = `<a href="${target}#${escapeAttribute(cssID)}">${md.renderInline(value)}</a>`
 
         if (h3s.length > 0) {
           nav.push(`<li${k === key ? ` id="nav-${escapeAttribute(cssID)}"` : ''}>`)
@@ -129,7 +129,7 @@ function generateNav(key) {
           nav.push(`<ul class="h3">`)
 
           for (let { cssID, value } of h3s) {
-            let a = `<a href="#${escapeAttribute(cssID)}">${escapeHTML(value)}</a>`
+            let a = `<a href="#${escapeAttribute(cssID)}">${md.renderInline(value)}</a>`
             nav.push(`<li id="nav-${escapeAttribute(cssID)}">${a}</li>`)
           }
 
