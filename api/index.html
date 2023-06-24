@@ -2796,7 +2796,14 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
       <td><code>'foo_' in x</code></td>
       </tr>
       </tbody>
-      </table><h4 id="reserve-props"><a class="permalink" href="#reserve-props">#</a>Preventing renaming
+      </table><h4 id="mangle-key"><a class="permalink" href="#mangle-key">#</a>Mangling other strings
+</h4><p>Mangling <a href="#mangle-quoted">quoted properties</a> still only mangles strings in property name position. Sometimes you may also need to mangle property names in strings at arbitrary other locations in your code. To do that, you can prefix the string with a <code>/* @__KEY__ */</code> comment to tell esbuild that the contents of a string should be treated as a property name that can be mangled. For example:</p><pre><span class="hljs-keyword">let</span> obj = {}
+<span class="hljs-built_in">Object</span>.defineProperty(
+  obj,
+  <span class="hljs-comment">/* @__KEY__ */</span> <span class="hljs-string">&#x27;foo_&#x27;</span>,
+  { <span class="hljs-attr">get</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-number">123</span> },
+)
+<span class="hljs-built_in">console</span>.log(obj.foo_)</pre><p>This will cause the contents of the string <code>'foo_'</code> to be mangled as a property name (assuming <a href="#mangle-props">property mangling</a> is enabled and <code>foo_</code> is eligible for renaming). The <code>/* @__KEY__ */</code> comment is a convention from <a href="https://github.com/terser/terser">Terser</a>, a popular JavaScript minifier with a similar property mangling feature.</p><h4 id="reserve-props"><a class="permalink" href="#reserve-props">#</a>Preventing renaming
 </h4><p>If you would like to exclude certain properties from mangling, you can reserve them with an additional setting. For example, this uses the regular expression <code>^__.*__$</code> to reserve all properties that start and end with two underscores, such as <code>__foo__</code>:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
