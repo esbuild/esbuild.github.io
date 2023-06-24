@@ -403,3 +403,85 @@ body:
       means generating equivalent code that uses as few bytes as possible. In
       JavaScript, an untagged template literal is equivalent to a string literal,
       so esbuild is doing the correct thing here.
+
+  - h2: Top-level `var`
+
+  - p: >
+      People are sometimes surprised that esbuild sometimes rewrites top-level
+      `let`, `const`, and `class` declarations as `var` declarations instead.
+      This is done for a few reasons:
+
+  - ul:
+    - >
+      **For correctness**
+      <p>
+      Bundling sometimes needs to lazily-initialize a module. For example, this
+      happens when you call `require()` or `import()` using the path of a module
+      within the bundle. Doing this involves separating the declaration and
+      initialization of top-level symbols by moving the initialization into a
+      closure. So for example `class` statements are rewritten as an assignment
+      of a class expression to a variable. Keeping the declarations out of the
+      lazy-initialization closure is important for performance, since it means
+      other modules can reference them directly instead by name instead of
+      indirectly via a slower property access.
+      </p>
+      <p>
+      Another case where this is needed is when transforming top-level `using`
+      declarations. This involves wrapping the entire module body in a `try`
+      block, which also involves separating the declaration and initialization
+      of top-level symbols. Top-level symbols may need to be exported, which
+      means they cannot be declared within the `try` block.
+      </p>
+      <p>
+      Due to esbuild's current architecture, the part of esbuild that does this
+      transformation (the parser) cannot know whether the current module will
+      end up being lazily initialized or not. The information for this decision
+      may only be discovered later on in the build, or may even change in future
+      incremental builds that reuse the same AST (per-file ASTs are transformed
+      once during parsing and then cached and reused across incremental builds).
+      </p>
+
+    - >
+      **For performance**
+      <p>
+      Multiple JavaScript VMs have had and continue to have performance issues
+      with TDZ (i.e. "temporal dead zone") checks. These checks validate that a
+      let, or const, or class symbol isn't used before it's initialized. Here
+      are two issues with well-known VMs:
+      </p>
+      <ul>
+        <li>
+          V8: <a href="https://bugs.chromium.org/p/v8/issues/detail?id=13723">https://bugs.chromium.org/p/v8/issues/detail?id=13723</a> (10% slowdown)
+        </li>
+        <li>
+          JavaScriptCore: <a href="https://bugs.webkit.org/show_bug.cgi?id=199866">https://bugs.webkit.org/show_bug.cgi?id=199866</a> (1,000% slowdown!)
+        </li>
+      </ul>
+      <p>
+      JavaScriptCore had a severe performance issue as their TDZ implementation
+      had time complexity that was quadratic in the number of variables needing
+      TDZ checks in the same scope (with the top-level scope typically being the
+      worst offender). V8 has ongoing issues with TDZ checks being present
+      throughout the code their JIT generates even when they have already been
+      checked earlier in the same function or when the function in question has
+      already been run (so the checks have already happened).
+      </p>
+      <p>
+      In JavaScript, `let`, `const`, and `class` declarations all introduce TDZ
+      checks while `var` declarations do not. Since bundling typically merges
+      many modules into a single very large top-level scope, the performance
+      impact of these TDZ checks can be pretty severe. Converting top-level
+      `let`, `const`, and `class` declarations into `var` helps automatically
+      make your code faster.
+      </p>
+
+  - p: >
+      Note that esbuild doesn't preserve top-level TDZ side effects because
+      modules may need to be lazily initialized (as described above), which
+      means separating declaration from initialization. TDZ checks for
+      top-level symbols could hypothetically still be supported by generating
+      extra code that checks before each use of a top-level symbol and throws
+      if it hasn't been initialized yet (effectively manually implementing
+      what a real JavaScript VM would do). However, this seems like an
+      excessive overhead for both code size and run time, and does not seem
+      like something that a production-oriented bundler should do.
