@@ -5735,6 +5735,33 @@ body:
       | Quoted object destructuring assignments | `({ 'foo_': x } = y)`     |
       | String literals to the left of `in`     | `'foo_' in x`             |
 
+  - h4#mangle-key: >
+      Mangling other strings
+
+  - p: >
+      Mangling [quoted properties](#mangle-quoted) still only mangles strings
+      in property name position. Sometimes you may also need to mangle property
+      names in strings at arbitrary other locations in your code. To do that,
+      you can prefix the string with a `/* @__KEY__ */` comment to tell esbuild
+      that the contents of a string should be treated as a property name that
+      can be mangled. For example:
+
+  - pre.js: |
+      let obj = {}
+      Object.defineProperty(
+        obj,
+        /* @__KEY__ */ 'foo_',
+        { get: () => 123 },
+      )
+      console.log(obj.foo_)
+
+  - p: >
+      This will cause the contents of the string `'foo_'` to be mangled as a
+      property name (assuming [property mangling](#mangle-props) is enabled
+      and `foo_` is eligible for renaming). The `/* @__KEY__ */` comment is a
+      convention from [Terser](https://github.com/terser/terser), a popular
+      JavaScript minifier with a similar property mangling feature.
+
   - h4#reserve-props: >
       Preventing renaming
 
