@@ -433,12 +433,19 @@ body:
       means they cannot be declared within the `try` block.
       </p>
       <p>
+      In both of these cases esbuild will fail with a build error if the source
+      code contains a mutation of a `const` symbol, so it's not possible for
+      esbuild's rewriting of top-level `const` into `var` to result in the
+      mutation of a constant.
+      </p>
+      <p>
       Due to esbuild's current architecture, the part of esbuild that does this
       transformation (the parser) cannot know whether the current module will
       end up being lazily initialized or not. The information for this decision
       may only be discovered later on in the build, or may even change in future
       incremental builds that reuse the same AST (per-file ASTs are transformed
       once during parsing and then cached and reused across incremental builds).
+      So this transformation is always done when bundling is active.
       </p>
 
     - >
