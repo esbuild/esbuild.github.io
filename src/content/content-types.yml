@@ -981,6 +981,39 @@ body:
       make sure to specify those older browsers using esbuild's
       [target](/api/#target) setting.
 
+  - p: >
+      When you provide a list of browser versions using the [target](/api/#target)
+      setting, esbuild will also automatically insert vendor prefixes so that your
+      CSS will work in those browsers at those versions or newer. Currently
+      esbuild will do this for the following CSS properties:
+
+  - ul:
+    - '[`appearance`](https://caniuse.com/css-appearance)'
+    - '[`backdrop-filter`](https://caniuse.com/css-backdrop-filter)'
+    - '[`background-clip: text`](https://caniuse.com/background-clip-text)'
+    - '[`box-decoration-break`](https://caniuse.com/css-boxdecorationbreak)'
+    - '[`clip-path`](https://caniuse.com/css-clip-path)'
+    - '[`font-kerning`](https://caniuse.com/font-kerning)'
+    - '[`hyphens`](https://caniuse.com/css-hyphens)'
+    - '[`initial-letter`](https://caniuse.com/css-initial-letter)'
+    - '[`mask-image`](https://caniuse.com/mdn-css_properties_mask-image)'
+    - '[`mask-origin`](https://caniuse.com/mdn-css_properties_mask-origin)'
+    - '[`mask-position`](https://caniuse.com/mdn-css_properties_mask-position)'
+    - '[`mask-repeat`](https://caniuse.com/mdn-css_properties_mask-repeat)'
+    - '[`mask-size`](https://caniuse.com/mdn-css_properties_mask-size)'
+    - '[`position: sticky`](https://caniuse.com/css-sticky)'
+    - '[`print-color-adjust`](https://caniuse.com/css-color-adjust)'
+    - '[`tab-size`](https://caniuse.com/css3-tabsize)'
+    - '[`text-decoration-color`](https://caniuse.com/mdn-css_properties_text-decoration-color)'
+    - '[`text-decoration-line`](https://caniuse.com/mdn-css_properties_text-decoration-line)'
+    - '[`text-decoration-skip`](https://caniuse.com/mdn-css_properties_text-decoration-skip)'
+    - '[`text-emphasis-color`](https://caniuse.com/mdn-css_properties_text-emphasis-color)'
+    - '[`text-emphasis-position`](https://caniuse.com/mdn-css_properties_text-emphasis-position)'
+    - '[`text-emphasis-style`](https://caniuse.com/mdn-css_properties_text-emphasis-style)'
+    - '[`text-orientation`](https://caniuse.com/css-text-orientation)'
+    - '[`text-size-adjust`](https://caniuse.com/text-size-adjust)'
+    - '[`user-select`](https://caniuse.com/mdn-css_properties_user-select)'
+
   - h3#css-from-js: Import from JavaScript
 
   - p: >
