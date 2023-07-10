@@ -2243,7 +2243,7 @@ body:
 
       mjs: |
         import * as esbuild from 'esbuild'
-        import * as svelte from 'svelte/compiler.mjs'
+        import * as svelte from 'svelte/compiler'
         import path from 'node:path'
         import fs from 'node:fs'
 
