@@ -31,6 +31,14 @@ interface Token {
   value_: any
 }
 
+const commaSeparatedArrays = [
+  'conditions',
+  'dropLabels',
+  'mainFields',
+  'resolveExtensions',
+  'target',
+]
+
 export function parseOptions(input: string, mode: Mode, switcherEl: HTMLDivElement | undefined): Record<string, any> {
   const trimmed = input.trimStart()
   const isJSON = /^{|^\/[*/]/.test(trimmed)
@@ -66,12 +74,6 @@ export function parseOptions(input: string, mode: Mode, switcherEl: HTMLDivEleme
       }
     }
 
-    const splitOnComma = (key: string): void => {
-      if (options[key] !== undefined) {
-        options[key] = (options[key] + '').split(',')
-      }
-    }
-
     options = parseOptionsAsShellArgs(input, mode)
 
     // These need to be numbers, not strings or booleans
@@ -83,10 +85,11 @@ export function parseOptions(input: string, mode: Mode, switcherEl: HTMLDivEleme
     toRegExp('reserveProps')
 
     // These need to be arrays, not comma-separated strings or booleans
-    splitOnComma('resolveExtensions')
-    splitOnComma('mainFields')
-    splitOnComma('conditions')
-    splitOnComma('target')
+    for (const key of commaSeparatedArrays) {
+      if (options[key] !== undefined) {
+        options[key] = (options[key] + '').split(',')
+      }
+    }
 
     // Map entries for "supported" must be booleans, not strings (but map
     // entries for other maps such as "define" or "banner" must be strings,
@@ -620,7 +623,7 @@ export function printOptionsAsShellArgs(options: Record<string, any>): string {
     }
 
     else if (Array.isArray(it)) {
-      if (key === 'resolveExtensions' || key === 'mainFields' || key === 'conditions' || key === 'target') {
+      if (commaSeparatedArrays.includes(key)) {
         args.push(`--${kabobKey}=${it}`)
       } else {
         for (const x of it) {
