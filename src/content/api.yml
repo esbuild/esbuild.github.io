@@ -232,6 +232,7 @@ body:
     - Conditions
     - Define
     - Drop
+    - Drop labels
     - Entry names
     - Entry points
     - External
@@ -345,6 +346,7 @@ body:
     - Color
     - Define
     - Drop
+    - Drop labels
     - Footer
     - Format
     - Format messages
@@ -5291,6 +5293,97 @@ body:
             os.Exit(1)
           }
         }
+
+  - h3: Drop labels
+
+  - p: >
+      This tells esbuild to edit your source code before building to drop
+      [labeled statements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/label)
+      with specific label names. For example, consider the following code:
+
+  - pre.js: |
+      function example() {
+        DEV: doAnExpensiveCheck()
+        return normalCodePath()
+      }
+
+  - p: >
+      If you use this option to drop all labels named `DEV`, then esbuild will
+      give you this:
+
+  - pre.js: |
+      function example() {
+        return normalCodePath();
+      }
+
+  - p: >
+      You can configure this feature like this (which will drop both the `DEV`
+      and `TEST` labels):
+
+  - example:
+      in:
+        app.js: |
+          DEV: dev()
+          TEST: test()
+          PROD: prod()
+
+      cli: |
+        esbuild app.js --drop-labels=DEV,TEST
+
+      mjs: |
+        import * as esbuild from 'esbuild'
+
+        await esbuild.build({
+          entryPoints: ['app.js'],
+          dropLabels: ['DEV', 'TEST'],
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            DropLabels:  []string{"DEV", "TEST"},
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Note that this is not the only way to conditionally remove code. Another
+      more common way is to use the [define](#define) feature to replace
+      specific global variables with a boolean value. For example, consider the
+      following code:
+
+  - pre.js: |
+      function example() {
+        DEV && doAnExpensiveCheck()
+        return normalCodePath()
+      }
+
+  - p: >
+      If you define `DEV` to `false`, then esbuild will give you this:
+
+  - pre.js: |
+      function example() {
+        return normalCodePath();
+      }
+
+  - p: >
+      This is pretty much the same thing as using a label. However, an advantage
+      of using a label instead of a global variable to conditionally remove code
+      is that you don't have to worry about the global variable not being defined
+      because someone forgot to configure esbuild to replace it with something.
+      Some drawbacks of using the label approach are that it makes conditionally
+      removing code when the label is *not* dropped slightly harder to read,
+      and it doesn't work for code embedded within nested expressions. Which
+      approach to use for a given project comes down to personal preference.
 
   - h3: Ignore annotations
 
