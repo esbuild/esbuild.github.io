@@ -917,7 +917,8 @@ body:
       console.log(version)
 
   - h2: CSS
-  - p: 'Loader: `css`'
+  - p: >
+      Loader: `css` (also `global-css` and `local-css` for [CSS modules](#local-css))
 
   - p: >
       This loader is enabled by default for `.css` files. It loads the file
@@ -1060,6 +1061,147 @@ body:
       matching `entryPoint` property. This file goes in the `<script>` tag. The
       associated CSS file can then be found using the `cssBundle` property.
       This file goes in the `<link>` tag.
+
+  - h3#local-css: CSS modules
+
+  - p: >
+      [CSS modules](https://github.com/css-modules/css-modules) is a CSS
+      preprocessor technique to avoid unintentional CSS name collisions. CSS
+      class names are normally global, but CSS modules provides a way to make
+      CSS class names local to the file they appear in instead. If two separate
+      CSS files use the same local class name `.button`, esbuild will
+      automatically rename one of them so that they don't collide. This is
+      analogous to how esbuild automatically renames local variables with
+      the same name in separate JS modules to avoid name collisions.
+
+  - p: >
+      There is experimental support for bundling with CSS modules in esbuild.
+      To use it, you need to enable [bundling](/api/#bundle), set the loader
+      to `local-css` (e.g. <code>--loader:<wbr>.module.css=<wbr>local-css</code>
+      will enable this for `.module.css` files), and then import your CSS
+      module code into a JS file. Each local CSS name in that file can be
+      imported into JS to get the name that esbuild renamed it to. Here's an
+      example:
+
+  - pre.js: |
+      // app.js
+      import { outerShell } from './app.css'
+      const div = document.createElement('div')
+      div.className = outerShell
+      document.body.appendChild(div)
+
+  - pre.css: |
+      /* app.css */
+      .outerShell {
+        position: absolute;
+        inset: 0;
+      }
+
+  - p: >
+      When you bundle this with <code>esbuild app.js <wbr>--bundle <wbr>--loader:<wbr>.css=<wbr>local-css <wbr>--outdir=out</code>
+      you'll get this (notice how the local CSS name `outerShell` has been renamed):
+
+  - pre.js: |
+      // out/app.js
+      (() => {
+        // app.css
+        var outerShell = "app_outerShell";
+
+        // app.js
+        var div = document.createElement("div");
+        div.className = outerShell;
+        document.body.appendChild(div);
+      })();
+
+  - pre.css: |
+      /* out/app.css */
+      .app_outerShell {
+        position: absolute;
+        inset: 0;
+      }
+
+  - p: >
+      This feature only makes sense to use when bundling is enabled both
+      because your code needs to `import` the renamed local names so that
+      it can use them, and because esbuild needs to be able to process all
+      CSS files containing local names in a single bundling operation so
+      that it can successfully rename conflicting local names to avoid collisions.
+
+  - p: >
+      The names that esbuild generates for local CSS names are an implementation
+      detail and are not intended to be hard-coded anywhere. The only way you
+      should be referencing the local CSS names in your JS or HTML is with an
+      import statement in JS that is bundled with esbuild, as demonstrated above.
+      For example, when [minification](/api/#minify) is enabled, esbuild will
+      use a different name generation algorithm which generates names that are
+      as short as possible (analogous to how esbuild minifies local identifiers
+      in JS).
+
+  - p: >
+      Note that esbuild's implementation of CSS modules is experimental and does
+      not currently have feature parity with other implementations of modular
+      CSS in similar tools. Additional behavior may be added in future releases.
+      In particular, esbuild's CSS modules do not currently implement:
+
+  - ul:
+    - >
+      The `composes` pragma
+    - >
+      Tree shaking for unused local CSS
+    - >
+      Local names for keyframe animations, grid lines, `@container`, `@counter-style`, etc.
+
+  - h4#global-css: Using global names
+
+  - p: >
+      The [`local-css`](#local-css) loader makes all CSS names in the file
+      local by default. However, sometimes you want to mix local and global
+      names in the same file. There are several ways to do this:
+
+  - ul:
+    - >
+      You can wrap class names in `:global(...)` make them global and
+      `:local(...)` to make them local.
+
+    - >
+      You can use `:global` to make names default to being global and
+      `:local` to make names default to being local.
+
+    - >
+      You can use the `global-css` loader to still have local CSS features
+      enabled but have names default to being global.
+
+  - p: >
+      Here are some examples:
+
+  - pre.css: |
+      /*
+       * This is a local name with the "local-css" loader
+       * and a global name with the "global-css" loader
+       */
+      .button {
+      }
+
+      /* This is a local name with both loaders */
+      :local(.button) {
+      }
+
+      /* This is a global name with both loaders */
+      :global(.button) {
+      }
+
+      /* "foo" is global and "bar" is local */
+      :global .foo :local .bar {
+      }
+
+      /* "foo" is global and "bar" is local */
+      :global {
+        .foo {
+          :local {
+            .bar {}
+          }
+        }
+      }
 
   - h3#css-caveats: CSS caveats
 
