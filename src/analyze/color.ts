@@ -202,7 +202,7 @@ export let formatColorToText = (color: string | CanvasPattern, prefix: string): 
 
 let assignColorsByFormat = (colorMapping: ColorMapping, node: TreeNodeInProgress): FORMATS => {
   let children = node.children_
-  let formats: FORMATS = 0
+  let formats: FORMATS | 0 = 0
   let hasChild = false
 
   for (let file in children) {
