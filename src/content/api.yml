@@ -1274,6 +1274,9 @@ body:
         # Enable HTTPS
         --keyfile=your.key --certfile=your.cert
 
+        # Specify a fallback HTML file
+        --serve-fallback=some-file.html
+
       js: |
         interface ServeOptions {
           port?: number
@@ -1281,6 +1284,7 @@ body:
           servedir?: string
           keyfile?: string
           certfile?: string
+          fallback?: string
           onRequest?: (args: ServeOnRequestArgs) => void
         }
 
@@ -1299,6 +1303,7 @@ body:
           Servedir  string
           Keyfile   string
           Certfile  string
+          Fallback  string
           OnRequest func(ServeOnRequestArgs)
         }
 
@@ -1357,6 +1362,17 @@ body:
       `certfile`, then esbuild's web server will use the `https://` protocol
       instead of the `http://` protocol. See [enabling HTTPS](#https) for more
       information.
+      </p>
+
+    - >
+      `fallback`
+      <p>
+      This is a HTML file for esbuild's HTTP server to serve instead of a 404
+      when incoming requests don't match any of the generated output file
+      paths. You can use this for a custom "not found" page. You can also use
+      this as the entry point of a [single-page application](https://en.wikipedia.org/wiki/Single-page_application)
+      that mutates the current URL and therefore needs to be served from many
+      different URLs simultaneously.
       </p>
 
     - >
