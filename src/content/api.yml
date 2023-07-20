@@ -7724,7 +7724,7 @@ body:
             <li><details><summary>`unsupported-@charset`</summary><pre>{{ FORMAT_MESSAGES('@charset "ASCII";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`unsupported-@namespace`</summary><pre>{{ FORMAT_MESSAGES('@namespace "ns";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`unsupported-css-property`</summary><pre>{{ FORMAT_MESSAGES('div { widht: 1px }', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
-            <li><details><summary>`unsupported-css-nesting`</summary><pre>{{ FORMAT_MESSAGES('div {\n&:hover {\n}\n}', { sourcefile: 'example.css', loader: 'css', target: 'chrome50' }) }}</pre></details></li>
+            <li><details><summary>`unsupported-css-nesting`</summary><pre>{{ FORMAT_MESSAGES('a b {\n.foo & {\n}\n}', { sourcefile: 'example.css', loader: 'css', target: 'chrome50' }) }}</pre></details></li>
           </ul>
           <br>
         </li>
