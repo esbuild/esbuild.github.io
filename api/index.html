@@ -483,6 +483,9 @@ ctx.dispose()
 
 <span class="hljs-comment"># Enable HTTPS</span>
 --keyfile=your.key --certfile=your.cert
+
+<span class="hljs-comment"># Specify a fallback HTML file</span>
+--serve-fallback=some-file.html
 </pre>
 <pre class="switchable js3">interface ServeOptions {
   port?: number
@@ -490,6 +493,7 @@ ctx.dispose()
   servedir?: string
   keyfile?: string
   certfile?: string
+  fallback?: string
   onRequest?: <span class="hljs-function">(<span class="hljs-params">args: ServeOnRequestArgs</span>) =&gt;</span> <span class="hljs-keyword">void</span>
 }
 
@@ -507,6 +511,7 @@ interface ServeOnRequestArgs {
   Servedir  <span class="hljs-keyword">string</span>
   Keyfile   <span class="hljs-keyword">string</span>
   Certfile  <span class="hljs-keyword">string</span>
+  Fallback  <span class="hljs-keyword">string</span>
   OnRequest <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(ServeOnRequestArgs)</span></span>
 }
 
@@ -517,7 +522,7 @@ interface ServeOnRequestArgs {
   Status        <span class="hljs-keyword">int</span>
   TimeInMS      <span class="hljs-keyword">int</span>
 }
-</pre><ul><li><code>host</code> <p> By default, esbuild makes the web server available on all IPv4 network interfaces. This corresponds to a host address of <code>0.0.0.0</code>. If you would like to configure a different host (for example, to only serve on the <code>127.0.0.1</code> loopback interface without exposing anything to the network), you can specify the host using this argument. </p> <p> If you need to use IPv6 instead of IPv4, you just need to specify an IPv6 host address. The equivalent to the <code>127.0.0.1</code> loopback interface in IPv6 is <code>::1</code> and the equivalent to the <code>0.0.0.0</code> universal interface in IPv6 is <code>::</code>. </p></li><li><code>port</code> <p> The HTTP port can optionally be configured here. If omitted, it will default to an open port with a preference for ports in the range 8000 to 8009. </p></li><li><code>servedir</code> <p> This is a directory of extra content for esbuild's HTTP server to serve instead of a 404 when incoming requests don't match any of the generated output file paths. This lets you use esbuild as a general-purpose local web server. </p> <p> For example, you might want to create an <code>index.html</code> file and then set <code>servedir</code> to <code>&quot;.&quot;</code> to serve the current directory (which includes the <code>index.html</code> file). If you don't set <code>servedir</code> then esbuild will only serve the build results, but not any other files. </p></li><li><code>keyfile</code> and <code>certfile</code> <p> If you pass a private key and certificate to esbuild using <code>keyfile</code> and <code>certfile</code>, then esbuild's web server will use the <code>https://</code> protocol instead of the <code>http://</code> protocol. See <a href="#https">enabling HTTPS</a> for more information. </p></li><li><code>onRequest</code> <p> This is called once for each incoming request with some information about the request. This callback is used by the CLI to print out a log message for each request. The time field is the time to generate the data for the request, but it does not include the time to stream the request to the client. </p> <p> Note that this is called after the request has completed. It's not possible to use this callback to modify the request in any way. If you want to do this, you should <a href="#serve-proxy">put a proxy in front of esbuild</a> instead. </p></li></ul><h4 id="serve-return-values"><a class="permalink" href="#serve-return-values">#</a>Return values</h4><div class="switcher">
+</pre><ul><li><code>host</code> <p> By default, esbuild makes the web server available on all IPv4 network interfaces. This corresponds to a host address of <code>0.0.0.0</code>. If you would like to configure a different host (for example, to only serve on the <code>127.0.0.1</code> loopback interface without exposing anything to the network), you can specify the host using this argument. </p> <p> If you need to use IPv6 instead of IPv4, you just need to specify an IPv6 host address. The equivalent to the <code>127.0.0.1</code> loopback interface in IPv6 is <code>::1</code> and the equivalent to the <code>0.0.0.0</code> universal interface in IPv6 is <code>::</code>. </p></li><li><code>port</code> <p> The HTTP port can optionally be configured here. If omitted, it will default to an open port with a preference for ports in the range 8000 to 8009. </p></li><li><code>servedir</code> <p> This is a directory of extra content for esbuild's HTTP server to serve instead of a 404 when incoming requests don't match any of the generated output file paths. This lets you use esbuild as a general-purpose local web server. </p> <p> For example, you might want to create an <code>index.html</code> file and then set <code>servedir</code> to <code>&quot;.&quot;</code> to serve the current directory (which includes the <code>index.html</code> file). If you don't set <code>servedir</code> then esbuild will only serve the build results, but not any other files. </p></li><li><code>keyfile</code> and <code>certfile</code> <p> If you pass a private key and certificate to esbuild using <code>keyfile</code> and <code>certfile</code>, then esbuild's web server will use the <code>https://</code> protocol instead of the <code>http://</code> protocol. See <a href="#https">enabling HTTPS</a> for more information. </p></li><li><code>fallback</code> <p> This is a HTML file for esbuild's HTTP server to serve instead of a 404 when incoming requests don't match any of the generated output file paths. You can use this for a custom &quot;not found&quot; page. You can also use this as the entry point of a <a href="https://en.wikipedia.org/wiki/Single-page_application">single-page application</a> that mutates the current URL and therefore needs to be served from many different URLs simultaneously. </p></li><li><code>onRequest</code> <p> This is called once for each incoming request with some information about the request. This callback is used by the CLI to print out a log message for each request. The time field is the time to generate the data for the request, but it does not include the time to stream the request to the client. </p> <p> Note that this is called after the request has completed. It's not possible to use this callback to modify the request in any way. If you want to do this, you should <a href="#serve-proxy">put a proxy in front of esbuild</a> instead. </p></li></ul><h4 id="serve-return-values"><a class="permalink" href="#serve-return-values">#</a>Return values</h4><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -4127,11 +4132,14 @@ fs.writeFileSync(<span class="hljs-string">&#x27;meta.json&#x27;</span>, <span c
         ╵       </span><span class="color-green">width</span><span>
 
   Did you mean "width" instead?</span></pre></details></li>
-<li><details><summary><code>unsupported-css-nesting</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span class="color-bold">CSS nesting syntax is not supported in the configured target environment ("chrome50")</span><span> [unsupported-css-nesting]
+<li><details><summary><code>unsupported-css-nesting</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span class="color-bold">Transforming this CSS nesting syntax is not supported in the configured target environment ("chrome50")</span><span> [unsupported-css-nesting]
 
-    example.css:2:0:
-</span><span class="color-dim">      2 │ </span><span class="color-green">&amp;</span><span class="color-dim">:hover {
-        ╵ </span><span class="color-green">^</span><span></span></pre></details></li>
+    example.css:2:5:
+</span><span class="color-dim">      2 │ .foo </span><span class="color-green">&amp;</span><span class="color-dim"> {
+        ╵      </span><span class="color-green">^</span><span>
+
+  The nesting transform for this case must generate an ":is(...)" but the configured target
+  environment does not support the ":is" pseudo-class.</span></pre></details></li>
 </ul>
 <br>
 </li>
