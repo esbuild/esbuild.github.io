@@ -1,47 +1,47 @@
 #summaryPanel {
   text-align: center;
-}
 
-#summaryPanel table {
-  border-collapse: collapse;
-  margin: auto;
-}
+  & table {
+    border-collapse: collapse;
+    margin: auto;
+  }
 
-#summaryPanel td:first-child {
-  text-align: right;
-}
+  & td:first-child {
+    text-align: right;
+  }
 
-#summaryPanel h2 {
-  font-size: 30px;
-  line-height: 1em;
-  color: var(--fg-on);
-  margin: 0;
-}
+  & h2 {
+    font-size: 30px;
+    line-height: 1em;
+    color: var(--fg-on);
+    margin: 0;
+  }
 
-#summaryPanel .symbol {
-  font-size: 30px;
-  padding: 0 30px;
-}
+  & .symbol {
+    font-size: 30px;
+    padding: 0 30px;
+  }
 
-#summaryPanel .formatBreakdown {
-  display: inline-block;
-  margin: 20px auto 0 auto;
-  white-space: nowrap;
-  text-decoration: none;
-}
+  & .formatBreakdown {
+    display: inline-block;
+    margin: 20px auto 0 auto;
+    white-space: nowrap;
+    text-decoration: none;
+  }
 
-#summaryPanel .formatBreakdown:hover .side {
-  text-decoration: underline;
-}
+  & .formatBreakdown:hover .side {
+    text-decoration: underline;
+  }
 
-#summaryPanel .bar {
-  display: inline-table;
-  vertical-align: middle;
-  margin: 0 0.8em;
-  border: 1px solid #222;
-}
+  & .bar {
+    display: inline-table;
+    vertical-align: middle;
+    margin: 0 0.8em;
+    border: 1px solid #222;
 
-#summaryPanel .bar>div {
-  height: 20px;
-  display: table-cell;
+    &>div {
+      height: 20px;
+      display: table-cell;
+    }
+  }
 }

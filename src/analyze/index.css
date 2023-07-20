@@ -117,64 +117,64 @@ button {
   border: 1px solid var(--fg);
   border-radius: 100px;
   cursor: pointer;
-}
 
-button:active,
-button:hover {
-  color: var(--fg-on);
-  border: 1px solid var(--fg-on);
-  background: rgba(127, 127, 127, 0.2);
-}
+  &:active,
+  &:hover {
+    color: var(--fg-on);
+    border: 1px solid var(--fg-on);
+    background: rgba(127, 127, 127, 0.2);
+  }
 
-button:active {
-  padding: 6px 30px 4px 30px;
-  background: rgba(0, 0, 0, 0.2);
+  &:active {
+    padding: 6px 30px 4px 30px;
+    background: rgba(0, 0, 0, 0.2);
+  }
 }
 
 #settingsPanel {
   text-align: center;
-}
 
-#settingsPanel .chartSwitcher {
-  position: relative;
-  margin: 50px 0;
-  display: flex;
-  justify-content: center;
-}
+  & .chartSwitcher {
+    position: relative;
+    margin: 50px 0;
+    display: flex;
+    justify-content: center;
 
-#settingsPanel .chartSwitcher:after {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0.5em;
-  content: '';
-  display: block;
-  border: 1px solid #FFCF00;
-  z-index: -1;
-}
+    &:after {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0.5em;
+      content: '';
+      display: block;
+      border: 1px solid #FFCF00;
+      z-index: -1;
+    }
 
-#settingsPanel .chartSwitcher span {
-  background: var(--bg);
-  padding: 0 1em;
-  border-left: 2px solid #FFCF00;
-}
+    & span {
+      background: var(--bg);
+      padding: 0 1em;
+      border-left: 2px solid #FFCF00;
+    }
 
-#settingsPanel .chartSwitcher span:first-child {
-  border: none;
-}
+    & span:first-child {
+      border: none;
+    }
+  }
 
-#settingsPanel a {
-  text-decoration: none;
-  color: var(--fg);
-}
+  & a {
+    text-decoration: none;
+    color: var(--fg);
 
-#settingsPanel a:hover {
-  text-decoration: underline;
-}
+    &:hover {
+      text-decoration: underline;
+    }
 
-#settingsPanel a.active {
-  font-weight: bold;
-  color: var(--fg-on);
+    &.active {
+      font-weight: bold;
+      color: var(--fg-on);
+    }
+  }
 }
 
 .summary {
@@ -196,8 +196,8 @@ button:active {
   pointer-events: none;
   z-index: 1;
   white-space: pre;
-}
 
-.tooltip b {
-  color: #FFF;
+  & b {
+    color: #FFF;
+  }
 }

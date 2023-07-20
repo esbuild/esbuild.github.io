@@ -1,116 +1,118 @@
-#sunburstPanel main {
-  display: flex;
-  justify-content: center;
-  margin-top: 50px;
-  margin-bottom: 500px;
-}
+#sunburstPanel {
+  & main {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    margin-bottom: 500px;
+  }
 
-#sunburstPanel .left {
-  margin-right: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  & .left {
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-#sunburstPanel canvas {
-  display: block;
-  margin-bottom: 30px;
-}
+  & canvas {
+    display: block;
+    margin-bottom: 30px;
+  }
 
-#sunburstPanel .details {
-  flex: 1;
-  max-width: 800px;
-  position: relative;
-}
+  & .details {
+    flex: 1;
+    max-width: 800px;
+    position: relative;
+  }
 
-#sunburstPanel .dir {
-  font-size: 20px;
-  line-height: 1.2em;
-  display: flex;
-  white-space: pre;
-  margin: 0 10px 20px 10px;
-}
+  & .dir {
+    font-size: 20px;
+    line-height: 1.2em;
+    display: flex;
+    white-space: pre;
+    margin: 0 10px 20px 10px;
 
-#sunburstPanel .dir .segments {
-  flex: 1;
-  height: 20px;
-}
+    & .segments {
+      flex: 1;
+      height: 20px;
+    }
 
-#sunburstPanel .dir a {
-  opacity: 0.5;
-  text-decoration: none;
-}
+    & a {
+      opacity: 0.5;
+      text-decoration: none;
 
-#sunburstPanel .dir a[href]:hover {
-  text-decoration: underline;
-}
+      &[href]:hover {
+        text-decoration: underline;
+      }
 
-#sunburstPanel .dir a:last-child {
-  opacity: 1;
-  color: var(--fg-on);
-  font-weight: bold;
-}
+      &:last-child {
+        opacity: 1;
+        color: var(--fg-on);
+        font-weight: bold;
+      }
+    }
+  }
 
-#sunburstPanel .bars {
-  width: 100%;
-}
+  & .bars {
+    width: 100%;
 
-#sunburstPanel .bars .row {
-  display: table-row;
-  text-decoration: none;
-  line-height: 26px;
-  color: var(--fg);
-}
+    & .row {
+      display: table-row;
+      text-decoration: none;
+      line-height: 26px;
+      color: var(--fg);
 
-#sunburstPanel .bars .row.hover {
-  background: rgba(127, 127, 127, 0.2);
-  color: var(--fg-on);
-}
+      &.hover {
+        background: rgba(127, 127, 127, 0.2);
+        color: var(--fg-on);
+      }
 
-#sunburstPanel .bars .row.hover .bar:after {
-  content: '';
-  position: absolute;
-  left: 1px;
-  top: 1px;
-  right: 1px;
-  bottom: 1px;
-  background: rgba(255, 255, 255, 0.3);
-}
+      &.hover .bar:after {
+        content: '';
+        position: absolute;
+        left: 1px;
+        top: 1px;
+        right: 1px;
+        bottom: 1px;
+        background: rgba(255, 255, 255, 0.3);
+      }
 
-#sunburstPanel .bars .row>div {
-  display: table-cell;
-}
+      &>div {
+        display: table-cell;
+      }
+    }
 
-#sunburstPanel .bars .name {
-  padding: 0 10px;
-  vertical-align: top;
-  white-space: pre;
-}
+    & .name {
+      padding: 0 10px;
+      vertical-align: top;
+      white-space: pre;
 
-#sunburstPanel .bars .name span {
-  opacity: 0.5;
-}
+      & span {
+        opacity: 0.5;
+      }
+    }
 
-#sunburstPanel .bars .size {
-  width: 100%;
-  padding-right: 100px;
-}
+    & .size {
+      width: 100%;
+      padding-right: 100px;
+    }
 
-#sunburstPanel .bars .bar {
-  position: relative;
-  height: 27px;
-  box-shadow: inset 0 0 0 1px #222;
-  margin-bottom: -1px;
-  min-width: var(--bar-min-width);
-}
+    & .bar {
+      position: relative;
+      height: 27px;
+      box-shadow: inset 0 0 0 1px #222;
+      margin-bottom: -1px;
+      min-width: var(--bar-min-width);
 
-#sunburstPanel .bars .bar.empty {
-  min-width: 0;
-}
+      &.empty {
+        min-width: 0;
+      }
+    }
 
-#sunburstPanel .bars .last {
-  position: absolute;
-  right: -10px;
-  width: 0;
-  white-space: nowrap;
+    & .last {
+      position: absolute;
+      right: -10px;
+      width: 0;
+      white-space: nowrap;
+    }
+  }
 }
