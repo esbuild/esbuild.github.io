@@ -5112,19 +5112,22 @@ body:
         }
 
   - p: >
-      Replacement expressions must either be a JSON object (null, boolean,
-      number, string, array, or object) or a single identifier. Replacement
-      expressions other than arrays and objects are substituted inline, which
-      means that they can participate in constant folding. Array and object
-      replacement expressions are stored in a variable and then referenced
-      using an identifier instead of being substituted inline, which avoids
-      substituting repeated copies of the value but means that the values don't
-      participate in constant folding.
+      Each `define` entry maps an identifier to a string of code containing
+      an expression. The expression in the string must either be a JSON object
+      (null, boolean, number, string, array, or object) or a single identifier.
+      Replacement expressions other than arrays and objects are substituted
+      inline, which means that they can participate in constant folding. Array
+      and object replacement expressions are stored in a variable and then
+      referenced using an identifier instead of being substituted inline, which
+      avoids substituting repeated copies of the value but means that the values
+      don't participate in constant folding.
 
   - p: >
       If you want to replace something with a string literal, keep in mind that
-      the replacement value passed to esbuild must itself contain quotes.
-      Omitting the quotes means the replacement value is an identifier instead:
+      the replacement value passed to esbuild must itself contain quotes because
+      each `define` entry maps to a string containing code. Omitting the quotes
+      means the replacement value is an identifier instead. This is demonstrated
+      in the example below:
 
   - example:
       cli:
