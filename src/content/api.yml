@@ -4875,6 +4875,7 @@ body:
       <li>`async-await`</li>
       <li>`async-generator`</li>
       <li>`bigint`</li>
+      <li>`class`</li>
       <li>`class-field`</li>
       <li>`class-private-accessor`</li>
       <li>`class-private-brand-check`</li>
@@ -4885,8 +4886,8 @@ body:
       <li>`class-private-static-method`</li>
       <li>`class-static-blocks`</li>
       <li>`class-static-field`</li>
-      <li>`class`</li>
       <li>`const-and-let`</li>
+      <li>`decorators`</li>
       <li>`default-argument`</li>
       <li>`destructuring`</li>
       <li>`dynamic-import`</li>
@@ -4894,6 +4895,7 @@ body:
       <li>`export-star-as`</li>
       <li>`for-await`</li>
       <li>`for-of`</li>
+      <li>`function-or-class-property-access`</li>
       <li>`generator`</li>
       <li>`hashbang`</li>
       <li>`import-assertions`</li>
@@ -4914,6 +4916,7 @@ body:
       <li>`regexp-lookbehind-assertions`</li>
       <li>`regexp-match-indices`</li>
       <li>`regexp-named-capture-groups`</li>
+      <li>`regexp-set-notation`</li>
       <li>`regexp-sticky-and-unicode-flags`</li>
       <li>`regexp-unicode-property-escapes`</li>
       <li>`rest-argument`</li>
@@ -4921,6 +4924,7 @@ body:
       <li>`top-level-await`</li>
       <li>`typeof-exotic-object-is-object`</li>
       <li>`unicode-escapes`</li>
+      <li>`using`</li>
       </ul>
 
       <p>**CSS:**</p>
@@ -4928,6 +4932,7 @@ body:
       <li>`hex-rgba`</li>
       <li>`inline-style`</li>
       <li>`inset-property`</li>
+      <li>`is-pseudo-class`</li>
       <li>`modern-rgb-hsl`</li>
       <li>`nesting`</li>
       <li>`rebecca-purple`</li>
