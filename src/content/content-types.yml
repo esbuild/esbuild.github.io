@@ -1070,9 +1070,9 @@ body:
       the same name in separate JS modules to avoid name collisions.
 
   - p: >
-      There is experimental support for bundling with CSS modules in esbuild.
-      To use it, you need to enable [bundling](/api/#bundle), set the loader
-      to `local-css` (e.g. <code>--loader:<wbr>.module.css=<wbr>local-css</code>
+      There is support for bundling with CSS modules in esbuild. To use it,
+      you need to enable [bundling](/api/#bundle), set the loader to
+      `local-css` (e.g. <code>--loader:<wbr>.module.css=<wbr>local-css</code>
       will enable this for `.module.css` files), and then import your CSS
       module code into a JS file. Each local CSS name in that file can be
       imported into JS to get the name that esbuild renamed it to. Here's an
@@ -1132,20 +1132,6 @@ body:
       as short as possible (analogous to how esbuild minifies local identifiers
       in JS).
 
-  - p: >
-      Note that esbuild's implementation of CSS modules is experimental and does
-      not currently have feature parity with other implementations of modular
-      CSS in similar tools. Additional behavior may be added in future releases.
-      In particular, esbuild's CSS modules do not currently implement:
-
-  - ul:
-    - >
-      The `composes` pragma
-    - >
-      Tree shaking for unused local CSS
-    - >
-      Local names for keyframe animations, grid lines, `@container`, `@counter-style`, etc.
-
   - h4#global-css: Using global names
 
   - p: >
@@ -1197,6 +1183,98 @@ body:
           }
         }
       }
+
+  - h4#composes: The `composes` directive
+
+  - p: >
+      The [CSS modules specification](https://github.com/css-modules/css-modules#composition)
+      also describes a `composes` directive. It allows class selectors with
+      local names to reference other class selectors. This can be used to split
+      out common sets of properties to avoid duplicating them. And with the `from`
+      keyword, it can also be used to reference class selectors with local names
+      in other files. Here's an example:
+
+  - pre.js: |
+      // app.js
+      import { submit } from './style.css'
+      const div = document.createElement('div')
+      div.className = submit
+      document.body.appendChild(div)
+
+  - pre.css: |
+      /* style.css */
+      .button {
+        composes: pulse from "anim.css";
+        display: inline-block;
+      }
+      .submit {
+        composes: button;
+        font-weight: bold;
+      }
+
+  - pre.css: |
+      /* anim.css */
+      @keyframes pulse {
+        from, to { opacity: 1 }
+        50% { opacity: 0.5 }
+      }
+      .pulse {
+        animation: 2s ease-in-out infinite pulse;
+      }
+
+  - p: >
+      Bundling this with <code>esbuild <wbr>app.js <wbr>--bundle <wbr>--outdir=<wbr>dist <wbr>--loader:<wbr>.css=<wbr>local-css</code>
+      will give you something like this:
+
+  - pre.js: |
+      (() => {
+        // style.css
+        var submit = "anim_pulse style_button style_submit";
+
+        // app.js
+        var div = document.createElement("div");
+        div.className = submit;
+        document.body.appendChild(div);
+      })();
+
+  - pre.css: |
+      /* anim.css */
+      @keyframes anim_pulse {
+        from, to {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+      .anim_pulse {
+        animation: 2s ease-in-out infinite anim_pulse;
+      }
+
+      /* style.css */
+      .style_button {
+        display: inline-block;
+      }
+      .style_submit {
+        font-weight: bold;
+      }
+
+  - p: >
+      Notice how using `composes` causes the string imported into JavaScript
+      to become a space-separated list of all of the local names that were
+      composed together. This is intended to be passed to the
+      [`className`](https://developer.mozilla.org/en-US/docs/Web/API/Element/className)
+      property on a DOM element. Also notice how using `composes` with `from`
+      allows you to (indirectly) reference local names in other CSS files.
+
+  - p: >
+      Note that the order in which composed CSS classes from separate files
+      appear in the bundled output file is deliberately _undefined_ by design
+      (see [the specification](https://github.com/css-modules/css-modules#composing-from-other-files)
+      for details). You are not supposed to declare the same CSS property in
+      two separate class selectors and then compose them together. You are
+      only supposed to compose CSS class selectors that declare non-overlapping
+      CSS properties.
 
   - h3#css-caveats: CSS caveats
 

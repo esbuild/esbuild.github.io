@@ -372,6 +372,7 @@ body:
           | 'dynamic-import'
           | 'require-resolve'
           | 'import-rule'
+          | 'composes-from'
           | 'url-token'
 
 
@@ -392,6 +393,7 @@ body:
           ResolveJSDynamicImport   ResolveKind
           ResolveJSRequireResolve  ResolveKind
           ResolveCSSImportRule     ResolveKind
+          ResolveCSSComposesFrom   ResolveKind
           ResolveCSSURLToken       ResolveKind
         )
 
