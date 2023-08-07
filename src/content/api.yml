@@ -3528,7 +3528,7 @@ body:
         })
 
         for (let out of result.outputFiles) {
-          console.log(out.path, out.contents, out.text)
+          console.log(out.path, out.contents, out.hash, out.text)
         }
 
       go: |
@@ -3551,9 +3551,15 @@ body:
           }
 
           for _, out := range result.OutputFiles {
-            fmt.Printf("%v %v\n", out.Path, out.Contents)
+            fmt.Printf("%v %v %s\n", out.Path, out.Contents, out.Hash)
           }
         }
+
+  - p: >
+      The `hash` property is a hash of the `contents` field and has been provided
+      for convenience. The hash algorithm (currently [XXH64](https://xxhash.com/))
+      is implementation-dependent and may be changed at any time in between esbuild
+      versions.
 
   - h2: Path resolution
 
