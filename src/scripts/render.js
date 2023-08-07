@@ -366,13 +366,13 @@ async function formatMessagesInText(text) {
       const buildOptions = {
         logLevel: 'silent',
         write: false,
-        ...remainingOptions,
       }
 
       if (typeof input === 'string') {
         ({ warnings } = await esbuild.build({
           stdin: { contents: input, sourcefile, loader },
           ...buildOptions,
+          ...remainingOptions,
         }))
       }
 
@@ -389,6 +389,7 @@ async function formatMessagesInText(text) {
             entryPoints: Object.keys(input).slice(0, 1),
             absWorkingDir: dir,
             ...buildOptions,
+            ...options,
           }))
         } finally {
           fs.rmSync(dir, { recursive: true })
