@@ -1,4 +1,4 @@
-#dragTarget {
+:global(#dragTarget) {
   display: none;
   position: fixed;
   inset: 0;

@@ -1,4 +1,5 @@
-import './flame.css'
+import * as indexStyles from './index.css'
+import * as styles from './flame.css'
 import { Metafile } from './metafile'
 import { isWhyFileVisible, showWhyFile } from './whyfile'
 import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from './tree'
@@ -505,16 +506,16 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
   setAfterColorMappingUpdate(draw)
   setResizeEventListener(resize)
 
-  componentEl.id = 'flamePanel'
+  componentEl.id = styles.flamePanel
   componentEl.innerHTML = ''
-    + '<div class="summary">'
+    + `<div class="${indexStyles.summary}">`
     + '<p>'
     + 'This visualization shows which input files were placed into each output file in the bundle. '
     + 'Use the scroll wheel with the ' + (isMac ? 'command' : 'control') + ' key to zoom in and out.'
     + '</p>'
     + '</div>'
 
-  tooltipEl.className = 'tooltip'
+  tooltipEl.className = indexStyles.tooltip
   mainEl.appendChild(canvas)
   componentEl.appendChild(mainEl)
   componentEl.appendChild(tooltipEl)

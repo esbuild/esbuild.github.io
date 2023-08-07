@@ -1,4 +1,4 @@
-import './warnings.css'
+import * as styles from './warnings.css'
 import { Metafile } from './metafile'
 import { showWhyFile } from './whyfile'
 import {
@@ -33,7 +33,7 @@ let generateWarnings = (metafile: Metafile): HTMLElement[] => {
       let commonPrefix: string[] | undefined
       let commonPostfix: string[] | undefined
 
-      warningEl.className = 'warning'
+      warningEl.className = styles.warning
       warningEl.innerHTML = 'The import path <code>' + textToHTML(original) + '</code> resolves to multiple files in the bundle:'
 
       for (let path of array) {
@@ -54,7 +54,7 @@ let generateWarnings = (metafile: Metafile): HTMLElement[] => {
 
         if (commonPrefix && commonPrefix.length) {
           html += ''
-            + '<span class="dim">'
+            + `<span class="${styles.dim}">`
             + parts.slice(0, commonPrefix.length).join('/')
             + '/'
             + '</span>'
@@ -63,7 +63,7 @@ let generateWarnings = (metafile: Metafile): HTMLElement[] => {
 
         if (commonPostfix && commonPostfix.length) {
           postfix = ''
-            + '<span class="dim">'
+            + `<span class="${styles.dim}">`
             + (parts.length > commonPostfix.length ? '/' : '')
             + parts.slice(parts.length - commonPostfix.length).join('/')
             + '</span>'
@@ -96,13 +96,13 @@ export let showWarningsPanel = (metafile: Metafile): void => {
 
   if (n) {
     warningsPanel.innerHTML = ''
-      + '<div class="expand">'
+      + `<div class="${styles.expand}">`
       + '⚠️ This bundle has <b><a href="javascript:void 0">' + n + ' warning' + (n === 1 ? '' : 's') + '</a></b><span>.</span>'
       + '</div>'
 
     let spanEl = warningsPanel.querySelector('span') as HTMLSpanElement
     let contentEl = document.createElement('div')
-    contentEl.className = 'content'
+    contentEl.className = styles.content
     for (let warning of warnings) contentEl.appendChild(warning)
     warningsPanel.appendChild(contentEl)
 

@@ -1,4 +1,4 @@
-import './summary.css'
+import * as styles from './summary.css'
 import { Metafile } from './metafile'
 import { cjsColor, esmColor } from './color'
 import {
@@ -57,7 +57,7 @@ export let showSummary = (metafile: Metafile, toggleColor: () => void): void => 
     + textToHTML(formatInteger(fileCountIn)) + ' input ' + countedFiles(fileCountIn)
     + '</td>'
 
-    + '<td class="symbol">&rarr;</td>'
+    + `<td class="${styles.symbol}">&rarr;</td>`
 
     + '<td>'
     + '<h2>' + textToHTML(bytesToText(totalBytesOut)) + '</h2>'
@@ -68,17 +68,17 @@ export let showSummary = (metafile: Metafile, toggleColor: () => void): void => 
 
     + (esmByteCountIn || cjsByteCountIn
       ? ''
-      + '<a href="javascript:void 0" class="formatBreakdown">'
-      + '<span class="side">' + formatInteger(Math.round(100 * cjsByteCountIn / totalBytesIn)) + '% CJS</span>'
-      + '<div class="bar">'
+      + `<a href="javascript:void 0" class="${styles.formatBreakdown}">`
+      + `<span class="${styles.side}">` + formatInteger(Math.round(100 * cjsByteCountIn / totalBytesIn)) + '% CJS</span>'
+      + `<div class="${styles.bar}">`
       + '<div style="background:' + cjsColor + ';width:' + cjsWidth + 'px"></div>'
       + '<div style="background:#CCC;width:' + (CONSTANTS.FORMAT_WIDTH - esmWidth - cjsWidth) + 'px"></div>'
       + '<div style="background:' + esmColor + ';width:' + esmWidth + 'px"></div>'
       + '</div>'
-      + '<span class="side">' + formatInteger(Math.round(100 * esmByteCountIn / totalBytesIn)) + '% ESM</span>'
+      + `<span class="${styles.side}">` + formatInteger(Math.round(100 * esmByteCountIn / totalBytesIn)) + '% ESM</span>'
       + '</a>'
       : '')
 
-  formatBreakdownEl = summaryPanel.querySelector('.formatBreakdown') as HTMLAnchorElement | undefined
+  formatBreakdownEl = summaryPanel.querySelector('.' + styles.formatBreakdown) as HTMLAnchorElement | undefined
   if (formatBreakdownEl) formatBreakdownEl.onclick = toggleColor
 }

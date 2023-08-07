@@ -1,4 +1,4 @@
-import './color.css'
+import * as styles from './color.css'
 import { Metafile } from "./metafile"
 import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from "./tree"
 import {
@@ -222,8 +222,8 @@ let assignColorsByFormat = (colorMapping: ColorMapping, node: TreeNodeInProgress
 
 export let colorLegendEl = document.createElement('div')
 let formatLegendHTML = ''
-  + '<span class="chit" style="background:' + esmColor + '"></span>ESM <small>modern, faster, smaller</small>'
-  + '<span class="chit" style="background:' + cjsColor + '"></span>CommonJS <small>legacy, slower, larger</small>'
-  + '<span class="chit" style="background:' + otherColor + '"></span>Other'
+  + `<span class="${styles.chit}" style="background:` + esmColor + '"></span>ESM <small>modern, faster, smaller</small>'
+  + `<span class="${styles.chit}" style="background:` + cjsColor + '"></span>CommonJS <small>legacy, slower, larger</small>'
+  + `<span class="${styles.chit}" style="background:` + otherColor + '"></span>Other'
 
-colorLegendEl.id = 'colorLegend'
+colorLegendEl.id = styles.colorLegend

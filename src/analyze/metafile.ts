@@ -28,13 +28,3 @@ export interface ImportRecord {
 export interface InputForOutput {
   bytesInOutput: number
 }
-
-export let metafileHasFormat = (metafile: Metafile): boolean => {
-  let inputs = metafile.inputs
-  for (let file in inputs) {
-    if (inputs[file].format) {
-      return true
-    }
-  }
-  return false
-}

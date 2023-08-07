@@ -1,6 +1,7 @@
 FLAGS += --bundle
 FLAGS += --external:*.svg
 FLAGS += --inject:inject.ts
+FLAGS += --loader:.css=local-css
 FLAGS += --loader:.html=copy
 FLAGS += --mangle-props=_$$
 FLAGS += --minify

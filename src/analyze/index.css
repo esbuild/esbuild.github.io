@@ -39,11 +39,11 @@ body {
   color: var(--fg);
 }
 
-#startPanel {
+:global(#startPanel) {
   margin: 10% auto 0 auto;
 }
 
-#resultsPanel {
+:global(#resultsPanel) {
   display: none;
 }
 
@@ -52,7 +52,7 @@ section {
   max-width: 600px;
 }
 
-#logo {
+:global(#logo) {
   background-image: url(/favicon.svg);
   background-size: 80px;
   background-repeat: no-repeat;
@@ -101,11 +101,11 @@ pre {
   white-space: pre-wrap;
 }
 
-.center {
+:global(.center) {
   text-align: center;
 }
 
-.noscript {
+:global(.noscript) {
   color: #e24834;
 }
 
@@ -131,10 +131,10 @@ button {
   }
 }
 
-#settingsPanel {
+:global(#settingsPanel) {
   text-align: center;
 
-  & .chartSwitcher {
+  & :global(.chartSwitcher) {
     position: relative;
     margin: 50px 0;
     display: flex;

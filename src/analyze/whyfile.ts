@@ -1,4 +1,4 @@
-import './whyfile.css'
+import * as styles from './whyfile.css'
 import { Metafile } from './metafile';
 import {
   bytesToText,
@@ -133,7 +133,7 @@ export let showWhyFile = (metafile: Metafile, path: string, bytesInOutput: numbe
   }
 
   let dialogEl = document.createElement('div')
-  dialogEl.className = 'dialog'
+  dialogEl.className = styles.dialog
   dialogEl.innerHTML = ''
     + '<h2>' + textToHTML(path) + '</h2>'
     + '<p>'
@@ -145,14 +145,14 @@ export let showWhyFile = (metafile: Metafile, path: string, bytesInOutput: numbe
   tryToExplainWhyFileIsInBundle(dialogEl, cachedInfo, path)
 
   let closeButtonEl = document.createElement('a')
-  closeButtonEl.className = 'closeButton'
+  closeButtonEl.className = styles.closeButton
   closeButtonEl.href = 'javascript:void 0'
   closeButtonEl.onclick = hideWhyFile
   closeButtonEl.innerHTML = '&times;'
   dialogEl.appendChild(closeButtonEl)
   dialogEl.tabIndex = 0
 
-  whyFileEl.id = 'whyFile'
+  whyFileEl.id = styles.whyFile
   whyFileEl.innerHTML = ''
   whyFileEl.appendChild(dialogEl)
 
@@ -217,8 +217,8 @@ let tryToExplainWhyFileIsInBundle = (el: HTMLElement, info: Info, path: string):
     if (hasOwnProperty.call(entryPoints, item.inputPath_)) {
       let outputPathEl = document.createElement('div')
       outputFileEl = document.createElement('div')
-      outputFileEl.className = 'outputFile'
-      outputPathEl.className = 'outputPath'
+      outputFileEl.className = styles.outputFile
+      outputPathEl.className = styles.outputPath
       outputPathEl.textContent = 'Output file '
       outputPathEl.appendChild(createCode(entryPoints[item.inputPath_]))
       outputFileEl.appendChild(outputPathEl)
@@ -242,7 +242,7 @@ let tryToExplainWhyFileIsInBundle = (el: HTMLElement, info: Info, path: string):
       let originalPath = record.originalPath_ || nodeModulesPackagePathOrNull(record.inputPath_) || posixRelPath(record.inputPath_, posixDirname(item.inputPath_))
       let preEl = document.createElement('pre')
       let arrowEl = document.createElement('span')
-      arrowEl.className = hasOwnProperty.call(entryPoints, record.inputPath_) ? 'longArrow' : 'arrow'
+      arrowEl.className = hasOwnProperty.call(entryPoints, record.inputPath_) ? styles.longArrow : styles.arrow
 
       if (record.kind_ === 'import-statement') {
         preEl.appendChild(createSpanWithClass('keyword', 'import '))

@@ -1,4 +1,4 @@
-#summaryPanel {
+:global(#summaryPanel) {
   text-align: center;
 
   & table {

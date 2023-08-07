@@ -1,7 +1,7 @@
-import './index.css'
+import * as styles from './index.css'
 import './import'
 import './live-reload'
-import { Metafile, metafileHasFormat } from './metafile'
+import { Metafile } from './metafile'
 import { showSummary } from './summary'
 import { createSunburst } from './sunburst'
 import { createFlame } from './flame'
@@ -34,23 +34,22 @@ let isPlainObject = (value: any): boolean => {
 
 export let finishLoading = (json: string): void => {
   let metafile: Metafile = JSON.parse(json)
-  let hasFormat = metafileHasFormat(metafile)
 
   let useChart = (use: CHART): void => {
     if (chartMode !== use) {
-      if (chartMode === CHART.SUNBURST) useSunburst.classList.remove('active')
-      else if (chartMode === CHART.FLAME) useFlame.classList.remove('active')
+      if (chartMode === CHART.SUNBURST) useSunburst.classList.remove(styles.active)
+      else if (chartMode === CHART.FLAME) useFlame.classList.remove(styles.active)
 
       chartMode = use
       chartPanel.innerHTML = ''
 
       if (chartMode === CHART.SUNBURST) {
         chartPanel.appendChild(createSunburst(metafile))
-        useSunburst.classList.add('active')
+        useSunburst.classList.add(styles.active)
         localStorageSetItem('chart', 'sunburst')
       } else if (chartMode === CHART.FLAME) {
         chartPanel.appendChild(createFlame(metafile))
-        useFlame.classList.add('active')
+        useFlame.classList.add(styles.active)
         localStorageSetItem('chart', 'flame')
       }
     }

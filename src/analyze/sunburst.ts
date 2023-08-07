@@ -1,4 +1,5 @@
-import './sunburst.css'
+import * as indexStyles from './index.css'
+import * as styles from './sunburst.css'
 import { Metafile } from './metafile'
 import { showWhyFile } from './whyfile'
 import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from './tree'
@@ -425,11 +426,11 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
       }
     }
 
-    leftEl.className = 'left'
+    leftEl.className = styles.left
     leftEl.appendChild(canvas)
     leftEl.appendChild(colorLegendEl)
 
-    tooltipEl.className = 'tooltip'
+    tooltipEl.className = indexStyles.tooltip
     mainEl.appendChild(tooltipEl)
     mainEl.appendChild(leftEl)
 
@@ -499,7 +500,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
       let children = currentNode.sortedChildren_
       let barsEl = document.createElement('div')
       let maxBytesInOutput = 1
-      barsEl.className = 'bars'
+      barsEl.className = styles.bars
 
       for (let child of children) {
         let bytesInOutput = child.bytesInOutput_
@@ -512,16 +513,16 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
       // Provide a link to the parent directory
       if (parent) {
         let rowEl = document.createElement('a')
-        rowEl.className = 'row'
+        rowEl.className = styles.row
         rowEl.tabIndex = 0
         barsEl.appendChild(rowEl)
 
         let nameEl = document.createElement('div')
-        nameEl.className = 'name'
+        nameEl.className = styles.name
         rowEl.appendChild(nameEl)
 
         let sizeEl = document.createElement('div')
-        sizeEl.className = 'size'
+        sizeEl.className = styles.size
         rowEl.appendChild(sizeEl)
 
         // Use a link so we get keyboard support
@@ -544,29 +545,29 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
         let size = bytesToText(child.bytesInOutput_)
 
         let rowEl = document.createElement('a')
-        rowEl.className = 'row'
+        rowEl.className = styles.row
         rowEl.tabIndex = 0
         barsEl.appendChild(rowEl)
 
         let prefix = /^[^/]*\/?/.exec(name)![0]
         let nameEl = document.createElement('div')
-        nameEl.className = 'name'
+        nameEl.className = styles.name
         nameEl.innerHTML = textToHTML(prefix) + '<span>' + name.slice(prefix.length) + '</span>'
         rowEl.appendChild(nameEl)
 
         let sizeEl = document.createElement('div')
-        sizeEl.className = 'size'
+        sizeEl.className = styles.size
         rowEl.appendChild(sizeEl)
 
         let barEl = document.createElement('div')
         let bgColor = cssBackgroundForInputPath(child.inputPath_)
-        barEl.className = child.bytesInOutput_ ? 'bar' : 'bar empty'
+        barEl.className = styles.bar + (child.bytesInOutput_ ? '' : ' ' + styles.empty)
         barEl.style.background = bgColor
         barEl.style.width = 100 * child.bytesInOutput_ / maxBytesInOutput + '%'
         sizeEl.appendChild(barEl)
 
         let bytesEl = document.createElement('div')
-        bytesEl.className = 'last'
+        bytesEl.className = styles.last
         bytesEl.textContent = colorMode === COLOR.FORMAT ? formatColorToText(bgColor, '') : size
         barEl.appendChild(bytesEl)
 
@@ -590,11 +591,11 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
       }
 
       let directoryEl = document.createElement('div')
-      directoryEl.className = 'dir'
+      directoryEl.className = styles.dir
       directoryEl.textContent = 'Directory: '
 
       let segmentsEl = document.createElement('div')
-      segmentsEl.className = 'segments'
+      segmentsEl.className = styles.segments
       directoryEl.appendChild(segmentsEl)
 
       for (let node: TreeNode | null = currentNode; node; node = node.parent_) {
@@ -637,7 +638,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
     let previousHoveredNode: TreeNode | null = null
     let previousHoveredElement: HTMLAnchorElement | null = null
 
-    detailsEl.className = 'details'
+    detailsEl.className = styles.details
     mainEl.appendChild(detailsEl)
     regenerate()
 
@@ -675,9 +676,9 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
     regenerateDetails()
   })
 
-  componentEl.id = 'sunburstPanel'
+  componentEl.id = styles.sunburstPanel
   componentEl.innerHTML = ''
-    + '<div class="summary">'
+    + `<div class="${indexStyles.summary}">`
     + '<p>'
     + 'This visualization shows how much space each input file takes up in the final bundle. '
     + 'Input files that take up 0 bytes have been completely eliminated by tree-shaking.'
