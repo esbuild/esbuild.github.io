@@ -194,15 +194,38 @@ server, err2 := ctx.Serve(api.ServeOptions{})
     os.Exit(<span class="hljs-number">1</span>)
   }
 }
-</pre><p>Refer to the <a href="/getting-started/#your-first-bundle">getting started guide</a> for an example of bundling with real-world code.</p><p>Note that bundling is different than file concatenation. Passing esbuild multiple input files with bundling enabled will create multiple separate bundles instead of joining the input files together. To join a set of files together with esbuild, import them all into a single entry point file and bundle just that one file with esbuild.</p><h4 id="non-analyzable-imports"><a class="permalink" href="#non-analyzable-imports">#</a>Non-analyzable imports</h4><p>Bundling with esbuild only works with statically-defined imports (i.e. when the import path is a string literal). Imports that are defined at run-time (i.e. imports that depend on run-time code evaluation) are not bundled, since bundling is a compile-time operation. For example:</p><pre><span class="hljs-comment">// Analyzable imports (will be bundled by esbuild)</span>
+</pre><p>Refer to the <a href="/getting-started/#your-first-bundle">getting started guide</a> for an example of bundling with real-world code.</p><p>Note that bundling is different than file concatenation. Passing esbuild multiple input files with bundling enabled will create multiple separate bundles instead of joining the input files together. To join a set of files together with esbuild, import them all into a single entry point file and bundle just that one file with esbuild.</p><h4 id="non-analyzable-imports"><a class="permalink" href="#non-analyzable-imports">#</a>Non-analyzable imports</h4><p>Import paths are currently only bundled if they are a string literal or a <a href="#glob">glob pattern</a>. Other forms of import paths are not bundled, and are instead preserved verbatim in the generated output. This is because bundling is a compile-time operation and esbuild doesn't support all forms of run-time path resolution. Here are some examples:</p><pre><span class="hljs-comment">// Analyzable imports (will be bundled by esbuild)</span>
 <span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;pkg&#x27;</span>;
 <span class="hljs-keyword">import</span>(<span class="hljs-string">&#x27;pkg&#x27;</span>);
 <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;pkg&#x27;</span>);
+<span class="hljs-keyword">import</span>(<span class="hljs-string">`./locale-<span class="hljs-subst">${foo}</span>.json`</span>);
+<span class="hljs-built_in">require</span>(<span class="hljs-string">`./locale-<span class="hljs-subst">${foo}</span>.json`</span>);
 
 <span class="hljs-comment">// Non-analyzable imports (will not be bundled by esbuild)</span>
 <span class="hljs-keyword">import</span>(<span class="hljs-string">`pkg/<span class="hljs-subst">${foo}</span>`</span>);
 <span class="hljs-built_in">require</span>(<span class="hljs-string">`pkg/<span class="hljs-subst">${foo}</span>`</span>);
-[<span class="hljs-string">&#x27;pkg&#x27;</span>].map(<span class="hljs-built_in">require</span>);</pre><p>The way to work around this issue is to mark the package containing this problematic code as <a href="#external">external</a> so that it's not included in the bundle. You will then need to ensure that a copy of the external package is available to your bundled code at run-time.</p><p>Some bundlers such as <a href="https://webpack.js.org/">Webpack</a> try to support this by including all potentially-reachable files in the bundle and then emulating a file system at run-time. However, run-time file system emulation is out of scope and will not be implemented in esbuild. If you really need to bundle code that does this, you will likely need to use another bundler instead of esbuild.</p><h3 id="cancel"><a class="permalink" href="#cancel">#</a>Cancel</h3><p><i>Supported by: <a href="#build">Build</a></i></p><p>If you are using <a href="#rebuild">rebuild</a> to manually invoke incremental builds, you may want to use this cancel API to end the current build early so that you can start a new one. You can do that like this:</p><div class="switcher">
+[<span class="hljs-string">&#x27;pkg&#x27;</span>].map(<span class="hljs-built_in">require</span>);</pre><p>The way to work around non-analyzable imports is to mark the package containing this problematic code as <a href="#external">external</a> so that it's not included in the bundle. You will then need to ensure that a copy of the external package is available to your bundled code at run-time.</p><p>Some bundlers such as <a href="https://webpack.js.org/">Webpack</a> try to support all forms of run-time path resolution by including all potentially-reachable files in the bundle and then emulating a file system at run-time. However, run-time file system emulation is out of scope and will not be implemented in esbuild. If you really need to bundle code that does this, you will likely need to use another bundler instead of esbuild.</p><h4 id="glob"><a class="permalink" href="#glob">#</a>Glob-style imports</h4><p>Import paths that are evaluated at run-time can now be bundled in certain limited situations. The import path expression must be a form of string concatenation and must start with either <code>./</code> or <code>../</code>. Each non-string expression in the string concatenation chain becomes a wildcard in a <a href="https://en.wikipedia.org/wiki/Glob_(programming)">glob</a> pattern. Some examples:</p><pre><span class="hljs-comment">// These two forms are equivalent</span>
+<span class="hljs-keyword">const</span> json1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;./data/&#x27;</span> + kind + <span class="hljs-string">&#x27;.json&#x27;</span>)
+<span class="hljs-keyword">const</span> json2 = <span class="hljs-built_in">require</span>(<span class="hljs-string">`./data/<span class="hljs-subst">${kind}</span>.json`</span>)</pre><p>When you do this, esbuild will search the file system for all files that match the pattern and include all of them in the bundle along with a map that maps the matching import path to the bundled module. The import expression will be replaced with a lookup into that map. An error will be thrown at run-time if the import path is not present in the map. The generated code will look something like this (unimportant parts were omitted for brevity):</p><pre><span class="hljs-comment">// data/bar.json</span>
+<span class="hljs-keyword">var</span> require_bar = ...;
+
+<span class="hljs-comment">// data/foo.json</span>
+<span class="hljs-keyword">var</span> require_foo = ...;
+
+<span class="hljs-comment">// require(&quot;./data/**/*.json&quot;) in example.js</span>
+<span class="hljs-keyword">var</span> globRequire_data_json = __glob({
+  <span class="hljs-string">&quot;./data/bar.json&quot;</span>: <span class="hljs-function">() =&gt;</span> require_bar(),
+  <span class="hljs-string">&quot;./data/foo.json&quot;</span>: <span class="hljs-function">() =&gt;</span> require_foo()
+});
+
+<span class="hljs-comment">// example.js</span>
+<span class="hljs-keyword">var</span> json1 = globRequire_data_json(<span class="hljs-string">&quot;./data/&quot;</span> + kind + <span class="hljs-string">&quot;.json&quot;</span>);
+<span class="hljs-keyword">var</span> json2 = globRequire_data_json(<span class="hljs-string">`./data/<span class="hljs-subst">${kind}</span>.json`</span>);</pre><p>This feature works with <code>require(...)</code> and <code>import(...)</code> because these can all accept run-time expressions. It does not work with <code>import</code> and <code>export</code> statements because these cannot accept run-time expressions. If you want to prevent esbuild from trying to bundle these imports, you should move the string concatenation expression outside of the <code>require(...)</code> or <code>import(...)</code>. For example:</p><pre><span class="hljs-comment">// This will be bundled</span>
+<span class="hljs-keyword">const</span> json1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;./data/&#x27;</span> + kind + <span class="hljs-string">&#x27;.json&#x27;</span>)
+
+<span class="hljs-comment">// This will not be bundled</span>
+<span class="hljs-keyword">const</span> path = <span class="hljs-string">&#x27;./data/&#x27;</span> + kind + <span class="hljs-string">&#x27;.json&#x27;</span>
+<span class="hljs-keyword">const</span> json2 = <span class="hljs-built_in">require</span>(path)</pre><p>Note that using this feature means esbuild will potentially do a lot of file system I/O to find all possible files that might match the pattern. This is by design, and is not a bug. If this is a concern, there are two ways to reduce the amount of file system I/O that esbuild does:</p><ol><li><p> The simplest approach is to put all files that you want to import for a given run-time import expression in a subdirectory and then include the subdirectory in the pattern. This limits esbuild to searching inside that subdirectory since esbuild doesn't consider <code>..</code> path elements during pattern-matching. </p></li><li><p> Another approach is to prevent esbuild from searching into any subdirectory at all. The pattern matching algorithm that esbuild uses only allows a wildcard to match something containing a <code>/</code> path separator if that wildcard has a <code>/</code> before it in the pattern. So for example <code>'./data/' + <wbr>x + <wbr>'.json'</code> will match <code>x</code> with anything in any subdirectory while <code>'./data-' + <wbr>x + <wbr>'.json'</code> will only match <code>x</code> with anything in the top-level directory (but not in any subdirectory). </p></li></ol><h3 id="cancel"><a class="permalink" href="#cancel">#</a>Cancel</h3><p><i>Supported by: <a href="#build">Build</a></i></p><p>If you are using <a href="#rebuild">rebuild</a> to manually invoke incremental builds, you may want to use this cancel API to end the current build early so that you can start a new one. You can do that like this:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -4116,21 +4139,21 @@ fs.writeFileSync(<span class="hljs-string">&#x27;meta.json&#x27;</span>, <span c
         ╵ </span><span class="color-green">~~</span><span></span></pre></details></li>
 <li><details><summary><code>undefined-composes-from</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span class="color-bold">The value of "zoom" in the "foo" class is undefined</span><span> [undefined-composes-from]
 
-    example.css:1:1:
-</span><span class="color-dim">      1 │ .</span><span class="color-green">foo</span><span class="color-dim"> { composes: bar from "lib.css"; zoom: 1; }
+    example.module.css:1:1:
+</span><span class="color-dim">      1 │ .</span><span class="color-green">foo</span><span class="color-dim"> { composes: bar from "lib.module.css"; zoom: 1; }
         ╵  </span><span class="color-green">~~~</span><span>
 
   The first definition of "zoom" is here:
 
-    lib.css:1:7:
+    lib.module.css:1:7:
 </span><span class="color-dim">      1 │ .bar { </span><span class="color-green">zoom</span><span class="color-dim">: 2 }
         ╵        </span><span class="color-green">~~~~</span><span>
 
   The second definition of "zoom" is here:
 
-    example.css:1:37:
-</span><span class="color-dim">      1 │ .foo { composes: bar from "lib.css"; </span><span class="color-green">zoom</span><span class="color-dim">: 1; }
-        ╵                                      </span><span class="color-green">~~~~</span><span>
+    example.module.css:1:44:
+</span><span class="color-dim">      1 │ .foo { composes: bar from "lib.module.css"; </span><span class="color-green">zoom</span><span class="color-dim">: 1; }
+        ╵                                             </span><span class="color-green">~~~~</span><span>
 
   The specification of "composes" does not define an order when class declarations from separate
   files are composed together. The value of the "zoom" property for "foo" may change unpredictably
