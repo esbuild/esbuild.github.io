@@ -933,10 +933,12 @@ body:
       Loader: `css` (also `global-css` and `local-css` for [CSS modules](#local-css))
 
   - p: >
-      This loader is enabled by default for `.css` files. It loads the file
-      as CSS syntax. CSS is a first-class content type in esbuild, which means
-      esbuild can [bundle](/api/#bundle) CSS files directly without needing to
-      import your CSS from JavaScript code:
+      The `css` loader is enabled by default for `.css` files and the
+      [`local-css`](#local-css) loader is enabled by default for `.module.css`
+      files. These loaders load the file as CSS syntax. CSS is a first-class
+      content type in esbuild, which means esbuild can [bundle](/api/#bundle)
+      CSS files directly without needing to import your CSS from JavaScript
+      code:
 
   - example:
       in:
@@ -1083,35 +1085,34 @@ body:
 
   - p: >
       There is support for bundling with CSS modules in esbuild. To use it,
-      you need to enable [bundling](/api/#bundle), set the loader to
-      `local-css` (e.g. <code>--loader:<wbr>.module.css=<wbr>local-css</code>
-      will enable this for `.module.css` files), and then import your CSS
-      module code into a JS file. Each local CSS name in that file can be
-      imported into JS to get the name that esbuild renamed it to. Here's an
-      example:
+      you need to enable [bundling](/api/#bundle), use the `local-css` loader
+      for your CSS file (e.g. by using the `.module.css` file extension), and
+      then import your CSS module code into a JS file. Each local CSS name in
+      that file can be imported into JS to get the name that esbuild renamed
+      it to. Here's an example:
 
   - pre.js: |
       // app.js
-      import { outerShell } from './app.css'
+      import { outerShell } from './app.module.css'
       const div = document.createElement('div')
       div.className = outerShell
       document.body.appendChild(div)
 
   - pre.css: |
-      /* app.css */
+      /* app.module.css */
       .outerShell {
         position: absolute;
         inset: 0;
       }
 
   - p: >
-      When you bundle this with <code>esbuild app.js <wbr>--bundle <wbr>--loader:<wbr>.css=<wbr>local-css <wbr>--outdir=out</code>
+      When you bundle this with <code>esbuild app.js <wbr>--bundle <wbr>--outdir=out</code>
       you'll get this (notice how the local CSS name `outerShell` has been renamed):
 
   - pre.js: |
       // out/app.js
       (() => {
-        // app.css
+        // app.module.css
         var outerShell = "app_outerShell";
 
         // app.js
