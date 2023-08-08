@@ -28,6 +28,7 @@ index:
       - '[JavaScript](/content-types/#javascript), [CSS](/content-types/#css), [TypeScript](/content-types/#typescript), and [JSX](/content-types/#jsx) built-in'
       - 'A straightforward [API](/api/) for CLI, JS, and Go'
       - 'Bundles ESM and CommonJS modules'
+      - 'Bundles CSS including [CSS modules](https://github.com/css-modules/css-modules)'
       - 'Tree shaking, [minification](/api/#minify), and [source maps](/api/#sourcemap)'
       - '[Local server](/api/#serve), [watch mode](/api/#watch), and [plugins](/plugins/)'
 
