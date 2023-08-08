@@ -577,17 +577,19 @@ body:
   - h4: Non-analyzable imports
 
   - p: >
-      Bundling with esbuild only works with statically-defined imports
-      (i.e. when the import path is a string literal). Imports that are
-      defined at run-time (i.e. imports that depend on run-time code
-      evaluation) are not bundled, since bundling is a compile-time
-      operation. For example:
+      Import paths are currently only bundled if they are a string literal or
+      a [glob pattern](#glob). Other forms of import paths are not bundled,
+      and are instead preserved verbatim in the generated output. This is
+      because bundling is a compile-time operation and esbuild doesn't
+      support all forms of run-time path resolution. Here are some examples:
 
   - pre.js: |
       // Analyzable imports (will be bundled by esbuild)
       import 'pkg';
       import('pkg');
       require('pkg');
+      import(`./locale-${foo}.json`);
+      require(`./locale-${foo}.json`);
 
       // Non-analyzable imports (will not be bundled by esbuild)
       import(`pkg/${foo}`);
@@ -595,18 +597,102 @@ body:
       ['pkg'].map(require);
 
   - p: >
-      The way to work around this issue is to mark the package containing this
-      problematic code as [external](#external) so that it's not included in
-      the bundle. You will then need to ensure that a copy of the external
-      package is available to your bundled code at run-time.
+      The way to work around non-analyzable imports is to mark the package
+      containing this problematic code as [external](#external) so that
+      it's not included in the bundle. You will then need to ensure that a
+      copy of the external package is available to your bundled code at run-time.
 
   - p: >
       Some bundlers such as [Webpack](https://webpack.js.org/) try to support
-      this by including all potentially-reachable files in the bundle and then
-      emulating a file system at run-time. However, run-time file system
-      emulation is out of scope and will not be implemented in esbuild. If you
-      really need to bundle code that does this, you will likely need to use
-      another bundler instead of esbuild.
+      all forms of run-time path resolution by including all potentially-reachable
+      files in the bundle and then emulating a file system at run-time. However,
+      run-time file system emulation is out of scope and will not be implemented
+      in esbuild. If you really need to bundle code that does this, you will
+      likely need to use another bundler instead of esbuild.
+
+  - h4#glob: Glob-style imports
+
+  - p: >
+      Import paths that are evaluated at run-time can now be bundled in certain
+      limited situations. The import path expression must be a form of string
+      concatenation and must start with either `./` or `../`. Each non-string
+      expression in the string concatenation chain becomes a wildcard in a
+      [glob](https://en.wikipedia.org/wiki/Glob_(programming)) pattern. Some
+      examples:
+
+  - pre.js: |
+      // These two forms are equivalent
+      const json1 = require('./data/' + kind + '.json')
+      const json2 = require(`./data/${kind}.json`)
+
+  - p: >
+      When you do this, esbuild will search the file system for all files that
+      match the pattern and include all of them in the bundle along with a map
+      that maps the matching import path to the bundled module. The import
+      expression will be replaced with a lookup into that map. An error will
+      be thrown at run-time if the import path is not present in the map. The
+      generated code will look something like this (unimportant parts were
+      omitted for brevity):
+
+  - pre.js: |
+      // data/bar.json
+      var require_bar = ...;
+
+      // data/foo.json
+      var require_foo = ...;
+
+      // require("./data/**/*.json") in example.js
+      var globRequire_data_json = __glob({
+        "./data/bar.json": () => require_bar(),
+        "./data/foo.json": () => require_foo()
+      });
+
+      // example.js
+      var json1 = globRequire_data_json("./data/" + kind + ".json");
+      var json2 = globRequire_data_json(`./data/${kind}.json`);
+
+  - p: >
+      This feature works with `require(...)` and `import(...)` because these
+      can all accept run-time expressions. It does not work with `import` and
+      `export` statements because these cannot accept run-time expressions. If
+      you want to prevent esbuild from trying to bundle these imports, you
+      should move the string concatenation expression outside of the
+      `require(...)` or `import(...)`. For example:
+
+  - pre.js: |
+      // This will be bundled
+      const json1 = require('./data/' + kind + '.json')
+
+      // This will not be bundled
+      const path = './data/' + kind + '.json'
+      const json2 = require(path)
+
+  - p: >
+      Note that using this feature means esbuild will potentially do a lot of
+      file system I/O to find all possible files that might match the pattern.
+      This is by design, and is not a bug. If this is a concern, there are two
+      ways to reduce the amount of file system I/O that esbuild does:
+
+  - ol:
+    - >
+      <p>
+      The simplest approach is to put all files that you want to import for a
+      given run-time import expression in a subdirectory and then include the
+      subdirectory in the pattern. This limits esbuild to searching inside that
+      subdirectory since esbuild doesn't consider `..` path elements during
+      pattern-matching.
+      </p>
+
+    - >
+      <p>
+      Another approach is to prevent esbuild from searching into any subdirectory
+      at all. The pattern matching algorithm that esbuild uses only allows
+      a wildcard to match something containing a `/` path separator if that
+      wildcard has a `/` before it in the pattern. So for example <code>'./data/' + <wbr>x + <wbr>'.json'</code>
+      will match `x` with anything in any subdirectory while <code>'./data-' + <wbr>x + <wbr>'.json'</code>
+      will only match `x` with anything in the top-level directory (but not in
+      any subdirectory).
+      </p>
 
   - h3: Cancel
 
