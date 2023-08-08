@@ -4209,6 +4209,11 @@ fs.writeFileSync(<span class="hljs-string">&#x27;meta.json&#x27;</span>, <span c
     example.js:2:7:
 </span><span class="color-dim">      2 │ import </span><span class="color-green">"./Foo.js"</span><span class="color-dim">
         ╵        </span><span class="color-green">~~~~~~~~~~</span><span></span></pre></details></li>
+<li><details><summary><code>empty-glob</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span class="color-bold">The glob pattern import("./icon-*.json") did not match any files</span><span> [empty-glob]
+
+    example.js:2:16:
+</span><span class="color-dim">      2 │   return import(</span><span class="color-green">"./icon-" + name + ".json"</span><span class="color-dim">)
+        ╵                 </span><span class="color-green">~~~~~~~~~~~~~~~~~~~~~~~~~~</span><span></span></pre></details></li>
 <li><details><summary><code>ignored-bare-import</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span class="color-bold">Ignoring this import because "node_modules/foo/index.js" was marked as having no side effects</span><span> [ignored-bare-import]
 
     example.js:1:7:
