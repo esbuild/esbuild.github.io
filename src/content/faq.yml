@@ -206,8 +206,6 @@ body:
 
   - ul:
     - 'Code splitting ([#16](https://github.com/evanw/esbuild/issues/16), [docs](/api/#splitting))'
-    - 'CSS content type ([#20](https://github.com/evanw/esbuild/issues/20), [docs](/content-types/#css))'
-    - 'Plugin API ([#111](https://github.com/evanw/esbuild/issues/111))'
 
   - p: >
       These are potential future features but may not happen or may happen
@@ -215,8 +213,6 @@ body:
 
   - ul:
     - 'HTML content type ([#31](https://github.com/evanw/esbuild/issues/31))'
-    - 'Lowering to ES5 ([#297](https://github.com/evanw/esbuild/issues/297))'
-    - 'Bundling top-level await ([#253](https://github.com/evanw/esbuild/issues/253))'
 
   - p: >
       After that point, I will consider esbuild to be relatively complete.
