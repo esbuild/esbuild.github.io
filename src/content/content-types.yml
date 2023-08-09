@@ -1327,9 +1327,8 @@ body:
       that to white text on a black background. _**This is not what happens.**_
       Instead, the body will be entirely black (both the foreground and the
       background). This is because `@import` is supposed to behave as if the
-      import rule was replaced by the imported file<sup id="footnote-use-1"><a href="#footnote-def-1">1</a></sup>
-      (sort of like `#include` in C/C++), which leads to the browser seeing
-      the following code:
+      import rule was replaced by the imported file (sort of like `#include`
+      in C/C++), which leads to the browser seeing the following code:
 
   - pre.css: |
       /* reset.css */
@@ -1373,21 +1372,6 @@ body:
       just switching over to running your CSS code natively in the browser),
       you may have appearance changes if your code depends on the incorrect
       import order.
-
-  - p: >
-      <footer>
-      <sup id="footnote-def-1"><a href="#footnote-use-1">1</a></sup>
-      [The specification says](https://www.w3.org/TR/css-cascade-3/#at-import)
-      "user agents must treat the contents of the stylesheet as if they were
-      written in place of the @import rule" but that's not actually how CSS works.
-      If CSS worked that way, then cyclic imports would cause a hang due to
-      infinite expansion. The way it actually works is that an imported CSS
-      file is evaluated once at the **last** duplicate `@import` rule (as
-      compared to JavaScript where an imported JS file is evaluated once at
-      the **first** duplicate `import` statement). This is considered an
-      implementation detail and only really matters when there are import
-      cycles.
-      </footer>
 
   - h2: Text
   - p: 'Loader: `text`'
