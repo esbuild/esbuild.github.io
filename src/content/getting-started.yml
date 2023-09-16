@@ -11,7 +11,7 @@ body:
       JavaScript runtime):
 
   - pre: |
-      npm install --save-exact esbuild
+      npm install --save-exact --save-dev esbuild
 
   - p: >
       This should have installed esbuild in your local `node_modules` folder.
