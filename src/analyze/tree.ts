@@ -15,7 +15,15 @@ export let orderChildrenBySize = (
 }
 
 export let accumulatePath = (root: TreeNodeInProgress, path: string, bytesInOutput: number): number => {
-  let parts = path.split('/')
+  let parts;
+  if (/^https?:\/\//.test(path)) {
+    const url = new URL(path);
+    parts = [url.origin, ...url.pathname.slice(1).split("/")];
+    if (url.search) parts[parts.length-1] += url.search;
+  } else {
+   parts = path.split('/')
+  }
+
   let n = parts.length
   let parent = root
   let inputPath = ''
