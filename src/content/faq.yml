@@ -367,6 +367,52 @@ body:
     - >
       Use another build tool instead of esbuild
 
+  - h2#old-go-version: Outdated version of Go
+
+  - p: >
+      If you use an automated dependency vulnerability scanner, you may get a
+      report that the version of the Go compiler that esbuild uses and/or the
+      version of `golang.org/x/sys` (esbuild's only dependency) is outdated.
+      These reports are benign and should be ignored.
+
+  - p: >
+      This happens because esbuild's code is deliberately intended to be
+      compilable with Go 1.13. Later versions of Go have dropped support for
+      certain older platforms that I want esbuild to be able to run on (e.g.
+      older versions of macOS). While esbuild's published binaries are compiled
+      with a much newer version of the Go compiler (and therefore don't work
+      on older versions of macOS), you are currently still able to compile the
+      latest version of esbuild for yourself with Go 1.13 and use it on older
+      versions of macOS because esbuild's code can still be compiled with Go
+      as far back as 1.13.
+
+  - p: >
+      People and/or automated tools sometimes see the `go 1.13` line in [`go.mod`](https://github.com/evanw/esbuild/blob/main/go.mod)
+      and complain that esbuild's published binaries are built with Go 1.13, which
+      is a really old version of Go. However, that's not true. That line in `go.mod`
+      only specifies the minimum compiler version. It has nothing to do with the
+      version of Go that esbuild's published binaries are built with, which is a
+      much newer version of Go. [Please read the documentation.](https://go.dev/ref/mod#go-mod-file-go)
+
+  - p: >
+      People also sometimes want esbuild to update the `golang.org/x/sys` dependency
+      because there is a known vulnerability in the version that esbuild uses
+      (specifically [GO-2022-0493](https://pkg.go.dev/vuln/GO-2022-0493)
+      about the `Faccessat` function). The problem that prevents esbuild from
+      updating to a newer version of the `golang.org/x/sys` dependency is that
+      newer versions have started using the `unsafe.Slice` function, which was
+      first introduced in Go 1.17 (and therefore doesn't compile in older
+      versions of Go). However, this vulnerability report is irrelevant because
+      a) esbuild doesn't ever call that function in the first place and b)
+      esbuild is a build tool, not a sandbox, and esbuild's file system access
+      is not security-sensitive.
+
+  - p: >
+      I'm not going to drop compatibility with older platforms and prevent some
+      people from being able to use esbuild just to work around irrelevant
+      vulnerability reports. Please ignore any reports about the issues described
+      above.
+
   - h2: Minified newlines
 
   - p: >
