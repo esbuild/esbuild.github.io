@@ -5,10 +5,10 @@ index:
     - blockquote: An extremely fast bundler for the web
 
     - benchmark.animated:
-        '[esbuild](https://esbuild.github.io/)': 0.37
-        '[parcel 2](https://parceljs.org/)': 30.50
-        '[rollup](https://rollupjs.org/) + [terser](https://terser.org/)': 32.07
-        '[webpack 5](https://webpack.js.org/)': 39.70
+        '[esbuild](https://esbuild.github.io/)': 0.39
+        '[parcel 2](https://parceljs.org/)': 14.91
+        '[rollup 4](https://rollupjs.org/) + [terser](https://terser.org/)': 34.10
+        '[webpack 5](https://webpack.js.org/)': 41.21
 
     - figcaption: >
         Above: the time to do a production bundle of 10 copies of the
