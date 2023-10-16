@@ -86,7 +86,22 @@ export let createSpanWithClass = (className: string, text: string): HTMLSpanElem
   return span
 }
 
+export let shortenDataURLForDisplay = (path: string): string => {
+  // Data URLs can be really long. This shortens them to something suitable for
+  // display in a tooltip. This shortening behavior is also what esbuild does.
+  if (path.startsWith('data:') && path.indexOf(',') >= 0) {
+    path = path.slice(0, 65).replace(/\n/g, '\\n')
+    return '<' + (path.length > 64 ? path.slice(0, 64) + '...' : path) + '>'
+  }
+  return path
+}
+
 export let splitPathBySlash = (path: string): string[] => {
+  // Treat data URLs (e.g. "data:text/plain;base64,ABCD") as a single path element
+  if (path.startsWith('data:') && path.indexOf(',') >= 0) {
+    return [path]
+  }
+
   const parts = path.split('/')
 
   // Replace ['a:', '', 'b'] at the start of the path with ['a://b']. This

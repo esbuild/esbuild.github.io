@@ -13,6 +13,7 @@ import {
   setDarkModeListener,
   setResizeEventListener,
   setWheelEventListener,
+  shortenDataURLForDisplay,
   splitPathBySlash,
   stripDisabledPathPrefix,
   textToHTML,
@@ -426,7 +427,7 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
 
     // Show a tooltip for hovered nodes
     if (node) {
-      let tooltip = node.inputPath_
+      let tooltip = node.name_ === node.inputPath_ ? shortenDataURLForDisplay(node.inputPath_) : node.inputPath_
       let nameSplit = tooltip.length - node.name_.length
       tooltip = textToHTML(tooltip.slice(0, nameSplit)) + '<b>' + textToHTML(tooltip.slice(nameSplit)) + '</b>'
       if (colorMode === COLOR.FORMAT) tooltip += textToHTML(formatColorToText(cssBackgroundForInputPath(node.inputPath_), ' – '))
