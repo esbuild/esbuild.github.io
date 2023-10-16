@@ -99,6 +99,7 @@ export let splitPathBySlash = (path: string): string[] => {
 }
 
 export let commonPrefixFinder = (path: string, commonPrefix: string[] | undefined): string[] => {
+  if (path === '') return []
   let parts = splitPathBySlash(path)
   if (!commonPrefix) return parts
 
