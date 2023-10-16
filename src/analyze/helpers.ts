@@ -86,8 +86,20 @@ export let createSpanWithClass = (className: string, text: string): HTMLSpanElem
   return span
 }
 
+export let splitPathBySlash = (path: string): string[] => {
+  const parts = path.split('/')
+
+  // Replace ['a:', '', 'b'] at the start of the path with ['a://b']. This
+  // handles paths that look like a URL scheme such as "https://example.com".
+  if (parts.length >= 3 && parts[1] === '' && parts[0].endsWith(':')) {
+    parts.splice(0, 3, parts.slice(0, 3).join('/'))
+  }
+
+  return parts
+}
+
 export let commonPrefixFinder = (path: string, commonPrefix: string[] | undefined): string[] => {
-  let parts = path.split('/')
+  let parts = splitPathBySlash(path)
   if (!commonPrefix) return parts
 
   // Note: This deliberately loops one past the end of the array so it can compare against "undefined"
@@ -102,7 +114,7 @@ export let commonPrefixFinder = (path: string, commonPrefix: string[] | undefine
 }
 
 export let commonPostfixFinder = (path: string, commonPostfix: string[] | undefined): string[] => {
-  let parts = path.split('/')
+  let parts = splitPathBySlash(path)
   if (!commonPostfix) return parts.reverse()
 
   // Note: This deliberately loops one past the end of the array so it can compare against "undefined"
@@ -138,7 +150,7 @@ export let posixRelPath = (path: string, relToDir: string): string => {
 }
 
 export let nodeModulesPackagePathOrNull = (path: string): string | null => {
-  let parts = path.split('/')
+  let parts = splitPathBySlash(path)
   for (let i = parts.length - 1; i >= 0; i--) {
     if (parts[i] === 'node_modules') {
       parts = parts.slice(i + 1)

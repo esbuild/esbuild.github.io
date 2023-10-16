@@ -4,6 +4,7 @@ import { showWhyFile } from './whyfile'
 import {
   commonPostfixFinder,
   commonPrefixFinder,
+  splitPathBySlash,
   textToHTML,
 } from './helpers'
 
@@ -41,13 +42,13 @@ let generateWarnings = (metafile: Metafile): HTMLElement[] => {
       }
 
       for (let path of array) {
-        let parts = path.split('/')
+        let parts = splitPathBySlash(path)
         if (commonPrefix) parts = parts.slice(commonPrefix.length)
         commonPostfix = commonPostfixFinder(parts.join('/'), commonPostfix)
       }
 
       for (let path of array.sort()) {
-        let parts = path.split('/').map(textToHTML)
+        let parts = splitPathBySlash(path).map(textToHTML)
         let itemEl = document.createElement('li')
         let html = '<pre><a href="javascript:void 0">'
         let postfix = ''

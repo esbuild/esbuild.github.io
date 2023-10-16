@@ -13,6 +13,7 @@ import {
   setDarkModeListener,
   setResizeEventListener,
   setWheelEventListener,
+  splitPathBySlash,
   stripDisabledPathPrefix,
   textToHTML,
 } from './helpers'
@@ -549,7 +550,8 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
         rowEl.tabIndex = 0
         barsEl.appendChild(rowEl)
 
-        let prefix = /^[^/]*\/?/.exec(name)![0]
+        let nameParts = splitPathBySlash(name)
+        let prefix = nameParts[0] + (nameParts.length > 1 ? '/' : '')
         let nameEl = document.createElement('div')
         nameEl.className = styles.name
         nameEl.innerHTML = textToHTML(prefix) + '<span>' + name.slice(prefix.length) + '</span>'

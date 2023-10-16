@@ -13,6 +13,7 @@ import {
   setDarkModeListener,
   setResizeEventListener,
   setWheelEventListener,
+  splitPathBySlash,
   stripDisabledPathPrefix,
   textToHTML,
 } from './helpers'
@@ -71,7 +72,7 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
 
   for (let o in outputs) {
     // Find the common directory prefix, not including the file name
-    let parts = o.split('/')
+    let parts = splitPathBySlash(o)
     parts.pop()
     commonPrefix = commonPrefixFinder(parts.join('/'), commonPrefix)
   }
@@ -79,7 +80,7 @@ let analyzeDirectoryTree = (metafile: Metafile): Tree => {
   for (let o in outputs) {
     if (isSourceMapPath(o)) continue
 
-    let name = commonPrefix ? o.split('/').slice(commonPrefix.length).join('/') : o
+    let name = commonPrefix ? splitPathBySlash(o).slice(commonPrefix.length).join('/') : o
     let node: TreeNodeInProgress = { name_: name, inputPath_: '', bytesInOutput_: 0, children_: {} }
     let output = outputs[o]
     let inputs = output.inputs
