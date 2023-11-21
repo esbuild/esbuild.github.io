@@ -2700,7 +2700,7 @@ fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<spa
     os.Exit(<span class="hljs-number">1</span>)
   }
 }
-</pre><h3 id="mangle-props"><a class="permalink" href="#mangle-props">#</a>Mangle props</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><div class="warning"><strong>Using this feature can break your code in subtle ways.</strong> Do not use this feature unless you know what you are doing, and you know exactly how it will affect both your code and all of your dependencies.</div><p>This setting lets you pass a regular expression to esbuild to tell esbuild to automatically rename all properties that match this regular expression. It's useful when you want to minify certain property names in your code either to make the generated code smaller or to somewhat obfuscate your code's intent.</p><p>Here's an example that uses the regular expression <code>_$</code> to mangle all properties ending in an underscore, such as <code>foo_</code>. This mangles <code>print({ <wbr>foo_: 0 <wbr>}.foo_)</code> into <code>print({ <wbr>a: 0 <wbr>}.a)</code>:</p><div class="switcher">
+</pre><p>Note that this feature is unavailable if the <a href="#target">target</a> has been set to an old environment that doesn't allow esbuild to mutate the <code>name</code> property on functions and classes. This is the case for environments that don't support ES6.</p><h3 id="mangle-props"><a class="permalink" href="#mangle-props">#</a>Mangle props</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><div class="warning"><strong>Using this feature can break your code in subtle ways.</strong> Do not use this feature unless you know what you are doing, and you know exactly how it will affect both your code and all of your dependencies.</div><p>This setting lets you pass a regular expression to esbuild to tell esbuild to automatically rename all properties that match this regular expression. It's useful when you want to minify certain property names in your code either to make the generated code smaller or to somewhat obfuscate your code's intent.</p><p>Here's an example that uses the regular expression <code>_$</code> to mangle all properties ending in an underscore, such as <code>foo_</code>. This mangles <code>print({ <wbr>foo_: 0 <wbr>}.foo_)</code> into <code>print({ <wbr>a: 0 <wbr>}.a)</code>:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -3674,8 +3674,10 @@ fs.writeFileSync(<span class="hljs-string">&#x27;meta.json&#x27;</span>, <span c
         <span class="hljs-attr">kind</span>: <span class="hljs-built_in">string</span>
         external?: <span class="hljs-built_in">boolean</span>
         original?: <span class="hljs-built_in">string</span>
+        <span class="hljs-keyword">with</span>?: Record&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt;
       }[]
       format?: <span class="hljs-built_in">string</span>
+      <span class="hljs-keyword">with</span>?: Record&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt;
     }
   }
   <span class="hljs-attr">outputs</span>: {
