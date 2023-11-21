@@ -5781,6 +5781,12 @@ body:
           }
         }
 
+  - p: >
+      Note that this feature is unavailable if the [target](#target) has been
+      set to an old environment that doesn't allow esbuild to mutate the `name`
+      property on functions and classes. This is the case for environments that
+      don't support ES6.
+
   - h3: Mangle props
 
   - warning: >
