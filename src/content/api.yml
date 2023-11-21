@@ -7437,8 +7437,10 @@ body:
               kind: string
               external?: boolean
               original?: string
+              with?: Record<string, string>
             }[]
             format?: string
+            with?: Record<string, string>
           }
         }
         outputs: {

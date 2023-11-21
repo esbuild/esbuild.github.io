@@ -831,6 +831,7 @@ body:
           namespace: string;
           suffix: string;
           pluginData: any;
+          with: Record<string, string>;
         }
 
       go: |
@@ -839,6 +840,7 @@ body:
           Namespace  string
           Suffix     string
           PluginData interface{}
+          With       map[string]string
         }
 
   - ul:
@@ -894,6 +896,19 @@ body:
       This property is passed from the previous plugin, as set by the
       [on-resolve callback](#on-resolve) that runs in the plugin
       chain.
+      </p>
+
+    - >
+      `with`
+      <p>
+      This contains a map of the [import attributes](https://github.com/tc39/proposal-import-attributes)
+      that were present on the import statement used to import this module. For
+      example, a module imported using <code>with { <wbr>type: <wbr>'json' }</code>
+      will provide a `with` value of <code>{ type: <wbr>'json' }</code> to plugins.
+      A given module is loaded separately for each unique combination of import
+      attributes, so these attributes are guaranteed to have been provided by all
+      import statements used to import this module. That means they can be used
+      by the plugin to alter the content of this module.
       </p>
 
   - h3: On-load results
