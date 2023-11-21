@@ -1011,6 +1011,7 @@ body:
     - '[`font-kerning`](https://caniuse.com/font-kerning)'
     - '[`hyphens`](https://caniuse.com/css-hyphens)'
     - '[`initial-letter`](https://caniuse.com/css-initial-letter)'
+    - '[`mask-composite`](https://caniuse.com/mdn-css_properties_mask-composite)'
     - '[`mask-image`](https://caniuse.com/mdn-css_properties_mask-image)'
     - '[`mask-origin`](https://caniuse.com/mdn-css_properties_mask-origin)'
     - '[`mask-position`](https://caniuse.com/mdn-css_properties_mask-position)'
