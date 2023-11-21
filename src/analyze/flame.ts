@@ -518,12 +518,11 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     + '</div>'
 
   tooltipEl.className = indexStyles.tooltip
-  mainEl.appendChild(canvas)
-  componentEl.appendChild(mainEl)
-  componentEl.appendChild(tooltipEl)
+  mainEl.append(canvas)
+  componentEl.append(mainEl, tooltipEl)
 
   let sectionEl = document.createElement('section')
-  sectionEl.appendChild(colorLegendEl)
-  componentEl.appendChild(sectionEl)
+  sectionEl.append(colorLegendEl)
+  componentEl.append(sectionEl)
   return componentEl
 }

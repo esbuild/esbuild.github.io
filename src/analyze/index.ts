@@ -44,11 +44,11 @@ export let finishLoading = (json: string): void => {
       chartPanel.innerHTML = ''
 
       if (chartMode === CHART.SUNBURST) {
-        chartPanel.appendChild(createSunburst(metafile))
+        chartPanel.append(createSunburst(metafile))
         useSunburst.classList.add(styles.active)
         localStorageSetItem('chart', 'sunburst')
       } else if (chartMode === CHART.FLAME) {
-        chartPanel.appendChild(createFlame(metafile))
+        chartPanel.append(createFlame(metafile))
         useFlame.classList.add(styles.active)
         localStorageSetItem('chart', 'flame')
       }

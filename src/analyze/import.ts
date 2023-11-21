@@ -48,7 +48,7 @@ importButton.onclick = function () {
   let input = document.createElement('input')
   input.type = 'file'
   input.style.display = 'none'
-  document.body.appendChild(input)
+  document.body.append(input)
   importInput = input
   input.click()
   input.onchange = () => input.files && startLoading(input.files)

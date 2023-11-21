@@ -72,14 +72,14 @@ let generateWarnings = (metafile: Metafile): HTMLElement[] => {
         }
 
         itemEl.innerHTML = html + '<b>' + parts.join('/') + '</b>' + postfix + '</a></pre>'
-        listEl.appendChild(itemEl)
+        listEl.append(itemEl)
 
         itemEl.querySelector('a')!.onclick = () => {
           showWhyFile(metafile, path, null)
         }
       }
 
-      warningEl.appendChild(listEl)
+      warningEl.append(listEl)
       warnings.push(warningEl)
     }
   }
@@ -104,8 +104,8 @@ export let showWarningsPanel = (metafile: Metafile): void => {
     let spanEl = warningsPanel.querySelector('span') as HTMLSpanElement
     let contentEl = document.createElement('div')
     contentEl.className = styles.content
-    for (let warning of warnings) contentEl.appendChild(warning)
-    warningsPanel.appendChild(contentEl)
+    for (let warning of warnings) contentEl.append(warning)
+    warningsPanel.append(contentEl)
 
     warningsPanel.querySelector('a')!.onclick = () => {
       if (contentEl.style.display === 'block') {

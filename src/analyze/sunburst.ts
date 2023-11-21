@@ -429,12 +429,10 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
     }
 
     leftEl.className = styles.left
-    leftEl.appendChild(canvas)
-    leftEl.appendChild(colorLegendEl)
+    leftEl.append(canvas, colorLegendEl)
 
     tooltipEl.className = indexStyles.tooltip
-    mainEl.appendChild(tooltipEl)
-    mainEl.appendChild(leftEl)
+    mainEl.append(tooltipEl, leftEl)
 
     return [draw, () => {
       if (previousHoveredNode !== hoveredNode) {
@@ -517,15 +515,15 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
         let rowEl = document.createElement('a')
         rowEl.className = styles.row
         rowEl.tabIndex = 0
-        barsEl.appendChild(rowEl)
+        barsEl.append(rowEl)
 
         let nameEl = document.createElement('div')
         nameEl.className = styles.name
-        rowEl.appendChild(nameEl)
+        rowEl.append(nameEl)
 
         let sizeEl = document.createElement('div')
         sizeEl.className = styles.size
-        rowEl.appendChild(sizeEl)
+        rowEl.append(sizeEl)
 
         // Use a link so we get keyboard support
         rowEl.href = 'javascript:void 0'
@@ -549,28 +547,28 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
         let rowEl = document.createElement('a')
         rowEl.className = styles.row
         rowEl.tabIndex = 0
-        barsEl.appendChild(rowEl)
+        barsEl.append(rowEl)
 
         let nameEl = document.createElement('div')
         nameEl.className = styles.name
         nameEl.innerHTML = textToHTML(name === child.inputPath_ ? shortenDataURLForDisplay(name) : name)
-        rowEl.appendChild(nameEl)
+        rowEl.append(nameEl)
 
         let sizeEl = document.createElement('div')
         sizeEl.className = styles.size
-        rowEl.appendChild(sizeEl)
+        rowEl.append(sizeEl)
 
         let barEl = document.createElement('div')
         let bgColor = cssBackgroundForInputPath(child.inputPath_)
         barEl.className = styles.bar + (child.bytesInOutput_ ? '' : ' ' + styles.empty)
         barEl.style.background = bgColor
         barEl.style.width = 100 * child.bytesInOutput_ / maxBytesInOutput + '%'
-        sizeEl.appendChild(barEl)
+        sizeEl.append(barEl)
 
         let bytesEl = document.createElement('div')
         bytesEl.className = styles.last
         bytesEl.textContent = colorMode === COLOR.FORMAT ? formatColorToText(bgColor, '') : size
-        barEl.appendChild(bytesEl)
+        barEl.append(bytesEl)
 
         // Use a link so we get keyboard support
         rowEl.href = 'javascript:void 0'
@@ -597,7 +595,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
 
       let segmentsEl = document.createElement('div')
       segmentsEl.className = styles.segments
-      directoryEl.appendChild(segmentsEl)
+      directoryEl.append(segmentsEl)
 
       for (let node: TreeNode | null = currentNode; node; node = node.parent_) {
         let text = node.inputPath_ || '/'
@@ -629,8 +627,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
       }
 
       detailsEl.innerHTML = ''
-      detailsEl.appendChild(directoryEl)
-      detailsEl.appendChild(barsEl)
+      detailsEl.append(directoryEl, barsEl)
     }
 
     let generatedNodes: (TreeNode | null)[] = []
@@ -640,7 +637,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
     let previousHoveredElement: HTMLAnchorElement | null = null
 
     detailsEl.className = styles.details
-    mainEl.appendChild(detailsEl)
+    mainEl.append(detailsEl)
     regenerate()
 
     return [regenerate, () => {
@@ -685,6 +682,6 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
     + 'Input files that take up 0 bytes have been completely eliminated by tree-shaking.'
     + '</p>'
     + '</div>'
-  componentEl.appendChild(mainEl)
+  componentEl.append(mainEl)
   return componentEl
 }

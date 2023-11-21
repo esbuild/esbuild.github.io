@@ -17,6 +17,7 @@ interface ImportRecord {
   inputPath_: string
   originalPath_: string | undefined
   kind_: string
+  with_: Record<string, string> | undefined
 }
 
 interface Info {
@@ -31,6 +32,7 @@ let whyFileEl = document.createElement('div')
 let cachedMetafile: Metafile | undefined
 let cachedInfo: Info | undefined
 let elementToFocusAfterHide: HTMLElement | null = null
+let isIdentifier = /^\w[\w\d]*$/
 
 export let isWhyFileVisible = () => whyFileEl.parentElement !== null
 export let hideWhyFile = () => {
@@ -73,7 +75,7 @@ export let computeImporters = (metafile: Metafile): Info => {
   for (let o of allEntryPointOutputs) {
     let entryPoint = outputs[o].entryPoint!
     if (!hasOwnProperty.call(crossChunkImports, o)) {
-      importers[entryPoint] = { inputPath_: entryPoint, originalPath_: undefined, kind_: 'entry-point' }
+      importers[entryPoint] = { inputPath_: entryPoint, originalPath_: undefined, kind_: 'entry-point', with_: undefined }
       current.push(entryPoint)
     }
   }
@@ -83,7 +85,7 @@ export let computeImporters = (metafile: Metafile): Info => {
   if (!current.length) {
     for (let o of allEntryPointOutputs) {
       let entryPoint = outputs[o].entryPoint!
-      importers[entryPoint] = { inputPath_: entryPoint, originalPath_: undefined, kind_: 'entry-point' }
+      importers[entryPoint] = { inputPath_: entryPoint, originalPath_: undefined, kind_: 'entry-point', with_: undefined }
       current.push(entryPoint)
     }
   }
@@ -102,6 +104,7 @@ export let computeImporters = (metafile: Metafile): Info => {
             inputPath_: path,
             originalPath_: record.original,
             kind_: record.kind,
+            with_: record.with,
           }
           next.push(record.path)
         }
@@ -140,6 +143,9 @@ export let showWhyFile = (metafile: Metafile, path: string, bytesInOutput: numbe
     + 'Original size: <b>' + textToHTML(bytesToText(input.bytes)) + '</b>'
     + (bytesInOutput === null ? '' : '<br>Bundled size: <b>' + textToHTML(bytesToText(bytesInOutput)) + '</b>')
     + (input.format === 'esm' ? '<br>Module format: <b>ESM</b>' : input.format === 'cjs' ? '<br>Module format: <b>CommonJS</b>' : '')
+    + (input.with ? '<br>Import attributes: <b>' + textToHTML(Object.entries(input.with).map(([k, v]) => {
+      return (isIdentifier.test(k) ? k : JSON.stringify(k)) + ': ' + JSON.stringify(v)
+    }).join(', ')) + '</b>' : '')
     + '</p>'
 
   tryToExplainWhyFileIsInBundle(dialogEl, cachedInfo, path)
@@ -149,19 +155,19 @@ export let showWhyFile = (metafile: Metafile, path: string, bytesInOutput: numbe
   closeButtonEl.href = 'javascript:void 0'
   closeButtonEl.onclick = hideWhyFile
   closeButtonEl.innerHTML = '&times;'
-  dialogEl.appendChild(closeButtonEl)
+  dialogEl.append(closeButtonEl)
   dialogEl.tabIndex = 0
 
   whyFileEl.id = styles.whyFile
   whyFileEl.innerHTML = ''
-  whyFileEl.appendChild(dialogEl)
+  whyFileEl.append(dialogEl)
 
   // Note: Don't use an implicit return here because returning false disables selection
   whyFileEl.onmousedown = e => {
     if (e.target === whyFileEl) hideWhyFile()
   }
 
-  document.body.appendChild(whyFileEl)
+  document.body.append(whyFileEl)
 
   // Capture the escape key to close the dialog
   dialogEl.focus()
@@ -202,6 +208,7 @@ let tryToExplainWhyFileIsInBundle = (el: HTMLElement, info: Info, path: string):
         inputPath_: current,
         originalPath_: importer.originalPath_,
         kind_: importer.kind_,
+        with_: importer.with_,
       },
     })
     current = importer.inputPath_
@@ -212,7 +219,7 @@ let tryToExplainWhyFileIsInBundle = (el: HTMLElement, info: Info, path: string):
   let entryPoints = info.entryPoints_
   let outputFileEl: HTMLDivElement | undefined
   let label = 'Entry point'
-  el.appendChild(createText('This file is included in the bundle because:'))
+  el.append('This file is included in the bundle because:')
   for (let item of items) {
     if (hasOwnProperty.call(entryPoints, item.inputPath_)) {
       let outputPathEl = document.createElement('div')
@@ -220,8 +227,8 @@ let tryToExplainWhyFileIsInBundle = (el: HTMLElement, info: Info, path: string):
       outputFileEl.className = styles.outputFile
       outputPathEl.className = styles.outputPath
       outputPathEl.textContent = 'Output file '
-      outputPathEl.appendChild(createCode(entryPoints[item.inputPath_]))
-      outputFileEl.appendChild(outputPathEl)
+      outputPathEl.append(createCode(entryPoints[item.inputPath_]))
+      outputFileEl.append(outputPathEl)
       el.appendChild(outputFileEl)
     }
 
@@ -232,10 +239,12 @@ let tryToExplainWhyFileIsInBundle = (el: HTMLElement, info: Info, path: string):
 
     let labelEl = createText(label + ' ')
     let targetEl = createText(' is included in the bundle.\n')
-    if (outputFileEl.firstChild) outputFileEl.appendChild(createText('\n'))
-    outputFileEl.appendChild(labelEl)
-    outputFileEl.appendChild(createCode(item.inputPath_))
-    outputFileEl.appendChild(targetEl)
+    if (outputFileEl.firstChild) outputFileEl.append('\n')
+    outputFileEl.append(
+      labelEl,
+      createCode(item.inputPath_),
+      targetEl,
+    )
 
     let record = item.import_
     if (record) {
@@ -245,37 +254,55 @@ let tryToExplainWhyFileIsInBundle = (el: HTMLElement, info: Info, path: string):
       arrowEl.className = hasOwnProperty.call(entryPoints, record.inputPath_) ? styles.longArrow : styles.arrow
 
       if (record.kind_ === 'import-statement') {
-        preEl.appendChild(createSpanWithClass('keyword', 'import '))
-        preEl.appendChild(createSpanWithClass('string', JSON.stringify(originalPath)))
-        preEl.appendChild(createText(';'))
+        preEl.append(
+          createSpanWithClass(styles.keyword, 'import '),
+          createSpanWithClass(styles.string, JSON.stringify(originalPath)),
+        )
+        if (record.with_) {
+          preEl.append(createSpanWithClass(styles.keyword, ' with '))
+          appendImportAttributes(preEl, record.with_)
+        }
+        preEl.append(';')
         label = 'Imported file'
       }
 
       else if (record.kind_ === 'require-call') {
-        preEl.appendChild(createText('require('))
-        preEl.appendChild(createSpanWithClass('string', JSON.stringify(originalPath)))
-        preEl.appendChild(createText(');'))
+        preEl.append(
+          'require(',
+          createSpanWithClass(styles.string, JSON.stringify(originalPath)),
+          ');',
+        )
         label = 'Required file'
       }
 
       else if (record.kind_ === 'dynamic-import') {
-        preEl.appendChild(createText('import('))
-        preEl.appendChild(createSpanWithClass('string', JSON.stringify(originalPath)))
-        preEl.appendChild(createText(');'))
+        preEl.append(
+          'import(',
+          createSpanWithClass(styles.string, JSON.stringify(originalPath)),
+        )
+        if (record.with_) {
+          preEl.append(', ')
+          appendImportAttributes(preEl, { with: record.with_ })
+        }
+        preEl.append(');')
         label = 'Dynamically-imported file'
       }
 
       else if (record.kind_ === 'import-rule') {
-        preEl.appendChild(createText('@import '))
-        preEl.appendChild(createSpanWithClass('string', JSON.stringify(originalPath)))
-        preEl.appendChild(createText(';'))
+        preEl.append(
+          '@import ',
+          createSpanWithClass(styles.string, JSON.stringify(originalPath)),
+          ';',
+        )
         label = 'Imported stylesheet'
       }
 
       else if (record.kind_ === 'url-token') {
-        preEl.appendChild(createText('url('))
-        preEl.appendChild(createSpanWithClass('string', JSON.stringify(originalPath)))
-        preEl.appendChild(createText(')'))
+        preEl.append(
+          'url(',
+          createSpanWithClass(styles.string, JSON.stringify(originalPath)),
+          ')',
+        )
         label = 'URL reference'
       }
 
@@ -285,11 +312,37 @@ let tryToExplainWhyFileIsInBundle = (el: HTMLElement, info: Info, path: string):
       }
 
       targetEl.textContent = ' contains:\n'
-      preEl.appendChild(arrowEl)
-      preEl.appendChild(createText('\n'))
-      outputFileEl.appendChild(preEl)
+      preEl.append(
+        arrowEl,
+        '\n',
+      )
+      outputFileEl.append(preEl)
     } else {
       labelEl.textContent = 'So ' + labelEl.textContent!.toLowerCase()
     }
   }
+}
+
+let appendImportAttributes = (el: HTMLElement, attrs: Record<string, string | Record<string, string>>): void => {
+  let keys = Object.keys(attrs)
+  if (keys.length === 0) {
+    el.append('{}')
+    return
+  }
+  el.append('{ ')
+  for (let i = 0; i < keys.length; i++) {
+    let key = keys[i]
+    let value = attrs[key]
+    if (i > 0) el.append(', ')
+    el.append(
+      isIdentifier.test(key) ? key : createSpanWithClass(styles.string, JSON.stringify(key)),
+      ': ',
+    )
+    if (typeof value === 'string') {
+      el.append(createSpanWithClass(styles.string, JSON.stringify(value)))
+    } else {
+      appendImportAttributes(el, value)
+    }
+  }
+  el.append(' }')
 }

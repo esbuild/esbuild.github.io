@@ -7,6 +7,7 @@ export interface InputFile {
   bytes: number
   imports: ImportRecord[]
   format?: 'cjs' | 'esm'
+  with?: Record<string, string>
 }
 
 export interface OutputFile {
@@ -23,6 +24,7 @@ export interface ImportRecord {
   kind: string
   external?: boolean
   original?: string
+  with?: Record<string, string>
 }
 
 export interface InputForOutput {
