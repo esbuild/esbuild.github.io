@@ -3,19 +3,29 @@ import * as styles from './flame.css'
 import { Metafile } from './metafile'
 import { isWhyFileVisible, showWhyFile } from './whyfile'
 import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from './tree'
-import { canvasFillStyleForInputPath, COLOR, colorLegendEl, cssBackgroundForInputPath, formatColorToText, otherColor, setAfterColorMappingUpdate } from './color'
 import { colorMode } from './index'
+import {
+  canvasFillStyleForInputPath,
+  COLOR,
+  colorLegendEl,
+  cssBackgroundForInputPath,
+  moduleTypeLabelInputPath,
+  otherColor,
+  setAfterColorMappingUpdate,
+} from './color'
 import {
   bytesToText,
   commonPrefixFinder,
   isMac,
   isSourceMapPath,
+  now,
   setDarkModeListener,
   setResizeEventListener,
   setWheelEventListener,
   shortenDataURLForDisplay,
   splitPathBySlash,
   stripDisabledPathPrefix,
+  strokeRectWithFirefoxBugWorkaround,
   textToHTML,
 } from './helpers'
 
@@ -166,6 +176,8 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
   let height = 0
   let zoomedOutMin = 0
   let zoomedOutWidth = 0
+  let prevWheelTime = 0
+  let prevWheelWasZoom = false
   let stripeScaleAdjust = 1
   let animationFrame: number | null = null
   let hoveredNode: TreeNode | null = null
@@ -184,11 +196,11 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     }
   }
 
-  let charCodeWidth = (cache: Record<number, number>, ch: number): number => {
-    let width = cache[ch]
+  let charCodeWidth = (ch: number): number => {
+    let width = currentWidthCache[ch]
     if (width === undefined) {
       width = c.measureText(String.fromCharCode(ch)).width
-      cache[ch] = width
+      currentWidthCache[ch] = width
     }
     return width
   }
@@ -217,7 +229,7 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     let n = text.length
     let i = 0
     while (i < n) {
-      textWidth += charCodeWidth(currentWidthCache, text.charCodeAt(i))
+      textWidth += charCodeWidth(text.charCodeAt(i))
       if (textWidth > width) break
       i++
     }
@@ -244,7 +256,10 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     let measuredW: number
     let typesetX = 0
     let typesetW = w + x - textX
-    let fillColor = node.inputPath_ ? canvasFillStyleForInputPath(c, node.inputPath_, zoomedOutMin - viewportMin * scale, CONSTANTS.ROW_HEIGHT, scale * stripeScaleAdjust) : otherColor
+    let fillColor = node.inputPath_
+      ? canvasFillStyleForInputPath(c, node.inputPath_,
+        zoomedOutMin - viewportMin * scale, CONSTANTS.ROW_HEIGHT, scale * stripeScaleAdjust)
+      : otherColor
     let textColor = 'black'
     let childRightEdge = -Infinity
 
@@ -252,7 +267,7 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
       textColor = fgOnColor
       c.font = boldFont
       currentWidthCache = boldWidthCache
-      ellipsisWidth = 3 * charCodeWidth(currentWidthCache, CONSTANTS.DOT_CHAR_CODE)
+      ellipsisWidth = 3 * charCodeWidth(CONSTANTS.DOT_CHAR_CODE)
     } else {
       c.fillStyle = fillColor
       c.fillRect(x, y, rectWidth, CONSTANTS.ROW_HEIGHT)
@@ -283,12 +298,12 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     if (flags & FLAGS.OUTPUT) {
       c.font = normalFont
       currentWidthCache = normalWidthCache
-      ellipsisWidth = 3 * charCodeWidth(currentWidthCache, CONSTANTS.DOT_CHAR_CODE)
+      ellipsisWidth = 3 * charCodeWidth(CONSTANTS.DOT_CHAR_CODE)
     }
 
     // Typeset the node size
     if (typesetX + ellipsisWidth < typesetW) {
-      sizeText = colorMode === COLOR.FORMAT ? formatColorToText(fillColor, ' – ') : node.sizeText_
+      sizeText = colorMode === COLOR.FORMAT ? moduleTypeLabelInputPath(node.inputPath_, ' – ') : node.sizeText_
       measuredW = c.measureText(sizeText).width
       if (typesetX + measuredW > typesetW) {
         sizeText = textOverflowEllipsis(sizeText, typesetW - typesetX)
@@ -306,8 +321,8 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
 
     // Draw the outline
     if (!(flags & FLAGS.OUTPUT)) {
-      c.strokeStyle = '#222'
-      c.strokeRect(x, y, rectWidth, CONSTANTS.ROW_HEIGHT)
+      // Note: The stroke deliberately overlaps the right and bottom edges
+      strokeRectWithFirefoxBugWorkaround(c, '#222', x + 0.5, y + 0.5, rectWidth, CONSTANTS.ROW_HEIGHT)
     }
 
     return rightEdge
@@ -430,8 +445,9 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
       let tooltip = node.name_ === node.inputPath_ ? shortenDataURLForDisplay(node.inputPath_) : node.inputPath_
       let nameSplit = tooltip.length - node.name_.length
       tooltip = textToHTML(tooltip.slice(0, nameSplit)) + '<b>' + textToHTML(tooltip.slice(nameSplit)) + '</b>'
-      if (colorMode === COLOR.FORMAT) tooltip += textToHTML(formatColorToText(cssBackgroundForInputPath(node.inputPath_), ' – '))
-      else tooltip += ' – ' + textToHTML(bytesToText(node.bytesInOutput_))
+      tooltip += colorMode === COLOR.FORMAT
+        ? textToHTML(moduleTypeLabelInputPath(node.inputPath_, ' – '))
+        : ' – ' + textToHTML(bytesToText(node.bytesInOutput_))
       showTooltip(e.pageX, e.pageY + 20, tooltip)
     } else {
       hideTooltip()
@@ -488,9 +504,16 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
   setWheelEventListener(e => {
     if (isWhyFileVisible()) return
 
+    // This compares with the time of the previous zoom to implement "zoom
+    // locking" to prevent zoom from changing to scroll if you zoom by
+    // flicking on the touchpad with a key pressed but release the key while
+    // momentum scrolling is still generating input events.
     let deltaX = e.deltaX
     let deltaY = e.deltaY
-    let isZoom = e.ctrlKey || e.metaKey
+    let wheelTime = now()
+    let isZoom = wheelTime - prevWheelTime < 50 ? prevWheelWasZoom : e.ctrlKey || e.metaKey
+    prevWheelTime = wheelTime
+    prevWheelWasZoom = isZoom
 
     // If we're zooming or panning sideways, then don't let the user interact
     // with the page itself. Note that this has to be ">=" not ">" for Chrome.
@@ -514,6 +537,9 @@ export let createFlame = (metafile: Metafile): HTMLDivElement => {
     + '<p>'
     + 'This visualization shows which input files were placed into each output file in the bundle. '
     + 'Use the scroll wheel with the ' + (isMac ? 'command' : 'control') + ' key to zoom in and out.'
+    + '</p>'
+    + '<p>'
+    + '<b>Benefit of this chart type:</b> Best chart for quick mouse navigation.'
     + '</p>'
     + '</div>'
 

@@ -69,7 +69,43 @@ export let hueAngleToColor = (hueAngle: number): string => {
   return 'hsl(' + hueAngle * 180 / Math.PI + 'deg, ' + Math.round(100 * saturation) + '%, ' + Math.round(100 * lightness) + '%)'
 }
 
-export let createText = (text: string) => {
+let isFirefox = /\bFirefox\//.test(navigator.userAgent)
+
+export let strokeRectWithFirefoxBugWorkaround = (
+  c: CanvasRenderingContext2D,
+  color: string,
+  x: number, y: number, w: number, h: number,
+): void => {
+  // Line drawing in Firefox (at least on macOS) has some really weird bugs:
+  //
+  //   1. Calling "strokeRect" appears to draw four individual line segments
+  //      instead of a single four-line polygon. This is visually different
+  //      from other browsers when the stroke color is partially-transparent.
+  //
+  //   2. Drawing lines appears to be incorrectly offset by 0.5px. Normally
+  //      you need to offset your 1px-wide lines by 0.5px when using center
+  //      stroke so that they fill up the whole pixel instead of straddling
+  //      two pixels. But Firefox offsets by another 0.5px, so lines are
+  //      sharp in all browsers except Firefox.
+  //
+  // As a hack, draw our rectangle outlines using fill instead of stroke on
+  // Firefox. That fixes both of these bugs.
+  if (isFirefox) {
+    let lineWidth = c.lineWidth
+    let halfWidth = lineWidth / 2
+    c.fillStyle = color
+    c.fillRect(x - halfWidth, y - halfWidth, w + lineWidth, lineWidth)
+    c.fillRect(x - halfWidth, y + halfWidth, lineWidth, h - lineWidth)
+    c.fillRect(x - halfWidth, y + h - halfWidth, w + lineWidth, lineWidth)
+    c.fillRect(x + w - halfWidth, y + halfWidth, lineWidth, h - lineWidth)
+    return
+  }
+
+  c.strokeStyle = color
+  c.strokeRect(x, y, w, h)
+}
+
+export let createText = (text: string): Text => {
   return document.createTextNode(text)
 }
 
@@ -181,8 +217,8 @@ export let lastInteractionWasKeyboard = false
 
 let darkMode = matchMedia("(prefers-color-scheme: dark)")
 let darkModeDidChange = () => darkModeListener && darkModeListener()
-export let wheelEventListener: ((e: WheelEvent) => void) | null = null
-export let resizeEventListener: (() => void) | null = null
+let wheelEventListener: ((e: WheelEvent) => void) | null = null
+let resizeEventListener: (() => void) | null = null
 export let darkModeListener: (() => void) | null = null
 
 export let setWheelEventListener = (listener: ((e: WheelEvent) => void) | null) => wheelEventListener = listener

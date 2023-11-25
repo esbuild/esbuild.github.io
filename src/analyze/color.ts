@@ -37,7 +37,13 @@ let colorMapping: ColorMapping = {}
 let afterColorMappingUpdate: (() => void) | null = null
 export let setAfterColorMappingUpdate = (callback: () => void) => afterColorMappingUpdate = callback
 
-export let canvasFillStyleForInputPath = (c: CanvasRenderingContext2D, inputPath: string, originX: number, originY: number, scale: number): string | CanvasPattern => {
+export let canvasFillStyleForInputPath = (
+  c: CanvasRenderingContext2D,
+  inputPath: string,
+  originX: number,
+  originY: number,
+  scale: number,
+): string | CanvasPattern => {
   let color = colorMapping[inputPath] || otherColor
   if (color instanceof Array) {
     let ratio = window.devicePixelRatio || 1
@@ -163,7 +169,12 @@ export let updateColorMapping = (metafile: Metafile, color: COLOR): void => {
   }
 }
 
-let assignColorsByDirectory = (colorMapping: ColorMapping, node: TreeNodeInProgress, startAngle: number, sweepAngle: number): void => {
+let assignColorsByDirectory = (
+  colorMapping: ColorMapping,
+  node: TreeNodeInProgress,
+  startAngle: number,
+  sweepAngle: number,
+): void => {
   let totalBytes = node.bytesInOutput_
   let children = node.children_
   let sorted: TreeNodeInProgress[] = []
@@ -193,7 +204,8 @@ let colorForFormats = (formats: FORMATS): Color => {
   return bothColor
 }
 
-export let formatColorToText = (color: string | CanvasPattern, prefix: string): string => {
+export let moduleTypeLabelInputPath = (inputPath: string, prefix: string): string => {
+  let color = colorMapping[inputPath] || otherColor
   if (color === otherColor) return ''
   if (color === esmColor) return prefix + 'ESM'
   if (color === cjsColor) return prefix + 'CJS'

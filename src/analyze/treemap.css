@@ -1,0 +1,23 @@
+#treemapPanel {
+  margin: 0 -50px;
+  padding: 0 50px;
+
+  & main {
+    position: relative;
+    margin-top: 60px;
+  }
+
+  & canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    margin: auto;
+    padding-bottom: 50px;
+  }
+
+  & section {
+    margin-top: 30px;
+    min-height: 200px;
+  }
+}

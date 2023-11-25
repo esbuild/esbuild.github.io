@@ -1,10 +1,17 @@
 import * as indexStyles from './index.css'
 import * as styles from './sunburst.css'
 import { Metafile } from './metafile'
-import { showWhyFile } from './whyfile'
+import { isWhyFileVisible, showWhyFile } from './whyfile'
 import { accumulatePath, orderChildrenBySize, TreeNodeInProgress } from './tree'
-import { canvasFillStyleForInputPath, COLOR, colorLegendEl, formatColorToText, cssBackgroundForInputPath, setAfterColorMappingUpdate } from './color'
 import { colorMode } from './index'
+import {
+  canvasFillStyleForInputPath,
+  COLOR,
+  colorLegendEl,
+  cssBackgroundForInputPath,
+  moduleTypeLabelInputPath,
+  setAfterColorMappingUpdate,
+} from './color'
 import {
   bytesToText,
   isSourceMapPath,
@@ -14,7 +21,6 @@ import {
   setResizeEventListener,
   setWheelEventListener,
   shortenDataURLForDisplay,
-  splitPathBySlash,
   stripDisabledPathPrefix,
   textToHTML,
 } from './helpers'
@@ -372,12 +378,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
     let previousHoveredNode: TreeNode | null = null
     let historyStack: TreeNode[] = []
 
-    resize()
-    setDarkModeListener(draw)
-    setResizeEventListener(resize)
-    setWheelEventListener(null)
-
-    canvas.onmousemove = e => {
+    let handleMouseMove = (e: MouseEvent): void => {
       let node = hitTestNode(e)
       changeHoveredNode(node)
 
@@ -390,13 +391,26 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
         } else {
           tooltip = '<b>' + textToHTML(shortenDataURLForDisplay(tooltip)) + '</b>'
         }
-        if (colorMode === COLOR.FORMAT) tooltip += textToHTML(formatColorToText(cssBackgroundForInputPath(node.inputPath_), ' – '))
+        if (colorMode === COLOR.FORMAT) tooltip += textToHTML(moduleTypeLabelInputPath(node.inputPath_, ' – '))
         else tooltip += ' – ' + textToHTML(bytesToText(node.bytesInOutput_))
         showTooltip(e.pageX, e.pageY + 20, tooltip)
         canvas.style.cursor = 'pointer'
       } else {
         hideTooltip()
       }
+    }
+
+    resize()
+    setDarkModeListener(draw)
+    setResizeEventListener(resize)
+
+    setWheelEventListener(e => {
+      if (isWhyFileVisible()) return
+      handleMouseMove(e)
+    })
+
+    canvas.onmousemove = e => {
+      handleMouseMove(e)
     }
 
     canvas.onmouseout = () => {
@@ -567,7 +581,7 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
 
         let bytesEl = document.createElement('div')
         bytesEl.className = styles.last
-        bytesEl.textContent = colorMode === COLOR.FORMAT ? formatColorToText(bgColor, '') : size
+        bytesEl.textContent = colorMode === COLOR.FORMAT ? moduleTypeLabelInputPath(child.inputPath_, '') : size
         barEl.append(bytesEl)
 
         // Use a link so we get keyboard support
@@ -680,6 +694,9 @@ export let createSunburst = (metafile: Metafile): HTMLDivElement => {
     + '<p>'
     + 'This visualization shows how much space each input file takes up in the final bundle. '
     + 'Input files that take up 0 bytes have been completely eliminated by tree-shaking.'
+    + '</p>'
+    + '<p>'
+    + '<b>Benefit of this chart type:</b> Can be navigated with the keyboard.'
     + '</p>'
     + '</div>'
   componentEl.append(mainEl)

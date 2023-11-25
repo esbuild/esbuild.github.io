@@ -3,6 +3,7 @@ import './import'
 import './live-reload'
 import { Metafile } from './metafile'
 import { showSummary } from './summary'
+import { createTreemap } from './treemap'
 import { createSunburst } from './sunburst'
 import { createFlame } from './flame'
 import { hideWhyFile } from './whyfile'
@@ -15,14 +16,16 @@ import {
 } from './helpers'
 
 enum CHART {
-  NONE = 0,
-  SUNBURST = 1,
-  FLAME = 2,
+  NONE,
+  TREEMAP,
+  SUNBURST,
+  FLAME,
 }
 
 let startPanel = document.getElementById('startPanel') as HTMLDivElement
 let resultsPanel = document.getElementById('resultsPanel') as HTMLDivElement
 let chartPanel = document.getElementById('chartPanel') as HTMLDivElement
+let useTreemap = document.getElementById('useTreemap') as HTMLAnchorElement
 let useSunburst = document.getElementById('useSunburst') as HTMLAnchorElement
 let useFlame = document.getElementById('useFlame') as HTMLAnchorElement
 let chartMode = CHART.NONE
@@ -37,17 +40,26 @@ export let finishLoading = (json: string): void => {
 
   let useChart = (use: CHART): void => {
     if (chartMode !== use) {
-      if (chartMode === CHART.SUNBURST) useSunburst.classList.remove(styles.active)
+      if (chartMode === CHART.TREEMAP) useTreemap.classList.remove(styles.active)
+      else if (chartMode === CHART.SUNBURST) useSunburst.classList.remove(styles.active)
       else if (chartMode === CHART.FLAME) useFlame.classList.remove(styles.active)
 
       chartMode = use
       chartPanel.innerHTML = ''
 
-      if (chartMode === CHART.SUNBURST) {
+      if (chartMode === CHART.TREEMAP) {
+        chartPanel.append(createTreemap(metafile))
+        useTreemap.classList.add(styles.active)
+        localStorageSetItem('chart', 'treemap')
+      }
+
+      else if (chartMode === CHART.SUNBURST) {
         chartPanel.append(createSunburst(metafile))
         useSunburst.classList.add(styles.active)
         localStorageSetItem('chart', 'sunburst')
-      } else if (chartMode === CHART.FLAME) {
+      }
+
+      else if (chartMode === CHART.FLAME) {
         chartPanel.append(createFlame(metafile))
         useFlame.classList.add(styles.active)
         localStorageSetItem('chart', 'flame')
@@ -68,6 +80,7 @@ export let finishLoading = (json: string): void => {
 
   startPanel.style.display = 'none'
   resultsPanel.style.display = 'block'
+  useTreemap.onclick = () => useChart(CHART.TREEMAP)
   useSunburst.onclick = () => useChart(CHART.SUNBURST)
   useFlame.onclick = () => useChart(CHART.FLAME)
 
@@ -76,7 +89,10 @@ export let finishLoading = (json: string): void => {
   showSummary(metafile, () => useColor(colorMode === COLOR.DIRECTORY ? COLOR.FORMAT : COLOR.DIRECTORY))
   showWarningsPanel(metafile)
   hideWhyFile()
-  useChart(localStorageGetItem('chart') === 'flame' ? CHART.FLAME : CHART.SUNBURST)
+  useChart(
+    localStorageGetItem('chart') === 'flame' ? CHART.FLAME :
+      localStorageGetItem('chart') === 'sunburst' ? CHART.SUNBURST :
+        CHART.TREEMAP)
   useColor(COLOR.DIRECTORY)
 }
 
