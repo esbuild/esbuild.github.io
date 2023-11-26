@@ -440,7 +440,7 @@ export let createTreemap = (metafile: Metafile): HTMLDivElement => {
 
       // Measure the node name
       let maxWidth = w - CONSTANTS.INSET_X
-      let textY = y + CONSTANTS.HEADER_HEIGHT / 2
+      let textY = y + Math.round(CONSTANTS.INSET_Y / 2)
       let [nameText, nameWidth] = textOverflowEllipsis(node.name_, maxWidth)
       let textX = x + Math.round((w - nameWidth) / 2)
 
