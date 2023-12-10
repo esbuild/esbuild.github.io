@@ -41,7 +41,7 @@ body:
       | [Numeric separators](https://github.com/tc39/proposal-numeric-separator)                                           | `esnext`         | `1_000_000`   |
 
   - p: >
-      These syntax features are conditionally transformed for older browsers depending on the configured language target:
+      These syntax features are conditionally transformed for older browsers depending on the configured language [target](/api/#target):
 
   - table: |
       | Syntax transform                                                                      | Transformed when `--target` is below | Example                     |
@@ -981,20 +981,32 @@ body:
       [data URL](#data-url) loader or the [external file](#external-file) loader.
 
   - p: >
-      Note that by default, esbuild's output will take advantage of all modern
+      These syntax features are conditionally transformed for older browsers depending on the configured language [target](/api/#target):
+
+  - table: |
+      | Syntax transform                                                                     | Example                            |
+      |--------------------------------------------------------------------------------------|------------------------------------|
+      | [Nested declarations](https://www.w3.org/TR/css-nesting-1/)                          | `a { &:hover { color: red } }`     |
+      | [Modern RGB/HSL syntax](https://www.w3.org/TR/css-color-4/#hex-notation)             | `#F008`                            |
+      | [`inset` shorthand](https://developer.mozilla.org/en-US/docs/Web/CSS/Inset)          | `inset: 0`                         |
+      | [`hwb()`](https://www.w3.org/TR/css-color-4/#the-hwb-notation)                       | `hwb(120 30% 50%)`                 |
+      | [`lab()` and `lch()`](https://www.w3.org/TR/css-color-4/#specifying-lab-lch)         | `lab(60 -5 58)`                    |
+      | [`oklab()` and `oklch()`](https://www.w3.org/TR/css-color-4/#specifying-oklab-oklch) | `oklab(0.5 -0.1 0.1)`              |
+      | [`color()`](https://www.w3.org/TR/css-color-4/#color-function)                       | `color(display-p3 1 0 0)`          |
+      | [Color stops with two positions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Images/Using_CSS_gradients#creating_color_bands_stripes) | `linear-gradient(red 2% 4%, blue)` |
+      | [Gradient transition hints](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Images/Using_CSS_gradients#gradient_hints) | `linear-gradient(red, 20%, blue)` |
+      | [Gradient color spaces](https://developer.mozilla.org/en-US/blog/css-color-module-level-4/#comparing_gradients_in_different_color_spaces) | `linear-gradient(in hsl, red, blue)` |
+      | [Gradient hue mode](https://developer.mozilla.org/en-US/blog/css-color-module-level-4/#using_hue_interpolation_modes_in_gradients) | `linear-gradient(in hsl longer hue, red, blue)` |
+
+  - p: >
+      Note that by default, esbuild's output will take advantage of modern
       CSS features. For example, <code>color: <wbr>rgba(255, <wbr>0, <wbr>0, <wbr>0.4)</code>
       will become <code>color: <wbr>#f006</code> when minifying is enabled
-      which makes use of syntax from [CSS Color Module Level 4](https://drafts.csswg.org/css-color-4/#changes-from-3).
+      which makes use of syntax from [CSS Color Module Level 4](https://www.w3.org/TR/css-color-4/#changes-from-3).
       If this is undesired, you must specify esbuild's [target](/api/#target)
       setting to say in which browsers you need the output to work correctly.
       Then esbuild will avoid using CSS features that are too modern for those
       browsers.
-
-  - p: >
-      The new [CSS nesting syntax](https://www.w3.org/TR/css-nesting-1/) is
-      supported. To transform nested CSS into non-nested CSS for older browsers,
-      make sure to specify those older browsers using esbuild's
-      [target](/api/#target) setting.
 
   - p: >
       When you provide a list of browser versions using the [target](/api/#target)

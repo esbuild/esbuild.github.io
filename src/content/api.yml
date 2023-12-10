@@ -5021,6 +5021,11 @@ body:
 
       <p>**CSS:**</p>
       <ul>
+      <li>`color-functions`</li>
+      <li>`gradient-double-position`</li>
+      <li>`gradient-interpolation`</li>
+      <li>`gradient-midpoints`</li>
+      <li>`hwb`</li>
       <li>`hex-rgba`</li>
       <li>`inline-style`</li>
       <li>`inset-property`</li>
