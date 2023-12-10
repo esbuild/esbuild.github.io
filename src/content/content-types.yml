@@ -994,9 +994,14 @@ body:
       | [`oklab()` and `oklch()`](https://www.w3.org/TR/css-color-4/#specifying-oklab-oklch) | `oklab(0.5 -0.1 0.1)`              |
       | [`color()`](https://www.w3.org/TR/css-color-4/#color-function)                       | `color(display-p3 1 0 0)`          |
       | [Color stops with two positions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Images/Using_CSS_gradients#creating_color_bands_stripes) | `linear-gradient(red 2% 4%, blue)` |
-      | [Gradient transition hints](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Images/Using_CSS_gradients#gradient_hints) | `linear-gradient(red, 20%, blue)` |
-      | [Gradient color spaces](https://developer.mozilla.org/en-US/blog/css-color-module-level-4/#comparing_gradients_in_different_color_spaces) | `linear-gradient(in hsl, red, blue)` |
-      | [Gradient hue mode](https://developer.mozilla.org/en-US/blog/css-color-module-level-4/#using_hue_interpolation_modes_in_gradients) | `linear-gradient(in hsl longer hue, red, blue)` |
+      | [Gradient transition hints](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Images/Using_CSS_gradients#gradient_hints) | `linear-gradient(red, 20%, blue)` <sup>1</sup> |
+      | [Gradient color spaces](https://developer.mozilla.org/en-US/blog/css-color-module-level-4/#comparing_gradients_in_different_color_spaces) | `linear-gradient(in hsl, red, blue)` <sup>1</sup> |
+      | [Gradient hue mode](https://developer.mozilla.org/en-US/blog/css-color-module-level-4/#using_hue_interpolation_modes_in_gradients) | `linear-gradient(in hsl longer hue, red, blue)` <sup>1</sup> |
+
+  - p: >
+      <footer>
+      <sup>1</sup> This is demonstrated visually by esbuild's [gradient transformation tests](/gradient-tests/).
+      </footer>
 
   - p: >
       Note that by default, esbuild's output will take advantage of modern

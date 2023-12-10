@@ -27,8 +27,11 @@ function minifyCSS(css) {
   return esbuild.transformSync(css, { loader: 'css', target, minify: true }).code.trim()
 }
 
-fs.mkdirSync(outDir, { recursive: true })
+fs.mkdirSync(path.join(outDir, 'gradient-tests'), { recursive: true })
 fs.copyFileSync(path.join(scriptsDir, 'favicon.svg'), path.join(outDir, 'favicon.svg'))
+fs.copyFileSync(path.join(scriptsDir, 'gradient-tests.html'), path.join(outDir, 'gradient-tests/index.html'))
+fs.writeFileSync(path.join(outDir, 'gradient-tests/style.css'),
+  esbuild.transformSync(fs.readFileSync(path.join(scriptsDir, 'gradient-tests.css'), 'utf8'), { loader: 'css', target }).code)
 
 const minifiedCSS = minifyCSS(fs.readFileSync(path.join(scriptsDir, 'style.css'), 'utf8'))
 const minifiedJS = minifyJS(fs.readFileSync(path.join(scriptsDir, 'script.js'), 'utf8'))
@@ -646,7 +649,7 @@ async function main() {
         const href = inline.attrGet('href')
 
         // Handle special cases
-        if (href === '/analyze/') continue
+        if (href === '/analyze/' || href === '/gradient-tests/') continue
 
         // Check cross-page links
         if (href.startsWith('/')) {
