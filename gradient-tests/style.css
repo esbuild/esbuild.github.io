@@ -1,0 +1,654 @@
+.linear.red_to_green-esbuild {
+  background:
+    linear-gradient(
+      to right,
+      #ff0e0e,
+      #ff3004 6.25%,
+      #fa3900 9.38%,
+      #f54100 12.5%,
+      #de5c00 25%,
+      #ac7a00 50%,
+      #718c00 75%,
+      #5d9000 81.25%,
+      #439300 87.5%,
+      #349400 90.62%,
+      #279500 92.19%,
+      #1b9500 93.75%,
+      #00942a);
+  background:
+    linear-gradient(
+      to right,
+      color(xyz 0.487 0.229 0),
+      color(xyz 0.452 0.229 0.001) 6.25%,
+      color(xyz 0.435 0.229 0.002) 9.38%,
+      color(xyz 0.418 0.228 0.003) 12.5%,
+      color(xyz 0.356 0.228 0.005) 25%,
+      color(xyz 0.246 0.226 0.009) 50%,
+      color(xyz 0.157 0.223 0.012) 75%,
+      color(xyz 0.137 0.223 0.013) 81.25%,
+      color(xyz 0.118 0.222 0.014) 87.5%,
+      color(xyz 0.11 0.222 0.014) 90.62%,
+      color(xyz 0.101 0.221 0.014) 93.75%,
+      color(xyz 0.085 0.22 0.014));
+}
+.radial.red_to_green-esbuild {
+  background:
+    radial-gradient(
+      #ff0e0e,
+      #ff3004 6.25%,
+      #fa3900 9.38%,
+      #f54100 12.5%,
+      #de5c00 25%,
+      #ac7a00 50%,
+      #718c00 75%,
+      #5d9000 81.25%,
+      #439300 87.5%,
+      #349400 90.62%,
+      #279500 92.19%,
+      #1b9500 93.75%,
+      #00942a);
+  background:
+    radial-gradient(
+      color(xyz 0.487 0.229 0),
+      color(xyz 0.452 0.229 0.001) 6.25%,
+      color(xyz 0.435 0.229 0.002) 9.38%,
+      color(xyz 0.418 0.228 0.003) 12.5%,
+      color(xyz 0.356 0.228 0.005) 25%,
+      color(xyz 0.246 0.226 0.009) 50%,
+      color(xyz 0.157 0.223 0.012) 75%,
+      color(xyz 0.137 0.223 0.013) 81.25%,
+      color(xyz 0.118 0.222 0.014) 87.5%,
+      color(xyz 0.11 0.222 0.014) 90.62%,
+      color(xyz 0.101 0.221 0.014) 93.75%,
+      color(xyz 0.085 0.22 0.014));
+}
+.conic.red_to_green-esbuild {
+  background:
+    conic-gradient(
+      #ff0e0e,
+      #ff3004 6.25%,
+      #fa3900 9.38%,
+      #f54100 12.5%,
+      #de5c00 25%,
+      #ac7a00 50%,
+      #718c00 75%,
+      #5d9000 81.25%,
+      #439300 87.5%,
+      #349400 90.62%,
+      #279500 92.19%,
+      #1b9500 93.75%,
+      #00942a);
+  background:
+    conic-gradient(
+      color(xyz 0.487 0.229 0),
+      color(xyz 0.452 0.229 0.001) 6.25%,
+      color(xyz 0.435 0.229 0.002) 9.38%,
+      color(xyz 0.418 0.228 0.003) 12.5%,
+      color(xyz 0.356 0.228 0.005) 25%,
+      color(xyz 0.246 0.226 0.009) 50%,
+      color(xyz 0.157 0.223 0.012) 75%,
+      color(xyz 0.137 0.223 0.013) 81.25%,
+      color(xyz 0.118 0.222 0.014) 87.5%,
+      color(xyz 0.11 0.222 0.014) 90.62%,
+      color(xyz 0.101 0.221 0.014) 93.75%,
+      color(xyz 0.085 0.22 0.014));
+}
+.linear.rainbow_shorter-esbuild {
+  background:
+    linear-gradient(
+      to right,
+      #80ffff 10%,
+      #8080ff 90%);
+}
+.radial.rainbow_shorter-esbuild {
+  background: radial-gradient(#80ffff 10%, #8080ff 90%);
+}
+.conic.rainbow_shorter-esbuild {
+  background: conic-gradient(#80ffff 10%, #8080ff 90%);
+}
+.linear.rainbow_longer-esbuild {
+  background:
+    linear-gradient(
+      to right,
+      #80ffff,
+      #80a0ff 1.25%,
+      #8088ff 1.56%,
+      #9080ff 1.88%,
+      #c080ff 2.5%,
+      #ef80ff 3.12%,
+      #ff80f7 3.44%,
+      #ff80df 3.75%,
+      #ff8080 5%,
+      #ffdf80 6.25%,
+      #fff780 6.56%,
+      #efff80 6.88%,
+      #c0ff80 7.5%,
+      #90ff80 8.12%,
+      #80ff88 8.44%,
+      #80ffa0 8.75%,
+      #80ffff 10%,
+      #80ffb0 20%,
+      #80ff88 25%,
+      #8cff80 27.5%,
+      #a0ff80 30%,
+      #efff80 40%,
+      #fffb80 42.5%,
+      #ffe780 45%,
+      #ffbf80 50%,
+      #ff9880 55%,
+      #ff8480 57.5%,
+      #ff8090 60%,
+      #ff80df 70%,
+      #ff80f3 72.5%,
+      #f780ff 75%,
+      #cf80ff 80%,
+      #8080ff 90%,
+      #df80ff 91.25%,
+      #f780ff 91.56%,
+      #ff80ef 91.88%,
+      #ff80bf 92.5%,
+      #ff8090 93.12%,
+      #ff8880 93.44%,
+      #ffa080 93.75%,
+      #ffff80 95%,
+      #a0ff80 96.25%,
+      #88ff80 96.56%,
+      #80ff90 96.88%,
+      #80ffbf 97.5%,
+      #80ffef 98.12%,
+      #80f7ff 98.44%,
+      #80dfff 98.75%,
+      #8080ff);
+}
+.radial.rainbow_longer-esbuild {
+  background:
+    radial-gradient(
+      #80ffff,
+      #80a0ff 1.25%,
+      #8088ff 1.56%,
+      #9080ff 1.88%,
+      #c080ff 2.5%,
+      #ef80ff 3.12%,
+      #ff80f7 3.44%,
+      #ff80df 3.75%,
+      #ff8080 5%,
+      #ffdf80 6.25%,
+      #fff780 6.56%,
+      #efff80 6.88%,
+      #c0ff80 7.5%,
+      #90ff80 8.12%,
+      #80ff88 8.44%,
+      #80ffa0 8.75%,
+      #80ffff 10%,
+      #80ffb0 20%,
+      #80ff88 25%,
+      #8cff80 27.5%,
+      #a0ff80 30%,
+      #efff80 40%,
+      #fffb80 42.5%,
+      #ffe780 45%,
+      #ffbf80 50%,
+      #ff9880 55%,
+      #ff8480 57.5%,
+      #ff8090 60%,
+      #ff80df 70%,
+      #ff80f3 72.5%,
+      #f780ff 75%,
+      #cf80ff 80%,
+      #8080ff 90%,
+      #df80ff 91.25%,
+      #f780ff 91.56%,
+      #ff80ef 91.88%,
+      #ff80bf 92.5%,
+      #ff8090 93.12%,
+      #ff8880 93.44%,
+      #ffa080 93.75%,
+      #ffff80 95%,
+      #a0ff80 96.25%,
+      #88ff80 96.56%,
+      #80ff90 96.88%,
+      #80ffbf 97.5%,
+      #80ffef 98.12%,
+      #80f7ff 98.44%,
+      #80dfff 98.75%,
+      #8080ff);
+}
+.conic.rainbow_longer-esbuild {
+  background:
+    conic-gradient(
+      #80ffff,
+      #80a0ff 1.25%,
+      #8088ff 1.56%,
+      #9080ff 1.88%,
+      #c080ff 2.5%,
+      #ef80ff 3.12%,
+      #ff80f7 3.44%,
+      #ff80df 3.75%,
+      #ff8080 5%,
+      #ffdf80 6.25%,
+      #fff780 6.56%,
+      #efff80 6.88%,
+      #c0ff80 7.5%,
+      #90ff80 8.12%,
+      #80ff88 8.44%,
+      #80ffa0 8.75%,
+      #80ffff 10%,
+      #80ffb0 20%,
+      #80ff88 25%,
+      #8cff80 27.5%,
+      #a0ff80 30%,
+      #efff80 40%,
+      #fffb80 42.5%,
+      #ffe780 45%,
+      #ffbf80 50%,
+      #ff9880 55%,
+      #ff8480 57.5%,
+      #ff8090 60%,
+      #ff80df 70%,
+      #ff80f3 72.5%,
+      #f780ff 75%,
+      #cf80ff 80%,
+      #8080ff 90%,
+      #df80ff 91.25%,
+      #f780ff 91.56%,
+      #ff80ef 91.88%,
+      #ff80bf 92.5%,
+      #ff8090 93.12%,
+      #ff8880 93.44%,
+      #ffa080 93.75%,
+      #ffff80 95%,
+      #a0ff80 96.25%,
+      #88ff80 96.56%,
+      #80ff90 96.88%,
+      #80ffbf 97.5%,
+      #80ffef 98.12%,
+      #80f7ff 98.44%,
+      #80dfff 98.75%,
+      #8080ff);
+}
+.linear.rainbow_increasing-esbuild {
+  background:
+    linear-gradient(
+      to right,
+      #8080ff 10%,
+      #b477f1 15%,
+      #da6fdc 20%,
+      #f36bc3 25%,
+      #ff72a9 30%,
+      #ff8195 35%,
+      #ff8e83 40%,
+      #ff986d 45%,
+      #f4a960 50%,
+      #e3b95e 55%,
+      #d0c866 60%,
+      #a8e18d 70%,
+      #85f3c6 80%,
+      #7dfae3 85%,
+      #80ffff 90%);
+  background:
+    linear-gradient(
+      to right,
+      #8080ff 10%,
+      #b477f1 15%,
+      #da6fdc 20%,
+      #f36bc3 25%,
+      color(xyz 0.555 0.36 0.418) 30%,
+      color(xyz 0.571 0.387 0.311) 35%,
+      color(xyz 0.57 0.417 0.238) 40%,
+      color(xyz 0.557 0.449 0.194) 45%,
+      #f4a960 50%,
+      #e3b95e 55%,
+      #d0c866 60%,
+      #a8e18d 70%,
+      #85f3c6 80%,
+      #7dfae3 85%,
+      #80ffff 90%);
+}
+.radial.rainbow_increasing-esbuild {
+  background:
+    radial-gradient(
+      #8080ff 10%,
+      #b477f1 15%,
+      #da6fdc 20%,
+      #f36bc3 25%,
+      #ff72a9 30%,
+      #ff8195 35%,
+      #ff8e83 40%,
+      #ff986d 45%,
+      #f4a960 50%,
+      #e3b95e 55%,
+      #d0c866 60%,
+      #a8e18d 70%,
+      #85f3c6 80%,
+      #7dfae3 85%,
+      #80ffff 90%);
+  background:
+    radial-gradient(
+      #8080ff 10%,
+      #b477f1 15%,
+      #da6fdc 20%,
+      #f36bc3 25%,
+      color(xyz 0.555 0.36 0.418) 30%,
+      color(xyz 0.571 0.387 0.311) 35%,
+      color(xyz 0.57 0.417 0.238) 40%,
+      color(xyz 0.557 0.449 0.194) 45%,
+      #f4a960 50%,
+      #e3b95e 55%,
+      #d0c866 60%,
+      #a8e18d 70%,
+      #85f3c6 80%,
+      #7dfae3 85%,
+      #80ffff 90%);
+}
+.conic.rainbow_increasing-esbuild {
+  background:
+    conic-gradient(
+      #8080ff 10%,
+      #b477f1 15%,
+      #da6fdc 20%,
+      #f36bc3 25%,
+      #ff72a9 30%,
+      #ff8195 35%,
+      #ff8e83 40%,
+      #ff986d 45%,
+      #f4a960 50%,
+      #e3b95e 55%,
+      #d0c866 60%,
+      #a8e18d 70%,
+      #85f3c6 80%,
+      #7dfae3 85%,
+      #80ffff 90%);
+  background:
+    conic-gradient(
+      #8080ff 10%,
+      #b477f1 15%,
+      #da6fdc 20%,
+      #f36bc3 25%,
+      color(xyz 0.555 0.36 0.418) 30%,
+      color(xyz 0.571 0.387 0.311) 35%,
+      color(xyz 0.57 0.417 0.238) 40%,
+      color(xyz 0.557 0.449 0.194) 45%,
+      #f4a960 50%,
+      #e3b95e 55%,
+      #d0c866 60%,
+      #a8e18d 70%,
+      #85f3c6 80%,
+      #7dfae3 85%,
+      #80ffff 90%);
+}
+.linear.rainbow_decreasing-esbuild {
+  background:
+    linear-gradient(
+      to right,
+      #80ffff 10%,
+      #80fce2 15%,
+      #8df6c2 20%,
+      #bbe180 30%,
+      #d2d363 35%,
+      #e7c34d 40%,
+      #f7b247 45%,
+      #ffa359 50%,
+      #ff9772 55%,
+      #ff8984 60%,
+      #f177b8 70%,
+      #c477e7 80%,
+      #a57bf7 85%,
+      #8080ff 90%);
+  background:
+    linear-gradient(
+      to right,
+      #80ffff 10%,
+      #80fce2 15%,
+      #8df6c2 20%,
+      #bbe180 30%,
+      #d2d363 35%,
+      #e7c34d 40%,
+      #f7b247 45%,
+      color(xyz 0.568 0.481 0.142) 50%,
+      color(xyz 0.571 0.444 0.184) 55%,
+      color(xyz 0.562 0.41 0.256) 60%,
+      #f177b8 70%,
+      #c477e7 80%,
+      #a57bf7 85%,
+      #8080ff 90%);
+}
+.radial.rainbow_decreasing-esbuild {
+  background:
+    radial-gradient(
+      #80ffff 10%,
+      #80fce2 15%,
+      #8df6c2 20%,
+      #bbe180 30%,
+      #d2d363 35%,
+      #e7c34d 40%,
+      #f7b247 45%,
+      #ffa359 50%,
+      #ff9772 55%,
+      #ff8984 60%,
+      #f177b8 70%,
+      #c477e7 80%,
+      #a57bf7 85%,
+      #8080ff 90%);
+  background:
+    radial-gradient(
+      #80ffff 10%,
+      #80fce2 15%,
+      #8df6c2 20%,
+      #bbe180 30%,
+      #d2d363 35%,
+      #e7c34d 40%,
+      #f7b247 45%,
+      color(xyz 0.568 0.481 0.142) 50%,
+      color(xyz 0.571 0.444 0.184) 55%,
+      color(xyz 0.562 0.41 0.256) 60%,
+      #f177b8 70%,
+      #c477e7 80%,
+      #a57bf7 85%,
+      #8080ff 90%);
+}
+.conic.rainbow_decreasing-esbuild {
+  background:
+    conic-gradient(
+      #80ffff 10%,
+      #80fce2 15%,
+      #8df6c2 20%,
+      #bbe180 30%,
+      #d2d363 35%,
+      #e7c34d 40%,
+      #f7b247 45%,
+      #ffa359 50%,
+      #ff9772 55%,
+      #ff8984 60%,
+      #f177b8 70%,
+      #c477e7 80%,
+      #a57bf7 85%,
+      #8080ff 90%);
+  background:
+    conic-gradient(
+      #80ffff 10%,
+      #80fce2 15%,
+      #8df6c2 20%,
+      #bbe180 30%,
+      #d2d363 35%,
+      #e7c34d 40%,
+      #f7b247 45%,
+      color(xyz 0.568 0.481 0.142) 50%,
+      color(xyz 0.571 0.444 0.184) 55%,
+      color(xyz 0.562 0.41 0.256) 60%,
+      #f177b8 70%,
+      #c477e7 80%,
+      #a57bf7 85%,
+      #8080ff 90%);
+}
+.linear.midpoint_hint-esbuild {
+  background:
+    linear-gradient(
+      to right,
+      #ff0000,
+      #ffff00 37.5%,
+      #f6ff09 50%,
+      #e7ff18 56.25%,
+      #cfff30 62.5%,
+      #adff52 68.75%,
+      #7fff80 75%,
+      #46ffb9 81.25%,
+      #00ffff 87.5%,
+      #0000ff);
+}
+.radial.midpoint_hint-esbuild {
+  background:
+    radial-gradient(
+      #ff0000,
+      #ffff00 37.5%,
+      #f6ff09 50%,
+      #e7ff18 56.25%,
+      #cfff30 62.5%,
+      #adff52 68.75%,
+      #7fff80 75%,
+      #46ffb9 81.25%,
+      #00ffff 87.5%,
+      #0000ff);
+}
+.conic.midpoint_hint-esbuild {
+  background:
+    conic-gradient(
+      #ff0000,
+      #ffff00 37.5%,
+      #f6ff09 50%,
+      #e7ff18 56.25%,
+      #cfff30 62.5%,
+      #adff52 68.75%,
+      #7fff80 75%,
+      #46ffb9 81.25%,
+      #00ffff 87.5%,
+      #0000ff);
+}
+.linear.premultiplied_alpha-esbuild {
+  background:
+    linear-gradient(
+      to right,
+      #ff0000,
+      rgba(250, 0, 5, .792) 1.56%,
+      rgba(248, 0, 7, .718) 3.12%,
+      rgba(244, 0, 11, .62) 6.25%,
+      rgba(236, 0, 19, .486) 12.5%,
+      rgba(214, 0, 41, .306) 25%,
+      rgba(0, 0, 255, .067) 50%,
+      rgba(0, 43, 212, .08) 62.5%,
+      rgba(0, 109, 146, .11) 68.75%,
+      rgba(0, 169, 86, .176) 75%,
+      rgba(0, 209, 46, .282) 81.25%,
+      rgba(0, 233, 22, .447) 87.5%,
+      rgba(0, 247, 8, .682) 93.75%,
+      #00ff00);
+}
+.radial.premultiplied_alpha-esbuild {
+  background:
+    radial-gradient(
+      #ff0000,
+      rgba(250, 0, 5, .792) 1.56%,
+      rgba(248, 0, 7, .718) 3.12%,
+      rgba(244, 0, 11, .62) 6.25%,
+      rgba(236, 0, 19, .486) 12.5%,
+      rgba(214, 0, 41, .306) 25%,
+      rgba(0, 0, 255, .067) 50%,
+      rgba(0, 43, 212, .08) 62.5%,
+      rgba(0, 109, 146, .11) 68.75%,
+      rgba(0, 169, 86, .176) 75%,
+      rgba(0, 209, 46, .282) 81.25%,
+      rgba(0, 233, 22, .447) 87.5%,
+      rgba(0, 247, 8, .682) 93.75%,
+      #00ff00);
+}
+.conic.premultiplied_alpha-esbuild {
+  background:
+    conic-gradient(
+      #ff0000,
+      rgba(250, 0, 5, .792) 1.56%,
+      rgba(248, 0, 7, .718) 3.12%,
+      rgba(244, 0, 11, .62) 6.25%,
+      rgba(236, 0, 19, .486) 12.5%,
+      rgba(214, 0, 41, .306) 25%,
+      rgba(0, 0, 255, .067) 50%,
+      rgba(0, 43, 212, .08) 62.5%,
+      rgba(0, 109, 146, .11) 68.75%,
+      rgba(0, 169, 86, .176) 75%,
+      rgba(0, 209, 46, .282) 81.25%,
+      rgba(0, 233, 22, .447) 87.5%,
+      rgba(0, 247, 8, .682) 93.75%,
+      #00ff00);
+}
+.linear.mixed_units-esbuild {
+  background:
+    linear-gradient(
+      to right,
+      #6e1bff 30px,
+      #7225ff calc(29.06px + 1.88%),
+      #742fff calc(28.12px + 3.75%),
+      #7a42fa calc(26.25px + 7.5%),
+      #8860ea calc(22.5px + 15%),
+      #aa87c7 calc(15px + 30%),
+      #d3a49a calc(7.5px + 45%),
+      #e9b17d calc(3.75px + 52.5%),
+      #ffbd53 60%);
+  background:
+    linear-gradient(
+      to right,
+      color(xyz 0.263 0.11 1.044) 30px,
+      color(xyz 0.265 0.119 1.013) calc(29.06px + 1.88%),
+      color(xyz 0.267 0.129 0.982) calc(28.12px + 3.75%),
+      #7a42fa calc(26.25px + 7.5%),
+      #8860ea calc(22.5px + 15%),
+      #aa87c7 calc(15px + 30%),
+      #d3a49a calc(7.5px + 45%),
+      #e9b17d calc(3.75px + 52.5%),
+      #ffbd53 60%);
+}
+.radial.mixed_units-esbuild {
+  background:
+    radial-gradient(
+      #6e1bff 30px,
+      #7127ff calc(29.06px + 1.88%),
+      #7530ff calc(28.12px + 3.75%),
+      #7c42fb calc(26.25px + 7.5%),
+      #8b60eb calc(22.5px + 15%),
+      #b087c8 calc(15px + 30%),
+      #dca49b calc(7.5px + 45%),
+      #f3b07d calc(3.75px + 52.5%),
+      #ffc173 60%);
+  background:
+    radial-gradient(
+      color(xyz 0.263 0.11 1.044) 30px,
+      color(xyz 0.265 0.12 1.013) calc(29.06px + 1.88%),
+      color(xyz 0.268 0.13 0.983) calc(28.12px + 3.75%),
+      #7c42fb calc(26.25px + 7.5%),
+      #8b60eb calc(22.5px + 15%),
+      #b087c8 calc(15px + 30%),
+      #dca49b calc(7.5px + 45%),
+      #f3b07d calc(3.75px + 52.5%),
+      color(xyz 0.652 0.601 0.162) 60%);
+}
+.conic.mixed_units-esbuild {
+  background:
+    conic-gradient(
+      #6e1bff 8.33%,
+      #7127ff 9.95%,
+      #7530ff 11.56%,
+      #7c42fb 14.79%,
+      #8b60eb 21.25%,
+      #b087c8 34.17%,
+      #dca49b 47.08%,
+      #f3b07d 53.54%,
+      #ffc173 60%);
+  background:
+    conic-gradient(
+      color(xyz 0.263 0.11 1.044) 8.33%,
+      color(xyz 0.265 0.12 1.013) 9.95%,
+      color(xyz 0.268 0.13 0.983) 11.56%,
+      #7c42fb 14.79%,
+      #8b60eb 21.25%,
+      #b087c8 34.17%,
+      #dca49b 47.08%,
+      #f3b07d 53.54%,
+      color(xyz 0.652 0.601 0.162) 60%);
+}

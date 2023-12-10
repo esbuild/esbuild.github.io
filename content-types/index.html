@@ -18,7 +18,7 @@
       <td><code>1_000_000</code></td>
       </tr>
       </tbody>
-      </table><p>These syntax features are conditionally transformed for older browsers depending on the configured language target:</p><table>
+      </table><p>These syntax features are conditionally transformed for older browsers depending on the configured language <a href="/api/#target">target</a>:</p><table>
       <thead>
       <tr>
       <th>Syntax transform</th>
@@ -522,7 +522,60 @@ render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div<
     os.Exit(<span class="hljs-number">1</span>)
   }
 }
-</pre><p>You can <code>@import</code> other CSS files and reference image and font files with <code>url()</code> and esbuild will bundle everything together. Note that you will have to configure a loader for image and font files, since esbuild doesn't have any pre-configured. Usually this is either the <a href="#data-url">data URL</a> loader or the <a href="#external-file">external file</a> loader.</p><p>Note that by default, esbuild's output will take advantage of all modern CSS features. For example, <code>color: <wbr>rgba(255, <wbr>0, <wbr>0, <wbr>0.4)</code> will become <code>color: <wbr>#f006</code> when minifying is enabled which makes use of syntax from <a href="https://drafts.csswg.org/css-color-4/#changes-from-3">CSS Color Module Level 4</a>. If this is undesired, you must specify esbuild's <a href="/api/#target">target</a> setting to say in which browsers you need the output to work correctly. Then esbuild will avoid using CSS features that are too modern for those browsers.</p><p>The new <a href="https://www.w3.org/TR/css-nesting-1/">CSS nesting syntax</a> is supported. To transform nested CSS into non-nested CSS for older browsers, make sure to specify those older browsers using esbuild's <a href="/api/#target">target</a> setting.</p><p>When you provide a list of browser versions using the <a href="/api/#target">target</a> setting, esbuild will also automatically insert vendor prefixes so that your CSS will work in those browsers at those versions or newer. Currently esbuild will do this for the following CSS properties:</p><ul><li><a href="https://caniuse.com/css-appearance"><code>appearance</code></a></li><li><a href="https://caniuse.com/css-backdrop-filter"><code>backdrop-filter</code></a></li><li><a href="https://caniuse.com/background-clip-text"><code>background-clip: text</code></a></li><li><a href="https://caniuse.com/css-boxdecorationbreak"><code>box-decoration-break</code></a></li><li><a href="https://caniuse.com/css-clip-path"><code>clip-path</code></a></li><li><a href="https://caniuse.com/font-kerning"><code>font-kerning</code></a></li><li><a href="https://caniuse.com/css-hyphens"><code>hyphens</code></a></li><li><a href="https://caniuse.com/css-initial-letter"><code>initial-letter</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-composite"><code>mask-composite</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-image"><code>mask-image</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-origin"><code>mask-origin</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-position"><code>mask-position</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-repeat"><code>mask-repeat</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-size"><code>mask-size</code></a></li><li><a href="https://caniuse.com/css-sticky"><code>position: sticky</code></a></li><li><a href="https://caniuse.com/css-color-adjust"><code>print-color-adjust</code></a></li><li><a href="https://caniuse.com/css3-tabsize"><code>tab-size</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-decoration-color"><code>text-decoration-color</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-decoration-line"><code>text-decoration-line</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-decoration-skip"><code>text-decoration-skip</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-emphasis-color"><code>text-emphasis-color</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-emphasis-position"><code>text-emphasis-position</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-emphasis-style"><code>text-emphasis-style</code></a></li><li><a href="https://caniuse.com/css-text-orientation"><code>text-orientation</code></a></li><li><a href="https://caniuse.com/text-size-adjust"><code>text-size-adjust</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_user-select"><code>user-select</code></a></li></ul><h3 id="css-from-js"><a class="permalink" href="#css-from-js">#</a>Import from JavaScript</h3><p>You can also import CSS from JavaScript. When you do this, esbuild will gather all CSS files referenced from a given entry point and bundle it into a sibling CSS output file next to the JavaScript output file for that JavaScript entry point. So if esbuild generates <code>app.js</code> it would also generate <code>app.css</code> containing all CSS files referenced by <code>app.js</code>. Here's an example of importing a CSS file from JavaScript:</p><pre><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;./button.css&#x27;</span>
+</pre><p>You can <code>@import</code> other CSS files and reference image and font files with <code>url()</code> and esbuild will bundle everything together. Note that you will have to configure a loader for image and font files, since esbuild doesn't have any pre-configured. Usually this is either the <a href="#data-url">data URL</a> loader or the <a href="#external-file">external file</a> loader.</p><p>These syntax features are conditionally transformed for older browsers depending on the configured language <a href="/api/#target">target</a>:</p><table>
+      <thead>
+      <tr>
+      <th>Syntax transform</th>
+      <th>Example</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td><a href="https://www.w3.org/TR/css-nesting-1/">Nested declarations</a></td>
+      <td><code>a { &amp;:hover { color: red } }</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://www.w3.org/TR/css-color-4/#hex-notation">Modern RGB/HSL syntax</a></td>
+      <td><code>#F008</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Inset"><code>inset</code> shorthand</a></td>
+      <td><code>inset: 0</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://www.w3.org/TR/css-color-4/#the-hwb-notation"><code>hwb()</code></a></td>
+      <td><code>hwb(120 30% 50%)</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://www.w3.org/TR/css-color-4/#specifying-lab-lch"><code>lab()</code> and <code>lch()</code></a></td>
+      <td><code>lab(60 -5 58)</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://www.w3.org/TR/css-color-4/#specifying-oklab-oklch"><code>oklab()</code> and <code>oklch()</code></a></td>
+      <td><code>oklab(0.5 -0.1 0.1)</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://www.w3.org/TR/css-color-4/#color-function"><code>color()</code></a></td>
+      <td><code>color(display-p3 1 0 0)</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Images/Using_CSS_gradients#creating_color_bands_stripes">Color stops with two positions</a></td>
+      <td><code>linear-gradient(red 2% 4%, blue)</code></td>
+      </tr>
+      <tr>
+      <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Images/Using_CSS_gradients#gradient_hints">Gradient transition hints</a></td>
+      <td><code>linear-gradient(red, 20%, blue)</code> <sup>1</sup></td>
+      </tr>
+      <tr>
+      <td><a href="https://developer.mozilla.org/en-US/blog/css-color-module-level-4/#comparing_gradients_in_different_color_spaces">Gradient color spaces</a></td>
+      <td><code>linear-gradient(in hsl, red, blue)</code> <sup>1</sup></td>
+      </tr>
+      <tr>
+      <td><a href="https://developer.mozilla.org/en-US/blog/css-color-module-level-4/#using_hue_interpolation_modes_in_gradients">Gradient hue mode</a></td>
+      <td><code>linear-gradient(in hsl longer hue, red, blue)</code> <sup>1</sup></td>
+      </tr>
+      </tbody>
+      </table><p><footer> <sup>1</sup> This is demonstrated visually by esbuild's <a href="/gradient-tests/">gradient transformation tests</a>. </footer></p><p>Note that by default, esbuild's output will take advantage of modern CSS features. For example, <code>color: <wbr>rgba(255, <wbr>0, <wbr>0, <wbr>0.4)</code> will become <code>color: <wbr>#f006</code> when minifying is enabled which makes use of syntax from <a href="https://www.w3.org/TR/css-color-4/#changes-from-3">CSS Color Module Level 4</a>. If this is undesired, you must specify esbuild's <a href="/api/#target">target</a> setting to say in which browsers you need the output to work correctly. Then esbuild will avoid using CSS features that are too modern for those browsers.</p><p>When you provide a list of browser versions using the <a href="/api/#target">target</a> setting, esbuild will also automatically insert vendor prefixes so that your CSS will work in those browsers at those versions or newer. Currently esbuild will do this for the following CSS properties:</p><ul><li><a href="https://caniuse.com/css-appearance"><code>appearance</code></a></li><li><a href="https://caniuse.com/css-backdrop-filter"><code>backdrop-filter</code></a></li><li><a href="https://caniuse.com/background-clip-text"><code>background-clip: text</code></a></li><li><a href="https://caniuse.com/css-boxdecorationbreak"><code>box-decoration-break</code></a></li><li><a href="https://caniuse.com/css-clip-path"><code>clip-path</code></a></li><li><a href="https://caniuse.com/font-kerning"><code>font-kerning</code></a></li><li><a href="https://caniuse.com/css-hyphens"><code>hyphens</code></a></li><li><a href="https://caniuse.com/css-initial-letter"><code>initial-letter</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-composite"><code>mask-composite</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-image"><code>mask-image</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-origin"><code>mask-origin</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-position"><code>mask-position</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-repeat"><code>mask-repeat</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_mask-size"><code>mask-size</code></a></li><li><a href="https://caniuse.com/css-sticky"><code>position: sticky</code></a></li><li><a href="https://caniuse.com/css-color-adjust"><code>print-color-adjust</code></a></li><li><a href="https://caniuse.com/css3-tabsize"><code>tab-size</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-decoration-color"><code>text-decoration-color</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-decoration-line"><code>text-decoration-line</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-decoration-skip"><code>text-decoration-skip</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-emphasis-color"><code>text-emphasis-color</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-emphasis-position"><code>text-emphasis-position</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_text-emphasis-style"><code>text-emphasis-style</code></a></li><li><a href="https://caniuse.com/css-text-orientation"><code>text-orientation</code></a></li><li><a href="https://caniuse.com/text-size-adjust"><code>text-size-adjust</code></a></li><li><a href="https://caniuse.com/mdn-css_properties_user-select"><code>user-select</code></a></li></ul><h3 id="css-from-js"><a class="permalink" href="#css-from-js">#</a>Import from JavaScript</h3><p>You can also import CSS from JavaScript. When you do this, esbuild will gather all CSS files referenced from a given entry point and bundle it into a sibling CSS output file next to the JavaScript output file for that JavaScript entry point. So if esbuild generates <code>app.js</code> it would also generate <code>app.css</code> containing all CSS files referenced by <code>app.js</code>. Here's an example of importing a CSS file from JavaScript:</p><pre><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;./button.css&#x27;</span>
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> Button = <span class="hljs-function">(<span class="hljs-params">{ text }</span>) =&gt;</span>
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;button&quot;</span>&gt;</span>{text}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span></pre><p>The bundled JavaScript generated by esbuild will not automatically import the generated CSS into your HTML page for you. Instead, you should import the generated CSS into your HTML page yourself along with the generated JavaScript. This means the browser can download the CSS and JavaScript files in parallel, which is the most efficient way to do it. That looks like this:</p><pre><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
