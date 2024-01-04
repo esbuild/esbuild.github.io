@@ -17,6 +17,7 @@ interface Block {
   parentEl_: HTMLDivElement
   pathEl_: HTMLInputElement
   contentEl_: HTMLTextAreaElement
+  underLinkEl_: HTMLDivElement
 }
 
 const optionsEl = document.querySelector('#buildOptions textarea') as HTMLTextAreaElement
@@ -115,6 +116,111 @@ export function runBuild(): void {
   catch (err) {
     updateBuildOutput({ stderr_: prettyPrintErrorAsStderr(err) }, -1)
   }
+
+  // Show an example link in the default state
+  for (const block of blocks) {
+    block.underLinkEl_.innerHTML = ''
+  }
+  if (!optionsEl.value && blocks.length === 1 && !blocks[0].contentEl_.value) {
+    const a = document.createElement('a')
+    a.href = 'javascript:void 0'
+    a.textContent = 'Load an example...'
+    a.onclick = () => setBuildState('--bundle\n--format=esm\n--outfile=out.js\n--sourcemap\n--drop-labels:DEBUG\n--minify-identifiers', [{
+      isEntryPoint_: true,
+      path_: 'entry.ts',
+      content_: `\
+// This import will be inlined by the bundler
+import * as UnionFind from '@example/union-find'
+
+// Type declarations are automatically removed
+export type Graph<K, V> = Map<K, Node<K, V>>
+export interface Node<K, V> {
+  data: V
+  edges: K[]
+}
+
+export function connectedComponents<K, V>(graph: Graph<K, V>) {
+  let groups = UnionFind.create(graph.keys())
+  let result = new Map<K, K[]>()
+
+  for (let [key, { edges }] of graph)
+    for (let edge of edges)
+      UnionFind.union(groups, key, edge)
+
+  // This is removed by "--drop-labels:DEBUG"
+  DEBUG: console.log('Groups: ' +
+    UnionFind.debugString(groups))
+
+  for (let key of graph.keys()) {
+    let group = UnionFind.find(groups, key)
+    let component = result.get(group) || []
+    component.push(key)
+    result.set(group, component)
+  }
+
+  return [...result.values()]
+}
+
+// This is removed by "--drop-labels:DEBUG"
+DEBUG: {
+  let observed = JSON.stringify(
+    connectedComponents(new Map([
+      ['A', { data: 1, edges: ['C'] }],
+      ['B', { data: 2, edges: ['B'] }],
+      ['C', { data: 3, edges: ['A', 'B'] }],
+      ['X', { data: -1, edges: ['Y'] }],
+      ['Y', { data: -2, edges: ['X'] }],
+      ['Z', { data: -3, edges: [] }],
+    ])))
+  let expected = '[["A","B","C"],["X","Y"],["Z"]]'
+  console.assert(observed === expected,
+    \`Expected \${expected} but got \${observed}\`)
+}`,
+    }, {
+      isEntryPoint_: false,
+      path_: 'node_modules/@example/union-find/index.js',
+      content_: `\
+// See: https://en.wikipedia.org/wiki/Disjoint-set_data_structure
+
+export function create(keys) {
+  let map = new Map()
+  for (let x of keys)
+    map.set(x, x)
+  return map
+}
+
+export function find(map, x) {
+  while (map.get(x) !== x)
+    map.set(x, x = map.get(map.get(x)))
+  return x
+}
+
+export function union(map, a, b) {
+  map.set(find(map, a), find(map, b))
+}
+
+// This is removed by tree-shaking when unused
+export function debugString(map) {
+  let obj = {}
+  for (let [k, v] of map) {
+    obj[k] = v
+    while (map.get(v) !== v)
+      obj[k] += ' => ' + (v = map.get(v))
+  }
+  return JSON.stringify(obj, null, 2)
+}`,
+    }, {
+      isEntryPoint_: false,
+      path_: 'node_modules/@example/union-find/index.d.ts',
+      content_: `\
+// Files related to type checking are ignored by esbuild
+export declare function create<T>(keys: Iterable<T>): Map<T, T>;
+export declare function find<T>(map: Map<T, T>, x: T): T;
+export declare function union<T>(map: Map<T, T>, a: T, b: T): void;
+export declare function debugString<T>(map: Map<T, T>): string;`,
+    }])
+    blocks[0].underLinkEl_.append(a)
+  }
 }
 
 function generateUniqueName(): string {
@@ -168,10 +274,12 @@ function addBlock(isEntryPoint = false, path = '', content = ''): Block {
   const pathEl = document.createElement('input')
   const contentParentEl = document.createElement('div')
   const contentEl = document.createElement('textarea')
+  const underLinkEl = document.createElement('div')
   const block: Block = {
     parentEl_: parentEl,
     pathEl_: pathEl,
     contentEl_: contentEl,
+    underLinkEl_: underLinkEl,
   }
   let sourceMapLinkEl: HTMLAnchorElement | undefined
 
@@ -191,7 +299,8 @@ function addBlock(isEntryPoint = false, path = '', content = ''): Block {
   if (isEntryPoint) parentEl.classList.add('entryPoint')
   contentParentEl.className = 'hasLabel'
   contentParentEl.append(contentEl)
-  parentEl.append(entryEl, pathEl, removeEl, contentParentEl)
+  underLinkEl.className = 'underLink'
+  parentEl.append(entryEl, pathEl, removeEl, contentParentEl, underLinkEl)
   inputsEl.insertBefore(parentEl, addInputEl)
 
   pathEl.oninput = () => {
