@@ -2628,15 +2628,20 @@ body:
   - ul:
     - >
       In the browser, you can load a module using <code>&lt;script <wbr>src="<wbr>file.js" <wbr>type="<wbr>module"&gt;<wbr>&lt;/script&gt;</code>.
+      Do not forget <code>type="<wbr>module"</code> as this will break your
+      code in subtle and confusing ways (omitting <code>type="<wbr>module"</code>
+      means that all top-level variables will end up in the global scope, which
+      will then collide with top-level variables that have the same name in other
+      JavaScript files).
       <br>&nbsp;
 
     - >
-      In node, you can load a module using <code>node <wbr>--experimental-<wbr>modules <wbr>file.mjs</code>.
+      In node, you can load a module using <code>node <wbr>file.mjs</code>.
       Note that node requires the `.mjs` extension unless you have configured
       <code>"type": <wbr>"module"</code> in your `package.json` file.
       You can use the [out extension](#out-extension) setting in esbuild to
       customize the output extension for the files esbuild generates. You can
-      read more about using ECMAScript modules in node [here](https://nodejs.org/api/esm.html).
+      read more about using ECMAScript modules in node [here](https://nodejs.org/api/esm.html#enabling).
 
   - h3: Global name
 

@@ -446,6 +446,42 @@ body:
       JavaScript, an untagged template literal is equivalent to a string literal,
       so esbuild is doing the correct thing here.
 
+  - h2#top-level-name-collisions: Avoiding name collisions
+
+  - p: >
+      Top-level variables in an entry point module should never end up in the
+      global scope when running esbuild's output in a browser. If that happens,
+      it means you did not follow [esbuild's documentation about output formats](/api/#format)
+      and are using esbuild incorrectly. **This is not a bug with esbuild.**
+
+  - p: >
+      Specifically, you must do either one of the following when running
+      esbuild's output in a browser:
+
+  - ol:
+    - >
+      <code>--format=<wbr>iife</code> with <code>&lt;script <wbr>src="..."&gt;</code>
+      <p>
+      If you are running your code in the global scope, then you should be using
+      <code>--format=<wbr>iife</code>. This causes esbuild's output to wrap your
+      code so that top-level variables are declared in a nested scope.
+      </p>
+
+    - >
+      <code>--format=<wbr>esm</code> with <code>&lt;script <wbr>src="..." <wbr>type="module"&gt;</code>
+      <p>
+      If you are using <code>--format=<wbr>esm</code>, then you must run your
+      code as a module. This causes the browser to wrap your code so that
+      top-level variables are declared in a nested scope.
+      </p>
+
+  - p: >
+      Using <code>--format=<wbr>esm</code> with <code>&lt;script <wbr>src="..."&gt;</code>
+      will break your code in subtle and confusing ways (omitting
+      <code>type="<wbr>module"</code> means that all top-level variables will end up
+      in the global scope, which will then collide with top-level variables
+      that have the same name in other JavaScript files).
+
   - h2: Top-level `var`
 
   - p: >
