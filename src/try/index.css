@@ -199,10 +199,15 @@ textarea:focus {
   top: 100%;
   right: 0;
   font-size: 12px;
+}
+
+a.underLink,
+.underLink a {
   opacity: 0.5;
 }
 
-.underLink:hover {
+a.underLink:hover,
+.underLink a:hover {
   opacity: 1;
 }
 

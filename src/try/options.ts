@@ -115,10 +115,64 @@ export function parseOptions(input: string, mode: Mode, switcherEl: HTMLDivEleme
   // Optionally add additional UI if relevant
   if (switcherEl) {
     switcherEl.innerHTML = ''
+    addTypeScriptExperimentalDecoratorUI(switcherEl, isJSON, options, tsconfigRaw, input)
     addSyntaxSwitcherUI(switcherEl, isJSON, options, tsconfigRaw)
   }
 
   return options
+}
+
+// Make it easier to enable TypeScript decorators
+function addTypeScriptExperimentalDecoratorUI(el: HTMLElement, isJSON: boolean, options: Readonly<Record<string, any>>, tsconfigRaw: any, input: string): void {
+  if (tsconfigRaw === undefined) tsconfigRaw = {}
+  if (typeof tsconfigRaw !== 'object') return
+
+  let compilerOptions = tsconfigRaw.compilerOptions
+  if (compilerOptions === undefined) compilerOptions = {}
+  if (typeof compilerOptions !== 'object') return
+
+  if ((options.loader === 'ts' || options.loader === 'tsx') && typeof compilerOptions.experimentalDecorators !== 'boolean') {
+    const newOptions = {
+      ...options,
+      tsconfigRaw: {
+        ...tsconfigRaw,
+        compilerOptions: {
+          ...compilerOptions,
+          experimentalDecorators: true,
+        },
+      },
+    }
+
+    let args: string | undefined
+    if (isJSON) {
+      args = printOptionsAsLooseJSON(newOptions)
+    } else if (options['tsconfigRaw'] === undefined) {
+      args = [
+        input,
+        /\n/.test(input) ? '\n' : ' ',
+        printOptionsAsShellArgs({ tsconfigRaw: newOptions.tsconfigRaw }),
+      ].join('')
+    } else {
+      try {
+        args = printOptionsAsShellArgs(newOptions)
+      } catch {
+        // Not every JSON5 object is representable as CLI options, but that's ok
+      }
+    }
+
+    if (args !== undefined) {
+      const a = document.createElement('a')
+      a.href = 'javascript:void 0'
+      a.textContent = 'Enable TS experimental decorators'
+      a.onclick = () => {
+        const textareaEl = el.parentElement!.querySelector('textarea')!
+        el.innerHTML = ''
+        textareaEl.value = args!
+        textareaEl.dispatchEvent(new Event('input'))
+      }
+      el.append(a, ' ')
+    }
+  }
 }
 
 // Provide a way to switch between the two option syntaxes
