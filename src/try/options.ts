@@ -101,45 +101,53 @@ export function parseOptions(input: string, mode: Mode, switcherEl: HTMLDivEleme
         else if (supported[key] === 'false') supported[key] = false
       }
     }
+  }
 
-    // Parsing this makes it more readable when printing it as JSON
-    if (options['tsconfigRaw'] !== undefined) {
-      try {
-        options['tsconfigRaw'] = JSON.parse(options['tsconfigRaw'])
-      } catch {
-      }
+  // Parsing this makes it more readable when printing it as JSON
+  let tsconfigRaw = options['tsconfigRaw']
+  if (tsconfigRaw !== undefined) {
+    try {
+      tsconfigRaw = JSON.parse(tsconfigRaw)
+    } catch {
     }
   }
 
-  // Optionally provide a way to switch between the two types of options
+  // Optionally add additional UI if relevant
   if (switcherEl) {
-    let args: string | undefined
-    const a = document.createElement('a')
-    a.href = 'javascript:void 0'
     switcherEl.innerHTML = ''
-    if (isJSON) {
-      try {
-        args = printOptionsAsShellArgs(options)
-        a.textContent = 'Switch to CLI syntax'
-      } catch {
-        // Not every JSON5 object is representable as CLI options, but that's ok
-      }
-    } else {
-      args = printOptionsAsLooseJSON(options)
-      a.textContent = 'Switch to JS syntax'
-    }
-    if (args !== undefined) {
-      a.onclick = () => {
-        const textareaEl = switcherEl.parentElement!.querySelector('textarea')!
-        switcherEl.innerHTML = ''
-        textareaEl.value = args!
-        textareaEl.dispatchEvent(new Event('input'))
-      }
-      switcherEl.append(a)
-    }
+    addSyntaxSwitcherUI(switcherEl, isJSON, options, tsconfigRaw)
   }
 
   return options
+}
+
+// Provide a way to switch between the two option syntaxes
+function addSyntaxSwitcherUI(el: HTMLElement, isJSON: boolean, options: Readonly<Record<string, any>>, tsconfigRaw: any): void {
+  let args: string | undefined
+  const a = document.createElement('a')
+
+  if (isJSON) {
+    try {
+      args = printOptionsAsShellArgs(options)
+      a.textContent = 'Switch to CLI syntax'
+    } catch {
+      // Not every JSON5 object is representable as CLI options, but that's ok
+    }
+  } else {
+    args = printOptionsAsLooseJSON(tsconfigRaw ? { ...options, tsconfigRaw } : options)
+    a.textContent = 'Switch to JS syntax'
+  }
+
+  if (args !== undefined) {
+    a.href = 'javascript:void 0'
+    a.onclick = () => {
+      const textareaEl = el.parentElement!.querySelector('textarea')!
+      el.innerHTML = ''
+      textareaEl.value = args!
+      textareaEl.dispatchEvent(new Event('input'))
+    }
+    el.append(a)
+  }
 }
 
 function parseOptionsAsShellArgs(input: string, mode: Mode): Record<string, any> {
