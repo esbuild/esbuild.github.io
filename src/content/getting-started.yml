@@ -533,7 +533,7 @@ body:
       let ts = 'let test: boolean = true'
       let result = await esbuild.transform(ts, { loader: 'ts' })
       console.log('result:', result)
-      esbuild.stop()
+      await esbuild.stop()
 
   - p: >
       It has basically the same API as esbuild's npm package with one addition:
@@ -551,7 +551,7 @@ body:
       let ts = 'let test: boolean = true'
       let result = await esbuild.transform(ts, { loader: 'ts' })
       console.log('result:', result)
-      esbuild.stop()
+      await esbuild.stop()
 
   - p: >
       Using WebAssembly instead of native means you do not need to specify Deno's
