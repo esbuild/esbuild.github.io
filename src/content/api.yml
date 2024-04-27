@@ -20,6 +20,16 @@ body:
       `--foo:bar` is used for flags that have multiple values and can be
       re-specified multiple times such as [`--external:`](#external).
       </p>
+      <p>
+      Also keep in mind that using a CLI (in general, not specific to esbuild)
+      means that your current shell interprets the command's arguments before
+      the command you are running sees them. For example, even though the `echo`
+      command just writes out what it reads in, `echo "foo"` can print `foo`
+      instead of `"foo"`, and `echo *.json` can print `package.json` instead of
+      `*.json` (the specific behavior depends on which shell you use). If you
+      want to avoid the problems that shell-specific behavior can cause, then
+      you should use esbuild's JavaScript or Go APIs instead of esbuild's CLI.
+      </p>
 
     - >
       <p>
@@ -2013,6 +2023,54 @@ body:
   - p: >
       This will generate two output files, `out/out1.js` and `out/out2.js`
       corresponding to the two entry points `home.ts` and `settings.ts`.
+
+  - h4: Glob-style entry points
+
+  - p: >
+      If an entry point contains the `*` character, then it's considered to be
+      a [glob](https://en.wikipedia.org/wiki/Glob_(programming)) pattern. This
+      means esbuild will use that entry point as a pattern to search for files
+      on the file system and will then replace that entry point with any
+      matching files that were found. So for example, an entry point of `*.js`
+      will cause esbuild to consider all files in the current directory that
+      end in `.js` to be entry points.
+
+  - p: >
+      The glob matcher that esbuild implements is intentionally simple, and does
+      not support more advanced features found in certain other glob libraries.
+      Only two kinds of wildcards are supported:
+
+  - ul:
+    - >
+      `*`
+      <p>
+      This wildcard matches any number of characters (including none) except
+      that it does not match a slash character (i.e. a `/`), which means it
+      does not cause esbuild to traverse into subdirectories. For example,
+      `*.js` will match `foo.js` but not `bar/foo.js`.
+      </p>
+
+    - >
+      `/**/`
+      <p>
+      This wildcard matches zero or more path segments, which means it can be
+      used to tell esbuild to match against a whole directory tree. For example,
+      `./**/*.js` will match `./foo.js` and `./bar/foo.js` and `./a/b/c/foo.js`.
+      </p>
+
+  - p: >
+      If you are using esbuild via the CLI, keep in mind that if you do not
+      quote arguments that contain shell metacharacters before you pass them
+      to esbuild, your shell will likely expand them before esbuild sees them.
+      So if you run `esbuild "*.js"` (with quotes) then esbuild will see an
+      entry point of `*.js` and the glob-style entry point rules described
+      above will apply. But if you run `esbuild *.js` (without quotes)
+      then esbuild will see whatever your current shell decided to expand
+      `*.js` into (which may include seeing nothing at all if your shell
+      expanded it into nothing). Using esbuild's built-in glob pattern support
+      can be a convenient way to ensure cross-platform consistency by avoiding
+      shell-specific behavior, but it requires you to quote your arguments
+      correctly so that your shell doesn't interpret them.
 
   - h3: Loader
 
@@ -7821,7 +7879,7 @@ body:
 
   - p: >
       The log level for each message type can be overridden to any value
-      supported by the [log level](/api/#log-level) setting. All
+      supported by the [log level](#log-level) setting. All
       currently-available message types are listed below (click on each one
       for an example log message):
 
