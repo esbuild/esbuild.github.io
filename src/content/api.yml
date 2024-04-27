@@ -6375,6 +6375,7 @@ body:
       and if doing so would result in smaller output. **This is not a bug.**
       Minification means you are asking for smaller output, and the escape
       sequence `\n` takes two bytes while the newline character takes one byte.
+      You can read more about this in the [FAQ entry on this topic](/faq/#minified-newlines).
       </p>
 
     - >
@@ -6414,6 +6415,31 @@ body:
       purposes. If you need to rely on this you should enable the
       [keep names](#keep-names) option.
       </p>
+
+    - >
+      <p>
+      The minifier assumes that built-in JavaScript features behave the way they
+      are expected to behave. These assumptions help esbuild generate more
+      compact code. If you want a JavaScript minifier that doesn't make any
+      assumptions about the behavior of built-in JavaScript features, then
+      esbuild may not be the right JavaScript minifier for you. Here are some
+      examples of these kinds of assumptions (note that this is not an exhaustive
+      list):
+      </p>
+      <ul>
+        <li><p>
+        It's expected that `Array.prototype.join` behaves [as specified](https://tc39.es/ecma262/#sec-array.prototype.join).
+        This means it's safe for esbuild's minifier to transform <code>x = [<wbr>1, <wbr>2, <wbr>3] +<wbr> ''</code>
+        into `x="1,2,3";`.
+        </p></li>
+        <li><p>
+        Accessing the `log` property on the `console` global is expected to not
+        have any side effects. This means it's safe for esbuild's minifier to
+        transform <code>var a, b =<wbr> a ?<wbr> console.<wbr>log(<wbr>x) :<wbr> console.<wbr>log(<wbr>y);</code>
+        into <code>var a,b=<wbr>console.<wbr>log(<wbr>a?x:y);</code> (i.e. esbuild
+        is assuming evaluating `console.log` can't change the value of `a`).
+        </p></li>
+      </ul>
 
     - |
       <p>
