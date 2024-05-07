@@ -68,6 +68,7 @@ body:
       | [Import assertions](https://github.com/tc39/proposal-import-assertions)               | `esnext`                             | `import "x" assert {}`      |
       | [Auto-accessors](https://github.com/tc39/proposal-decorators#class-auto-accessors)    | `esnext`                             | `class { accessor x }`      |
       | [`using` declarations](https://github.com/tc39/proposal-explicit-resource-management) | `esnext`                             | `using x = y`               |
+      | [Decorators](https://github.com/tc39/proposal-decorators)                             | `esnext`                             | `@foo class Bar {}`         |
 
   - p: >
       These syntax features are currently always passed through un-transformed:
@@ -84,7 +85,6 @@ body:
       | [Arbitrary module namespace identifiers](https://github.com/bmeck/proposal-arbitrary-module-namespace-identifiers)     | `es2022`                             | `export {foo as 'f o o'}`   |
       | [RegExp match indices](https://github.com/tc39/proposal-regexp-match-indices)                                          | `es2022`                             | `/x(.+)y/d`<sup>1</sup>     |
       | [Hashbang grammar](https://github.com/tc39/proposal-hashbang)                                                          | `esnext`                             | `#!/usr/bin/env node`       |
-      | [Decorators](https://github.com/tc39/proposal-decorators)                                                              | `esnext`                             | `@foo class Bar {}`         |
       | [RegExp set notation](https://github.com/tc39/proposal-regexp-v-flag)                                                  | `esnext`                             | `/[\w--\d]/`<sup>1</sup>    |
 
   - p: >
