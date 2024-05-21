@@ -892,16 +892,6 @@ body:
 
     - >
       <p>
-      The `EventSource` API is supposed to automatically reconnect for you. However,
-      there's [a bug in Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1809332)
-      that breaks this if the server is ever temporarily unreachable. Workarounds
-      are to use any other browser, to manually reload the page if this happens, or
-      to write more complicated code that manually closes and re-creates the
-      `EventSource` object if there is a connection error.
-      </p>
-
-    - >
-      <p>
       Browser vendors have decided to not implement HTTP/2 without TLS. This
       means that when using the `http://` protocol, each `/esbuild` event source
       will take up one of your precious 6 simultaneous per-domain HTTP/1.1
