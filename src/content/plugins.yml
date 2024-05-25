@@ -363,6 +363,7 @@ body:
           resolveDir: string;
           kind: ResolveKind;
           pluginData: any;
+          with: Record<string, string>;
         }
 
         type ResolveKind =
@@ -384,6 +385,7 @@ body:
           ResolveDir string
           Kind       ResolveKind
           PluginData interface{}
+          With       map[string]string
         }
 
         const (
@@ -456,6 +458,17 @@ body:
       <p>
       This property is passed from the previous plugin, as set by the
       [on-load callback](#on-load) that loaded this file.
+      </p>
+
+    - >
+      `with`
+      <p>
+      This contains a map of the [import attributes](https://github.com/tc39/proposal-import-attributes)
+      that were present on the import statement used to import this module. For
+      example, a module imported using <code>with { <wbr>type: <wbr>'json' }</code>
+      will provide a `with` value of <code>{ type: <wbr>'json' }</code> to plugins.
+      You can use this to resolve to a different path depending on the import
+      attributes.
       </p>
 
   - h3: On-resolve results
@@ -1602,6 +1615,7 @@ body:
           namespace?: string;
           resolveDir?: string;
           pluginData?: any;
+          with?: Record<string, string>;
         }
 
         type ResolveKind =
@@ -1620,6 +1634,7 @@ body:
           Namespace  string
           ResolveDir string
           PluginData interface{}
+          With       map[string]string
         }
 
         const (
@@ -1676,6 +1691,16 @@ body:
       <p>
       This property can be used to pass custom data to whatever [on-resolve callbacks](#on-resolve)
       match this import path. The meaning of this data is left entirely up to you.
+      </p>
+
+    - >
+      `with`
+      <p>
+      This is the [import attributes](https://github.com/tc39/proposal-import-attributes)
+      assocated with the import statement for this path. For example, a `with` value of
+      <code>{ type: <wbr>'json' }</code> would be appropriate for a module imported using
+      <code>with { <wbr>type: <wbr>'json' }</code> attributes on the import statement.
+      This information isn't used by esbuild but may be used by [on-resolve callbacks](#on-resolve).
       </p>
 
   - h3: Resolve results
