@@ -418,6 +418,7 @@ async function formatMessagesInText(text) {
     result = '<span>' + result.replace(/\033\[([^m]*)m/g, (_, escape) => {
       switch (escape) {
         case '1': return '</span><span class="color-bold">'
+        case '4': return '</span><span class="color-underline">'
         case '31': return '</span><span class="color-red">'
         case '32': return '</span><span class="color-green">'
         case '33': return '</span><span class="color-yellow">'

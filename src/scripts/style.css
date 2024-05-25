@@ -420,6 +420,11 @@ body[data-os2=windows] pre.windows2 {
   color: var(--fg-on);
 }
 
+.color-underline {
+  text-decoration: underline;
+  color: var(--fg-on);
+}
+
 .bg-red {
   background: #e24834;
 }

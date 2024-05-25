@@ -7888,12 +7888,18 @@ body:
         <li>
           **JS:**
           <ul>
+            <li><details><summary>`assert-to-with`</summary><pre>{{ FORMAT_MESSAGES('import data from "./data.json" assert { type: "json" }', { sourcefile: 'example.js', supported: { 'import-assertions': false } }) }}</pre></details></li>
+            <li><details><summary>`assert-type-json`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': 'import * as data from "./data.json" assert { type: "json" }; console.log(data.value)', 'data.json': '{}' }, { bundle: true }) }}</pre></details></li>
             <li><details><summary>`assign-to-constant`</summary><pre>{{ FORMAT_MESSAGES('const foo = 1; foo = 2', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`assign-to-define`</summary><pre>{{ FORMAT_MESSAGES('DEFINE = false', { sourcefile: 'example.js', define: { DEFINE: 'true' } }) }}</pre></details></li>
             <li><details><summary>`assign-to-import`</summary><pre>{{ FORMAT_MESSAGES('import foo from "foo"; foo = null', { sourcefile: 'example.js' }) }}</pre></details></li>
             <li><details><summary>`call-import-namespace`</summary><pre>{{ FORMAT_MESSAGES('import * as foo from "foo"; foo()', { sourcefile: 'example.js', format: 'esm' }) }}</pre></details></li>
+            <li><details><summary>`class-name-will-throw`</summary><pre>{{ FORMAT_MESSAGES('class Foo { static key = "foo"; static [Foo.key] = 123 }', { sourcefile: 'example.js' }) }}</pre></details></li>
             <li><details><summary>`commonjs-variable-in-esm`</summary><pre>{{ FORMAT_MESSAGES('exports.foo = 1; export let bar = 2', { sourcefile: 'example.js', format: 'esm' }) }}</pre></details></li>
             <li><details><summary>`delete-super-property`</summary><pre>{{ FORMAT_MESSAGES('class Foo extends Object { foo() { delete super.foo } }', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`direct-eval`</summary><pre>{{ FORMAT_MESSAGES('let apparentlyUnused; eval("actuallyUse(apparentlyUnused)")', { sourcefile: 'example.js', logOverride: { 'direct-eval': 'warning' } }) }}</pre></details></li>
             <li><details><summary>`duplicate-case`</summary><pre>{{ FORMAT_MESSAGES('switch (foo) { case 1: return 1; case 1: return 2 }', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`duplicate-class-member`</summary><pre>{{ FORMAT_MESSAGES('class Foo { x = 1; x = 2 }', { sourcefile: 'example.js' }) }}</pre></details></li>
             <li><details><summary>`duplicate-object-key`</summary><pre>{{ FORMAT_MESSAGES('foo = { bar: 1, bar: 2 }', { sourcefile: 'example.js' }) }}</pre></details></li>
             <li><details><summary>`empty-import-meta`</summary><pre>{{ FORMAT_MESSAGES('foo = import.meta', { sourcefile: 'example.js', target: 'chrome50' }) }}</pre></details></li>
             <li><details><summary>`equals-nan`</summary><pre>{{ FORMAT_MESSAGES('foo = foo.filter(x => x !== NaN)', { sourcefile: 'example.js' }) }}</pre></details></li>
@@ -7905,6 +7911,9 @@ body:
             <li><details><summary>`private-name-will-throw`</summary><pre>{{ FORMAT_MESSAGES('class Foo { get #foo() {} bar() { this.#foo++ } }', { sourcefile: 'example.js' }) }}</pre></details></li>
             <li><details><summary>`semicolon-after-return`</summary><pre>{{ FORMAT_MESSAGES('return\nx', { sourcefile: 'example.js' }) }}</pre></details></li>
             <li><details><summary>`suspicious-boolean-not`</summary><pre>{{ FORMAT_MESSAGES('if (!foo in bar) {\n}', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`suspicious-define`</summary><pre>{{ FORMAT_MESSAGES('', { sourcefile: 'example.js', define: { 'process.env.NODE_ENV': 'production' } }) }}</pre></details></li>
+            <li><details><summary>`suspicious-logical-operator`</summary><pre>{{ FORMAT_MESSAGES('const isInRange = x => 0 && x <= 1', { sourcefile: 'example.js' }) }}</pre></details></li>
+            <li><details><summary>`suspicious-nullish-coalescing`</summary><pre>{{ FORMAT_MESSAGES('return name === user.name ?? ""', { sourcefile: 'example.js' }) }}</pre></details></li>
             <li><details><summary>`this-is-undefined-in-esm`</summary><pre>{{ FORMAT_MESSAGES('this.foo = 1; export let bar = 2', { sourcefile: 'example.js', bundle: true, logOverride: { 'this-is-undefined-in-esm': 'warning' } }) }}</pre></details></li>
             <li><details><summary>`unsupported-dynamic-import`</summary><pre>{{ FORMAT_MESSAGES('import(foo)', { sourcefile: 'example.js', bundle: true, logOverride: { 'unsupported-dynamic-import': 'warning' } }) }}</pre></details></li>
             <li><details><summary>`unsupported-jsx-comment`</summary><pre>{{ FORMAT_MESSAGES('// @jsx 123', { sourcefile: 'example.jsx', loader: 'jsx' }) }}</pre></details></li>
