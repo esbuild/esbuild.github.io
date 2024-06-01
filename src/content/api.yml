@@ -5050,10 +5050,12 @@ body:
       <li>`export-star-as`</li>
       <li>`for-await`</li>
       <li>`for-of`</li>
+      <li>`function-name-configurable`</li>
       <li>`function-or-class-property-access`</li>
       <li>`generator`</li>
       <li>`hashbang`</li>
       <li>`import-assertions`</li>
+      <li>`import-attributes`</li>
       <li>`import-meta`</li>
       <li>`inline-script`</li>
       <li>`logical-assignment`</li>
