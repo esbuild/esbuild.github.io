@@ -1762,7 +1762,7 @@ body:
   - p: 'Loader: `empty`'
 
   - p: >
-      This loader tells tells esbuild to pretend that a file is empty. It can be
+      This loader tells esbuild to pretend that a file is empty. It can be
       a helpful way to remove content from your bundle in certain situations.
       For example, you can configure `.css` files to load with `empty` to prevent
       esbuild from bundling CSS files that are imported into JavaScript files:
