@@ -2880,6 +2880,11 @@ body:
 
   - h3: Line limit
 
+  - warning: >
+      Beware that if you have a custom post-build process (after minification) which relies on a simple search of a static string, 
+      using feature may split strings into two lines such as `"__VITE_PRELOAD__"` becoming `"\\n__VITE_PRELOAD__"` 
+      (slash and newline added inside the string) which could potentially break your build.
+
   - p: >
       This setting is a way to prevent esbuild from generating output files
       with really long lines, which can help editing performance in
