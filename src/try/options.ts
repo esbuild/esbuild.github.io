@@ -7,7 +7,7 @@ import { Mode } from './mode'
 import { RichError } from './output'
 
 const enum Kind {
-  // These must be in the order "-,:[]{}+"
+  // These must be in the order "-,:[]{}()+"
   Minus,
   Comma,
   Colon,
@@ -15,10 +15,13 @@ const enum Kind {
   CloseBracket,
   OpenBrace,
   CloseBrace,
+  OpenParen,
+  CloseParen,
   Plus,
 
   // The order doesn't matter for these
   Identifier,
+  Function,
   Literal,
   String,
 }
@@ -483,7 +486,7 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
       }
 
       // Punctuation
-      const index = '-,:[]{}+'.indexOf(c)
+      const index = '-,:[]{}()+'.indexOf(c)
       if (index >= 0) {
         i++
         token = { line_: tokenLine, column_: tokenColumn, kind_: index as Kind, text_: c, value_: c }
@@ -523,6 +526,7 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
         else if (text === 'undefined') value = undefined
         else if (text === 'Infinity') value = Infinity
         else if (text === 'NaN') value = NaN
+        else if (text === 'function') kind = Kind.Function
         else kind = Kind.Identifier
         token = { line_: tokenLine, column_: tokenColumn, kind_: kind, text_: text, value_: value }
         return
@@ -561,6 +565,25 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
     }
   }
 
+  // Hack: Parse function literals by repeatedly using the browser's parser after each '}' character
+  const scanForFunctionLiteral = (name: string, from: number): Function => {
+    let closeBrace = /\}/g
+    let error = ''
+    closeBrace.lastIndex = from
+
+    for (let match: RegExpExecArray | null; match = closeBrace.exec(input);) {
+      try {
+        const code = new Function('return {' + name + input.slice(from, match.index + 1) + '}.' + name)
+        i = match.index + 1
+        return code()
+      } catch (err) {
+        error = ': ' + err.message
+      }
+    }
+
+    throwRichError(input, 'Invalid function literal' + error, token.line_, token.column_, token.text_.length)
+  }
+
   const parseExpression = (): any => {
     if (token.kind_ as number === Kind.OpenBrace) {
       const object: Record<string, any> = Object.create(null)
@@ -575,10 +598,17 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
             `The original key ${JSON.stringify(token.value_)} is here:`, original.line_, original.column_, original.text_.length)
         }
         const key = token
+        const endOfKey = i
+        let value: any
         nextToken()
-        if (token.kind_ !== Kind.Colon) throwExpectedAfter(key, ':', 'property ' + JSON.stringify(key.value_))
-        nextToken()
-        object[key.value_] = parseExpression()
+        if (token.kind_ === Kind.OpenParen) value = scanForFunctionLiteral(key.value_, endOfKey)
+        else {
+          if (token.kind_ !== Kind.Colon) throwExpectedAfter(key, ':', 'property ' + JSON.stringify(key.value_))
+          nextToken()
+          if (token.kind_ === Kind.Function) value = scanForFunctionLiteral(key.value_, endOfKey)
+          else value = parseExpression()
+        }
+        object[key.value_] = value
         originals[key.value_] = key
         const beforeComma = token
         nextToken()

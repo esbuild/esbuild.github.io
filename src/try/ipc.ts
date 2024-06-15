@@ -160,7 +160,7 @@ async function reloadWorker(version: Version): Promise<Worker> {
 }
 
 export function sendIPC(message: IPCRequest): Promise<IPCResponse> {
-  function activateTask(worker: Worker, task: Task): void {
+  const activateTask = (worker: Worker, task: Task): void => {
     if (activeTask) {
       if (pendingTask) pendingTask.abort_()
       pendingTask = task
@@ -183,9 +183,22 @@ export function sendIPC(message: IPCRequest): Promise<IPCResponse> {
 
   return new Promise((resolve, reject) => {
     workerPromise.then(worker => activateTask(worker, {
-      message_: message,
+      message_: serializeFunctions(message),
       resolve_: resolve,
       abort_: () => reject(new Error('Task aborted')),
     }), reject)
   })
+}
+
+// Hack: Serialize "Function" objects as "EvalError" objects instead
+const serializeFunctions = (value: any): any => {
+  if (typeof value === 'function') {
+    const text = value + ''
+    return new EvalError('function ' + value.name + text.slice(text.indexOf('(')))
+  }
+  if (typeof value === 'object' && value) {
+    if (Array.isArray(value)) return value.map(serializeFunctions)
+    else return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, serializeFunctions(v)]))
+  }
+  return value
 }
