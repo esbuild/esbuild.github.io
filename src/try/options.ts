@@ -23,6 +23,12 @@ const enum Kind {
   String,
 }
 
+const enum Flags {
+  None = 0,
+  KeywordsAreIdentifiers = 1 << 0,
+  ExpectEndOfFile = 1 << 1,
+}
+
 interface Token {
   line_: number
   column_: number
@@ -390,7 +396,7 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
       token.line_, token.column_ + token.text_.length, 0, '', 0, 0, 0, expected)
   }
 
-  const nextToken = (expectEndOfFile = false): void => {
+  const nextToken = (flags = Flags.None): void => {
     while (i < n) {
       const tokenLine = line
       const tokenColumn = i - lineStart
@@ -472,7 +478,7 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
       }
 
       // End of file
-      if (expectEndOfFile) {
+      if (flags & Flags.ExpectEndOfFile) {
         throwRichError(input, `Expected end of file after ${where}`, line, i - lineStart, 0)
       }
 
@@ -510,7 +516,8 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
         const text = input.slice(start, i)
         let kind = Kind.Literal
         let value: any = text
-        if (text === 'null') value = null
+        if (flags & Flags.KeywordsAreIdentifiers) kind = Kind.Identifier
+        else if (text === 'null') value = null
         else if (text === 'true') value = true
         else if (text === 'false') value = false
         else if (text === 'undefined') value = undefined
@@ -549,7 +556,7 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
       throwRichError(input, `Unexpected ${JSON.stringify(c)} in ${where}`, line, i - lineStart, 1)
     }
 
-    if (!expectEndOfFile) {
+    if (!(flags & Flags.ExpectEndOfFile)) {
       throwRichError(input, `Unexpected end of file in ${where}`, line, i - lineStart, 0)
     }
   }
@@ -559,7 +566,7 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
       const object: Record<string, any> = Object.create(null)
       const originals: Record<string, Token> = Object.create(null)
       while (true) {
-        nextToken()
+        nextToken(Flags.KeywordsAreIdentifiers)
         if (token.kind_ === Kind.CloseBrace) break
         if (token.kind_ !== Kind.String && token.kind_ !== Kind.Identifier) throwUnexpectedToken()
         const original = originals[token.value_]
@@ -617,7 +624,7 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
 
   nextToken()
   const root = parseExpression()
-  nextToken(true)
+  nextToken(Flags.ExpectEndOfFile)
   return root
 }
 
