@@ -5,14 +5,27 @@
 const enum Kind {
   File,
   Directory,
+  Symlink,
 }
 
 const enum StatsMode {
+  IFLNK = 0o120000,
   IFREG = 0o100000,
   IFDIR = 0o40000,
 }
 
-type Entry = File | Directory
+function kindToStats(kind: Kind): StatsMode {
+  switch (kind) {
+    case Kind.File:
+      return StatsMode.IFREG;
+    case Kind.Directory:
+      return StatsMode.IFDIR;
+    case Kind.Symlink:
+      return StatsMode.IFLNK;
+  }
+}
+
+type Entry = File | Directory | Symlink
 
 interface Metadata {
   inode_: number
@@ -28,6 +41,11 @@ interface File extends Metadata {
 interface Directory extends Metadata {
   kind_: Kind.Directory
   children_: Map<string, Entry>
+}
+
+interface Symlink extends Metadata {
+  kind_: Kind.Symlink
+  target: string
 }
 
 class Stats {
@@ -57,7 +75,7 @@ class Stats {
     const ctimeMs = entry.ctime_.getTime()
     this.dev = 1
     this.ino = entry.inode_
-    this.mode = entry.kind_ === Kind.File ? StatsMode.IFREG : StatsMode.IFDIR
+    this.mode = kindToStats(entry.kind_);
     this.nlink = 1
     this.uid = 1
     this.gid = 1
@@ -82,6 +100,10 @@ class Stats {
   isFile(): boolean {
     return this.mode === StatsMode.IFREG
   }
+
+  isSymbolicLink(): boolean {
+    return this.mode === StatsMode.IFLNK
+  }
 }
 
 interface Handle {
@@ -97,9 +119,9 @@ const ENOTDIR = errorWithCode('ENOTDIR')
 const handles = new Map<number, Handle>()
 const encoder = new TextEncoder
 const decoder = new TextDecoder
-let root: Directory = createDirectory()
 let nextFD = 3
 let nextInode = 1
+let root: Directory = createDirectory()
 export let stderrSinceReset = ''
 
 // The "esbuild-wasm" package overwrites "fs.writeSync" with this value
@@ -136,6 +158,8 @@ function read(
       callback(EBADF, 0, buffer)
     } else if (handle.entry_.kind_ === Kind.Directory) {
       callback(EISDIR, 0, buffer)
+    } else if (handle.entry_.kind_ === Kind.Symlink) {
+      callback(EINVAL, 0, buffer);
     } else {
       const content = handle.entry_.content_
       if (position !== null && position !== -1) {
@@ -160,7 +184,15 @@ export function resetFileSystem(files: Record<string, string>): void {
   root.children_.clear()
   stderrSinceReset = ''
 
+  const records: Array<{ path: string, entry: Entry }> = [];
   for (const path in files) {
+    records.push({ path, entry: createFile(encoder.encode(files[path])) });
+  }
+  populateFileSystem(records);
+}
+
+function populateFileSystem(records: Array<{ path: string, entry: Entry }>): void {
+  for (const { path, entry } of records) {
     const parts = splitPath(absoluteNormalizedPath(path))
     let dir = root
 
@@ -178,8 +210,16 @@ export function resetFileSystem(files: Record<string, string>): void {
 
     const part = parts[parts.length - 1]
     if (dir.children_.has(part)) rejectConflict(part)
-    dir.children_.set(part, createFile(encoder.encode(files[path])))
+    dir.children_.set(part, entry)
   }
+}
+
+export function createSymlinks(links: Record<string, string>): void {
+  const records: Array<{ path: string, entry: Entry }> = [];
+  for (const path in links) {
+    records.push({ path, entry: createSymlink(links[path]) });
+  }
+  populateFileSystem(records);
 }
 
 globalThis.fs = {
@@ -203,7 +243,7 @@ globalThis.fs = {
     callback: (err: Error | null, fd: number | null) => void,
   ) {
     try {
-      const entry = getEntryFromPath(path)
+      const entry = getEntryFromPathFollowingSymlinks(path, false)
       const fd = nextFD++
       handles.set(fd, { entry_: entry, offset_: 0 })
       callback(null, fd)
@@ -231,7 +271,7 @@ globalThis.fs = {
 
   readdir(path: string, callback: (err: Error | null, files: string[] | null) => void) {
     try {
-      const entry = getEntryFromPath(path)
+      const entry = getEntryFromPathFollowingSymlinks(path, false)
       if (entry.kind_ !== Kind.Directory) throw ENOTDIR
       callback(null, [...entry.children_.keys()])
     } catch (err) {
@@ -241,7 +281,7 @@ globalThis.fs = {
 
   stat(path: string, callback: (err: Error | null, stats: Stats | null) => void) {
     try {
-      const entry = getEntryFromPath(path)
+      const entry = getEntryFromPathFollowingSymlinks(path, false)
       callback(null, new Stats(entry))
     } catch (err) {
       callback(err, null)
@@ -250,7 +290,7 @@ globalThis.fs = {
 
   lstat(path: string, callback: (err: Error | null, stats: Stats | null) => void) {
     try {
-      const entry = getEntryFromPath(path)
+      const entry = getEntryFromPathFollowingSymlinks(path, true)
       callback(null, new Stats(entry))
     } catch (err) {
       callback(err, null)
@@ -263,6 +303,19 @@ globalThis.fs = {
       callback(null, new Stats(handle.entry_))
     } else {
       callback(EBADF, null)
+    }
+  },
+
+  readlink(path: string, callback: (err: Error | null, linkString: string) => void) {
+    try {
+      const entry = getEntryFromPathFollowingSymlinks(path, true)
+      if (entry.kind_ === Kind.Symlink) {
+        callback(null, entry.target);
+      } else {
+        callback(EINVAL, null)
+      }
+    } catch (err) {
+      callback(err, null)
     }
   },
 }
@@ -286,6 +339,17 @@ function createDirectory(): Directory {
     ctime_: now,
     mtime_: now,
     children_: new Map,
+  }
+}
+
+function createSymlink(target: string): Symlink {
+  const now = new Date
+  return {
+    kind_: Kind.Symlink,
+    inode_: nextInode++,
+    ctime_: now,
+    mtime_: now,
+    target,
   }
 }
 
@@ -314,7 +378,7 @@ function splitPath(path: string): string[] {
   return parts
 }
 
-function getEntryFromPath(path: string): Entry {
+function getEntryFromPathFollowingSymlinks(path: string, returnLink: boolean): Entry {
   const parts = splitPath(path)
   let dir = root
   for (let i = 0, n = parts.length; i < n; i++) {
@@ -324,7 +388,12 @@ function getEntryFromPath(path: string): Entry {
       if (i + 1 === n) return child
       throw ENOTDIR
     }
-    dir = child
+    if (child.kind_ === Kind.Symlink) {
+      if (returnLink && i + 1 === n) return child
+      dir = getEntryFromPathFollowingSymlinks(child.target, false)
+    } else {
+      dir = child
+    }
   }
   return dir
 }
