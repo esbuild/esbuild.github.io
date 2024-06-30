@@ -3530,6 +3530,7 @@ body:
             EntryPoints: []string{"app.js"},
             Bundle:      true,
             Outdir:      "out",
+            Write:       true,
           })
 
           if len(result.Errors) > 0 {
@@ -3590,7 +3591,8 @@ body:
           result := api.Build(api.BuildOptions{
             EntryPoints: []string{"app.js"},
             Bundle:      true,
-            Outdir:      "out.js",
+            Outfile:     "out.js",
+            Write:       true,
           })
 
           if len(result.Errors) > 0 {
