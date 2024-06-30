@@ -1035,6 +1035,12 @@ body:
       </p>
     - >
       <p>
+      The [packages](#packages) setting is set to `bundle` by default, which
+      means all packages are allowed to be bundled. This is important because
+      the browser won't otherwise be able to load them.
+      </p>
+    - >
+      <p>
       If a package specifies a map for the
       [`browser`](https://gist.github.com/defunctzombie/4339901/49493836fb873ddaa4b8a7aa0ef2352119f69211)
       field in its `package.json` file, esbuild will use that map to replace
@@ -1099,6 +1105,14 @@ body:
       </p>
     - >
       <p>
+      The [packages](#packages) setting is set to `external` by default, which
+      means all packages are excluded from the bundle. This avoids compatibility
+      problems from packages using node-specific features that don't work with
+      esbuild. If you don't want this behavior, you'll have to explicitly set
+      the [packages](#packages) setting to `bundle` instead.
+      </p>
+    - >
+      <p>
       All [built-in node modules](https://nodejs.org/docs/latest/api/) such
       as `fs` are automatically marked as [external](#external) so they don't
       cause errors when the bundler tries to bundle them.
@@ -1159,6 +1173,11 @@ body:
       is set to `esm`, which uses the `export` syntax introduced with ECMAScript
       2015 (i.e. ES6). You can change the output format if this default is not
       appropriate.
+      </p>
+    - >
+      <p>
+      The [packages](#packages) setting is set to `bundle` by default, which
+      means all packages are allowed to be bundled.
       </p>
     - >
       <p>
@@ -3951,34 +3970,30 @@ body:
       This has several uses. First of all, it can be used to trim unnecessary
       code from your bundle for a code path that you know will never be
       executed. For example, a package may contain code that only runs in node
-      but you will only be using that package in the browser. It can also be
-      used to import code in node at run time from a package that cannot be
-      bundled. For example, the `fsevents` package contains a native extension,
-      which esbuild doesn't support. Marking something as external looks like
-      this:
+      but you will only be using that package in the browser. Marking something
+      as external looks like this:
 
   - example:
       cli:
         - $: |
-            echo 'require("fsevents")' > app.js
+            echo 'require("foo")' > app.js
         - $: |
-            esbuild app.js --bundle --external:fsevents --platform=node
+            esbuild app.js --bundle --external:foo
         - expect: |
             // app.js
-            require("fsevents");
+            require("foo");
 
       mjs: |
         import * as esbuild from 'esbuild'
         import fs from 'node:fs'
 
-        fs.writeFileSync('app.js', 'require("fsevents")')
+        fs.writeFileSync('app.js', 'require("foo")')
 
         await esbuild.build({
           entryPoints: ['app.js'],
           outfile: 'out.js',
           bundle: true,
-          platform: 'node',
-          external: ['fsevents'],
+          external: ['foo'],
         })
 
       go: |
@@ -3989,15 +4004,14 @@ body:
         import "os"
 
         func main() {
-          ioutil.WriteFile("app.js", []byte("require(\"fsevents\")"), 0644)
+          ioutil.WriteFile("app.js", []byte("require(\"foo\")"), 0644)
 
           result := api.Build(api.BuildOptions{
             EntryPoints: []string{"app.js"},
             Outfile:     "out.js",
             Bundle:      true,
             Write:       true,
-            Platform:    api.PlatformNode,
-            External:    []string{"fsevents"},
+            External:    []string{"foo"},
           })
 
           if len(result.Errors) > 0 {
@@ -4278,11 +4292,50 @@ body:
   - h3: Packages
 
   - p: >
-      Use this setting to exclude all of your package's dependencies from the bundle.
-      This is useful when [bundling for node](/getting-started/#bundling-for-node)
+      Use this setting to control whether all of your package's dependencies
+      are excluded from the bundle or not. This is useful when
+      [bundling for node](/getting-started/#bundling-for-node)
       because many npm packages use node-specific features that esbuild doesn't
       support while bundling (such as `__dirname`, `import.meta.url`, `fs.readFileSync`,
-      and `*.node` native binary modules). Using it looks like this:
+      and `*.node` native binary modules). There are two possible values:
+
+  - ul:
+    - >
+      `bundle`
+      <p>
+      This is the default value when the [platform](#platform) is set to
+      `browser`. It means that package imports are allowed to be bundled.
+      Note that this value doesn't mean all packages will be bundled, just that
+      they are allowed to be. You can still exclude individual packages from
+      the bundle using [external](#external).
+      </p>
+
+    - >
+      `external`
+      <p>
+      This is the default value when the [platform](#platform) is set to `node`.
+      It means that all package imports considered external to the bundle,
+      and are not bundled. _Note that your dependencies must still be present
+      on the file system when your bundle is run._ It has the same effect as
+      manually passing each dependency to [external](#external) but is more
+      concise. If you want to customize which of your dependencies are external
+      and which ones aren't, then you should set this to `bundle` instead and
+      then use [external](#external) for individual dependencies.
+      </p>
+      <p>
+      This setting considers all import paths that "look like" package imports
+      in the original source code to be package imports. Specifically import paths
+      that don't start with a path segment of `/` or `.` or `..` are considered
+      to be package imports. The only two exceptions to this rule are
+      [subpath imports](https://nodejs.org/api/packages.html#subpath-imports)
+      (which start with a `#` character) and TypeScript path remappings via
+      [`paths`](https://www.typescriptlang.org/tsconfig/#paths) and/or
+      [`baseUrl`](https://www.typescriptlang.org/tsconfig/#baseUrl) in
+      `tsconfig.json` (which are applied first).
+      </p>
+
+  - p: >
+      Using it looks like this:
 
   - example:
       in:
@@ -4317,15 +4370,6 @@ body:
             os.Exit(1)
           }
         }
-
-  - p: >
-      Enabling this automatically marks all import paths that look like npm
-      packages (i.e. that don't start with a `.` or `..` path component and
-      that aren't absolute paths) as external. It has the same effect as
-      manually passing each dependency to [external](#external) but is more
-      concise. If you want to customize which of your dependencies are
-      external and which ones aren't, then you should be using
-      [external](#external) instead of this setting.
 
   - p: >
       Note that this setting only has an effect when [bundling](#bundle) is

@@ -215,14 +215,12 @@ body:
       If you are bundling code that will be run in node, you should configure
       the [platform](/api/#platform) setting by passing <code>--platform=<wbr>node</code>
       to esbuild. This simultaneously changes a few different settings to
-      node-friendly default values. For example, all packages that are
-      built-in to node such as `fs` are automatically marked as external so
-      esbuild doesn't try to bundle them. This setting also disables the
-      interpretation of the browser field in `package.json`.
-
-  - p: >
-      If your code uses newer JavaScript syntax that doesn't work in your
-      version of node, you will want to configure the [target](/api/#target)
+      node-friendly default values. For example, all of your dependencies are
+      automatically excluded from the bundle to avoid compatibility problems from
+      packages using node-specific features that don't work with esbuild. You
+      can read more in the documentation for the [platform](/api/#platform)
+      setting. If your code uses newer JavaScript syntax that doesn't work in your
+      version of node, you will want to also configure the [target](/api/#target)
       version of node:
 
   - example:
@@ -266,26 +264,27 @@ body:
         }
 
   - p: >
-      You also may not want to bundle your dependencies with esbuild. There
-      are many node-specific features that esbuild doesn't support while
-      bundling such as `__dirname`, `import.meta.url`, `fs.readFileSync`,
-      and `*.node` native binary modules. You can exclude all of your
-      dependencies from the bundle by setting [packages](/api/#packages)
-      to external:
+      _Note that by default, your dependencies must still be present on the
+      file system when your bundle is run._ If you want to include your
+      dependencies in the bundle, you can change the [packages](/api/#packages)
+      setting to `--packages=bundle`. However, this may not work with packages
+      that use node-specific features that esbuild doesn't support while
+      bundling (such as `__dirname`, `import.meta.url`, `fs.readFileSync`, and
+      `*.node` native binary modules):
 
   - example:
       in:
-        app.jsx: '<div/>'
+        app.js: '1 + 2'
 
       cli: |
-        esbuild app.jsx --bundle --platform=node --packages=external
+        esbuild app.js --bundle --platform=node --packages=bundle
 
       js: |
         require('esbuild').buildSync({
-          entryPoints: ['app.jsx'],
+          entryPoints: ['app.js'],
           bundle: true,
           platform: 'node',
-          packages: 'external',
+          packages: 'bundle',
           outfile: 'out.js',
         })
 
@@ -297,10 +296,10 @@ body:
 
         func main() {
           result := api.Build(api.BuildOptions{
-            EntryPoints: []string{"app.jsx"},
+            EntryPoints: []string{"app.js"},
             Bundle:      true,
             Platform:    api.PlatformNode,
-            Packages:    api.PackagesExternal,
+            Packages:    api.PackagesBundle,
             Write:       true,
           })
 
@@ -308,10 +307,6 @@ body:
             os.Exit(1)
           }
         }
-
-  - p: >
-      If you do this, your dependencies must still be present on the file
-      system at run-time since they are no longer included in the bundle.
 
   - h2: Simultaneous platforms
 
