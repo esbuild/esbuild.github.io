@@ -52,7 +52,7 @@ export function resetHeight(el: HTMLTextAreaElement): void {
   document.body.style.paddingBottom = '0'
 }
 
-export function disableAnnoyingBehaviors(el: HTMLTextAreaElement | HTMLInputElement, readOnly = false): void {
+export function disableAnnoyingBehaviors(el: HTMLTextAreaElement | HTMLInputElement, readOnly: boolean): void {
   el.readOnly = readOnly
   el.spellcheck = false
   el.autocapitalize = 'off'
@@ -194,7 +194,7 @@ export function updateBuildOutput({ outputFiles_, metafile_, mangleCache_, stder
       outputPath.append(outputSize)
       textarea.readOnly = true
       textarea.value = file.text.replace(/\n$/, '')
-      disableAnnoyingBehaviors(textarea)
+      disableAnnoyingBehaviors(textarea, true)
       div.className = 'buildOutput hasLabel'
       div.append(textarea)
 

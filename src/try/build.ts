@@ -283,8 +283,8 @@ function addBlock(isEntryPoint = false, path = '', content = ''): Block {
   }
   let sourceMapLinkEl: HTMLAnchorElement | undefined
 
-  disableAnnoyingBehaviors(pathEl)
-  disableAnnoyingBehaviors(contentEl)
+  disableAnnoyingBehaviors(pathEl, false)
+  disableAnnoyingBehaviors(contentEl, false)
   pathEl.placeholder = '<stdin>'
   pathEl.value = path
   entryEl.className = 'entryToggle'
