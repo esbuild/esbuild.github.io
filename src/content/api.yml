@@ -3976,24 +3976,25 @@ body:
   - example:
       cli:
         - $: |
-            echo 'require("foo")' > app.js
+            echo 'import "foo"' > app.js
         - $: |
-            esbuild app.js --bundle --external:foo
+            esbuild app.js --bundle --external:foo --format=esm
         - expect: |
             // app.js
-            require("foo");
+            import "foo";
 
       mjs: |
         import * as esbuild from 'esbuild'
         import fs from 'node:fs'
 
-        fs.writeFileSync('app.js', 'require("foo")')
+        fs.writeFileSync('app.js', 'import "foo"')
 
         await esbuild.build({
           entryPoints: ['app.js'],
           outfile: 'out.js',
           bundle: true,
           external: ['foo'],
+          format: 'esm',
         })
 
       go: |
@@ -4004,7 +4005,7 @@ body:
         import "os"
 
         func main() {
-          ioutil.WriteFile("app.js", []byte("require(\"foo\")"), 0644)
+          ioutil.WriteFile("app.js", []byte("import \"foo\""), 0644)
 
           result := api.Build(api.BuildOptions{
             EntryPoints: []string{"app.js"},
@@ -4012,6 +4013,7 @@ body:
             Bundle:      true,
             Write:       true,
             External:    []string{"foo"},
+            Format:      api.FormatESModule,
           })
 
           if len(result.Errors) > 0 {
