@@ -1640,6 +1640,7 @@ example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span clas
     EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
     Bundle:      <span class="hljs-literal">true</span>,
     Outdir:      <span class="hljs-string">&quot;out&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
   })
 
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
@@ -1670,7 +1671,8 @@ example.versions[<span class="hljs-string">&quot;1.0&quot;</span>] = (<span clas
   result := api.Build(api.BuildOptions{
     EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
     Bundle:      <span class="hljs-literal">true</span>,
-    Outdir:      <span class="hljs-string">&quot;out.js&quot;</span>,
+    Outfile:     <span class="hljs-string">&quot;out.js&quot;</span>,
+    Write:       <span class="hljs-literal">true</span>,
   })
 
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) &gt; <span class="hljs-number">0</span> {
