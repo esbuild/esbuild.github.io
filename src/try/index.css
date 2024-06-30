@@ -391,6 +391,11 @@ a.underLink:hover,
   color: var(--fg-on);
 }
 
+.outputPath span {
+  font-weight: normal;
+  font-style: italic;
+}
+
 #slowWarning {
   display: none;
   color: #CC9C00;

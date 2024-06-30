@@ -16,8 +16,27 @@ const mangleCacheEl = document.createElement('textarea')
 const metafileEl = document.createElement('textarea')
 const sourceMapEl = document.createElement('textarea')
 const buildOutputEls: HTMLTextAreaElement[] = []
+const encoder = new TextEncoder
 let sourceMapLinkEl: HTMLAnchorElement | undefined
+let numberFormat: Intl.NumberFormat | undefined
 let loadingFailure = false
+
+let formatInteger = (value: number): string => {
+  return numberFormat ? numberFormat.format(value) : value + ''
+}
+
+let formatNumberWithDecimal = (value: number): string => {
+  let parts = value.toFixed(1).split('.', 2)
+  return formatInteger(+parts[0]) + '.' + parts[1]
+}
+
+let bytesToText = (bytes: number): string => {
+  if (bytes === 1) return '1 byte'
+  if (bytes < 1024) return formatInteger(bytes) + ' bytes'
+  if (bytes < 1024 * 1024) return formatNumberWithDecimal(bytes / 1024) + ' kb'
+  if (bytes < 1024 * 1024 * 1024) return formatNumberWithDecimal(bytes / (1024 * 1024)) + ' mb'
+  return formatNumberWithDecimal(bytes / (1024 * 1024 * 1024)) + ' gb'
+}
 
 disableAnnoyingBehaviors(transformOutputEl, true)
 disableAnnoyingBehaviors(legalCommentsEl, true)
@@ -167,9 +186,12 @@ export function updateBuildOutput({ outputFiles_, metafile_, mangleCache_, stder
     for (const file of outputFiles_) {
       const div = document.createElement('div')
       const outputPath = document.createElement('div')
+      const outputSize = document.createElement('span')
       const textarea = document.createElement('textarea')
       outputPath.className = 'outputPath'
       outputPath.textContent = file.path.replace(/^\//, '')
+      outputSize.textContent = ' (' + bytesToText(encoder.encode(file.text).length) + ')'
+      outputPath.append(outputSize)
       textarea.readOnly = true
       textarea.value = file.text.replace(/\n$/, '')
       disableAnnoyingBehaviors(textarea)
@@ -285,3 +307,9 @@ addEventListener('resize', () => {
   }
   resetHeight(mangleCacheEl)
 })
+
+// Handle the case where this API doesn't exist
+try {
+  numberFormat = new Intl.NumberFormat()
+} catch {
+}
