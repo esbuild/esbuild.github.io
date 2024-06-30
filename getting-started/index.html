@@ -70,7 +70,7 @@
     os.Exit(<span class="hljs-number">1</span>)
   }
 }
-</pre><p>Some npm packages you want to use may not be designed to be run in the browser. Sometimes you can use esbuild's configuration options to work around certain issues and successfully bundle the package anyway. Undefined globals can be replaced with either the <a href="/api/#define">define</a> feature in simple cases or the <a href="/api/#inject">inject</a> feature in more complex cases.</p><h2 id="bundling-for-node"><a class="permalink" href="#bundling-for-node">#</a>Bundling for node</h2><p>Even though a bundler is not necessary when using node, sometimes it can still be beneficial to process your code with esbuild before running it in node. Bundling can automatically strip TypeScript types, convert ECMAScript module syntax to CommonJS, and transform newer JavaScript syntax into older syntax for a specific version of node. And it may be beneficial to bundle your package before publishing it so that it's a smaller download and so it spends less time reading from the file system when being loaded.</p><p>If you are bundling code that will be run in node, you should configure the <a href="/api/#platform">platform</a> setting by passing <code>--platform=<wbr>node</code> to esbuild. This simultaneously changes a few different settings to node-friendly default values. For example, all packages that are built-in to node such as <code>fs</code> are automatically marked as external so esbuild doesn't try to bundle them. This setting also disables the interpretation of the browser field in <code>package.json</code>.</p><p>If your code uses newer JavaScript syntax that doesn't work in your version of node, you will want to configure the <a href="/api/#target">target</a> version of node:</p><div class="switcher">
+</pre><p>Some npm packages you want to use may not be designed to be run in the browser. Sometimes you can use esbuild's configuration options to work around certain issues and successfully bundle the package anyway. Undefined globals can be replaced with either the <a href="/api/#define">define</a> feature in simple cases or the <a href="/api/#inject">inject</a> feature in more complex cases.</p><h2 id="bundling-for-node"><a class="permalink" href="#bundling-for-node">#</a>Bundling for node</h2><p>Even though a bundler is not necessary when using node, sometimes it can still be beneficial to process your code with esbuild before running it in node. Bundling can automatically strip TypeScript types, convert ECMAScript module syntax to CommonJS, and transform newer JavaScript syntax into older syntax for a specific version of node. And it may be beneficial to bundle your package before publishing it so that it's a smaller download and so it spends less time reading from the file system when being loaded.</p><p>If you are bundling code that will be run in node, you should configure the <a href="/api/#platform">platform</a> setting by passing <code>--platform=<wbr>node</code> to esbuild. This simultaneously changes a few different settings to node-friendly default values. For example, all of your dependencies are automatically excluded from the bundle to avoid compatibility problems from packages using node-specific features that don't work with esbuild. You can read more in the documentation for the <a href="/api/#platform">platform</a> setting. If your code uses newer JavaScript syntax that doesn't work in your version of node, you will want to also configure the <a href="/api/#target">target</a> version of node:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -107,18 +107,18 @@
     os.Exit(<span class="hljs-number">1</span>)
   }
 }
-</pre><p>You also may not want to bundle your dependencies with esbuild. There are many node-specific features that esbuild doesn't support while bundling such as <code>__dirname</code>, <code>import.meta.url</code>, <code>fs.readFileSync</code>, and <code>*.node</code> native binary modules. You can exclude all of your dependencies from the bundle by setting <a href="/api/#packages">packages</a> to external:</p><div class="switcher">
+</pre><p><em>Note that by default, your dependencies must still be present on the file system when your bundle is run.</em> If you want to include your dependencies in the bundle, you can change the <a href="/api/#packages">packages</a> setting to <code>--packages=bundle</code>. However, this may not work with packages that use node-specific features that esbuild doesn't support while bundling (such as <code>__dirname</code>, <code>import.meta.url</code>, <code>fs.readFileSync</code>, and <code>*.node</code> native binary modules):</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
       </div>
-<pre class="switchable cli3">esbuild app.jsx --bundle --platform=node --packages=external
+<pre class="switchable cli3">esbuild app.js --bundle --platform=node --packages=bundle
 </pre>
 <pre class="switchable js3"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;esbuild&#x27;</span>).buildSync({
-  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.jsx&#x27;</span>],
+  <span class="hljs-attr">entryPoints</span>: [<span class="hljs-string">&#x27;app.js&#x27;</span>],
   <span class="hljs-attr">bundle</span>: <span class="hljs-literal">true</span>,
   <span class="hljs-attr">platform</span>: <span class="hljs-string">&#x27;node&#x27;</span>,
-  <span class="hljs-attr">packages</span>: <span class="hljs-string">&#x27;external&#x27;</span>,
+  <span class="hljs-attr">packages</span>: <span class="hljs-string">&#x27;bundle&#x27;</span>,
   <span class="hljs-attr">outfile</span>: <span class="hljs-string">&#x27;out.js&#x27;</span>,
 })
 </pre>
@@ -129,10 +129,10 @@
 
 <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
   result := api.Build(api.BuildOptions{
-    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.jsx&quot;</span>},
+    EntryPoints: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;app.js&quot;</span>},
     Bundle:      <span class="hljs-literal">true</span>,
     Platform:    api.PlatformNode,
-    Packages:    api.PackagesExternal,
+    Packages:    api.PackagesBundle,
     Write:       <span class="hljs-literal">true</span>,
   })
 
@@ -140,8 +140,8 @@
     os.Exit(<span class="hljs-number">1</span>)
   }
 }
-</pre><p>If you do this, your dependencies must still be present on the file system at run-time since they are no longer included in the bundle.</p><h2 id="simultaneous-platforms"><a class="permalink" href="#simultaneous-platforms">#</a>Simultaneous platforms</h2><p>You cannot install esbuild on one OS, copy the <code>node_modules</code> directory to another OS without reinstalling, and then run esbuild on that other OS. This won't work because esbuild is written with native code and needs to install a platform-specific binary executable. Normally this isn't an issue because you typically check your <code>package.json</code> file into version control, not your <code>node_modules</code> directory, and then everyone runs <code>npm install</code> on their local machine after cloning the repository.</p><p>However, people sometimes get into this situation by installing esbuild on Windows or macOS and copying their <code>node_modules</code> directory into a <a href="https://www.docker.com/">Docker</a> image that runs Linux, or by copying their <code>node_modules</code> directory between Windows and <a href="https://docs.microsoft.com/en-us/windows/wsl/">WSL</a> environments. The way to get this to work depends on your package manager:</p><ul><li><p> <strong>npm/pnpm:</strong> If you are installing with npm or pnpm, you can try not copying the <code>node_modules</code> directory when you copy the files over, and running <code>npm ci</code> or <code>npm install</code> on the destination platform after the copy. Or you could consider using <a href="https://yarnpkg.com/">Yarn</a> instead which has built-in support for installing a package on multiple platforms simultaneously. </p></li><li><p> <strong>Yarn:</strong> If you are installing with Yarn, you can try listing both this platform and the other platform in your <code>.yarnrc.yml</code> file using <a href="https://yarnpkg.com/configuration/yarnrc/#supportedArchitectures">the <code>supportedArchitectures</code> feature</a>. Keep in mind that this means multiple copies of esbuild will be present on the file system. </p></li></ul><p>You can also get into this situation on a macOS computer with an ARM processor if you install esbuild using the ARM version of npm but then try to run esbuild with the x86-64 version of node running inside of <a href="https://en.wikipedia.org/wiki/Rosetta_(software)">Rosetta</a>. In that case, an easy fix is to run your code using the ARM version of node instead, which can be downloaded here: <a href="https://nodejs.org/en/download/">https://nodejs.org/en/download/</a>.</p><p>Another alternative is to <a href="#wasm">use the <code>esbuild-wasm</code> package instead</a>, which works the same way on all platforms. But it comes with a heavy performance cost and can sometimes be 10x slower than the <code>esbuild</code> package, so you may also not want to do that.</p><h2 id="yarn-pnp"><a class="permalink" href="#yarn-pnp">#</a>Using Yarn Plug'n'Play</h2><p>Yarn's <a href="https://yarnpkg.com/features/pnp/">Plug'n'Play</a> package installation strategy is supported natively by esbuild. To use it, make sure you are running esbuild such that the <a href="/api/#working-directory">current working directory</a> contains Yarn's generated package manifest JavaScript file (either <code>.pnp.cjs</code> or <code>.pnp.js</code>). If a Yarn Plug'n'Play package manifest is detected, esbuild will automatically resolve package imports to paths inside the <code>.zip</code> files in Yarn's package cache, and will automatically extract these files on the fly during bundling.</p><p>Because esbuild is written in Go, support for Yarn Plug'n'Play has been completely re-implemented in Go instead of relying on Yarn's JavaScript API. This allows Yarn Plug'n'Play package resolution to integrate well with esbuild's fully parallelized bundling pipeline for maximum speed. Note that Yarn's command-line interface adds a lot of unavoidable performance overhead to every command. For maximum esbuild performance, you may want to consider running esbuild without using Yarn's CLI (i.e. not using <code>yarn esbuild</code>). This can result in esbuild running 10x faster.</p><h2 id="other-ways-to-install"><a class="permalink" href="#other-ways-to-install">#</a>Other ways to install</h2><p>The recommended way to install esbuild is to <a href="#install-esbuild">install the native executable using npm</a>. But you can also install esbuild in these ways:</p><h3 id="download-a-build"><a class="permalink" href="#download-a-build">#</a>Download a build</h3><p>If you have a Unix system, you can use the following command to download the <code>esbuild</code> binary executable for your current platform (it will be downloaded to the current working directory):</p><pre>curl -fsSL https://esbuild.github.io/dl/v0.21.4 | sh</pre><p>You can also use <code>latest</code> instead of the version number to download the most recent version of esbuild:</p><pre>curl -fsSL https://esbuild.github.io/dl/latest | sh</pre><p>If you don't want to evaluate a shell script from the internet to download esbuild, you can also manually download the package from npm yourself instead (which is all the above shell script is doing). Although the precompiled native executables are hosted using npm, you don't actually need npm installed to download them. The npm package registry is a normal HTTP server and packages are normal gzipped tar files.</p><p>Here is an example of downloading a binary executable directly:</p><pre class="cli1"><span class="repl-in">curl -O https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.21.4.tgz
-</span><span class="repl-in">tar xzf ./darwin-x64-0.21.4.tgz
+</pre><h2 id="simultaneous-platforms"><a class="permalink" href="#simultaneous-platforms">#</a>Simultaneous platforms</h2><p>You cannot install esbuild on one OS, copy the <code>node_modules</code> directory to another OS without reinstalling, and then run esbuild on that other OS. This won't work because esbuild is written with native code and needs to install a platform-specific binary executable. Normally this isn't an issue because you typically check your <code>package.json</code> file into version control, not your <code>node_modules</code> directory, and then everyone runs <code>npm install</code> on their local machine after cloning the repository.</p><p>However, people sometimes get into this situation by installing esbuild on Windows or macOS and copying their <code>node_modules</code> directory into a <a href="https://www.docker.com/">Docker</a> image that runs Linux, or by copying their <code>node_modules</code> directory between Windows and <a href="https://docs.microsoft.com/en-us/windows/wsl/">WSL</a> environments. The way to get this to work depends on your package manager:</p><ul><li><p> <strong>npm/pnpm:</strong> If you are installing with npm or pnpm, you can try not copying the <code>node_modules</code> directory when you copy the files over, and running <code>npm ci</code> or <code>npm install</code> on the destination platform after the copy. Or you could consider using <a href="https://yarnpkg.com/">Yarn</a> instead which has built-in support for installing a package on multiple platforms simultaneously. </p></li><li><p> <strong>Yarn:</strong> If you are installing with Yarn, you can try listing both this platform and the other platform in your <code>.yarnrc.yml</code> file using <a href="https://yarnpkg.com/configuration/yarnrc/#supportedArchitectures">the <code>supportedArchitectures</code> feature</a>. Keep in mind that this means multiple copies of esbuild will be present on the file system. </p></li></ul><p>You can also get into this situation on a macOS computer with an ARM processor if you install esbuild using the ARM version of npm but then try to run esbuild with the x86-64 version of node running inside of <a href="https://en.wikipedia.org/wiki/Rosetta_(software)">Rosetta</a>. In that case, an easy fix is to run your code using the ARM version of node instead, which can be downloaded here: <a href="https://nodejs.org/en/download/">https://nodejs.org/en/download/</a>.</p><p>Another alternative is to <a href="#wasm">use the <code>esbuild-wasm</code> package instead</a>, which works the same way on all platforms. But it comes with a heavy performance cost and can sometimes be 10x slower than the <code>esbuild</code> package, so you may also not want to do that.</p><h2 id="yarn-pnp"><a class="permalink" href="#yarn-pnp">#</a>Using Yarn Plug'n'Play</h2><p>Yarn's <a href="https://yarnpkg.com/features/pnp/">Plug'n'Play</a> package installation strategy is supported natively by esbuild. To use it, make sure you are running esbuild such that the <a href="/api/#working-directory">current working directory</a> contains Yarn's generated package manifest JavaScript file (either <code>.pnp.cjs</code> or <code>.pnp.js</code>). If a Yarn Plug'n'Play package manifest is detected, esbuild will automatically resolve package imports to paths inside the <code>.zip</code> files in Yarn's package cache, and will automatically extract these files on the fly during bundling.</p><p>Because esbuild is written in Go, support for Yarn Plug'n'Play has been completely re-implemented in Go instead of relying on Yarn's JavaScript API. This allows Yarn Plug'n'Play package resolution to integrate well with esbuild's fully parallelized bundling pipeline for maximum speed. Note that Yarn's command-line interface adds a lot of unavoidable performance overhead to every command. For maximum esbuild performance, you may want to consider running esbuild without using Yarn's CLI (i.e. not using <code>yarn esbuild</code>). This can result in esbuild running 10x faster.</p><h2 id="other-ways-to-install"><a class="permalink" href="#other-ways-to-install">#</a>Other ways to install</h2><p>The recommended way to install esbuild is to <a href="#install-esbuild">install the native executable using npm</a>. But you can also install esbuild in these ways:</p><h3 id="download-a-build"><a class="permalink" href="#download-a-build">#</a>Download a build</h3><p>If you have a Unix system, you can use the following command to download the <code>esbuild</code> binary executable for your current platform (it will be downloaded to the current working directory):</p><pre>curl -fsSL https://esbuild.github.io/dl/v0.22.0 | sh</pre><p>You can also use <code>latest</code> instead of the version number to download the most recent version of esbuild:</p><pre>curl -fsSL https://esbuild.github.io/dl/latest | sh</pre><p>If you don't want to evaluate a shell script from the internet to download esbuild, you can also manually download the package from npm yourself instead (which is all the above shell script is doing). Although the precompiled native executables are hosted using npm, you don't actually need npm installed to download them. The npm package registry is a normal HTTP server and packages are normal gzipped tar files.</p><p>Here is an example of downloading a binary executable directly:</p><pre class="cli1"><span class="repl-in">curl -O https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.22.0.tgz
+</span><span class="repl-in">tar xzf ./darwin-x64-0.22.0.tgz
 </span><span class="repl-in">./package/bin/esbuild
 </span><span class="repl-out">Usage:
   esbuild [options] [entry points]
@@ -161,153 +161,159 @@
       <td><a href="https://www.npmjs.org/package/@esbuild/aix-ppc64"><code>@esbuild/aix-ppc64</code></a></td>
       <td><code>aix</code></td>
       <td><code>ppc64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/aix-ppc64/-/android-arm-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/aix-ppc64/-/android-arm-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/android-arm"><code>@esbuild/android-arm</code></a></td>
       <td><code>android</code></td>
       <td><code>arm</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/android-arm64"><code>@esbuild/android-arm64</code></a></td>
       <td><code>android</code></td>
       <td><code>arm64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/android-x64"><code>@esbuild/android-x64</code></a></td>
       <td><code>android</code></td>
       <td><code>x64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/darwin-arm64"><code>@esbuild/darwin-arm64</code></a></td>
       <td><code>darwin</code></td>
       <td><code>arm64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/darwin-x64"><code>@esbuild/darwin-x64</code></a></td>
       <td><code>darwin</code></td>
       <td><code>x64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/freebsd-arm64"><code>@esbuild/freebsd-arm64</code></a></td>
       <td><code>freebsd</code></td>
       <td><code>arm64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/freebsd-x64"><code>@esbuild/freebsd-x64</code></a></td>
       <td><code>freebsd</code></td>
       <td><code>x64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/linux-arm"><code>@esbuild/linux-arm</code></a></td>
       <td><code>linux</code></td>
       <td><code>arm</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/linux-arm64"><code>@esbuild/linux-arm64</code></a></td>
       <td><code>linux</code></td>
       <td><code>arm64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/linux-ia32"><code>@esbuild/linux-ia32</code></a></td>
       <td><code>linux</code></td>
       <td><code>ia32</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/linux-loong64"><code>@esbuild/linux-loong64</code></a></td>
       <td><code>linux</code></td>
       <td><code>loong64</code><sup>2</sup></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/linux-mips64el"><code>@esbuild/linux-mips64el</code></a></td>
       <td><code>linux</code></td>
       <td><code>mips64el</code><sup>2</sup></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/linux-ppc64"><code>@esbuild/linux-ppc64</code></a></td>
       <td><code>linux</code></td>
       <td><code>ppc64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/linux-riscv64"><code>@esbuild/linux-riscv64</code></a></td>
       <td><code>linux</code></td>
       <td><code>riscv64</code><sup>2</sup></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/linux-s390x"><code>@esbuild/linux-s390x</code></a></td>
       <td><code>linux</code></td>
       <td><code>s390x</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/linux-x64"><code>@esbuild/linux-x64</code></a></td>
       <td><code>linux</code></td>
       <td><code>x64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/netbsd-x64"><code>@esbuild/netbsd-x64</code></a></td>
       <td><code>netbsd</code><sup>1</sup></td>
       <td><code>x64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.22.0.tgz"></a></td>
+      </tr>
+      <tr>
+      <td><a href="https://www.npmjs.org/package/@esbuild/openbsd-arm64"><code>@esbuild/openbsd-arm64</code></a></td>
+      <td><code>openbsd</code></td>
+      <td><code>arm64</code></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/openbsd-x64"><code>@esbuild/openbsd-x64</code></a></td>
       <td><code>openbsd</code></td>
       <td><code>x64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/sunos-x64"><code>@esbuild/sunos-x64</code></a></td>
       <td><code>sunos</code></td>
       <td><code>x64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/win32-arm64"><code>@esbuild/win32-arm64</code></a></td>
       <td><code>win32</code></td>
       <td><code>arm64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/win32-ia32"><code>@esbuild/win32-ia32</code></a></td>
       <td><code>win32</code></td>
       <td><code>ia32</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.22.0.tgz"></a></td>
       </tr>
       <tr>
       <td><a href="https://www.npmjs.org/package/@esbuild/win32-x64"><code>@esbuild/win32-x64</code></a></td>
       <td><code>win32</code></td>
       <td><code>x64</code></td>
-      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.21.4.tgz"></a></td>
+      <td><a class="dl" href="https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.22.0.tgz"></a></td>
       </tr>
       </tbody>
-      </table><p><strong>Why this is not recommended:</strong> This approach only works on Unix systems that can run shell scripts, so it will require <a href="https://learn.microsoft.com/en-us/windows/wsl/">WSL</a> on Windows. An additional drawback is that you cannot use <a href="/plugins/">plugins</a> with the native version of esbuild.</p><p>If you choose to write your own code to download esbuild directly from npm, then you are relying on internal implementation details of esbuild's native executable installer. These details may change at some point, in which case this approach will no longer work for new esbuild versions. This is only a minor drawback though since the approach should still work forever for existing esbuild versions (packages published to npm are immutable).</p><p><footer> <sup>1</sup> This operating system is not on <a href="https://nodejs.org/api/process.html#process_process_platform">node's list of supported platforms</a> <br> <sup>2</sup> This architecture is not on <a href="https://nodejs.org/api/process.html#processarch">node's list of supported architectures</a> </footer></p><h3 id="wasm"><a class="permalink" href="#wasm">#</a>Install the WASM version</h3><p>In addition to the <code>esbuild</code> npm package, there is also an <code>esbuild-wasm</code> package that functions similarly but that uses WebAssembly instead of native code. Installing it will also install an executable called <code>esbuild</code>:</p><pre>npm install --save-exact esbuild-wasm</pre><p><strong>Why this is not recommended:</strong> The WebAssembly version is much, much slower than the native version. In many cases it is an order of magnitude (i.e. 10x) slower. This is for various reasons including a) node re-compiles the WebAssembly code from scratch on every run, b) Go's WebAssembly compilation approach is single-threaded, and c) node has WebAssembly bugs that can delay the exiting of the process by many seconds. The WebAssembly version also excludes some features such as the local file server. You should only use the WebAssembly package like this if there is no other option, such as when you want to use esbuild on an unsupported platform. The WebAssembly package is primarily intended to only be used <a href="/api/#browser">in the browser</a>.</p><h3 id="deno"><a class="permalink" href="#deno">#</a>Deno instead of node</h3><p>There is also basic support for the <a href="https://deno.land">Deno</a> JavaScript environment if you'd like to use esbuild with that instead. The package is hosted at <a href="https://deno.land/x/esbuild">https://deno.land/x/esbuild</a> and uses the native esbuild executable. The executable will be downloaded and cached from npm at run-time so your computer will need network access to registry.npmjs.org to make use of this package. Using the package looks like this:</p><pre><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;https://deno.land/x/esbuild@v0.21.4/mod.js&#x27;</span>
+      </table><p><strong>Why this is not recommended:</strong> This approach only works on Unix systems that can run shell scripts, so it will require <a href="https://learn.microsoft.com/en-us/windows/wsl/">WSL</a> on Windows. An additional drawback is that you cannot use <a href="/plugins/">plugins</a> with the native version of esbuild.</p><p>If you choose to write your own code to download esbuild directly from npm, then you are relying on internal implementation details of esbuild's native executable installer. These details may change at some point, in which case this approach will no longer work for new esbuild versions. This is only a minor drawback though since the approach should still work forever for existing esbuild versions (packages published to npm are immutable).</p><p><footer> <sup>1</sup> This operating system is not on <a href="https://nodejs.org/api/process.html#process_process_platform">node's list of supported platforms</a> <br> <sup>2</sup> This architecture is not on <a href="https://nodejs.org/api/process.html#processarch">node's list of supported architectures</a> </footer></p><h3 id="wasm"><a class="permalink" href="#wasm">#</a>Install the WASM version</h3><p>In addition to the <code>esbuild</code> npm package, there is also an <code>esbuild-wasm</code> package that functions similarly but that uses WebAssembly instead of native code. Installing it will also install an executable called <code>esbuild</code>:</p><pre>npm install --save-exact esbuild-wasm</pre><p><strong>Why this is not recommended:</strong> The WebAssembly version is much, much slower than the native version. In many cases it is an order of magnitude (i.e. 10x) slower. This is for various reasons including a) node re-compiles the WebAssembly code from scratch on every run, b) Go's WebAssembly compilation approach is single-threaded, and c) node has WebAssembly bugs that can delay the exiting of the process by many seconds. The WebAssembly version also excludes some features such as the local file server. You should only use the WebAssembly package like this if there is no other option, such as when you want to use esbuild on an unsupported platform. The WebAssembly package is primarily intended to only be used <a href="/api/#browser">in the browser</a>.</p><h3 id="deno"><a class="permalink" href="#deno">#</a>Deno instead of node</h3><p>There is also basic support for the <a href="https://deno.land">Deno</a> JavaScript environment if you'd like to use esbuild with that instead. The package is hosted at <a href="https://deno.land/x/esbuild">https://deno.land/x/esbuild</a> and uses the native esbuild executable. The executable will be downloaded and cached from npm at run-time so your computer will need network access to registry.npmjs.org to make use of this package. Using the package looks like this:</p><pre><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;https://deno.land/x/esbuild@v0.22.0/mod.js&#x27;</span>
 <span class="hljs-keyword">let</span> ts = <span class="hljs-string">&#x27;let test: boolean = true&#x27;</span>
 <span class="hljs-keyword">let</span> result = <span class="hljs-keyword">await</span> esbuild.transform(ts, { <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;ts&#x27;</span> })
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;result:&#x27;</span>, result)
-<span class="hljs-keyword">await</span> esbuild.stop()</pre><p>It has basically the same API as esbuild's npm package with one addition: you need to call <code>stop()</code> when you're done because unlike node, Deno doesn't provide the necessary APIs to allow Deno to exit while esbuild's internal child process is still running.</p><p>If you would like to use esbuild's WebAssembly implementation instead of esbuild's native implementation with Deno, you can do that by importing <code>wasm.js</code> instead of <code>mod.js</code> like this:</p><pre><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;https://deno.land/x/esbuild@v0.21.4/wasm.js&#x27;</span>
+<span class="hljs-keyword">await</span> esbuild.stop()</pre><p>It has basically the same API as esbuild's npm package with one addition: you need to call <code>stop()</code> when you're done because unlike node, Deno doesn't provide the necessary APIs to allow Deno to exit while esbuild's internal child process is still running.</p><p>If you would like to use esbuild's WebAssembly implementation instead of esbuild's native implementation with Deno, you can do that by importing <code>wasm.js</code> instead of <code>mod.js</code> like this:</p><pre><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;https://deno.land/x/esbuild@v0.22.0/wasm.js&#x27;</span>
 <span class="hljs-keyword">let</span> ts = <span class="hljs-string">&#x27;let test: boolean = true&#x27;</span>
 <span class="hljs-keyword">let</span> result = <span class="hljs-keyword">await</span> esbuild.transform(ts, { <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;ts&#x27;</span> })
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;result:&#x27;</span>, result)
 <span class="hljs-keyword">await</span> esbuild.stop()</pre><p>Using WebAssembly instead of native means you do not need to specify Deno's <code>--allow-run</code> permission, and WebAssembly the only option in situations where the file system is unavailable such as with <a href="https://deno.com/deploy">Deno Deploy</a>. However, keep in mind that the WebAssembly version of esbuild is a lot slower than the native version. Another thing to know about WebAssembly is that Deno currently has a bug where process termination is unnecessarily delayed until all loaded WebAssembly modules are fully optimized, which can take many seconds. You may want to manually call <code>Deno.exit(0)</code> after your code is done if you are writing a short-lived script that uses esbuild's WebAssembly implementation so that your code exits in a reasonable timeframe.</p><p><strong>Why this is not recommended:</strong> Deno is newer than node, less widely used, and supports fewer platforms than node, so node is recommended as the primary way to run esbuild. Deno also uses the internet as a package system instead of existing JavaScript package ecosystems, and esbuild is designed around and optimized for npm-style package management. You should still be able to use esbuild with Deno, but you will need a plugin if you would like to be able to bundle HTTP URLs.</p><h3 id="build-from-source"><a class="permalink" href="#build-from-source">#</a>Build from source</h3><p>To build esbuild from source:</p><ol><li>Install the Go compiler:
 <p><a href="https://go.dev/dl/">https://go.dev/dl/</a></p></li><li>Download the source code for esbuild:
 <pre>
-git clone --depth 1 --branch v0.21.4 https://github.com/evanw/esbuild.git
+git clone --depth 1 --branch v0.22.0 https://github.com/evanw/esbuild.git
 cd esbuild
 </pre></li><li>Build the <code>esbuild</code> executable (it will be <code>esbuild.exe</code> on Windows):
 <pre>go build ./cmd/esbuild</pre></li></ol><p>If you want to build for other platforms, you can just prefix the build command with the platform information. For example, you can build the 32-bit Linux version using this command:</p><pre>GOOS=linux GOARCH=386 go build ./cmd/esbuild</pre><p><strong>Why this is not recommended:</strong> The native version can only be used via the command-line interface, which can be unergonomic for complex use cases and which does not support <a href="/plugins/">plugins</a>. You will need to write JavaScript or Go code and use <a href="/api/">esbuild's API</a> to use plugins.</p></main></body></html>
