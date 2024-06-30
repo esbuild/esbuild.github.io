@@ -92,8 +92,8 @@ body:
       | [Top-level await](https://github.com/tc39/proposal-top-level-await)                                                    | `es2022`                             | `await import(x)`           |
       | [Arbitrary module namespace identifiers](https://github.com/bmeck/proposal-arbitrary-module-namespace-identifiers)     | `es2022`                             | `export {foo as 'f o o'}`   |
       | [RegExp match indices](https://github.com/tc39/proposal-regexp-match-indices)                                          | `es2022`                             | `/x(.+)y/d`<sup>1</sup>     |
+      | [RegExp set notation](https://github.com/tc39/proposal-regexp-v-flag)                                                  | `es2024`                             | `/[\w--\d]/v`<sup>1</sup>   |
       | [Hashbang grammar](https://github.com/tc39/proposal-hashbang)                                                          | `esnext`                             | `#!/usr/bin/env node`       |
-      | [RegExp set notation](https://github.com/tc39/proposal-regexp-v-flag)                                                  | `esnext`                             | `/[\w--\d]/`<sup>1</sup>    |
 
   - p: >
       <footer>
