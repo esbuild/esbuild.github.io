@@ -1035,12 +1035,6 @@ body:
       </p>
     - >
       <p>
-      The [packages](#packages) setting is set to `bundle` by default, which
-      means all packages are allowed to be bundled. This is important because
-      the browser won't otherwise be able to load them.
-      </p>
-    - >
-      <p>
       If a package specifies a map for the
       [`browser`](https://gist.github.com/defunctzombie/4339901/49493836fb873ddaa4b8a7aa0ef2352119f69211)
       field in its `package.json` file, esbuild will use that map to replace
@@ -1105,14 +1099,6 @@ body:
       </p>
     - >
       <p>
-      The [packages](#packages) setting is set to `external` by default, which
-      means all packages are excluded from the bundle. This avoids compatibility
-      problems from packages using node-specific features that don't work with
-      esbuild. If you don't want this behavior, you'll have to explicitly set
-      the [packages](#packages) setting to `bundle` instead.
-      </p>
-    - >
-      <p>
       All [built-in node modules](https://nodejs.org/docs/latest/api/) such
       as `fs` are automatically marked as [external](#external) so they don't
       cause errors when the bundler tries to bundle them.
@@ -1173,11 +1159,6 @@ body:
       is set to `esm`, which uses the `export` syntax introduced with ECMAScript
       2015 (i.e. ES6). You can change the output format if this default is not
       appropriate.
-      </p>
-    - >
-      <p>
-      The [packages](#packages) setting is set to `bundle` by default, which
-      means all packages are allowed to be bundled.
       </p>
     - >
       <p>
@@ -3970,30 +3951,34 @@ body:
       This has several uses. First of all, it can be used to trim unnecessary
       code from your bundle for a code path that you know will never be
       executed. For example, a package may contain code that only runs in node
-      but you will only be using that package in the browser. Marking something
-      as external looks like this:
+      but you will only be using that package in the browser. It can also be
+      used to import code in node at run time from a package that cannot be
+      bundled. For example, the `fsevents` package contains a native extension,
+      which esbuild doesn't support. Marking something as external looks like
+      this:
 
   - example:
       cli:
         - $: |
-            echo 'require("foo")' > app.js
+            echo 'require("fsevents")' > app.js
         - $: |
-            esbuild app.js --bundle --external:foo
+            esbuild app.js --bundle --external:fsevents --platform=node
         - expect: |
             // app.js
-            require("foo");
+            require("fsevents");
 
       mjs: |
         import * as esbuild from 'esbuild'
         import fs from 'node:fs'
 
-        fs.writeFileSync('app.js', 'require("foo")')
+        fs.writeFileSync('app.js', 'require("fsevents")')
 
         await esbuild.build({
           entryPoints: ['app.js'],
           outfile: 'out.js',
           bundle: true,
-          external: ['foo'],
+          platform: 'node',
+          external: ['fsevents'],
         })
 
       go: |
@@ -4004,14 +3989,15 @@ body:
         import "os"
 
         func main() {
-          ioutil.WriteFile("app.js", []byte("require(\"foo\")"), 0644)
+          ioutil.WriteFile("app.js", []byte("require(\"fsevents\")"), 0644)
 
           result := api.Build(api.BuildOptions{
             EntryPoints: []string{"app.js"},
             Outfile:     "out.js",
             Bundle:      true,
             Write:       true,
-            External:    []string{"foo"},
+            Platform:    api.PlatformNode,
+            External:    []string{"fsevents"},
           })
 
           if len(result.Errors) > 0 {
@@ -4303,18 +4289,16 @@ body:
     - >
       `bundle`
       <p>
-      This is the default value when the [platform](#platform) is set to
-      `browser`. It means that package imports are allowed to be bundled.
-      Note that this value doesn't mean all packages will be bundled, just that
-      they are allowed to be. You can still exclude individual packages from
-      the bundle using [external](#external).
+      This is the default value. It means that package imports are allowed to
+      be bundled. Note that this value doesn't mean all packages will be
+      bundled, just that they are allowed to be. You can still exclude
+      individual packages from the bundle using [external](#external).
       </p>
 
     - >
       `external`
       <p>
-      This is the default value when the [platform](#platform) is set to `node`.
-      It means that all package imports considered external to the bundle,
+      This means that all package imports considered external to the bundle,
       and are not bundled. _Note that your dependencies must still be present
       on the file system when your bundle is run._ It has the same effect as
       manually passing each dependency to [external](#external) but is more
