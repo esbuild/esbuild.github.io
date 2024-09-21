@@ -142,6 +142,11 @@ onmessage = e => {
           respond({
             stderr_: [...errors, ...warnings].join(''),
           })
+        }, error => {
+          // Catch errors when the "formatMessages" call itself fails
+          respond({
+            stderr_: '' + error,
+          })
         })
       }
 
