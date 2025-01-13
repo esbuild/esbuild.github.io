@@ -117,7 +117,7 @@ const formatMessages = (api: API, messages: Message[], options: FormatMessagesOp
 
 // Hack: Deserialize "EvalError" objects as "Function" objects instead
 const deserializeFunctions = (value: any): any => {
-  if (typeof value === 'object' && value) {
+  if (typeof value === 'object' && value && !(value instanceof RegExp)) {
     if (value instanceof EvalError) return new Function('return ' + value.message)()
     else if (Array.isArray(value)) return value.map(deserializeFunctions)
     else return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, deserializeFunctions(v)]))

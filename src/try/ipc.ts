@@ -196,7 +196,7 @@ const serializeFunctions = (value: any): any => {
     const text = value + ''
     return new EvalError('function ' + value.name + text.slice(text.indexOf('(')))
   }
-  if (typeof value === 'object' && value) {
+  if (typeof value === 'object' && value && !(value instanceof RegExp)) {
     if (Array.isArray(value)) return value.map(serializeFunctions)
     else return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, serializeFunctions(v)]))
   }
