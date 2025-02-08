@@ -53,6 +53,7 @@ body:
       | [Spread properties](https://github.com/tc39/proposal-object-rest-spread)              | `es2018`                             | `let x = {...y}`                   |
       | [Rest properties](https://github.com/tc39/proposal-object-rest-spread)                | `es2018`                             | `let {...x} = y`                   |
       | [Optional catch binding](https://github.com/tc39/proposal-optional-catch-binding)     | `es2019`                             | `try {} catch {}`                  |
+      | [BigInt](https://github.com/tc39/proposal-bigint)                                     | `es2020`                             | `123n`                             |
       | [Optional chaining](https://github.com/tc39/proposal-optional-chaining)               | `es2020`                             | `a?.b`                             |
       | [Nullish coalescing](https://github.com/tc39/proposal-nullish-coalescing)             | `es2020`                             | `a ?? b`                           |
       | [`import.meta`](https://github.com/tc39/proposal-import-meta)                         | `es2020`                             | `import.meta`                      |
@@ -88,7 +89,6 @@ body:
       | [RegExp lookbehind assertions](https://github.com/tc39/proposal-regexp-lookbehind)                                     | `es2018`                             | `/(?<=x)y/`<sup>1</sup>     |
       | [RegExp named capture groups](https://github.com/tc39/proposal-regexp-named-groups)                                    | `es2018`                             | `/(?<foo>\d+)/`<sup>1</sup> |
       | [RegExp unicode property escapes](https://github.com/tc39/proposal-regexp-unicode-property-escapes)                    | `es2018`                             | `/\p{ASCII}/u`<sup>1</sup>  |
-      | [BigInt](https://github.com/tc39/proposal-bigint)                                                                      | `es2020`                             | `123n`                      |
       | [Top-level await](https://github.com/tc39/proposal-top-level-await)                                                    | `es2022`                             | `await import(x)`           |
       | [Arbitrary module namespace identifiers](https://github.com/bmeck/proposal-arbitrary-module-namespace-identifiers)     | `es2022`                             | `export {foo as 'f o o'}`   |
       | [RegExp match indices](https://github.com/tc39/proposal-regexp-match-indices)                                          | `es2022`                             | `/x(.+)y/d`<sup>1</sup>     |
@@ -1410,6 +1410,12 @@ body:
   - pre.js: |
       import string from './example.txt'
       console.log(string)
+
+  - p: >
+      Note that this loader automatically strips the UTF-8 [BOM](https://en.wikipedia.org/wiki/Byte_order_mark)
+      from the file if it's present, which is a special byte sequence that
+      some programs such as Notepad on Windows sometimes insert when saving
+      a file.
 
   - h2: Binary
   - p: 'Loader: `binary`'

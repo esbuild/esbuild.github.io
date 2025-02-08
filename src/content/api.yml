@@ -1435,6 +1435,15 @@ body:
       default to an open port with a preference for ports in the range 8000 to
       8009.
       </p>
+      <p>
+      Note that the Go API differs from the CLI and JS API regarding port 0.
+      Unix reserves the port 0 to mean "pick a random [ephemeral port](https://en.wikipedia.org/wiki/Ephemeral_port)"
+      but esbuild reserves the port 0 for the default behavior described above,
+      as 0 is the default value of an integer field in Go. Instead esbuild uses
+      a sentinel value of -1 to pick a random ephemeral port in Go. The CLI
+      and JS APIs don't have this problem and allow you to specify a port of 0
+      to pick a random ephemeral port just like other standard Unix APIs.
+      </p>
 
     - >
       `servedir`
@@ -1492,31 +1501,36 @@ body:
       noCheck: true
 
       cli: |
-        # The CLI will print the host and port like this:
+        # The CLI will print the hosts and port like this:
 
-         > Local: http://127.0.0.1:8000/
+         > Local:   http://127.0.0.1:8000/
+         > Network: http://192.168.0.1:8000/
 
       js: |
         interface ServeResult {
-          host: string
+          hosts: string[]
           port: number
         }
 
       go: |
         type ServeResult struct {
-          Host string
-          Port uint16
+          Hosts []string
+          Port  uint16
         }
 
   - ul:
     - >
-      `host`
+      `hosts`
       <p>
-      This is the host that ended up being used by the web server. It will be
-      `0.0.0.0` (i.e. serving on all available network interfaces) unless a
-      custom host was configured. If you are using the CLI and the host is
-      `0.0.0.0`, all available network interfaces will be printed as hosts
-      instead.
+      This is an array of hosts that ended up being used by the web server.
+      If the host is an unspecified address (which it is by default), then the
+      array includes the loopback interface as well as any other network
+      interfaces that are currently active, such as the interface for your WiFi
+      network. For example, the unspecified IPv4 address `0.0.0.0` might cause
+      the array to contain both `127.0.0.1` and `192.168.0.1`, and the unspecified
+      IPv6 address `::` might cause the array to contain both `::1` and
+      `fe80::b0ba:cafe`. The actual hosts returned for an unspecified host
+      depends on your current network configuration.
       </p>
 
     - >
@@ -1600,12 +1614,12 @@ body:
       })
 
       // The return value tells us where esbuild's local server is
-      let { host, port } = await ctx.serve({ servedir: '.' })
+      let { hosts, port } = await ctx.serve({ servedir: '.' })
 
       // Then start a proxy server on port 3000
       http.createServer((req, res) => {
         const options = {
-          hostname: host,
+          hostname: hosts[0],
           port: port,
           path: req.url,
           method: req.method,
@@ -5460,12 +5474,15 @@ body:
       flag available in the popular [UglifyJS](https://github.com/mishoo/UglifyJS)
       and [Terser](https://github.com/terser/terser) JavaScript minifiers.
       </p>
-      <p>
-      WARNING: Using this flag can introduce bugs into your code! This flag
-      removes the entire call expression including all call arguments. If any
-      of those arguments had important side effects, using this flag will
-      change the behavior of your code. Be very careful when using this flag.
-      </p>
+      <div class="warning">
+      Using this flag can introduce bugs into your code! This flag
+      removes the entire call expression including all call arguments. This is
+      intentional because removing the evaluation of call arguments is useful
+      for improving performance in production if those call arguments are
+      expensive to compute. However, if any of those arguments had important
+      side effects, using this flag will change the behavior of your code.
+      Be very careful when using this flag.
+      </div>
       <p>
       If you want to remove console API calls without removing the arguments
       with side effects (so you do not introduce bugs), you should mark the
