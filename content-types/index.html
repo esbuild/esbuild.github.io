@@ -63,6 +63,11 @@
       <td><code>try {} catch {}</code></td>
       </tr>
       <tr>
+      <td><a href="https://github.com/tc39/proposal-bigint">BigInt</a></td>
+      <td><code>es2020</code></td>
+      <td><code>123n</code></td>
+      </tr>
+      <tr>
       <td><a href="https://github.com/tc39/proposal-optional-chaining">Optional chaining</a></td>
       <td><code>es2020</code></td>
       <td><code>a?.b</code></td>
@@ -176,11 +181,6 @@
       <td><a href="https://github.com/tc39/proposal-regexp-unicode-property-escapes">RegExp unicode property escapes</a></td>
       <td><code>es2018</code></td>
       <td><code>/\p{ASCII}/u</code><sup>1</sup></td>
-      </tr>
-      <tr>
-      <td><a href="https://github.com/tc39/proposal-bigint">BigInt</a></td>
-      <td><code>es2020</code></td>
-      <td><code>123n</code></td>
       </tr>
       <tr>
       <td><a href="https://github.com/tc39/proposal-top-level-await">Top-level await</a></td>
@@ -706,7 +706,7 @@ div.className = submit
   color: black;
   background: black;
 }</pre><p>This behavior is unfortunate, but esbuild behaves this way because that's how CSS is specified, and that's how CSS works in browsers. This is important to know about because some other commonly-used CSS processing tools such as <a href="https://github.com/postcss/postcss-import/issues/462"><code>postcss-import</code></a> incorrectly resolve CSS imports in JavaScript order instead of in CSS order. If you are porting CSS code written for those tools to esbuild (or even just switching over to running your CSS code natively in the browser), you may have appearance changes if your code depends on the incorrect import order.</p><h2 id="text"><a class="permalink" href="#text">#</a>Text</h2><p>Loader: <code>text</code></p><p>This loader is enabled by default for <code>.txt</code> files. It loads the file as a string at build time and exports the string as the default export. Using it looks something like this:</p><pre><span class="hljs-keyword">import</span> string <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.txt&#x27;</span>
-<span class="hljs-built_in">console</span>.log(string)</pre><h2 id="binary"><a class="permalink" href="#binary">#</a>Binary</h2><p>Loader: <code>binary</code></p><p>This loader will load the file as a binary buffer at build time and embed it into the bundle using Base64 encoding. The original bytes of the file are decoded from Base64 at run time and exported as a <code>Uint8Array</code> using the default export. Using it looks like this:</p><pre><span class="hljs-keyword">import</span> uint8array <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.data&#x27;</span>
+<span class="hljs-built_in">console</span>.log(string)</pre><p>Note that this loader automatically strips the UTF-8 <a href="https://en.wikipedia.org/wiki/Byte_order_mark">BOM</a> from the file if it's present, which is a special byte sequence that some programs such as Notepad on Windows sometimes insert when saving a file.</p><h2 id="binary"><a class="permalink" href="#binary">#</a>Binary</h2><p>Loader: <code>binary</code></p><p>This loader will load the file as a binary buffer at build time and embed it into the bundle using Base64 encoding. The original bytes of the file are decoded from Base64 at run time and exported as a <code>Uint8Array</code> using the default export. Using it looks like this:</p><pre><span class="hljs-keyword">import</span> uint8array <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./example.data&#x27;</span>
 <span class="hljs-built_in">console</span>.log(uint8array)</pre><p>If you need an <code>ArrayBuffer</code> instead, you can just access <code>uint8array<wbr>.buffer</code>. Note that this loader is not enabled by default. You will need to configure it for the appropriate file extension like this:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
