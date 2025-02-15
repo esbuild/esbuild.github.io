@@ -1064,7 +1064,7 @@ body:
       If no custom [conditions](#conditions) are configured, the Webpack-specific
       `module` condition is also included. The `module` condition is used by
       package authors to provide a tree-shakable ESM alternative to a CommonJS
-      file without creating a [dual package hazard](https://nodejs.org/api/packages.html#dual-package-hazard).
+      file without creating a [dual package hazard](https://github.com/nodejs/package-examples?tab=readme-ov-file#dual-package-hazard).
       You can prevent the `module` condition from being included by explicitly
       configuring some custom conditions (even an empty list).
       </p>
@@ -1128,7 +1128,7 @@ body:
       If no custom [conditions](#conditions) are configured, the Webpack-specific
       `module` condition is also included. The `module` condition is used by
       package authors to provide a tree-shakable ESM alternative to a CommonJS
-      file without creating a [dual package hazard](https://nodejs.org/api/packages.html#dual-package-hazard).
+      file without creating a [dual package hazard](https://github.com/nodejs/package-examples?tab=readme-ov-file#dual-package-hazard).
       You can prevent the `module` condition from being included by explicitly
       configuring some custom conditions (even an empty list).
       </p>
