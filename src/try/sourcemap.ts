@@ -31,10 +31,14 @@ export function toggleInlineSourceMapLink(parentEl: HTMLElement, code: string, s
   if (sourceMapEl) {
     sourceMapEl.remove()
   }
-  if (map && map.startsWith('data:application/json;base64,')) {
+  if (map) {
     let json: any
     try {
-      json = JSON.parse(atob(map.slice(29)))
+      if (map.startsWith('data:application/json;base64,')) {
+        json = JSON.parse(atob(map.slice(29)))
+      } else if (map.startsWith('data:application/json;charset=utf-8,')) {
+        json = JSON.parse(decodeURIComponent(map.slice(36)))
+      }
     } catch {
     }
     if (json && typeof json === 'object') {
