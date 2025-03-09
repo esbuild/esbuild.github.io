@@ -275,7 +275,7 @@ function terminalEscapeCodesToHTML(text: string): string {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/\033\[([^m]*)m/g, (_, escape) => {
+      .replace(/\x1B\[([^m]*)m/g, (_, escape) => {
         switch (escape) {
           case '1': return '</span><span class="color-bold">'
           case '31': return '</span><span class="color-red">'
