@@ -517,7 +517,12 @@ ctx.dispose()
   keyfile?: string
   certfile?: string
   fallback?: string
+  cors?: CORSOptions
   onRequest?: <span class="hljs-function">(<span class="hljs-params">args: ServeOnRequestArgs</span>) =&gt;</span> <span class="hljs-keyword">void</span>
+}
+
+interface CORSOptions {
+  origin?: string | string[]
 }
 
 interface ServeOnRequestArgs {
@@ -535,7 +540,12 @@ interface ServeOnRequestArgs {
   Keyfile   <span class="hljs-keyword">string</span>
   Certfile  <span class="hljs-keyword">string</span>
   Fallback  <span class="hljs-keyword">string</span>
+  CORS      CORSOptions
   OnRequest <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(ServeOnRequestArgs)</span></span>
+}
+
+<span class="hljs-keyword">type</span> CORSOptions <span class="hljs-keyword">struct</span> {
+  Origin []<span class="hljs-keyword">string</span>
 }
 
 <span class="hljs-keyword">type</span> ServeOnRequestArgs <span class="hljs-keyword">struct</span> {
@@ -545,7 +555,7 @@ interface ServeOnRequestArgs {
   Status        <span class="hljs-keyword">int</span>
   TimeInMS      <span class="hljs-keyword">int</span>
 }
-</pre><ul><li><code>host</code> <p> By default, esbuild makes the web server available on all IPv4 network interfaces. This corresponds to a host address of <code>0.0.0.0</code>. If you would like to configure a different host (for example, to only serve on the <code>127.0.0.1</code> loopback interface without exposing anything to the network), you can specify the host using this argument. </p> <p> If you need to use IPv6 instead of IPv4, you just need to specify an IPv6 host address. The equivalent to the <code>127.0.0.1</code> loopback interface in IPv6 is <code>::1</code> and the equivalent to the <code>0.0.0.0</code> universal interface in IPv6 is <code>::</code>. </p></li><li><code>port</code> <p> The HTTP port can optionally be configured here. If omitted, it will default to an open port with a preference for ports in the range 8000 to 8009. </p> <p> Note that the Go API differs from the CLI and JS API regarding port 0. Unix reserves the port 0 to mean &quot;pick a random <a href="https://en.wikipedia.org/wiki/Ephemeral_port">ephemeral port</a>&quot; but esbuild reserves the port 0 for the default behavior described above, as 0 is the default value of an integer field in Go. Instead esbuild uses a sentinel value of -1 to pick a random ephemeral port in Go. The CLI and JS APIs don't have this problem and allow you to specify a port of 0 to pick a random ephemeral port just like other standard Unix APIs. </p></li><li><code>servedir</code> <p> This is a directory of extra content for esbuild's HTTP server to serve instead of a 404 when incoming requests don't match any of the generated output file paths. This lets you use esbuild as a general-purpose local web server. </p> <p> For example, you might want to create an <code>index.html</code> file and then set <code>servedir</code> to <code>&quot;.&quot;</code> to serve the current directory (which includes the <code>index.html</code> file). If you don't set <code>servedir</code> then esbuild will only serve the build results, but not any other files. </p></li><li><code>keyfile</code> and <code>certfile</code> <p> If you pass a private key and certificate to esbuild using <code>keyfile</code> and <code>certfile</code>, then esbuild's web server will use the <code>https://</code> protocol instead of the <code>http://</code> protocol. See <a href="#https">enabling HTTPS</a> for more information. </p></li><li><code>fallback</code> <p> This is a HTML file for esbuild's HTTP server to serve instead of a 404 when incoming requests don't match any of the generated output file paths. You can use this for a custom &quot;not found&quot; page. You can also use this as the entry point of a <a href="https://en.wikipedia.org/wiki/Single-page_application">single-page application</a> that mutates the current URL and therefore needs to be served from many different URLs simultaneously. </p></li><li><code>onRequest</code> <p> This is called once for each incoming request with some information about the request. This callback is used by the CLI to print out a log message for each request. The time field is the time to generate the data for the request, but it does not include the time to stream the request to the client. </p> <p> Note that this is called after the request has completed. It's not possible to use this callback to modify the request in any way. If you want to do this, you should <a href="#serve-proxy">put a proxy in front of esbuild</a> instead. </p></li></ul><h4 id="serve-return-values"><a class="permalink" href="#serve-return-values">#</a>Return values</h4><div class="switcher">
+</pre><ul><li><code>host</code> <p> By default, esbuild makes the web server available on all IPv4 network interfaces. This corresponds to a host address of <code>0.0.0.0</code>. If you would like to configure a different host (for example, to only serve on the <code>127.0.0.1</code> loopback interface without exposing anything to the network), you can specify the host using this argument. </p> <p> If you need to use IPv6 instead of IPv4, you just need to specify an IPv6 host address. The equivalent to the <code>127.0.0.1</code> loopback interface in IPv6 is <code>::1</code> and the equivalent to the <code>0.0.0.0</code> universal interface in IPv6 is <code>::</code>. </p></li><li><code>port</code> <p> The HTTP port can optionally be configured here. If omitted, it will default to an open port with a preference for ports in the range 8000 to 8009. </p> <p> Note that the Go API differs from the CLI and JS API regarding port 0. Unix reserves the port 0 to mean &quot;pick a random <a href="https://en.wikipedia.org/wiki/Ephemeral_port">ephemeral port</a>&quot; but esbuild reserves the port 0 for the default behavior described above, as 0 is the default value of an integer field in Go. Instead esbuild uses a sentinel value of -1 to pick a random ephemeral port in Go. The CLI and JS APIs don't have this problem and allow you to specify a port of 0 to pick a random ephemeral port just like other standard Unix APIs. </p></li><li><code>servedir</code> <p> This is a directory of extra content for esbuild's HTTP server to serve instead of a 404 when incoming requests don't match any of the generated output file paths. This lets you use esbuild as a general-purpose local web server. </p> <p> For example, you might want to create an <code>index.html</code> file and then set <code>servedir</code> to <code>&quot;.&quot;</code> to serve the current directory (which includes the <code>index.html</code> file). If you don't set <code>servedir</code> then esbuild will only serve the build results, but not any other files. </p></li><li><code>keyfile</code> and <code>certfile</code> <p> If you pass a private key and certificate to esbuild using <code>keyfile</code> and <code>certfile</code>, then esbuild's web server will use the <code>https://</code> protocol instead of the <code>http://</code> protocol. See <a href="#https">enabling HTTPS</a> for more information. </p></li><li><code>fallback</code> <p> This is a HTML file for esbuild's HTTP server to serve instead of a 404 when incoming requests don't match any of the generated output file paths. You can use this for a custom &quot;not found&quot; page. You can also use this as the entry point of a <a href="https://en.wikipedia.org/wiki/Single-page_application">single-page application</a> that mutates the current URL and therefore needs to be served from many different URLs simultaneously. </p></li><li><code>cors</code> <p> This is for <a href="#cors">Cross-Origin Request Sharing</a>. See that link for more information. </p></li><li><code>onRequest</code> <p> This is called once for each incoming request with some information about the request. This callback is used by the CLI to print out a log message for each request. The time field is the time to generate the data for the request, but it does not include the time to stream the request to the client. </p> <p> Note that this is called after the request has completed. It's not possible to use this callback to modify the request in any way. If you want to do this, you should <a href="#serve-proxy">put a proxy in front of esbuild</a> instead. </p></li></ul><h4 id="serve-return-values"><a class="permalink" href="#serve-return-values">#</a>Return values</h4><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -601,7 +611,91 @@ http.createServer(<span class="hljs-function">(<span class="hljs-params">req, re
 
   <span class="hljs-comment">// Forward the body of the request to esbuild</span>
   req.pipe(proxyReq, { <span class="hljs-attr">end</span>: <span class="hljs-literal">true</span> })
-}).listen(<span class="hljs-number">3000</span>)</pre><p>This code starts esbuild's server on random local port and then starts a proxy server on port 3000. During development you would load <a href="http://localhost:3000">http://localhost:3000</a> in your browser, which talks to the proxy. This example demonstrates modifying a response after esbuild has handled the request, but you can also modify or replace the request before esbuild has handled it.</p><p>You can do many things with a proxy like this including:</p><ul><li>Injecting your own 404 page (the example above)</li><li>Customizing the mapping of routes to files on the file system</li><li>Redirecting some routes to an API server instead of to esbuild</li></ul><p>You can also use a real proxy such as <a href="https://nginx.org/en/docs/beginners_guide.html#proxy">nginx</a> if you have more advanced needs.</p><h3 id="tsconfig"><a class="permalink" href="#tsconfig">#</a>Tsconfig</h3><p><i>Supported by: <a href="#build">Build</a></i></p><p>Normally the <a href="#build">build</a> API automatically discovers <code>tsconfig.json</code> files and reads their contents during a build. However, you can also configure a custom <code>tsconfig.json</code> file to use instead. This can be useful if you need to do multiple builds of the same code with different settings:</p><div class="switcher">
+}).listen(<span class="hljs-number">3000</span>)</pre><p>This code starts esbuild's server on random local port and then starts a proxy server on port 3000. During development you would load <a href="http://localhost:3000">http://localhost:3000</a> in your browser, which talks to the proxy. This example demonstrates modifying a response after esbuild has handled the request, but you can also modify or replace the request before esbuild has handled it.</p><p>You can do many things with a proxy like this including:</p><ul><li>Injecting your own 404 page (the example above)</li><li>Customizing the mapping of routes to files on the file system</li><li>Redirecting some routes to an API server instead of to esbuild</li></ul><p>You can also use a real proxy such as <a href="https://nginx.org/en/docs/beginners_guide.html#proxy">nginx</a> if you have more advanced needs.</p><h4 id="cors"><a class="permalink" href="#cors">#</a>Cross-Origin Resource Sharing</h4><p>By default, esbuild's development server does not allow access from arbitrary origins. This ensures that visiting a malicious website in your browser doesn't allow that website to access esbuild's development server, which could divulge confidential information (source code, API keys, directory listing, etc.).</p><p>However, you may want to grant access to esbuild's development server for certain origins that you control. This can be done with <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS">Cross-Origin Resource Sharing</a> (a.k.a. CORS). Specifically, passing your origin(s) to esbuild will cause esbuild to set the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Allow-Origin"><code>Access-Control-Allow-Origin</code></a> response header when the request has a matching <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Origin"><code>Origin</code></a> header.</p><p>Here is a simple example that allows any page on <code>https://example.com</code> to access esbuild's development server:</p><div class="switcher">
+<a href="javascript:void 0" class="cli3">CLI</a>
+<a href="javascript:void 0" class="js3">JS</a>
+<a href="javascript:void 0" class="go3">Go</a>
+      </div>
+<pre class="switchable cli3">esbuild --servedir=. --cors-origin=https://example.com
+</pre>
+<pre class="switchable js3"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;esbuild&#x27;</span>
+
+<span class="hljs-keyword">let</span> ctx = <span class="hljs-keyword">await</span> esbuild.context({})
+
+<span class="hljs-keyword">await</span> ctx.serve({
+  <span class="hljs-attr">servedir</span>: <span class="hljs-string">&#x27;.&#x27;</span>,
+  <span class="hljs-attr">cors</span>: {
+    <span class="hljs-attr">origin</span>: <span class="hljs-string">&#x27;https://example.com&#x27;</span>,
+  },
+})
+</pre>
+<pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  ctx, err := api.Context(api.BuildOptions{})
+  <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+
+  result, err2 := ctx.Serve(api.ServeOptions{
+    Servedir: <span class="hljs-string">&quot;.&quot;</span>,
+    CORS: api.CORSOptions{
+      Origin: []<span class="hljs-keyword">string</span>{<span class="hljs-string">&quot;https://example.com&quot;</span>},
+    },
+  })
+  <span class="hljs-keyword">if</span> err2 != <span class="hljs-literal">nil</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}
+</pre><p>You can also provide an array of multiple origins to allow, and you can match many origins with a single pattern by using a <code>*</code> wildcard character. The following example matches both <code>https://example.com</code> and all subdomains that match <code>https://*.example.com</code>:</p><div class="switcher">
+<a href="javascript:void 0" class="cli3">CLI</a>
+<a href="javascript:void 0" class="js3">JS</a>
+<a href="javascript:void 0" class="go3">Go</a>
+      </div>
+<pre class="switchable cli3">esbuild --servedir=. <span class="hljs-string">&quot;--cors-origin=https://example.com,https://*.example.com&quot;</span>
+</pre>
+<pre class="switchable js3"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;esbuild&#x27;</span>
+
+<span class="hljs-keyword">let</span> ctx = <span class="hljs-keyword">await</span> esbuild.context({})
+
+<span class="hljs-keyword">await</span> ctx.serve({
+  <span class="hljs-attr">servedir</span>: <span class="hljs-string">&#x27;.&#x27;</span>,
+  <span class="hljs-attr">cors</span>: {
+    <span class="hljs-attr">origin</span>: [
+      <span class="hljs-string">&#x27;https://example.com&#x27;</span>,
+      <span class="hljs-string">&#x27;https://*.example.com&#x27;</span>,
+    ],
+  },
+})
+</pre>
+<pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;os&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  ctx, err := api.Context(api.BuildOptions{})
+  <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+
+  result, err2 := ctx.Serve(api.ServeOptions{
+    Servedir: <span class="hljs-string">&quot;.&quot;</span>,
+    CORS: api.CORSOptions{
+      Origin: []<span class="hljs-keyword">string</span>{
+        <span class="hljs-string">&quot;https://example.com&quot;</span>,
+        <span class="hljs-string">&quot;https://*.example.com&quot;</span>,
+      },
+    },
+  })
+  <span class="hljs-keyword">if</span> err2 != <span class="hljs-literal">nil</span> {
+    os.Exit(<span class="hljs-number">1</span>)
+  }
+}
+</pre><p>Note that this feature currently only works for <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS#simple_requests">simple requests</a>, which are requests that don't send a preflight <code>OPTIONS</code> request, as esbuild's development server doesn't currently support <code>OPTIONS</code> requests.</p><h3 id="tsconfig"><a class="permalink" href="#tsconfig">#</a>Tsconfig</h3><p><i>Supported by: <a href="#build">Build</a></i></p><p>Normally the <a href="#build">build</a> API automatically discovers <code>tsconfig.json</code> files and reads their contents during a build. However, you can also configure a custom <code>tsconfig.json</code> file to use instead. This can be useful if you need to do multiple builds of the same code with different settings:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -4362,17 +4456,6 @@ fs.writeFileSync(<span class="hljs-string">&#x27;meta.json&#x27;</span>, <span c
     example.js.map:2:18:
 </span><span class="color-dim">      2 │   "mappings": "aAA</span><span class="color-green">F</span><span class="color-dim">A,UAAU;;"
         ╵                   </span><span class="color-green">^</span><span>
-
-  The source map "example.js.map" was referenced by the file "example.js" here:
-
-    example.js:1:21:
-</span><span class="color-dim">      1 │ //# sourceMappingURL=</span><span class="color-green">example.js.map</span><span class="color-dim">
-        ╵                      </span><span class="color-green">~~~~~~~~~~~~~~</span><span></span></pre></details></li>
-<li><details><summary><code>sections-in-source-map</code></summary><pre><span></span><span class="color-yellow">▲ </span><span class="bg-yellow color-yellow">[</span><span class="bg-yellow color-black">WARNING</span><span class="bg-yellow color-yellow">]</span><span> </span><span class="color-bold">Source maps with "sections" are not supported</span><span> [sections-in-source-map]
-
-    example.js.map:2:2:
-</span><span class="color-dim">      2 │   </span><span class="color-green">"sections"</span><span class="color-dim">: []
-        ╵   </span><span class="color-green">~~~~~~~~~~</span><span>
 
   The source map "example.js.map" was referenced by the file "example.js" here:
 
