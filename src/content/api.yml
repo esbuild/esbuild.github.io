@@ -8008,7 +8008,6 @@ body:
           **Source maps:**
           <ul>
             <li><details><summary>`invalid-source-mappings`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': '//# sourceMappingURL=example.js.map', 'example.js.map': '{ "version": 3, "sources": ["example.js"],\n  "mappings": "aAAFA,UAAU;;"\n}' }, { bundle: true, sourcemap: true }) }}</pre></details></li>
-            <li><details><summary>`sections-in-source-map`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': '//# sourceMappingURL=example.js.map', 'example.js.map': '{\n  "sections": []\n}' }, { bundle: true, sourcemap: true }) }}</pre></details></li>
             <li><details><summary>`missing-source-map`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': '//# sourceMappingURL=.' }, { bundle: true, sourcemap: true }) }}</pre></details></li>
             <li><details><summary>`unsupported-source-map-comment`</summary><pre>{{ FORMAT_MESSAGES({ 'example.js': '//# sourceMappingURL=data:application/json,"%"' }, { bundle: true, sourcemap: true }) }}</pre></details></li>
           </ul>
