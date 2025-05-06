@@ -1381,7 +1381,12 @@ body:
           keyfile?: string
           certfile?: string
           fallback?: string
+          cors?: CORSOptions
           onRequest?: (args: ServeOnRequestArgs) => void
+        }
+
+        interface CORSOptions {
+          origin?: string | string[]
         }
 
         interface ServeOnRequestArgs {
@@ -1400,7 +1405,12 @@ body:
           Keyfile   string
           Certfile  string
           Fallback  string
+          CORS      CORSOptions
           OnRequest func(ServeOnRequestArgs)
+        }
+
+        type CORSOptions struct {
+          Origin []string
         }
 
         type ServeOnRequestArgs struct {
@@ -1478,6 +1488,13 @@ body:
       this as the entry point of a [single-page application](https://en.wikipedia.org/wiki/Single-page_application)
       that mutates the current URL and therefore needs to be served from many
       different URLs simultaneously.
+      </p>
+
+    - >
+      `cors`
+      <p>
+      This is for [Cross-Origin Request Sharing](#cors). See that link for
+      more information.
       </p>
 
     - >
@@ -1662,6 +1679,129 @@ body:
   - p: >
       You can also use a real proxy such as [nginx](https://nginx.org/en/docs/beginners_guide.html#proxy)
       if you have more advanced needs.
+
+  - h4#cors: Cross-Origin Resource Sharing
+
+  - p: >
+      By default, esbuild's development server does not allow access from
+      arbitrary origins. This ensures that visiting a malicious website in your
+      browser doesn't allow that website to access esbuild's development server,
+      which could divulge confidential information (source code, API keys,
+      directory listing, etc.).
+
+  - p: >
+      However, you may want to grant access to esbuild's development server for
+      certain origins that you control. This can be done with
+      [Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS)
+      (a.k.a. CORS). Specifically, passing your origin(s) to esbuild will cause
+      esbuild to set the
+      [`Access-Control-Allow-Origin`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Allow-Origin)
+      response header when the request has a matching
+      [`Origin`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Origin) header.
+
+  - p: >
+      Here is a simple example that allows any page on `https://example.com` to
+      access esbuild's development server:
+
+  - example:
+      noCheck: true
+
+      cli: |
+        esbuild --servedir=. --cors-origin=https://example.com
+
+      mjs: |
+        import * as esbuild from 'esbuild'
+
+        let ctx = await esbuild.context({})
+
+        await ctx.serve({
+          servedir: '.',
+          cors: {
+            origin: 'https://example.com',
+          },
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          ctx, err := api.Context(api.BuildOptions{})
+          if err != nil {
+            os.Exit(1)
+          }
+
+          result, err2 := ctx.Serve(api.ServeOptions{
+            Servedir: ".",
+            CORS: api.CORSOptions{
+              Origin: []string{"https://example.com"},
+            },
+          })
+          if err2 != nil {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      You can also provide an array of multiple origins to allow, and you can
+      match many origins with a single pattern by using a `*` wildcard character.
+      The following example matches both `https://example.com` and all subdomains
+      that match `https://*.example.com`:
+
+  - example:
+      noCheck: true
+
+      cli: |
+        esbuild --servedir=. "--cors-origin=https://example.com,https://*.example.com"
+
+      mjs: |
+        import * as esbuild from 'esbuild'
+
+        let ctx = await esbuild.context({})
+
+        await ctx.serve({
+          servedir: '.',
+          cors: {
+            origin: [
+              'https://example.com',
+              'https://*.example.com',
+            ],
+          },
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          ctx, err := api.Context(api.BuildOptions{})
+          if err != nil {
+            os.Exit(1)
+          }
+
+          result, err2 := ctx.Serve(api.ServeOptions{
+            Servedir: ".",
+            CORS: api.CORSOptions{
+              Origin: []string{
+                "https://example.com",
+                "https://*.example.com",
+              },
+            },
+          })
+          if err2 != nil {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Note that this feature currently only works for
+      [simple requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS#simple_requests),
+      which are requests that don't send a preflight `OPTIONS` request, as
+      esbuild's development server doesn't currently support `OPTIONS` requests.
 
   - h3: Tsconfig
 
