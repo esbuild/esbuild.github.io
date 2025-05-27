@@ -1034,6 +1034,7 @@ body:
     - '[`box-decoration-break`](https://caniuse.com/css-boxdecorationbreak)'
     - '[`clip-path`](https://caniuse.com/css-clip-path)'
     - '[`font-kerning`](https://caniuse.com/font-kerning)'
+    - '[`height: stretch`](https://caniuse.com/mdn-css_properties_height_stretch)'
     - '[`hyphens`](https://caniuse.com/css-hyphens)'
     - '[`initial-letter`](https://caniuse.com/css-initial-letter)'
     - '[`mask-composite`](https://caniuse.com/mdn-css_properties_mask-composite)'
@@ -1042,6 +1043,10 @@ body:
     - '[`mask-position`](https://caniuse.com/mdn-css_properties_mask-position)'
     - '[`mask-repeat`](https://caniuse.com/mdn-css_properties_mask-repeat)'
     - '[`mask-size`](https://caniuse.com/mdn-css_properties_mask-size)'
+    - '[`max-height: stretch`](https://caniuse.com/mdn-css_properties_max-height_stretch)'
+    - '[`max-width: stretch`](https://caniuse.com/mdn-css_properties_max-width_stretch)'
+    - '[`min-height: stretch`](https://caniuse.com/mdn-css_properties_min-height_stretch)'
+    - '[`min-width: stretch`](https://caniuse.com/mdn-css_properties_min-width_stretch)'
     - '[`position: sticky`](https://caniuse.com/css-sticky)'
     - '[`print-color-adjust`](https://caniuse.com/css-color-adjust)'
     - '[`tab-size`](https://caniuse.com/css3-tabsize)'
@@ -1054,6 +1059,7 @@ body:
     - '[`text-orientation`](https://caniuse.com/css-text-orientation)'
     - '[`text-size-adjust`](https://caniuse.com/text-size-adjust)'
     - '[`user-select`](https://caniuse.com/mdn-css_properties_user-select)'
+    - '[`width: stretch`](https://caniuse.com/mdn-css_properties_width_stretch)'
 
   - h3#css-from-js: Import from JavaScript
 
