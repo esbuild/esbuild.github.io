@@ -10,16 +10,21 @@ body:
       with the [transform](/api/#transform) API.
 
   - h2: Finding plugins
+
   - p: >
-      If you're looking for an existing esbuild plugin, you should check out the
-      [list of existing esbuild plugins](https://github.com/esbuild/community-plugins).
-      Plugins on this list have been deliberately added by the author and are
-      intended to be used by others in the esbuild community.
+      There are two ways to find esbuild plugins. One way is to check the
+      (uncurated) [central list of existing esbuild plugins](https://github.com/esbuild/community-plugins).
+      Another way is to search for the [`esbuild-plugin`](https://www.npmjs.com/search?q=keywords:esbuild-plugin&sortBy=downloads_monthly)
+      keyword on the npm registry.
 
   - p: >
       If you want to share your esbuild plugin, you should:
 
   - ol:
+    - >
+      Add `"keywords": ["esbuild-plugin"]` to your plugin's `package.json` file
+      before you publish it.
+
     - >
       [Publish it to npm](https://docs.npmjs.com/creating-and-publishing-unscoped-public-packages)
       so others can install it.
