@@ -2042,6 +2042,45 @@ body:
       continue to watch forever even when the parent process has finished, you
       may use <code>--watch=<wbr>forever</code> instead of `--watch`.
 
+  - h4#watch-arguments: Arguments
+
+  - p: >
+      The optional arguments to the watch API are as follows:
+
+  - example:
+      noCheck: true
+
+      cli: |
+        # Wait 500ms before rebuilding after a change
+        --watch-delay=500
+
+      js: |
+        interface WatchOptions {
+          delay?: number
+        }
+
+      go: |
+        type WatchOptions struct {
+          Delay int
+        }
+
+  - ul:
+    - >
+      `delay`
+      <p>
+      If specified, esbuild waits this many milliseconds before rebuilding
+      after a change is detected. The default value is 0 which means esbuild
+      rebuilds immediately after the first detected change.
+      </p>
+      <p>
+      If you use a tool that regenerates multiple source files very slowly,
+      rebuilding immediately after the first change could cause esbuild to
+      generate a broken intermediate build before generating a successful
+      final build, which can be confusing and/or distracting. Using this option
+      to introduce a delay before rebuilding can give extra time to such a tool
+      and avoid this situation.
+      </p>
+
   - h2: Input
 
   - h3: Entry points
