@@ -7841,6 +7841,14 @@ body:
   - p: >
       Colored output can also be set to `false` to disable colors.
 
+  - p: >
+      In addition, esbuild respects the informally-standard `NO_COLOR`
+      environment variable. So if you want esbuild (and many other CLI
+      programs) to have color output disabled by default without needing
+      to explicitly disable it on the command line, you should export the
+      `NO_COLOR=1` environment variable in your shell's configuration file.
+      You can read more about this convention at [https://no-color.org/](https://no-color.org/).
+
   - h3: Format messages
 
   - p: >
