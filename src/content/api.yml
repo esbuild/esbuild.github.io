@@ -3114,7 +3114,7 @@ body:
 
   - p: >
       Lines are truncated after they pass the limit instead of before because
-      it's simpler to check when the limit is passed then to predict when the
+      it's simpler to check when the limit is passed than to predict when the
       limit is about to be passed, and because it's faster to avoid backing up
       and rewriting things when generating an output file. So the limit is only
       approximate.
