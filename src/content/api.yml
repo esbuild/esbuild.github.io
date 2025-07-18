@@ -7834,7 +7834,7 @@ body:
         app.js: 'x = typeof y === "null"'
 
       cli: |
-        esbuild app.js --abs-paths=log,metafile --metafile=meta.json
+        esbuild app.js --abs-paths=log,metafile --outfile=out.js --metafile=meta.json
 
       mjs: |
         import * as esbuild from 'esbuild'
@@ -7842,6 +7842,7 @@ body:
         let result = await esbuild.build({
           entryPoints: ['app.js'],
           absPaths: ['log', 'metafile'],
+          outfile: 'out.js',
           metafile: true,
         })
 
@@ -7855,6 +7856,7 @@ body:
           result := api.Build(api.BuildOptions{
             EntryPoints: []string{"app.js"},
             AbsPaths:    api.LogAbsPath | api.MetafileAbsPath,
+            Outfile:     "out.js",
             Metafile:    true,
           })
 
