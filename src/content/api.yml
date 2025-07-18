@@ -7791,7 +7791,77 @@ body:
         }
       }
 
+  - p: >
+      All paths in the metafile are relative by default. If you would like them
+      to be absolute paths instead, you can configure that with the
+      [abs paths](#abs-paths) setting.
+
   - h2: Logging
+
+  - h3: Abs paths
+
+  - p: >
+      Use this feature to tell esbuild to refer to files by absolute paths
+      instead of relative paths. By default, esbuild uses relative paths
+      instead of absolute paths because they are necessary for build output to
+      be reproducible across different machines and operating systems.
+
+  - p: >
+      Absolute paths can be useful with certain terminal emulators that
+      automatically turn absolute paths in the terminal text into clickable
+      links. They can also be useful when esbuild is being automatically
+      invoked from several different directories by another script and the log
+      messages are all merged together.
+
+  - p: >
+      There are currently three supported situations where absolute paths can
+      be configured:
+
+  - ul:
+    - >
+      `code` controls paths in comments and string literals
+    - >
+      `log` controls paths in log messages
+    - >
+      `metafile` controls paths in [JSON build metadata](#metafile)
+
+  - p: >
+      Here is an example of configuring absolute paths in log messages and
+      build metadata:
+
+  - example:
+      in:
+        app.js: 'x = typeof y === "null"'
+
+      cli: |
+        esbuild app.js --abs-paths=log,metafile --metafile=meta.json
+
+      mjs: |
+        import * as esbuild from 'esbuild'
+
+        let result = await esbuild.build({
+          entryPoints: ['app.js'],
+          absPaths: ['log', 'metafile'],
+          metafile: true,
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            AbsPaths:    api.LogAbsPath | api.MetafileAbsPath,
+            Metafile:    true,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
 
   - h3: Color
 

@@ -41,6 +41,7 @@ interface Token {
 }
 
 const commaSeparatedArrays = [
+  'absPaths',
   'conditions',
   'dropLabels',
   'mainFields',
