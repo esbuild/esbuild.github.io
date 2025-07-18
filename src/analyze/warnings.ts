@@ -17,7 +17,7 @@ let generateWarnings = (metafile: Metafile): HTMLElement[] => {
 
   for (let i in inputs) {
     let input = inputs[i]
-    for (let record of input.imports) {
+    for (let record of input.imports || []) {
       if (record.original && record.original[0] !== '.') {
         let array = resolvedPaths[record.original] || (resolvedPaths[record.original] = [])
         if (!array.includes(record.path)) array.push(record.path)
