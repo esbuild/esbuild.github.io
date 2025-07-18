@@ -596,16 +596,13 @@ body:
     - >
       [`experimentalDecorators`](https://www.typescriptlang.org/tsconfig#experimentalDecorators)
       <p>
-      This option enables the transformation of decorator syntax in TypeScript
-      files. The transformation follows the outdated decorator design that
-      TypeScript itself follows when `experimentalDecorators` is enabled.
-      </p>
-      <p>
-      Note that there is an updated design for decorators that is being added to
-      JavaScript, as well as to TypeScript when `experimentalDecorators` is
-      disabled. This is not something that esbuild implements yet, so esbuild
-      will currently not transform decorators when `experimentalDecorators` is
-      disabled.
+      If this is enabled, esbuild will transform decorators using the legacy
+      decorator behavior that TypeScript itself follows when `experimentalDecorators`
+      is enabled. If this is disabled or missing, esbuild will instead use standard
+      JavaScript decorator behavior as specified in the
+      [decorator proposal for JavaScript](https://github.com/tc39/proposal-decorators).
+      These two options for decorators mostly share the same syntax but have
+      different behavior at run-time.
       </p>
 
     - >
