@@ -170,7 +170,7 @@ body:
           outdir: 'dist',
         })
 
-        let { host, port } = await ctx.serve()
+        let { hosts, port } = await ctx.serve()
 
       go: |
         ctx, err := api.Context(api.BuildOptions{
@@ -821,7 +821,7 @@ body:
 
         await ctx.watch()
 
-        let { host, port } = await ctx.serve({
+        let { hosts, port } = await ctx.serve({
           servedir: 'www',
         })
 
@@ -1287,7 +1287,7 @@ body:
           bundle: true,
         })
 
-        let { host, port } = await ctx.serve({
+        let { hosts, port } = await ctx.serve({
           servedir: 'www',
         })
 
