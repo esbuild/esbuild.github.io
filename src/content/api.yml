@@ -5318,6 +5318,7 @@ body:
       <li>`inline-style`</li>
       <li>`inset-property`</li>
       <li>`is-pseudo-class`</li>
+      <li>`media-range`</li>
       <li>`modern-rgb-hsl`</li>
       <li>`nesting`</li>
       <li>`rebecca-purple`</li>
