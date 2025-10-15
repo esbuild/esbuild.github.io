@@ -1481,6 +1481,22 @@ body:
           }
         }
 
+  - p: >
+      The `binary` loader can also be accessed without needing to change
+      esbuild's configuration by adding <code>with { <wbr>type: <wbr>'bytes' }</code>
+      after the import statement. That looks like this:
+
+  - pre.js: |
+      import uint8array from './example.data' with { type: 'bytes' }
+      console.log(uint8array)
+
+  - p: >
+      This uses the name `bytes` instead of `binary` because it's from the
+      JavaScript [import bytes](https://github.com/tc39/proposal-import-bytes)
+      proposal, and that uses the name `bytes`. Support for this syntax has
+      also been added to many other JavaScript tools so code written this
+      way will be more portable across tools.
+
   - h2: Base64
   - p: 'Loader: `base64`'
 
