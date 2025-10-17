@@ -1004,6 +1004,7 @@ body:
       | [Gradient transition hints](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Images/Using_CSS_gradients#gradient_hints) | `linear-gradient(red, 20%, blue)` <sup>1</sup> |
       | [Gradient color spaces](https://developer.mozilla.org/en-US/blog/css-color-module-level-4/#comparing_gradients_in_different_color_spaces) | `linear-gradient(in hsl, red, blue)` <sup>1</sup> |
       | [Gradient hue mode](https://developer.mozilla.org/en-US/blog/css-color-module-level-4/#using_hue_interpolation_modes_in_gradients) | `linear-gradient(in hsl longer hue, red, blue)` <sup>1</sup> |
+      | [Range syntax in media queries](https://css-tricks.com/the-new-css-media-query-range-syntax/) | `@media (400px <= width <= 800px) {}` |
 
   - p: >
       <footer>
