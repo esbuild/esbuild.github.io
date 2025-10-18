@@ -273,8 +273,7 @@ body:
       **Used by other projects**
       <p>
       The API is already being used as a library within many other
-      developer tools. For example, [Vite](https://vitejs.dev/)
-      and [Snowpack](https://www.snowpack.dev/) are using
+      developer tools. For example, [Vite](https://vitejs.dev/) is using
       esbuild to transform TypeScript into JavaScript and
       [Amazon CDK](https://aws.amazon.com/cdk/) (Cloud Development Kit)
       and [Phoenix](https://www.phoenixframework.org/) are using
