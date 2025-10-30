@@ -413,6 +413,10 @@ a.underLink:hover,
   color: var(--fg-on);
 }
 
+.color-underline {
+  text-decoration: underline;
+}
+
 .bg-red {
   background: #e24834;
 }
