@@ -182,7 +182,7 @@ export function resetFileSystem(files: Record<string, string>): void {
   }
 }
 
-globalThis.fs = {
+(globalThis as any).fs = {
   get writeSync() { return writeSync },
   set writeSync(value) { esbuildWriteSync = value },
 
@@ -200,7 +200,7 @@ globalThis.fs = {
 
   open(
     path: string, flags: string | number, mode: string | number,
-    callback: (err: Error | null, fd: number | null) => void,
+    callback: (err: unknown, fd: number | null) => void,
   ) {
     try {
       const entry = getEntryFromPath(path)
@@ -212,13 +212,13 @@ globalThis.fs = {
     }
   },
 
-  close(fd: number, callback: (err: Error | null) => void) {
+  close(fd: number, callback: (err: unknown) => void) {
     callback(handles.delete(fd) ? null : EBADF)
   },
 
   write(
     fd: number, buffer: Uint8Array, offset: number, length: number, position: number | null,
-    callback: (err: Error | null, count: number, buffer: Uint8Array) => void,
+    callback: (err: unknown, count: number, buffer: Uint8Array) => void,
   ) {
     if (fd <= 2) {
       if (fd === 2) writeToStderr(buffer, offset, length)
@@ -229,7 +229,7 @@ globalThis.fs = {
     }
   },
 
-  readdir(path: string, callback: (err: Error | null, files: string[] | null) => void) {
+  readdir(path: string, callback: (err: unknown, files: string[] | null) => void) {
     try {
       const entry = getEntryFromPath(path)
       if (entry.kind_ !== Kind.Directory) throw ENOTDIR
@@ -239,7 +239,7 @@ globalThis.fs = {
     }
   },
 
-  stat(path: string, callback: (err: Error | null, stats: Stats | null) => void) {
+  stat(path: string, callback: (err: unknown, stats: Stats | null) => void) {
     try {
       const entry = getEntryFromPath(path)
       callback(null, new Stats(entry))
@@ -248,7 +248,7 @@ globalThis.fs = {
     }
   },
 
-  lstat(path: string, callback: (err: Error | null, stats: Stats | null) => void) {
+  lstat(path: string, callback: (err: unknown, stats: Stats | null) => void) {
     try {
       const entry = getEntryFromPath(path)
       callback(null, new Stats(entry))
@@ -257,7 +257,7 @@ globalThis.fs = {
     }
   },
 
-  fstat(fd: number, callback: (err: Error | null, stats: Stats | null) => void) {
+  fstat(fd: number, callback: (err: unknown, stats: Stats | null) => void) {
     const handle = handles.get(fd)
     if (handle) {
       callback(null, new Stats(handle.entry_))

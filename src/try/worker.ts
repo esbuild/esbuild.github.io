@@ -221,7 +221,7 @@ onmessage = e => {
           )
         }
       } catch (err) {
-        respondWithError(respond, err)
+        respondWithError(respond, err as any)
       }
     }
 

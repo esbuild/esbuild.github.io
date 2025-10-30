@@ -68,7 +68,7 @@ export function parseOptions(input: string, mode: Mode, switcherEl: HTMLDivEleme
           options[key] = new RegExp(options[key] + '')
         } catch (err) {
           key = key.replace(/[A-Z]/g, x => '-' + x.toLowerCase())
-          throw new Error(`Invalid regular expression for "--${key}=": ${err.message}`)
+          throw new Error(`Invalid regular expression for "--${key}=": ${(err as Error).message}`)
         }
       }
     }
@@ -79,7 +79,7 @@ export function parseOptions(input: string, mode: Mode, switcherEl: HTMLDivEleme
           options[key] = +options[key]
         } catch (err) {
           key = key.replace(/[A-Z]/g, x => '-' + x.toLowerCase())
-          throw new Error(`Invalid number for "--${key}=": ${err.message}`)
+          throw new Error(`Invalid number for "--${key}=": ${(err as Error).message}`)
         }
       }
     }
@@ -578,7 +578,7 @@ function parseOptionsAsLooseJSON(input: string): Record<string, any> {
         i = match.index + 1
         return code()
       } catch (err) {
-        error = ': ' + err.message
+        error = ': ' + (err as Error).message
       }
     }
 

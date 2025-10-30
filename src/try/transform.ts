@@ -52,7 +52,7 @@ export function runTransform(): void {
   }
 
   catch (err) {
-    updateTransformOutput({ stderr_: prettyPrintErrorAsStderr(err) })
+    updateTransformOutput({ stderr_: prettyPrintErrorAsStderr(err as any) })
   }
 
   // Show an example link in the default state

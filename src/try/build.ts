@@ -114,7 +114,7 @@ export function runBuild(): void {
   }
 
   catch (err) {
-    updateBuildOutput({ stderr_: prettyPrintErrorAsStderr(err) }, -1)
+    updateBuildOutput({ stderr_: prettyPrintErrorAsStderr(err as any) }, -1)
   }
 
   // Show an example link in the default state
