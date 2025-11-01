@@ -1957,6 +1957,12 @@ body:
         }
 
   - p: >
+      Note that the JavaScript and Go watch APIs complete as soon as watch mode
+      has started. They do not wait for the initial build to finish. If you want
+      to wait for an initial build to finish, you should additionally call
+      [`rebuild`](#rebuild) and wait for it to complete.
+
+  - p: >
       If you want to stop watch mode at some point in the future, you can call
       `dispose` on the context object to terminate the file watcher:
 
