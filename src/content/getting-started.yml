@@ -28,7 +28,9 @@ body:
   - p: >
       The recommended way to install esbuild is to install the native executable
       using npm. But if you don't want to do that, there are also some
-      [other ways to install](#other-ways-to-install).
+      [other ways to install](#other-ways-to-install). You can also read more
+      about [additional npm flags](#additional-npm-flags) if you're passing additional
+      flags to npm, as they may affect how esbuild gets installed.
 
   - h2: Your first bundle
 
@@ -388,6 +390,83 @@ body:
       performance overhead to every command. For maximum esbuild performance,
       you may want to consider running esbuild without using Yarn's CLI (i.e.
       not using `yarn esbuild`). This can result in esbuild running 10x faster.
+
+  - h2: Additional npm flags
+
+  - p: >
+      There are two npm flags that can potentially interfere with how the
+      `esbuild` package is installed: <code>--ignore-<wbr>scripts</code> and
+      <code>--no-<wbr>optional</code>. This is because the `esbuild`
+      package uses an install script and because the `esbuild` package depends
+      on a separate optional package for each platform-specific binary executable.
+
+  - p: >
+      The optimal way to install esbuild is to not use either of these flags.
+      The installation flow for esbuild is designed to still partially work
+      when one of these flags is present, but it cannot work at all when
+      both of these flags are present.
+
+  - p: >
+      In more detail:
+
+  - ul:
+    - >
+      <pre>npm install esbuild</pre>
+      <p>
+      This is the default installation flow. The `esbuild` binary for the current
+      platform should be automatically selected and installed from esbuild's
+      optional dependencies by npm. The install script then runs which a) checks
+      that the esbuild binary is the correct version (which is
+      [sometimes not the case](https://github.com/evanw/esbuild/issues/3800)
+      due to package manager bugs) and b) optimizes the `esbuild` command in
+      <code>node_modules/<wbr>.bin</code> to be the `esbuild` executable itself
+      instead of a JavaScript shim file that runs the actual `esbuild` executable.
+      </p>
+
+    - >
+      <pre>npm install esbuild --ignore-scripts</pre>
+      <p>
+      This means esbuild's install script doesn't run. However, the `esbuild`
+      binary for the current platform should still be automatically selected and
+      installed from esbuild's optional dependencies by npm. The `esbuild`
+      command in <code>node_modules/<wbr>.bin</code> remains pointed to the
+      JavaScript shim file that runs the actual esbuild executable.
+      </p>
+      <p>
+      This means that running esbuild using for example
+      <code>./node_modules/<wbr>.bin/<wbr>esbuild</code> will experience some
+      unnecessary performance overhead as an extra node process will be launched
+      to invoke esbuild. Uses of the esbuild API (so not the esbuild CLI) do not
+      have degraded performance as that use case already requires a node process
+      to be launched (for the caller of the JavaScript the API). The performance
+      overhead of launching the extra node process is not nothing but also not
+      that big. So this is not the end of the world.
+      </p>
+
+    - >
+      <pre>npm install esbuild --no-optional</pre>
+      <p>
+      This means npm doesn't install the optional package with the `esbuild` binary
+      for the current platform, as it has been instructed not to install any
+      optional packages. The install script then runs and notices the missing
+      `esbuild` binary and attempts to download it manually from the npm registry.
+      </p>
+      <p>
+      This is less robust than the default installation flow because many people
+      have complex npm configuration that esbuild's install script can't necessarily
+      replicate. For example, this may fail if the network path to the internet
+      involves a proxy, or a custom npm registry is in use. But this install flow
+      has been added because it works for some people who do this. If this fails
+      for you, the solution is to not do this.
+      </p>
+
+    - >
+      <pre>npm install esbuild --ignore-scripts --no-optional</pre>
+      <p>
+      In this scenario, the installed `esbuild` package is broken because nothing
+      downloads the actual `esbuild` binary. I consider this to be a user error.
+      The solution is to not do this.
+      </p>
 
   - h2: Other ways to install
 
