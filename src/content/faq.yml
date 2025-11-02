@@ -481,6 +481,80 @@ body:
       in the global scope, which will then collide with top-level variables
       that have the same name in other JavaScript files).
 
+  - h2: Strict mode
+
+  - p: >
+      JavaScript contains a feature called [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode)
+      which alters how JavaScript code runs. If a JavaScript file and/or function
+      starts with a `"use strict";` statement, the code in that scope and all
+      nested scopes runs in strict mode:
+
+  - pre.js: |
+      function usesStrictMode() {
+        "use strict";
+        return this;
+      }
+
+      function doesNotUseStrictMode() {
+        return this;
+      }
+
+      console.log(
+        usesStrictMode(),
+        doesNotUseStrictMode(),
+      )
+
+  - p: >
+      The strict mode feature is complicated and error-prone for many reasons:
+
+  - ul:
+    - >
+      <p>
+      It does not compose well because there is no way to turn it off for a
+      nested scope. For example, it's unclear what the above code will print.
+      The first function will definitely return `undefined` because `this` is
+      always defaults to `undefined` when calling a strict mode function. But
+      the second function may either return `undefined` or the global object
+      depending on whether or not the scope surrounding this code snippet is
+      in strict mode.
+      </p>
+
+    - >
+      <p>
+      Strict mode can be affected by your choice of JavaScript module format.
+      CommonJS modules (files that reference `module` and/or `exports`) are
+      only in strict mode if they start with a `"use strict";` directive.
+      However, ECMAScript modules (files that use the `import` and `export`
+      keywords) are always in strict mode regardless of whether or not the
+      `"use strict";` directive is present.
+      </p>
+
+    - >
+      <p>
+      The TypeScript compiler automatically inserts a `"use strict";` directive
+      for you if you enable the [`strict`](https://www.typescriptlang.org/tsconfig/#strict)
+      or [`alwaysStrict`](https://www.typescriptlang.org/tsconfig/#alwaysStrict)
+      options in your `tsconfig.json` file. This isn't necessarily obvious
+      because the `strict` option is typically associated with type checking,
+      not changing run-time behavior. Because esbuild emulates these TypeScript
+      settings, esbuild will also insert `"use strict";` in these cases.
+      </p>
+
+    - >
+      When esbuild bundles multiple modules into a single file, some of the
+      modules that shouldn't be run in strict mode may end up being run in
+      strict mode anyway. This can happen when the output format is an
+      ECMAScript module (implicit strict mode) or when the entry point is in
+      strict mode (either with an explicit directive or implicit strict mode
+      from `tsconfig.json`). This is because bundling places the dependencies
+      in nested scopes and because JavaScript doesn't have a way to turn
+      strict mode back off in a nested scope.
+
+  - p: >
+      There isn't really a general solution to these problems because of how the
+      strict mode feature was designed. Hopefully this information can help you
+      diagnose and work around any compatibility problems that come up.
+
   - h2: Top-level `var`
 
   - p: >
