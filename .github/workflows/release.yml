@@ -29,17 +29,17 @@ jobs:
         id: file-check
         continue-on-error: true
         run: |
-          test -f 'dl/v${{ env.ESBUILD_VERSION }}'
+          test -f "dl/v$ESBUILD_VERSION"
 
       - if: steps.file-check.outcome == 'failure'
         name: Create "dl/v${{ env.ESBUILD_VERSION }}"
         run: |
-          cat esbuild/dl.sh | sed 's/$ESBUILD_VERSION/${{ env.ESBUILD_VERSION }}/' > 'dl/v${{ env.ESBUILD_VERSION }}'
+          cat esbuild/dl.sh | sed "s/\$ESBUILD_VERSION/$ESBUILD_VERSION/" > "dl/v$ESBUILD_VERSION"
 
       - if: steps.file-check.outcome == 'failure'
         name: Update "dl/latest"
         run: |
-          cat esbuild/dl.sh | sed 's/$ESBUILD_VERSION/${{ env.ESBUILD_VERSION }}/' > dl/latest
+          cat esbuild/dl.sh | sed "s/\$ESBUILD_VERSION/$ESBUILD_VERSION/" > dl/latest
 
       - if: steps.file-check.outcome == 'failure'
         name: Commit and push
@@ -47,6 +47,6 @@ jobs:
           git config --global user.name GitHub
           git config --global user.email 'github@example.com'
           git status
-          git add dl/latest 'dl/v${{ env.ESBUILD_VERSION }}'
-          git commit -m 'publish download script for ${{ env.ESBUILD_VERSION }}'
+          git add dl/latest "dl/v$ESBUILD_VERSION"
+          git commit -m "publish download script for $ESBUILD_VERSION"
           git push origin gh-pages
