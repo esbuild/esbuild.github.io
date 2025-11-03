@@ -25,21 +25,28 @@ jobs:
         run: |
           echo "ESBUILD_VERSION=$(cat esbuild/version.txt)" >> $GITHUB_ENV
 
-      - name: Create "dl/v${{ env.ESBUILD_VERSION }}"
+      - name: Check for "dl/v${{ env.ESBUILD_VERSION }}"
+        id: file-check
+        continue-on-error: true
+        run: |
+          test -f 'dl/v${{ env.ESBUILD_VERSION }}'
+
+      - if: steps.file-check.outcome == 'failure'
+        name: Create "dl/v${{ env.ESBUILD_VERSION }}"
         run: |
           cat esbuild/dl.sh | sed 's/$ESBUILD_VERSION/${{ env.ESBUILD_VERSION }}/' > 'dl/v${{ env.ESBUILD_VERSION }}'
 
-      - name: Update "dl/latest"
+      - if: steps.file-check.outcome == 'failure'
+        name: Update "dl/latest"
         run: |
           cat esbuild/dl.sh | sed 's/$ESBUILD_VERSION/${{ env.ESBUILD_VERSION }}/' > dl/latest
 
-      - name: Commit and push
+      - if: steps.file-check.outcome == 'failure'
+        name: Commit and push
         run: |
           git config --global user.name GitHub
           git config --global user.email 'github@example.com'
           git status
-          git diff
-
-# git add dl/latest '${{ env.ESBUILD_VERSION }}'
-# git commit -am 'publish download script for ${{ env.ESBUILD_VERSION }}'
-# git push origin gh-pages
+          git add dl/latest '${{ env.ESBUILD_VERSION }}'
+          git commit -m 'publish download script for ${{ env.ESBUILD_VERSION }}'
+          git push origin gh-pages
