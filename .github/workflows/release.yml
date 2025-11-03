@@ -47,6 +47,6 @@ jobs:
           git config --global user.name GitHub
           git config --global user.email 'github@example.com'
           git status
-          git add dl/latest '${{ env.ESBUILD_VERSION }}'
+          git add dl/latest 'dl/v${{ env.ESBUILD_VERSION }}'
           git commit -m 'publish download script for ${{ env.ESBUILD_VERSION }}'
           git push origin gh-pages
