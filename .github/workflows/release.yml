@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  schedule:
+    - cron: "27 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+
+      - name: Clone the esbuild repo
+        run: |
+          git clone --depth 1 https://github.com/evanw/esbuild.git
+
+      - name: Read version info
+        run: |
+          echo "ESBUILD_VERSION=$(cat esbuild/version.txt)" >> $GITHUB_ENV
+
+      - name: Create "dl/v${{ env.ESBUILD_VERSION }}"
+        run: |
+          cat esbuild/dl.sh | sed 's/$ESBUILD_VERSION/${{ env.ESBUILD_VERSION }}/' > 'dl/v${{ env.ESBUILD_VERSION }}'
+
+      - name: Update "dl/latest"
+        run: |
+          cat esbuild/dl.sh | sed 's/$ESBUILD_VERSION/${{ env.ESBUILD_VERSION }}/' > dl/latest
+
+      - name: Commit and push
+        run: |
+          git config --global user.name GitHub
+          git config --global user.email 'github@example.com'
+          git status
+          git diff
+
+# git add dl/latest '${{ env.ESBUILD_VERSION }}'
+# git commit -am 'publish download script for ${{ env.ESBUILD_VERSION }}'
+# git push origin gh-pages
