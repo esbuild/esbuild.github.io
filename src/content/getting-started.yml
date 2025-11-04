@@ -438,7 +438,7 @@ body:
       unnecessary performance overhead as an extra node process will be launched
       to invoke esbuild. Uses of the esbuild API (so not the esbuild CLI) do not
       have degraded performance as that use case already requires a node process
-      to be launched (for the caller of the JavaScript the API). The performance
+      to be launched (for the caller of the JavaScript API). The performance
       overhead of launching the extra node process is not nothing but also not
       that big. So this is not the end of the world.
       </p>
