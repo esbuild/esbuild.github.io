@@ -5279,6 +5279,7 @@ body:
       <li>`export-star-as`</li>
       <li>`for-await`</li>
       <li>`for-of`</li>
+      <li>`from-base64`</li>
       <li>`function-name-configurable`</li>
       <li>`function-or-class-property-access`</li>
       <li>`generator`</li>
