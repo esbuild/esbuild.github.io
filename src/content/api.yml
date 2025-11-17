@@ -4098,17 +4098,17 @@ body:
 
   - p: >
       The following condition is also automatically included when the [platform](#platform)
-      is set to either `browser` or `node` and no custom conditions are
-      configured. If there are any custom conditions configured (even an empty
-      list) then this condition will no longer be automatically included:
+      is not set to `neutral` and no custom conditions are configured. If there are any
+      custom conditions configured (even an empty list) then this condition will no longer
+      be automatically included:
 
   - ul:
     - >
       `module`
       <p>
-      This condition can be used to tell esbuild to pick the ESM variant for a
-      given import path to provide better tree-shaking when bundling. This
-      condition is not active when you run your code natively in node. It is
+      This condition can be used to tell esbuild to always pick the ESM variant for a
+      given import/require path to avoid dual package hazard and provide better tree-shaking when bundling.
+      This condition is not active when you run your code natively in node. It is
       specific to bundlers, and originated from Webpack.
       </p>
 
@@ -4137,6 +4137,13 @@ body:
       because bundlers support loading ESM using `require`, but it's not something
       that can work with node because node deliberately doesn't implement loading
       ESM using `require`.
+
+  - p: >
+      Note that when using `module` condition and falling back to CJS in node,
+      it's still advised to use the mentioned ESM wrapper that reexports CJS code
+      with `import` condition. This way you might make sure that `default` export
+      remains what you expect it to be or that it exists at all. Without that your
+      CJS module will always be importable in node with `import nsObject from 'pkg'`.
 
   - h3: External
 
