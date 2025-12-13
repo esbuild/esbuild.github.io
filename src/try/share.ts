@@ -11,8 +11,8 @@ const enum Tag {
 }
 
 export function loadStateFromHash(): boolean {
-  const hash = location.hash
-  const parts = atob(hash.slice(1)).split('\0')
+  // Decode as base64, then convert from UTF-8 to UTF-16
+  const parts = decodeURIComponent(escape(atob(location.hash.slice(1)))).split('\0')
 
   // Transform mode
   if (parts[0] === Tag.Transform && parts.length === 4) {
@@ -71,7 +71,8 @@ export function tryToSaveStateToHash(): void {
   // Try to save our state to the URL hash
   const reset = location.pathname + location.search
   try {
-    const hash = parts ? '#' + btoa(parts.join('\0')).replace(/=+$/, '') : ''
+    // Convert from UTF-16 to UTF-8, then encode as base64
+    const hash = parts ? '#' + btoa(unescape(encodeURIComponent(parts.join('\0')))).replace(/=+$/, '') : ''
     if (location.hash !== hash) {
       history.replaceState({}, '', hash || reset)
     }
