@@ -3644,8 +3644,8 @@ one();</pre><p>This way esbuild will only bundle the parts of your packages that
       </div>
 <pre class="switchable cli3"><span class="repl-in">esbuild --bundle example.jsx --outfile=out.js --minify --analyze
 </span><span class="repl-out">
-  out.js                                                                    27.6kb  100.0%
-   ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   69.8%
+  out.js                                                                    27.5kb  100.0%
+   ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js  19.2kb   69.7%
    ├ node_modules/react/cjs/react.production.min.js                          5.9kb   21.4%
    ├ node_modules/object-assign/index.js                                     962b     3.4%
    ├ example.jsx                                                             137b     0.5%
@@ -3694,8 +3694,8 @@ one();</pre><p>This way esbuild will only bundle the parts of your packages that
       </div>
 <pre class="switchable cli3"><span class="repl-in">esbuild --bundle example.jsx --outfile=out.js --minify --analyze=verbose
 </span><span class="repl-out">
-  out.js ─────────────────────────────────────────────────────────────────── 27.6kb ─ 100.0%
-   ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 69.8%
+  out.js ─────────────────────────────────────────────────────────────────── 27.5kb ─ 100.0%
+   ├ node_modules/react-dom/cjs/react-dom-server.browser.production.min.js ─ 19.2kb ── 69.7%
    │  └ node_modules/react-dom/server.browser.js
    │     └ example.jsx
    ├ node_modules/react/cjs/react.production.min.js ───────────────────────── 5.9kb ── 21.4%
