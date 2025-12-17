@@ -1037,6 +1037,7 @@ body:
     - '[`height: stretch`](https://caniuse.com/mdn-css_properties_height_stretch)'
     - '[`hyphens`](https://caniuse.com/css-hyphens)'
     - '[`initial-letter`](https://caniuse.com/css-initial-letter)'
+    - '[`mask`](https://caniuse.com/mdn-css_properties_mask)'
     - '[`mask-composite`](https://caniuse.com/mdn-css_properties_mask-composite)'
     - '[`mask-image`](https://caniuse.com/mdn-css_properties_mask-image)'
     - '[`mask-origin`](https://caniuse.com/mdn-css_properties_mask-origin)'
