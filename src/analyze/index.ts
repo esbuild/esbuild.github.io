@@ -110,16 +110,22 @@ document.getElementById('loadExample')!.onclick = () => {
   fetch('example-metafile.json').then(r => r.text()).then(finishLoading)
 }
 
-if (location.hash !== '') {
-  // Load from the hash if it's present
-  try {
-    finishLoading(atob(location.hash.slice(1)))
-  } catch (e) {
-  }
+function loadHash(){
+  if (location.hash !== '') {
+    // Load from the hash if it's present
+    try {
+      finishLoading(atob(location.hash.slice(1)))
+    } catch (e) {
+    }
 
-  // Clear out the hash afterward
-  try {
-    history.replaceState({}, '', location.pathname)
-  } catch (e) {
+    // Clear out the hash afterward
+    try {
+      history.replaceState({}, '', location.pathname)
+    } catch (e) {
+    }
   }
 }
+
+window.addEventListener('hashchange', loadHash);
+
+loadHash()
