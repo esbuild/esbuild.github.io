@@ -3762,7 +3762,9 @@ body:
       This option sets the output file name for the build operation. This is
       only applicable if there is a single entry point. If there are multiple
       entry points, you must use the [outdir](#outdir) option instead to
-      specify an output directory. Using outfile looks like this:
+      specify an output directory, or specify the `out` property of each entry
+      point using the [alternative entry point syntax](#entry-points). Using
+      outfile looks like this:
 
   - example:
       in:
