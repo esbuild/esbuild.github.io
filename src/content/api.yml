@@ -7464,7 +7464,7 @@ body:
   - h3: Sources content
 
   - p: >
-      [Source maps](#sourcemap) are generated using [version 3](https://sourcemaps.info/spec.html)
+      [Source maps](#sourcemap) are generated using [version 3](https://tc39.es/ecma426/)
       of the source map format, which is by far the most widely-supported
       variant. Each source map will look something like this:
 
