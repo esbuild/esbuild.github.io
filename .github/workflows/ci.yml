@@ -13,19 +13,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Set up Go 1.x
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.16.0
+          go-version: 1.26.1
+          
         id: go
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v1.4.4
+        uses: actions/setup-node@v6
         with:
-          node-version: 16
-
-      - name: Checkout code
-        uses: actions/checkout@v2
+          node-version: 24
 
       - name: Make git work
         run: |
