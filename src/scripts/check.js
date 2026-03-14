@@ -221,7 +221,7 @@ async function main() {
   // Some tests use this directory
   await fs.mkdir('/var/tmp/custom/working/directory', { recursive: true })
 
-  const data = yaml.safeLoad(await fs.readFile(path.join(contentDir, 'index.yml'), 'utf8'))
+  const data = yaml.load(await fs.readFile(path.join(contentDir, 'index.yml'), 'utf8'))
   const pages = Object.entries(data)
   let callbacks = []
   let failed = false
@@ -245,7 +245,7 @@ async function main() {
         }
       }
 
-      pages[i][1] = yaml.safeLoad(contents)
+      pages[i][1] = yaml.load(contents)
     }
   }
 
