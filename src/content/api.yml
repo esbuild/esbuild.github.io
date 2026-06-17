@@ -5116,7 +5116,7 @@ body:
 
   - p: >
       By default esbuild assumes that JSX expressions are side-effect free,
-      which means they are annoated with [`/* @__PURE__ */` comments](#pure) and
+      which means they are annotated with [`/* @__PURE__ */` comments](#pure) and
       are removed during bundling when they are unused. This follows the common
       use of JSX for virtual DOM and applies to the vast majority of JSX libraries.
       However, some people have written JSX libraries that don't have this property
@@ -7464,7 +7464,7 @@ body:
   - h3: Sources content
 
   - p: >
-      [Source maps](#sourcemap) are generated using [version 3](https://sourcemaps.info/spec.html)
+      [Source maps](#sourcemap) are generated using [version 3](https://tc39.es/ecma426/)
       of the source map format, which is by far the most widely-supported
       variant. Each source map will look something like this:
 
@@ -7756,7 +7756,7 @@ body:
   - p: >
       This data can then be analyzed by other tools. For an interactive
       visualization, you can use esbuild's own [Bundle Size Analyzer](/analyze/).
-      For a quick textual analysis, you can use esbuild's build-in [analyze](#analyze)
+      For a quick textual analysis, you can use esbuild's built-in [analyze](#analyze)
       feature. Or you can write your own analysis which uses this information.
 
   - p: >
@@ -8251,7 +8251,7 @@ body:
             <li><details><summary>`undefined-composes-from`</summary><pre>{{ FORMAT_MESSAGES({ 'example.module.css': '.foo { composes: bar from "lib.module.css"; zoom: 1; }', 'lib.module.css': '.bar { zoom: 2 }' }, { bundle: true }) }}</pre></details></li>
             <li><details><summary>`unsupported-@charset`</summary><pre>{{ FORMAT_MESSAGES('@charset "ASCII";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`unsupported-@namespace`</summary><pre>{{ FORMAT_MESSAGES('@namespace "ns";', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
-            <li><details><summary>`unsupported-css-property`</summary><pre>{{ FORMAT_MESSAGES('div { widht: 1px }', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
+            <li><details><summary>`unsupported-css-property`</summary><pre>{{ FORMAT_MESSAGES('div { width: 1px }', { sourcefile: 'example.css', loader: 'css' }) }}</pre></details></li>
             <li><details><summary>`unsupported-css-nesting`</summary><pre>{{ FORMAT_MESSAGES('a b {\n.foo & {\n}\n}', { sourcefile: 'example.css', loader: 'css', target: 'chrome50' }) }}</pre></details></li>
           </ul>
           <br>
