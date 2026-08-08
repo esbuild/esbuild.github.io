@@ -266,6 +266,7 @@ body:
     - Log level
     - Log limit
     - Log override
+    - Log style
     - Main fields
     - Mangle props
     - Metafile
@@ -375,6 +376,7 @@ body:
     - Log level
     - Log limit
     - Log override
+    - Log style
     - Mangle props
     - Minify
     - Platform
@@ -8006,6 +8008,7 @@ body:
           kind: 'error' | 'warning';
           color?: boolean;
           terminalWidth?: number;
+          logStyle?: LogStyle;
         }
 
       go: |
@@ -8013,6 +8016,7 @@ body:
           Kind          MessageKind
           Color         bool
           TerminalWidth int
+          LogStyle      LogStyle
         }
 
   - ul:
@@ -8027,6 +8031,11 @@ body:
       `terminalWidth`
       <p>Provide a positive value to wrap long lines so that they don't overflow
       past the provided column width. Provide `0` to disable word wrapping.</p>
+    - >
+      `logStyle`
+      <p>Can be used to change the style of log message to adapt esbuild's output
+      for different tools. See the [log style](#log-style) setting for the available
+      style options.</p>
 
   - h3: Log level
 
@@ -8295,3 +8304,56 @@ body:
       These message types should be reasonably stable but new ones may be added
       and old ones may occasionally be removed in the future. If a message type
       is removed, any overrides for that message type will just be silently ignored.
+
+  - h3: Log style
+
+  - p: >
+      This can be used to adapt esbuild's log output to different tools that expect
+      a certain style of log messages. Here is an example of configuring the log style:
+
+  - example:
+      in:
+        app.js: '1 + 2'
+
+      cli: |
+        esbuild app.js --log-style=visualstudio
+
+      mjs: |
+        import * as esbuild from 'esbuild'
+
+        await esbuild.build({
+          entryPoints: ['app.js'],
+          logStyle: 'visualstudio',
+        })
+
+      go: |
+        package main
+
+        import "github.com/evanw/esbuild/pkg/api"
+        import "os"
+
+        func main() {
+          result := api.Build(api.BuildOptions{
+            EntryPoints: []string{"app.js"},
+            LogStyle:    api.LogStyleVisualStudio,
+          })
+
+          if len(result.Errors) > 0 {
+            os.Exit(1)
+          }
+        }
+
+  - p: >
+      Available log styles:
+
+  - ul:
+    - >
+      `default`
+      <p>This is esbuild's default log style, and normally doesn't
+      need to be configured explicitly.</p>
+    - >
+      `visualstudio`
+      <p>This allows esbuild to integrate with
+      [Visual Studio](https://visualstudio.microsoft.com/)'s built-in problem matcher
+      for custom build rules. Without this, the IDE will fail to understand esbuild's
+      log output and won't show errors and/or warnigns from esbuild in the IDE.</p>
