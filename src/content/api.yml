@@ -8221,6 +8221,7 @@ body:
             <li><details><summary>`call-import-namespace`</summary><pre>{{ FORMAT_MESSAGES('import * as foo from "foo"; foo()', { sourcefile: 'example.js', format: 'esm' }) }}</pre></details></li>
             <li><details><summary>`class-name-will-throw`</summary><pre>{{ FORMAT_MESSAGES('class Foo { static key = "foo"; static [Foo.key] = 123 }', { sourcefile: 'example.js' }) }}</pre></details></li>
             <li><details><summary>`commonjs-variable-in-esm`</summary><pre>{{ FORMAT_MESSAGES('exports.foo = 1; export let bar = 2', { sourcefile: 'example.js', format: 'esm' }) }}</pre></details></li>
+            <li><details><summary>`confusing-typescript-cast`</summary><pre>{{ FORMAT_MESSAGES({ 'example.ts': '1 + 2 as number * 3' }, {}) }}</pre></details></li>
             <li><details><summary>`delete-super-property`</summary><pre>{{ FORMAT_MESSAGES('class Foo extends Object { foo() { delete super.foo } }', { sourcefile: 'example.js' }) }}</pre></details></li>
             <li><details><summary>`direct-eval`</summary><pre>{{ FORMAT_MESSAGES('let apparentlyUnused; eval("actuallyUse(apparentlyUnused)")', { sourcefile: 'example.js', logOverride: { 'direct-eval': 'warning' } }) }}</pre></details></li>
             <li><details><summary>`duplicate-case`</summary><pre>{{ FORMAT_MESSAGES('switch (foo) { case 1: return 1; case 1: return 2 }', { sourcefile: 'example.js' }) }}</pre></details></li>
