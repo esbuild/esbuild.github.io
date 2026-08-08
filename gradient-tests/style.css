@@ -3,18 +3,18 @@
     linear-gradient(
       to right,
       #ff0e0e,
-      #ff3004 6.25%,
-      #fa3900,
-      #f54100 12.5%,
-      #de5c00 25%,
-      #ac7a00,
+      #ff1d00 6.25%,
+      #ff2e00,
+      #f93900 12.5%,
+      #e25700 25%,
+      #ad7a00,
       #718c00 75%,
-      #5d9000,
-      #439300 87.5%,
-      #349400 90.62%,
-      #279500,
-      #1b9500 93.75%,
-      #00942a);
+      #5c9000,
+      #429300 87.5%,
+      #319500 90.62%,
+      #229600,
+      #119600 93.75%,
+      #009523);
   background:
     linear-gradient(
       to right,
@@ -35,18 +35,18 @@
   background:
     radial-gradient(
       #ff0e0e,
-      #ff3004 6.25%,
-      #fa3900,
-      #f54100 12.5%,
-      #de5c00 25%,
-      #ac7a00,
+      #ff1d00 6.25%,
+      #ff2e00,
+      #f93900 12.5%,
+      #e25700 25%,
+      #ad7a00,
       #718c00 75%,
-      #5d9000,
-      #439300 87.5%,
-      #349400 90.62%,
-      #279500,
-      #1b9500 93.75%,
-      #00942a);
+      #5c9000,
+      #429300 87.5%,
+      #319500 90.62%,
+      #229600,
+      #119600 93.75%,
+      #009523);
   background:
     radial-gradient(
       color(xyz 0.487 0.229 0),
@@ -66,18 +66,18 @@
   background:
     conic-gradient(
       #ff0e0e,
-      #ff3004 6.25%,
-      #fa3900,
-      #f54100 12.5%,
-      #de5c00 25%,
-      #ac7a00,
+      #ff1d00 6.25%,
+      #ff2e00,
+      #f93900 12.5%,
+      #e25700 25%,
+      #ad7a00,
       #718c00 75%,
-      #5d9000,
-      #439300 87.5%,
-      #349400 90.62%,
-      #279500,
-      #1b9500 93.75%,
-      #00942a);
+      #5c9000,
+      #429300 87.5%,
+      #319500 90.62%,
+      #229600,
+      #119600 93.75%,
+      #009523);
   background:
     conic-gradient(
       color(xyz 0.487 0.229 0),
@@ -178,10 +178,10 @@
       #b477f1,
       #da6fdc,
       #f36bc3,
-      #ff72a9,
-      #ff8195,
-      #ff8e83,
-      #ff986d,
+      #ff70a9,
+      #ff8094,
+      #ff8d83,
+      #ff986c,
       #f4a960,
       #e3b95e,
       #d0c866 60%,
@@ -215,10 +215,10 @@
       #b477f1,
       #da6fdc,
       #f36bc3,
-      #ff72a9,
-      #ff8195,
-      #ff8e83,
-      #ff986d,
+      #ff70a9,
+      #ff8094,
+      #ff8d83,
+      #ff986c,
       #f4a960,
       #e3b95e,
       #d0c866 60%,
@@ -251,10 +251,10 @@
       #b477f1,
       #da6fdc,
       #f36bc3,
-      #ff72a9,
-      #ff8195,
-      #ff8e83,
-      #ff986d,
+      #ff70a9,
+      #ff8094,
+      #ff8d83,
+      #ff986c,
       #f4a960,
       #e3b95e,
       #d0c866 60%,
@@ -291,8 +291,8 @@
       #d2d363,
       #e7c34d,
       #f7b247,
-      #ffa359,
-      #ff9772,
+      #ffa256,
+      #ff956d,
       #ff8984 60%,
       #f177b8,
       #c477e7 80%,
@@ -326,8 +326,8 @@
       #d2d363,
       #e7c34d,
       #f7b247,
-      #ffa359,
-      #ff9772,
+      #ffa256,
+      #ff956d,
       #ff8984 60%,
       #f177b8,
       #c477e7 80%,
@@ -360,8 +360,8 @@
       #d2d363,
       #e7c34d,
       #f7b247,
-      #ffa359,
-      #ff9772,
+      #ffa256,
+      #ff956d,
       #ff8984 60%,
       #f177b8,
       #c477e7 80%,
@@ -486,9 +486,9 @@
   background:
     linear-gradient(
       to right,
-      #6e1bff 30px,
-      #7225ff calc(29.06px + 1.88%),
-      #742fff calc(28.12px + 3.75%),
+      #6e1aff 30px,
+      #7222ff calc(29.06px + 1.88%),
+      #742eff calc(28.12px + 3.75%),
       #7a42fa calc(26.25px + 7.5%),
       #8860ea calc(22.5px + 15%),
       #aa87c7 calc(15px + 30%),
@@ -511,15 +511,15 @@
 .radial.mixed_units-esbuild {
   background:
     radial-gradient(
-      #6e1bff 30px,
-      #7127ff calc(29.06px + 1.88%),
-      #7530ff calc(28.12px + 3.75%),
+      #6e1aff 30px,
+      #7124ff calc(29.06px + 1.88%),
+      #752fff calc(28.12px + 3.75%),
       #7c42fb calc(26.25px + 7.5%),
       #8b60eb calc(22.5px + 15%),
       #b087c8 calc(15px + 30%),
       #dca49b calc(7.5px + 45%),
       #f3b07d calc(3.75px + 52.5%),
-      #ffc173 60%);
+      #ffbf67 60%);
   background:
     radial-gradient(
       color(xyz 0.263 0.11 1.044) 30px,
@@ -535,15 +535,15 @@
 .conic.mixed_units-esbuild {
   background:
     conic-gradient(
-      #6e1bff 8.33%,
-      #7127ff,
-      #7530ff 11.56%,
+      #6e1aff 8.33%,
+      #7124ff,
+      #752fff 11.56%,
       #7c42fb 14.79%,
       #8b60eb 21.25%,
       #b087c8,
       #dca49b 47.08%,
       #f3b07d,
-      #ffc173 60%);
+      #ffbf67 60%);
   background:
     conic-gradient(
       color(xyz 0.263 0.11 1.044) 8.33%,
