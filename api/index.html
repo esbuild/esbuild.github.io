@@ -1113,7 +1113,7 @@ image.src = url
     os.Exit(<span class="hljs-number">1</span>)
   }
 }
-</pre><h2 id="output-contents"><a class="permalink" href="#output-contents">#</a>Output contents</h2><h3 id="banner"><a class="permalink" href="#banner">#</a>Banner</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>Use this to insert an arbitrary string at the beginning of generated JavaScript and CSS files. This is commonly used to insert comments:</p><div class="switcher">
+</pre><h2 id="output-contents"><a class="permalink" href="#output-contents">#</a>Output contents</h2><h3 id="banner"><a class="permalink" href="#banner">#</a>Banner</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>Use this to insert an arbitrary string at the beginning of generated JavaScript and CSS files. This is typically used to insert comments. Here is an example using the <a href="#build">build</a> API:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -1149,7 +1149,36 @@ image.src = url
     os.Exit(<span class="hljs-number">1</span>)
   }
 }
-</pre><p>This is similar to <a href="#footer">footer</a> which inserts at the end instead of the beginning.</p><p>Note that if you are inserting non-comment code into a CSS file, be aware that CSS ignores all <code>@import</code> rules that come after a non-<code>@import</code> rule (other than a <code>@charset</code> rule), so using a banner to inject CSS rules may accidentally disable imports of external stylesheets.</p><h3 id="charset"><a class="permalink" href="#charset">#</a>Charset</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>By default esbuild's output is ASCII-only. Any non-ASCII characters are escaped using backslash escape sequences. One reason is because non-ASCII characters are misinterpreted by the browser by default, which causes confusion. You have to explicitly add <code>&lt;meta <wbr>charset=<wbr>&quot;utf-8&quot;&gt;</code> to your HTML or serve it with the correct <code>Content-<wbr>Type</code> header for the browser to not mangle your code. Another reason is that non-ASCII characters can significantly <a href="https://v8.dev/blog/scanner">slow down the browser's parser</a>. However, using escape sequences makes the generated output slightly bigger, and also makes it harder to read.</p><p>If you would like for esbuild to print the original characters without using escape sequences and you have ensured that the browser will interpret your code as UTF-8, you can disable character escaping by setting the charset:</p><div class="switcher">
+</pre><p>This is similar to <a href="#footer">footer</a> which inserts at the end instead of the beginning.</p><p>Note that if you are inserting non-comment code into a CSS file, be aware that CSS ignores all <code>@import</code> rules that come after a non-<code>@import</code> rule (other than a <code>@charset</code> rule), so using a banner to inject CSS rules may accidentally disable imports of external stylesheets.</p><p>Unlike the build API, the banner for the <a href="#transform">transform</a> API is just a single string. There is no need to specify a separate banner for JS and CSS files since the content type for the transform API is already unambiguously specified via the <a href="#loader">loader</a> setting. Here is an example using the transform API:</p><div class="switcher">
+<a href="javascript:void 0" class="cli3">CLI</a>
+<a href="javascript:void 0" class="js3">JS</a>
+<a href="javascript:void 0" class="go3">Go</a>
+      </div>
+<pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;1+2&#x27;</span> | esbuild --banner=//comment
+</span><span class="repl-out">//comment
+1 + 2;
+</span></pre>
+<pre class="switchable js3"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;esbuild&#x27;</span>
+
+<span class="hljs-keyword">let</span> result = <span class="hljs-keyword">await</span> esbuild.transform(<span class="hljs-string">&#x27;1+2&#x27;</span>, {
+  <span class="hljs-attr">banner</span>: <span class="hljs-string">&#x27;//comment&#x27;</span>,
+})
+<span class="hljs-built_in">console</span>.log(result.code)
+</pre>
+<pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Transform(<span class="hljs-string">&quot;1+2&quot;</span>, api.TransformOptions{
+    Banner: <span class="hljs-string">&quot;//comment&quot;</span>,
+  })
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}
+</pre><h3 id="charset"><a class="permalink" href="#charset">#</a>Charset</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>By default esbuild's output is ASCII-only. Any non-ASCII characters are escaped using backslash escape sequences. One reason is because non-ASCII characters are misinterpreted by the browser by default, which causes confusion. You have to explicitly add <code>&lt;meta <wbr>charset=<wbr>&quot;utf-8&quot;&gt;</code> to your HTML or serve it with the correct <code>Content-<wbr>Type</code> header for the browser to not mangle your code. Another reason is that non-ASCII characters can significantly <a href="https://v8.dev/blog/scanner">slow down the browser's parser</a>. However, using escape sequences makes the generated output slightly bigger, and also makes it harder to read.</p><p>If you would like for esbuild to print the original characters without using escape sequences and you have ensured that the browser will interpret your code as UTF-8, you can disable character escaping by setting the charset:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -1190,7 +1219,7 @@ image.src = url
     fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result2.Code)
   }
 }
-</pre><p>Some caveats:</p><ul><li><p> This does not yet escape non-ASCII characters embedded in regular expressions. This is because esbuild does not currently parse the contents of regular expressions at all. The flag was added despite this limitation because it's still useful for code that doesn't contain cases like this. </p></li><li><p> This flag does not apply to comments. I believe preserving non-ASCII data in comments should be fine because even if the encoding is wrong, the run time environment should completely ignore the contents of all comments. For example, the <a href="https://v8.dev/blog/scanner">V8 blog post</a> mentions an optimization that avoids decoding comment contents completely. And all comments other than license-related comments are stripped out by esbuild anyway. </p></li><li><p> This option simultaneously applies to all output file types (JavaScript, CSS, and JSON). So if you configure your web server to send the correct <code>Content-<wbr>Type</code> header and want to use the UTF-8 charset, make sure your web server is configured to treat both <code>.js</code> and <code>.css</code> files as UTF-8. </p></li></ul><h3 id="footer"><a class="permalink" href="#footer">#</a>Footer</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>Use this to insert an arbitrary string at the end of generated JavaScript and CSS files. This is commonly used to insert comments:</p><div class="switcher">
+</pre><p>Some caveats:</p><ul><li><p> This does not yet escape non-ASCII characters embedded in regular expressions. This is because esbuild does not currently parse the contents of regular expressions at all. The flag was added despite this limitation because it's still useful for code that doesn't contain cases like this. </p></li><li><p> This flag does not apply to comments. I believe preserving non-ASCII data in comments should be fine because even if the encoding is wrong, the run time environment should completely ignore the contents of all comments. For example, the <a href="https://v8.dev/blog/scanner">V8 blog post</a> mentions an optimization that avoids decoding comment contents completely. And all comments other than license-related comments are stripped out by esbuild anyway. </p></li><li><p> This option simultaneously applies to all output file types (JavaScript, CSS, and JSON). So if you configure your web server to send the correct <code>Content-<wbr>Type</code> header and want to use the UTF-8 charset, make sure your web server is configured to treat both <code>.js</code> and <code>.css</code> files as UTF-8. </p></li></ul><h3 id="footer"><a class="permalink" href="#footer">#</a>Footer</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>Use this to insert an arbitrary string at the end of generated JavaScript and CSS files. This is typically used to insert comments. Here is an example using the <a href="#build">build</a> API:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
@@ -1226,7 +1255,36 @@ image.src = url
     os.Exit(<span class="hljs-number">1</span>)
   }
 }
-</pre><p>This is similar to <a href="#banner">banner</a> which inserts at the beginning instead of the end.</p><h3 id="format"><a class="permalink" href="#format">#</a>Format</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>This sets the output format for the generated JavaScript files. There are currently three possible values that can be configured: <code>iife</code>, <code>cjs</code>, and <code>esm</code>. When no output format is specified, esbuild picks an output format for you if <a href="#bundle">bundling</a> is enabled (as described below), or doesn't do any format conversion if <a href="#bundle">bundling</a> is disabled.</p><h4 id="format-iife"><a class="permalink" href="#format-iife">#</a>IIFE</h4><p>The <code>iife</code> format stands for &quot;immediately-invoked function expression&quot; and is intended to be run in the browser. Wrapping your code in a function expression ensures that any variables in your code don't accidentally conflict with variables in the global scope. If your entry point has exports that you want to expose as a global in the browser, you can configure that global's name using the <a href="#global-name">global name</a> setting. The <code>iife</code> format will automatically be enabled when no output format is specified, <a href="#bundle">bundling</a> is enabled, and <a href="#platform">platform</a> is set to <code>browser</code> (which it is by default). Specifying the <code>iife</code> format looks like this:</p><div class="switcher">
+</pre><p>This is similar to <a href="#banner">banner</a> which inserts at the beginning instead of the end.</p><p>Unlike the build API, the footer for the <a href="#transform">transform</a> API is just a single string. There is no need to specify a separate footer for JS and CSS files since the content type for the transform API is already unambiguously specified via the <a href="#loader">loader</a> setting. Here is an example using the transform API:</p><div class="switcher">
+<a href="javascript:void 0" class="cli3">CLI</a>
+<a href="javascript:void 0" class="js3">JS</a>
+<a href="javascript:void 0" class="go3">Go</a>
+      </div>
+<pre class="switchable cli3"><span class="repl-in"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;1+2&#x27;</span> | esbuild --footer=//comment
+</span><span class="repl-out">1 + 2;
+//comment
+</span></pre>
+<pre class="switchable js3"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> esbuild <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;esbuild&#x27;</span>
+
+<span class="hljs-keyword">let</span> result = <span class="hljs-keyword">await</span> esbuild.transform(<span class="hljs-string">&#x27;1+2&#x27;</span>, {
+  <span class="hljs-attr">footer</span>: <span class="hljs-string">&#x27;//comment&#x27;</span>,
+})
+<span class="hljs-built_in">console</span>.log(result.code)
+</pre>
+<pre class="switchable go3"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/evanw/esbuild/pkg/api&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  result := api.Transform(<span class="hljs-string">&quot;1+2&quot;</span>, api.TransformOptions{
+    Footer: <span class="hljs-string">&quot;//comment&quot;</span>,
+  })
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(result.Errors) == <span class="hljs-number">0</span> {
+    fmt.Printf(<span class="hljs-string">&quot;%s&quot;</span>, result.Code)
+  }
+}
+</pre><h3 id="format"><a class="permalink" href="#format">#</a>Format</h3><p><i>Supported by: <a href="#build">Build</a> and <a href="#transform">Transform</a></i></p><p>This sets the output format for the generated JavaScript files. There are currently three possible values that can be configured: <code>iife</code>, <code>cjs</code>, and <code>esm</code>. When no output format is specified, esbuild picks an output format for you if <a href="#bundle">bundling</a> is enabled (as described below), or doesn't do any format conversion if <a href="#bundle">bundling</a> is disabled.</p><h4 id="format-iife"><a class="permalink" href="#format-iife">#</a>IIFE</h4><p>The <code>iife</code> format stands for &quot;immediately-invoked function expression&quot; and is intended to be run in the browser. Wrapping your code in a function expression ensures that any variables in your code don't accidentally conflict with variables in the global scope. If your entry point has exports that you want to expose as a global in the browser, you can configure that global's name using the <a href="#global-name">global name</a> setting. The <code>iife</code> format will automatically be enabled when no output format is specified, <a href="#bundle">bundling</a> is enabled, and <a href="#platform">platform</a> is set to <code>browser</code> (which it is by default). Specifying the <code>iife</code> format looks like this:</p><div class="switcher">
 <a href="javascript:void 0" class="cli3">CLI</a>
 <a href="javascript:void 0" class="js3">JS</a>
 <a href="javascript:void 0" class="go3">Go</a>
