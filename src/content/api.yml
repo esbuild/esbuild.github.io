@@ -2519,7 +2519,8 @@ body:
 
   - p: >
       Use this to insert an arbitrary string at the beginning of generated
-      JavaScript and CSS files. This is commonly used to insert comments:
+      JavaScript and CSS files. This is typically used to insert comments.
+      Here is an example using the [build](#build) API:
 
   - example:
       in:
@@ -2569,6 +2570,44 @@ body:
       that CSS ignores all `@import` rules that come after a non-`@import` rule
       (other than a `@charset` rule), so using a banner to inject CSS rules may
       accidentally disable imports of external stylesheets.
+
+  - p: >
+      Unlike the build API, the banner for the [transform](#transform) API is
+      just a single string. There is no need to specify a separate banner for
+      JS and CSS files since the content type for the transform API is already
+      unambiguously specified via the [loader](#loader) setting. Here is an
+      example using the transform API:
+
+  - example:
+      cli:
+        - $: |
+            echo '1+2' | esbuild --banner=//comment
+        - expect: |
+            //comment
+            1 + 2;
+
+      mjs: |
+        import * as esbuild from 'esbuild'
+
+        let result = await esbuild.transform('1+2', {
+          banner: '//comment',
+        })
+        console.log(result.code)
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          result := api.Transform("1+2", api.TransformOptions{
+            Banner: "//comment",
+          })
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
 
   - h3: Charset
 
@@ -2674,7 +2713,8 @@ body:
 
   - p: >
       Use this to insert an arbitrary string at the end of generated JavaScript
-      and CSS files. This is commonly used to insert comments:
+      and CSS files. This is typically used to insert comments. Here is an
+      example using the [build](#build) API:
 
   - example:
       in:
@@ -2718,6 +2758,44 @@ body:
   - p: >
       This is similar to [banner](#banner) which inserts at the beginning
       instead of the end.
+
+  - p: >
+      Unlike the build API, the footer for the [transform](#transform) API is
+      just a single string. There is no need to specify a separate footer for
+      JS and CSS files since the content type for the transform API is already
+      unambiguously specified via the [loader](#loader) setting. Here is an
+      example using the transform API:
+
+  - example:
+      cli:
+        - $: |
+            echo '1+2' | esbuild --footer=//comment
+        - expect: |
+            1 + 2;
+            //comment
+
+      mjs: |
+        import * as esbuild from 'esbuild'
+
+        let result = await esbuild.transform('1+2', {
+          footer: '//comment',
+        })
+        console.log(result.code)
+
+      go: |
+        package main
+
+        import "fmt"
+        import "github.com/evanw/esbuild/pkg/api"
+
+        func main() {
+          result := api.Transform("1+2", api.TransformOptions{
+            Footer: "//comment",
+          })
+          if len(result.Errors) == 0 {
+            fmt.Printf("%s", result.Code)
+          }
+        }
 
   - h3: Format
 
