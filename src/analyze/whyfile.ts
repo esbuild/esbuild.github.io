@@ -59,7 +59,7 @@ export let computeImporters = (metafile: Metafile): Info => {
     if (entryPoint) {
       entryPoints[entryPoint] = o
       allEntryPointOutputs.push(o)
-      for (let record of output.imports) {
+      for (let record of output.imports || []) {
         if (!record.external && !hasOwnProperty.call(crossChunkImports, record.path)) {
           crossChunkImports[record.path] = true
         }
@@ -98,7 +98,7 @@ export let computeImporters = (metafile: Metafile): Info => {
     for (let path of current) {
       let input = inputs[path]
 
-      for (let record of input.imports) {
+      for (let record of input.imports || []) {
         if (!record.external && !hasOwnProperty.call(importers, record.path)) {
           importers[record.path] = {
             inputPath_: path,
