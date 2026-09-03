@@ -1702,7 +1702,7 @@ body:
       `with`
       <p>
       This is the [import attributes](https://github.com/tc39/proposal-import-attributes)
-      assocated with the import statement for this path. For example, a `with` value of
+      associated with the import statement for this path. For example, a `with` value of
       <code>{ type: <wbr>'json' }</code> would be appropriate for a module imported using
       <code>with { <wbr>type: <wbr>'json' }</code> attributes on the import statement.
       This information isn't used by esbuild but may be used by [on-resolve callbacks](#on-resolve).
