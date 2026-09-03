@@ -33,9 +33,9 @@ let formatNumberWithDecimal = (value: number): string => {
 let bytesToText = (bytes: number): string => {
   if (bytes === 1) return '1 byte'
   if (bytes < 1024) return formatInteger(bytes) + ' bytes'
-  if (bytes < 1024 * 1024) return formatNumberWithDecimal(bytes / 1024) + ' kb'
-  if (bytes < 1024 * 1024 * 1024) return formatNumberWithDecimal(bytes / (1024 * 1024)) + ' mb'
-  return formatNumberWithDecimal(bytes / (1024 * 1024 * 1024)) + ' gb'
+  if (bytes < 1024 * 1024) return formatNumberWithDecimal(bytes / 1024) + ' KiB'
+  if (bytes < 1024 * 1024 * 1024) return formatNumberWithDecimal(bytes / (1024 * 1024)) + ' MiB'
+  return formatNumberWithDecimal(bytes / (1024 * 1024 * 1024)) + ' GiB'
 }
 
 disableAnnoyingBehaviors(transformOutputEl, true)
