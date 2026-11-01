@@ -1342,6 +1342,20 @@ body:
       build results.
 
   - p: >
+      Build outputs in serve mode are kept in memory and overlaid on top of the
+      served directory. They are **not** written to disk unless you also run a
+      normal build (for example with [watch mode](#watch) writing `outdir` /
+      `outfile`). Reloading always sees the in-memory result of the latest
+      rebuild, even if nothing has been written under `outdir` yet.
+
+  - p: >
+      You can also use serve mode **without** bundling. Passing only
+      `--servedir=...` (or calling `serve` on a context with no entry points)
+      starts a plain static file server for that directory. No transform or
+      bundle step runs; requests are served from disk as-is. That is handy for
+      quickly hosting already-built assets during development.
+
+  - p: >
       Note that this web server is intended to only be used in development. _Do
       not use this in production._
 
